@@ -1,0 +1,11 @@
+# Contenu source copié depuis Plonk It — usage personnel, jamais versionné
+input/
+
+# Données dérivées lourdes (images recadrées, caches)
+data/cache/
+data/images/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
