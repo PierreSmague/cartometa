@@ -10,20 +10,31 @@ from cartometa.extract.maps_links import load_cache, resolve_maps_url, save_cach
 COUNTRY_BY_SLUG = {"poland": ("PL", "https://www.plonkit.net/poland")}
 
 
-def _find_page(input_dir: Path, slug: str) -> tuple[Path, Path]:
-    """Retrouve le .htm sauvegardé et son dossier _files pour un pays."""
-    for html_path in sorted(input_dir.glob("*.htm*")):
-        if slug in html_path.stem.lower():
-            assets = html_path.with_name(html_path.stem + "_files")
-            return html_path, assets
-    raise FileNotFoundError(f"aucune page sauvegardée pour '{slug}' dans {input_dir}")
+def _find_page(input_dir: Path, slug: str) -> Path:
+    """Retrouve le .htm sauvegardé pour un pays.
+
+    Lève une erreur explicite s'il n'y a aucun candidat ou si plusieurs
+    fichiers correspondent (ex. collision de nom d'une seconde sauvegarde
+    navigateur, du type "Poland — Plonk It (1).htm") : mieux vaut échouer
+    bruyamment qu'en choisir un silencieusement.
+    """
+    candidates = [p for p in sorted(input_dir.glob("*.htm*")) if slug in p.stem.lower()]
+    if not candidates:
+        raise FileNotFoundError(f"aucune page sauvegardée pour '{slug}' dans {input_dir}")
+    if len(candidates) > 1:
+        names = ", ".join(p.name for p in candidates)
+        raise ValueError(
+            f"plusieurs pages sauvegardées correspondent à '{slug}' dans {input_dir} : "
+            f"{names} — supprimez les doublons ou renommez pour lever l'ambiguïté"
+        )
+    return candidates[0]
 
 
 def run_extract(
     input_dir: Path, data_dir: Path, country: str, base_url: str, resolve: bool = True
 ) -> dict:
     slug = base_url.rstrip("/").rsplit("/", 1)[-1]
-    html_path, assets_dir = _find_page(input_dir, slug)
+    html_path = _find_page(input_dir, slug)
     metas, anomalies = parse_page(html_path.read_text("utf-8", errors="replace"), country, base_url)
 
     cache_path = data_dir / "cache" / "maps_links.json"
