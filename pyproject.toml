@@ -16,6 +16,11 @@ dev = [
     "pytest>=9.1.1",
 ]
 
+[project.scripts]
+cartometa-extract = "cartometa.extract.cli:main"
+cartometa-geo = "cartometa.geo.cli:main"
+cartometa-review = "cartometa.review.server:main"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
