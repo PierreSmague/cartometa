@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import json
+import os
 import urllib.request
 from functools import lru_cache
 from pathlib import Path
+from typing import Callable
 
 from shapely.geometry import shape
 from shapely.geometry.base import BaseGeometry
@@ -14,12 +16,28 @@ DATASET_URL = (
 )
 DATASET_NAME = "ne_10m_admin_0_countries.geojson"
 
+Downloader = Callable[[str, Path], None]
 
-def ensure_dataset(cache_dir: Path) -> Path:
+
+def _urlretrieve(url: str, dest: Path) -> None:
+    urllib.request.urlretrieve(url, dest)
+
+
+def ensure_dataset(cache_dir: Path, downloader: Downloader = _urlretrieve) -> Path:
     path = cache_dir / DATASET_NAME
     if not path.exists():
         cache_dir.mkdir(parents=True, exist_ok=True)
-        urllib.request.urlretrieve(DATASET_URL, path)
+        tmp_path = path.with_name(path.name + ".part")
+        try:
+            downloader(DATASET_URL, tmp_path)
+            os.replace(tmp_path, path)
+        finally:
+            # Un téléchargement interrompu (réseau, Ctrl-C, disque plein) ne doit
+            # jamais laisser de fichier partiel au chemin final, ni de résidu
+            # temporaire : sinon les exécutions suivantes échoueraient sur une
+            # erreur JSON obscure sans jamais retenter le téléchargement.
+            if tmp_path.exists():
+                tmp_path.unlink()
     return path
 
 
