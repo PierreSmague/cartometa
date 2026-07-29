@@ -42,9 +42,17 @@ def test_many_components_suggest_parasite_red():
     assert any("composantes" in w for w in warnings)
 
 
-def test_border_touching_zone_is_flagged_as_possibly_truncated():
-    _, warnings = _evaluate(touches_border=True)
-    assert any("tronquée" in w for w in warnings)
+def test_border_touching_zone_is_reported_without_truncation_claim_or_penalty():
+    """Correction (relecture finale) : `touches_border` mesure le contact avec
+    la bbox de la SILHOUETTE DU PAYS, pas le cadre de l'image — ce n'est donc
+    pas une troncature fiable. L'avertissement doit décrire ce fait sans
+    prétendre à une troncature, et ne doit plus pénaliser le score (6 des 11
+    métas régionales polonaises, par ailleurs correctes, le déclenchaient)."""
+    score_without, _ = _evaluate(touches_border=False)
+    score_with, warnings = _evaluate(touches_border=True)
+    assert any("silhouette du pays" in w for w in warnings)
+    assert not any("possiblement tronquée" in w for w in warnings)
+    assert score_with == score_without
 
 
 def test_near_national_coverage_suggests_using_country_polygon():

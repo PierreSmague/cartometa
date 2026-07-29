@@ -42,8 +42,24 @@ def evaluate(
         score -= 0.2
 
     if touches_border:
-        warnings.append("zone au bord de l'encart, possiblement tronquée")
-        score -= 0.15
+        # NOTE (correction, relecture finale) : `touches_border` teste le bord
+        # de la boîte englobante de la SILHOUETTE DU PAYS (`inset.bbox`), pas
+        # le cadre de l'image composite. Toucher ce bord signifie seulement
+        # « la zone atteint l'extrémité du pays » — parfaitement normal pour
+        # une méta régionale frontalière, et mesuré chez 6 des 11 métas
+        # régionales de la Pologne, dont des géométries par ailleurs justes.
+        # Ce n'est donc PAS un signe fiable de troncature par le cadrage de
+        # l'image (voir cartometa/geo/cli.py pour la tentative de mesure
+        # directe sur le bord réel de l'image, abandonnée : les fermetures/
+        # ouvertures morphologiques rendent ce bord non fiable). On se
+        # contente donc de rapporter le fait observé, sans jugement de
+        # troncature ni malus de confiance — il ne doit pas faire remonter
+        # ces métas, par ailleurs correctes, en tête de la file de revue.
+        warnings.append(
+            "zone au contact du bord de la silhouette du pays détectée "
+            "(fréquent et normal en bordure nationale, ne signifie pas "
+            "que l'image est tronquée)"
+        )
 
     if area_fraction_of_country is not None:
         if area_fraction_of_country > 0.95:

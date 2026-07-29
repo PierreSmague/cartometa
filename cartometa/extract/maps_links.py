@@ -6,11 +6,17 @@ from pathlib import Path
 from typing import Any, Callable
 
 LATLON_RE = re.compile(r"/@(-?\d+\.\d+),(-?\d+\.\d+)")
+# Deuxième forme observée sur des liens `goo.gl/maps` anciens (relecture
+# finale, correction) : la redirection Google mène à un viewer panorama
+# Street View de la forme `.../maps/@?api=1&map_action=pano&pano=...
+# &viewpoint=LAT,LON&...`, sans coordonnées dans le chemin `/@LAT,LON`. Ce
+# n'est pas un lien mort — juste un second format à reconnaître.
+VIEWPOINT_RE = re.compile(r"[?&]viewpoint=(-?\d+\.\d+),(-?\d+\.\d+)")
 USER_AGENT = "cartometa/0.1 (usage personnel)"
 
 
 def extract_latlon(url: str) -> tuple[float, float] | None:
-    match = LATLON_RE.search(url)
+    match = LATLON_RE.search(url) or VIEWPOINT_RE.search(url)
     return (float(match.group(1)), float(match.group(2))) if match else None
 
 
@@ -22,11 +28,25 @@ def _default_opener(url: str) -> str:
 
 
 def resolve_maps_url(
-    url: str, cache: dict[str, Any], opener: Callable[[str], str] | None = None
+    url: str,
+    cache: dict[str, Any],
+    opener: Callable[[str], str] | None = None,
+    retry_failed: bool = False,
 ) -> tuple[float, float] | None:
+    """Résout un lien Maps court en (lat, lon), en s'appuyant sur un cache disque.
+
+    Par défaut, un échec déjà mémorisé (``null`` en cache) n'est jamais retenté :
+    c'est le comportement historique, silencieux vis-à-vis du réseau. Passer
+    ``retry_failed=True`` lève cette règle pour les seules entrées en échec —
+    un lien déjà résolu n'est, lui, jamais retapé sur le réseau.
+    """
     if url in cache:
         value = cache[url]
-        return tuple(value) if value else None
+        if value:
+            return tuple(value)
+        if not retry_failed:
+            return None
+        # value est None ici : échec mémorisé, mais on nous demande de rejouer.
     try:
         final_url = (opener or _default_opener)(url)
         latlon = extract_latlon(final_url)
