@@ -178,8 +178,12 @@ def main() -> None:
     parser.add_argument("country", nargs="?", default="PL")
     parser.add_argument("--data", type=Path, default=Path("data"))
     args = parser.parse_args()
-    stats = build_country(args.country, args.data, load_config())
-    print(f"{args.country}: {stats['total']} métas — "
+    # Un code pays saisi en minuscules produisait un fichier `gh.geojson` à
+    # côté de `GH.json` : invisible sous Windows (système de fichiers
+    # insensible à la casse), cassant partout ailleurs.
+    country = args.country.upper()
+    stats = build_country(country, args.data, load_config())
+    print(f"{country}: {stats['total']} métas — "
           f"national {stats['country']}, ponctuel {stats['spot']}, régional {stats['regional']}, "
           f"échecs {stats['failed']}")
     print(f"  écrit: {stats['output']}")

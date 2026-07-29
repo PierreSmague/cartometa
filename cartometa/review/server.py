@@ -322,7 +322,7 @@ def main() -> None:
     parser.add_argument("--data", type=Path, default=Path("data"))
     parser.add_argument("--port", type=int, default=8765)
     args = parser.parse_args()
-    STATE["data"], STATE["country"] = args.data, args.country
+    STATE["data"], STATE["country"] = args.data, args.country.upper()
 
     # Les images sont servies depuis la racine du projet (chemins relatifs des métas).
     os.chdir(Path.cwd())
