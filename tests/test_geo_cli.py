@@ -156,6 +156,101 @@ def test_build_country_writes_atomically_no_leftover_tmp(tmp_path, monkeypatch):
     assert data["type"] == "FeatureCollection"
 
 
+def _square_image(rect=(60, 40, 360, 340), size=(420, 400)) -> Image.Image:
+    """Encart crème net : silhouette carrée alignable sur un pays carré."""
+    img = Image.new("RGBA", size, (255, 255, 255, 255))
+    ImageDraw.Draw(img).rectangle(rect, fill=CREAM)
+    return img
+
+
+def _cross_image(size=(420, 400)) -> Image.Image:
+    """Silhouette en croix : incapable de bien s'aligner sur un pays carré."""
+    img = Image.new("RGBA", size, (255, 255, 255, 255))
+    draw = ImageDraw.Draw(img)
+    draw.rectangle([60, 160, 360, 240], fill=CREAM)
+    draw.rectangle([170, 40, 250, 360], fill=CREAM)
+    return img
+
+
+def test_calibration_tournament_prefers_the_best_image_not_the_first(tmp_path, monkeypatch):
+    """Cause première des calibrations médiocres (Namibie 0,79 → 0,98 mesuré) :
+    la première image venue n'est pas forcément représentative du pays."""
+    square_country = box(14.0, 49.0, 24.0, 55.0)
+    monkeypatch.setattr(geo_cli, "country_geometry", lambda *a, **k: square_country)
+    rel_bad = _write_meta_image(tmp_path, "calib_bad", _cross_image())
+    rel_good = _write_meta_image(tmp_path, "calib_good", _square_image())
+    metas = [
+        _base_meta(id="BAD1", tier="regional", image=rel_bad),
+        _base_meta(id="GOOD", tier="regional", image=rel_good),
+    ]
+    data_dir = tmp_path / "data"
+    (data_dir / "metas").mkdir(parents=True)
+
+    import os
+    old_cwd = os.getcwd()
+    os.chdir(tmp_path)
+    try:
+        calib = geo_cli._calibration_for("PL", metas, data_dir, load_config())
+    finally:
+        os.chdir(old_cwd)
+
+    assert calib is not None
+    assert calib.meta_id == "GOOD"
+    assert calib.iou > 0.9
+    # Le fichier sauvegardé porte la provenance, pour ne plus jamais avoir à
+    # deviner quelle image a servi à calibrer.
+    saved = json.loads((data_dir / "calib" / "PL.json").read_text("utf-8"))
+    assert saved["meta_id"] == "GOOD"
+
+
+def test_calibration_tournament_picks_multi_variant_for_archipelagos(tmp_path, monkeypatch):
+    """Hong Kong mesuré : IoU 0,56 sur la plus grande île seule, 0,80 en
+    gardant toutes les îles. L'IoU départage les variantes."""
+    from shapely.ops import unary_union
+
+    archipelago = unary_union([box(14.0, 52.0, 18.0, 55.0), box(20.0, 49.0, 24.0, 51.5)])
+    monkeypatch.setattr(geo_cli, "country_geometry", lambda *a, **k: archipelago)
+    img = Image.new("RGBA", (420, 400), (255, 255, 255, 255))
+    draw = ImageDraw.Draw(img)
+    draw.rectangle([60, 40, 180, 140], fill=CREAM)    # île nord-ouest
+    draw.rectangle([240, 157, 360, 240], fill=CREAM)  # île sud-est
+    rel = _write_meta_image(tmp_path, "calib_arch", img)
+    metas = [_base_meta(id="ARCH", tier="regional", image=rel)]
+    data_dir = tmp_path / "data"
+    (data_dir / "metas").mkdir(parents=True)
+
+    import os
+    old_cwd = os.getcwd()
+    os.chdir(tmp_path)
+    try:
+        calib = geo_cli._calibration_for("PL", metas, data_dir, load_config())
+    finally:
+        os.chdir(old_cwd)
+
+    assert calib is not None
+    assert calib.variant == "multi"
+    assert calib.iou > 0.85
+
+
+def test_calibration_reference_is_clipped_when_configured(monkeypatch):
+    """L'Indonésie est dessinée sans la Papouasie : la référence de
+    calibration doit être rognée via la config, sans toucher au code."""
+    from copy import deepcopy
+
+    from cartometa.config import Config
+
+    monkeypatch.setattr(geo_cli, "country_geometry", lambda *a, **k: box(0.0, 0.0, 10.0, 10.0))
+    cfg = load_config()
+    clipped_data = deepcopy(cfg.data)
+    clipped_data["calibration"]["reference_bbox_clip"] = {"XX": [0.0, 0.0, 6.0, 10.0]}
+
+    clipped = geo_cli._calibration_reference("XX", Path("unused"), Config(clipped_data))
+    assert clipped.bounds == (0.0, 0.0, 6.0, 10.0)
+    # Sans rognage configuré pour ce pays : référence pleine (masse principale).
+    full = geo_cli._calibration_reference("YY", Path("unused"), Config(clipped_data))
+    assert full.bounds == (0.0, 0.0, 10.0, 10.0)
+
+
 def test_build_country_preserves_existing_geojson_on_write_failure(tmp_path, monkeypatch):
     """La méthode d'écriture doit passer par cartometa.atomic_write : si le
     remplacement final échoue, le fichier précédent (travail de revue humain)

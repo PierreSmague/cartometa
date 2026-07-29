@@ -13,6 +13,7 @@ class Inset:
     bbox: tuple[int, int, int, int]  # x0, y0, x1, y1
     mask: np.ndarray                 # booléen, pleine taille image
     area_fraction: float
+    variant: str = "largest"         # "largest" ou "multi" (cf. inset_variants)
 
 
 def red_pixels(rgba: np.ndarray, cfg: Config) -> np.ndarray:
@@ -54,9 +55,7 @@ def _cream_pixels(rgba: np.ndarray, cfg: Config) -> np.ndarray:
     return (diff <= tolerance) & (rgba[..., 3] > 200)
 
 
-def find_inset(rgba: np.ndarray, cfg: Config) -> Inset | None:
-    """Localise la silhouette du pays. Retourne None si l'image n'a pas d'encart."""
-    height, width = rgba.shape[:2]
+def _significant_regions(rgba: np.ndarray, cfg: Config):
     candidate = _cream_pixels(rgba, cfg) | red_pixels(rgba, cfg)
 
     # Élimine le bruit poivre-et-sel (faux positifs isolés dans la photo) avant
@@ -69,14 +68,70 @@ def find_inset(rgba: np.ndarray, cfg: Config) -> Inset | None:
 
     labelled = label(candidate)
     regions = [r for r in regionprops(labelled) if r.area >= cfg.get("silhouette.min_component_px")]
+    return labelled, regions
+
+
+def inset_variants(rgba: np.ndarray, cfg: Config) -> list[Inset]:
+    """Les silhouettes candidates d'une image, plus grande composante d'abord.
+
+    La plus grande composante suffit pour un pays d'un seul tenant, mais
+    réduit un archipel à sa plus grande île (Hong Kong mesuré à IoU 0,56
+    contre 0,80 en gardant toutes les îles). On propose donc aussi, quand
+    elles existent, l'union des composantes pesant au moins
+    `calibration.multi_min_fraction` de la plus grande — le seuil écarte le
+    bruit résiduel de la photo sans écarter les vraies îles. L'appelant
+    départage les variantes par l'IoU de calibration : aucune règle a priori
+    ne décide si les composantes secondaires sont des îles (Hong Kong) ou
+    des parasites (encart décoratif de l'Inde).
+    """
+    height, width = rgba.shape[:2]
+    labelled, regions = _significant_regions(rgba, cfg)
     if not regions:
-        return None
+        return []
 
-    largest = max(regions, key=lambda r: r.area)
-    area_fraction = largest.area / (width * height)
+    biggest = max(regions, key=lambda r: r.area)
+    area_fraction = biggest.area / (width * height)
     if area_fraction < cfg.get("silhouette.min_area_fraction"):
-        return None
+        return []
 
-    mask = binary_fill_holes(labelled == largest.label)
-    y0, x0, y1, x1 = largest.bbox
-    return Inset(bbox=(x0, y0, x1, y1), mask=mask, area_fraction=area_fraction)
+    mask = binary_fill_holes(labelled == biggest.label)
+    y0, x0, y1, x1 = biggest.bbox
+    largest = Inset(bbox=(x0, y0, x1, y1), mask=mask, area_fraction=area_fraction)
+
+    threshold = cfg.get("calibration.multi_min_fraction", 0.02) * biggest.area
+    kept = [r for r in regions if r.area >= threshold]
+    if len(kept) < 2:
+        return [largest]
+
+    union = np.zeros(labelled.shape, dtype=bool)
+    for region in kept:
+        union |= labelled == region.label
+    union = binary_fill_holes(union)
+    ys, xs = np.nonzero(union)
+    multi = Inset(
+        bbox=(int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1),
+        mask=union,
+        area_fraction=union.sum() / (width * height),
+        variant="multi",
+    )
+    return [largest, multi]
+
+
+def find_inset(rgba: np.ndarray, cfg: Config) -> Inset | None:
+    """Localise la silhouette du pays (plus grande composante).
+
+    Conservée comme raccourci historique ; `inset_variants` expose aussi la
+    variante multi-composantes pour les archipels.
+    """
+    variants = inset_variants(rgba, cfg)
+    return variants[0] if variants else None
+
+
+def touches_image_edge(mask: np.ndarray) -> bool:
+    """Vrai si la silhouette touche le bord physique de l'image.
+
+    C'est le signe d'une carte rognée par le cadrage de la capture (Namibie,
+    Inde mesurées) : la partie du pays hors cadre ne doit alors pas compter
+    contre l'alignement de calibration (cf. fit_calibration edge_aware).
+    """
+    return bool(mask[0].any() or mask[-1].any() or mask[:, 0].any() or mask[:, -1].any())
