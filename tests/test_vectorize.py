@@ -2,15 +2,51 @@ import numpy as np
 from shapely.geometry import Point
 from cartometa.config import load_config
 from cartometa.geo.calibrate import Calibration
-from cartometa.geo.silhouette import find_inset
+from cartometa.geo.silhouette import Inset, find_inset
 from cartometa.geo.vectorize import buffer_km, mask_to_geometry, zone_mask
 from tests.fixtures import synthetic_meta_image
 
 CALIB = Calibration(ax=0.01, bx=14.0, ay=-0.01, by=55.0, iou=0.99)
 
+RED = (193, 40, 58, 255)
+
 
 def _array(**kwargs):
     return np.array(synthetic_meta_image(**kwargs).convert("RGBA"))
+
+
+def test_zone_mask_excludes_red_in_a_notch_outside_an_l_shaped_silhouette():
+    """La silhouette de synthetic_meta_image est un rectangle : mask == bbox
+    rectangle, donc un test qui ne mélange que ces fixtures ne peut pas
+    distinguer un vrai masquage intra-silhouette d'un simple recadrage
+    rectangulaire. Cette silhouette en L, construite directement, a un
+    "notch" (coin manquant) qui est dans le rectangle englobant (bbox) mais
+    hors de la silhouette elle-même : c'est là qu'on place le rouge
+    parasite, mesuré comme réel sur `Poland-southern-hills` (75 px de rouge
+    dans le rectangle de l'encart mais hors silhouette).
+    """
+    size = 100
+    rgba = np.zeros((size, size, 4), dtype=np.uint8)
+    rgba[..., 3] = 255  # fond opaque, non rouge
+
+    mask = np.zeros((size, size), dtype=bool)
+    mask[10:90, 10:90] = True
+    mask[10:50, 10:50] = False  # coin manquant : silhouette en L
+    inset = Inset(bbox=(10, 10, 90, 90), mask=mask, area_fraction=0.48)
+
+    # Rouge parasite : dans le rectangle englobant (bbox), mais dans le
+    # coin manquant, donc hors de la silhouette en L.
+    rgba[20:30, 20:30, :3] = RED[:3]
+    rgba[20:30, 20:30, 3] = 255
+
+    # Rouge légitime : à l'intérieur de la silhouette en L.
+    rgba[60:70, 60:70, :3] = RED[:3]
+    rgba[60:70, 60:70, 3] = 255
+
+    result = zone_mask(rgba, inset, load_config())
+
+    assert result[60:70, 60:70].any(), "le rouge légitime dans la silhouette doit être retenu"
+    assert not result[20:30, 20:30].any(), "le rouge du coin manquant (hors silhouette) doit être exclu"
 
 
 def test_zone_mask_excludes_parasite_red_from_the_photo():
