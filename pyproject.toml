@@ -20,6 +20,7 @@ dev = [
 cartometa-extract = "cartometa.extract.cli:main"
 cartometa-geo = "cartometa.geo.cli:main"
 cartometa-review = "cartometa.review.server:main"
+cartometa-export = "cartometa.geo.export:main"
 
 [tool.pytest.ini_options]
 markers = ["real_data: nécessite input/, sauté si absent"]

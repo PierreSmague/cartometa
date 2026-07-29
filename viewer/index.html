@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cartometa</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="map"></div>
+  <aside id="panel">
+    <header>
+      <input id="search" type="search" placeholder="Rechercher…">
+      <select id="category">
+        <option value="">Toutes catégories</option>
+        <option value="bollards">Bollards</option>
+        <option value="poteaux">Poteaux</option>
+        <option value="vehicule">Véhicule</option>
+        <option value="vegetation">Végétation</option>
+        <option value="signalisation">Signalisation</option>
+        <option value="autre">Autre</option>
+      </select>
+    </header>
+    <p id="hint">Cliquez sur la carte pour voir les métas applicables.</p>
+    <ul id="results"></ul>
+  </aside>
+  <script src="app.js"></script>
+</body>
+</html>
