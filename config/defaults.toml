@@ -16,6 +16,26 @@ min_component_px = 1000
 
 [calibration]
 min_iou = 0.90
+# Tournoi : la calibration essaie plusieurs images (au plus max_images ayant
+# une silhouette détectable) et garde le meilleur IoU ; arrêt anticipé dès
+# target_iou atteint, donc un pays au template propre ne paie qu'un seul fit.
+target_iou = 0.95
+max_images = 15
+# Variante multi-composantes : une composante est gardée si elle pèse au
+# moins cette fraction de la plus grande (archipels : Hong Kong, Indonésie).
+multi_min_fraction = 0.005
+# IoU hors-cadre exclu (cartes rognées par la capture) : un alignement
+# laissant visible moins de cette fraction du pays est rejeté — sans ce
+# plancher, l'optimiseur pousse le pays hors cadre pour ne garder qu'un
+# fragment bien aligné (optima dégénérés mesurés à 35 % visibles).
+edge_visible_min = 0.75
+
+# Référence de calibration restreinte, par pays [min_lon, min_lat, max_lon, max_lat] :
+# à utiliser quand le template Plonk It ne dessine qu'une partie du pays.
+# L'Indonésie est dessinée sans la Papouasie (pas de couverture Street View).
+# N'affecte que la calibration — la géométrie publiée reste le pays complet.
+[calibration.reference_bbox_clip]
+ID = [90.0, -12.0, 131.5, 6.5]
 
 [vectorize]
 min_component_px = 40

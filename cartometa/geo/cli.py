@@ -5,15 +5,23 @@ from pathlib import Path
 
 import numpy as np
 from PIL import Image
-from shapely.geometry import Point, mapping, shape
+from shapely.geometry import Point, box, mapping, shape
 from skimage.measure import label, regionprops
+
+from dataclasses import replace
 
 from cartometa.atomic_write import write_json_atomic
 from cartometa.config import Config, load_config
-from cartometa.geo.calibrate import Calibration, fit_calibration, load_calibration, save_calibration
+from cartometa.geo.calibrate import (
+    Calibration,
+    fit_calibration,
+    load_calibration,
+    save_calibration,
+    warn_if_below_threshold,
+)
 from cartometa.geo.confidence import evaluate
 from cartometa.geo.reference import country_geometry, main_landmass
-from cartometa.geo.silhouette import find_inset
+from cartometa.geo.silhouette import inset_variants, touches_image_edge
 from cartometa.geo.vectorize import buffer_km, mask_to_geometry, zone_mask
 
 
@@ -33,27 +41,81 @@ def _existing_statuses(path: Path) -> dict[str, dict]:
     }
 
 
+def _calibration_reference(country: str, data_dir: Path, cfg: Config):
+    """Référence géographique à laquelle aligner la silhouette dessinée.
+
+    Deux corrections par rapport au contour Natural Earth brut, parce que la
+    référence doit représenter ce que Plonk It DESSINE, pas le pays légal :
+
+    - `calibration.reference_bbox_clip` (config) rogne les pays dont le
+      template omet une partie du territoire (l'Indonésie est dessinée sans
+      la Papouasie, faute de couverture Street View) ;
+    - sinon, `main_landmass` écarte les territoires distants négligeables
+      (îles du Prince-Édouard de l'Afrique du Sud).
+
+    N'affecte que la calibration : la géométrie publiée reste le pays complet.
+    """
+    geometry = country_geometry(country, data_dir / "cache")
+    clip = (cfg.get("calibration.reference_bbox_clip") or {}).get(country)
+    if clip:
+        return geometry.intersection(box(*clip))
+    return main_landmass(geometry)
+
+
 def _calibration_for(country: str, metas: list[dict], data_dir: Path, cfg: Config) -> Calibration | None:
-    """Calibre une fois par pays, à partir d'une méta dont la silhouette est intacte."""
+    """Calibre une fois par pays, en tournoi : le meilleur IoU gagne.
+
+    Prendre la première image venue s'est avéré être la principale cause de
+    calibrations médiocres (mesuré : Namibie 0,79 sur une carte rognée alors
+    qu'une autre image du même pays donne 0,98 ; Indonésie 0,26 sur une
+    carte régionale de Bali). On essaie donc jusqu'à `calibration.max_images`
+    images, chacune sous ses variantes de silhouette (plus grande composante,
+    et union des composantes pour les archipels), plus un fit « hors-cadre
+    exclu » quand la silhouette touche le bord physique de l'image (carte
+    rognée par la capture). Arrêt anticipé dès `calibration.target_iou` :
+    un pays au template propre ne paie qu'un fit, comme avant.
+    """
     path = data_dir / "calib" / f"{country}.json"
     if path.exists():
         return load_calibration(path)
 
-    # Calibrer sur la masse principale : les territoires distants faussent
-    # l'alignement sans jamais apparaître sur la carte Plonk It.
-    reference = main_landmass(country_geometry(country, data_dir / "cache"))
+    reference = _calibration_reference(country, data_dir, cfg)
     # Une méta `spot` est préférée : son pin n'ampute pas la silhouette.
     ordered = sorted(metas, key=lambda m: 0 if m["tier"] == "spot" else 1)
+    target_iou = cfg.get("calibration.target_iou", 0.95)
+    max_images = int(cfg.get("calibration.max_images", 15))
+    visible_min = cfg.get("calibration.edge_visible_min", 0.75)
+
+    best: Calibration | None = None
+    tried = 0
     for meta in ordered:
         if not meta.get("image"):
             continue
-        inset = find_inset(_load_rgba(meta["image"]), cfg)
-        if inset is None:
+        variants = inset_variants(_load_rgba(meta["image"]), cfg)
+        if not variants:
             continue
-        calib = fit_calibration(inset.mask, reference, cfg)
-        save_calibration(path, calib)
-        return calib
-    return None
+        tried += 1
+        for inset in variants:
+            candidates = [fit_calibration(inset.mask, reference, cfg, warn=False)]
+            if touches_image_edge(inset.mask):
+                candidates.append(
+                    fit_calibration(inset.mask, reference, cfg, edge_aware=True, warn=False)
+                )
+            for calib in candidates:
+                if calib.visible < visible_min:
+                    continue
+                if best is None or calib.iou > best.iou:
+                    best = replace(calib, variant=inset.variant, meta_id=meta["id"])
+        if best is not None and best.iou >= target_iou:
+            break
+        if tried >= max_images:
+            break
+
+    if best is None:
+        return None
+    warn_if_below_threshold(best, cfg)
+    save_calibration(path, best)
+    return best
 
 
 def build_country(country: str, data_dir: Path, cfg: Config) -> dict:
@@ -100,7 +162,14 @@ def build_country(country: str, data_dir: Path, cfg: Config) -> dict:
                 warnings.append("aucune calibration disponible pour ce pays")
             else:
                 rgba = _load_rgba(meta["image"])
-                inset = find_inset(rgba, cfg)
+                # La même variante de silhouette que la calibration retenue :
+                # si le pays est un archipel calé sur toutes ses îles, une
+                # zone rouge sur une île secondaire doit compter aussi.
+                variants = inset_variants(rgba, cfg)
+                inset = next(
+                    (i for i in variants if i.variant == calib.variant),
+                    variants[0] if variants else None,
+                )
                 if inset is None:
                     warnings.append("aucun encart cartographique détecté")
                 else:
