@@ -35,6 +35,28 @@ def test_every_geometry_is_valid():
         assert not geom.is_empty
 
 
+def test_missing_geometry_always_carries_a_warning():
+    """Une géométrie absente doit toujours s'expliquer.
+
+    `test_every_geometry_is_valid` ignore désormais légitimement les features
+    à `geometry: null` (une géométrie absente est un état voulu par la
+    spécification). Mais ce filtrage ne doit pas devenir un angle mort : rien
+    n'empêcherait une régression future où le pipeline produirait `null` sans
+    le moindre message, et ce test resterait muet dessus. On vérifie donc
+    explicitement que toute feature sans géométrie porte au moins un
+    avertissement expliquant pourquoi.
+    """
+    _skip_unless_built()
+    data = json.loads(GEO.read_text("utf-8"))
+    for feature in data["features"]:
+        if feature["geometry"] is not None:
+            continue
+        warnings = feature["properties"].get("warnings") or []
+        assert warnings, (
+            f"géométrie absente sans avertissement: {feature['properties']['id']}"
+        )
+
+
 def test_country_tier_covers_warsaw():
     _skip_unless_built()
     data = json.loads(GEO.read_text("utf-8"))

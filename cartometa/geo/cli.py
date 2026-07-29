@@ -107,7 +107,11 @@ def build_country(country: str, data_dir: Path, cfg: Config) -> dict:
                             edge[0].any() or edge[-1].any() or edge[:, 0].any() or edge[:, -1].any()
                         )
                     geometry = mask_to_geometry(mask, calib, cfg)
-                    if geometry is not None and reference.area > 0:
+                    if geometry is None:
+                        warnings.append(
+                            "encart détecté mais aucun pixel rouge dans la silhouette"
+                        )
+                    elif reference.area > 0:
                         area_fraction = geometry.intersection(reference).area / reference.area
                     stats["regional"] += 1
 
