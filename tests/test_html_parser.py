@@ -56,8 +56,121 @@ def test_captures_maps_url_and_builds_anchored_source_url():
     assert next(m for m in metas if m.id == "AAAA").maps_url is None
 
 
-def test_block_without_strong_is_reported_as_anomaly_not_crash():
-    html = '<h3>Step 2 - Regional</h3><div id="BAD" class="relative group/bk"><p>no strong</p></div>'
+def test_block_without_paragraph_is_reported_as_anomaly_not_crash():
+    html = '<h3>Step 2 - Regional</h3><div id="BAD" class="relative group/bk"><strong>x</strong></div>'
     metas, anomalies = parse_page(html, "PL", "https://x/poland")
     assert metas == []
     assert any("BAD" in a for a in anomalies)
+
+
+def test_block_without_strong_at_all_uses_first_sentence_not_anomaly():
+    html = (
+        '<h3>Step 2 - Regional</h3>'
+        '<div id="BAD" class="relative group/bk">'
+        '<p>No bold here. Second sentence follows.</p>'
+        '</div>'
+    )
+    metas, anomalies = parse_page(html, "PL", "https://x/poland")
+    assert anomalies == []
+    assert metas[0].title == "No bold here."
+    assert metas[0].description == "No bold here. Second sentence follows."
+
+
+def test_title_keeps_strong_when_it_opens_the_paragraph():
+    html = (
+        '<h3>Step 2 - Regional</h3>'
+        '<div id="OPEN" class="relative group/bk">'
+        '<p><strong>Bollards</strong> are white with a red stripe.</p>'
+        '</div>'
+    )
+    metas, _ = parse_page(html, "PL", "https://x/poland")
+    assert metas[0].title == "Bollards"
+
+
+def test_title_tolerates_insignificant_punctuation_before_leading_strong():
+    html = (
+        '<h3>Step 2 - Regional</h3>'
+        '<div id="PUNC" class="relative group/bk">'
+        '<p>— <strong>Bollards</strong> are white with a red stripe.</p>'
+        '</div>'
+    )
+    metas, _ = parse_page(html, "PL", "https://x/poland")
+    assert metas[0].title == "Bollards"
+
+
+def test_title_merges_consecutive_leading_strong_runs():
+    html = (
+        '<h3>Step 2 - Regional</h3>'
+        '<div id="TWIN" class="relative group/bk">'
+        '<p><strong>Regional</strong> <strong>roads</strong> have 3-digit numbers.</p>'
+        '</div>'
+    )
+    metas, _ = parse_page(html, "PL", "https://x/poland")
+    assert metas[0].title == "Regional roads"
+
+
+def test_title_merges_consecutive_leading_strong_runs_across_span_wrapped_whitespace():
+    """Reproduit le HTML réel Plonk It, où le séparateur entre deux <strong>
+    de tête est un espace enveloppé dans un <span>, pas un simple noeud texte."""
+    html = (
+        '<h3>Step 2 - Regional</h3>'
+        '<div id="TWIN2" class="relative group/bk">'
+        '<p><strong><span>Regional</span></strong><span> </span>'
+        '<strong><span>roads</span></strong><span> have 3-digit numbers.</span></p>'
+        '</div>'
+    )
+    metas, _ = parse_page(html, "PL", "https://x/poland")
+    assert metas[0].title == "Regional roads"
+
+
+def test_title_falls_back_to_first_sentence_when_strong_is_mid_sentence():
+    html = (
+        '<h3>Step 2 - Regional</h3>'
+        '<div id="MID" class="relative group/bk">'
+        '<p>Poles with <strong>yellow markings</strong> are found in western Poland. '
+        'A second sentence.</p>'
+        '</div>'
+    )
+    metas, _ = parse_page(html, "PL", "https://x/poland")
+    assert metas[0].title == "Poles with yellow markings are found in western Poland."
+
+
+def test_title_first_sentence_not_split_on_abbreviation():
+    html = (
+        '<h3>Step 2 - Regional</h3>'
+        '<div id="ABBR" class="relative group/bk">'
+        '<p>Dr. Kowalski says hello loudly. He then leaves the room.</p>'
+        '</div>'
+    )
+    metas, _ = parse_page(html, "PL", "https://x/poland")
+    assert metas[0].title == "Dr. Kowalski says hello loudly."
+
+
+def test_title_first_sentence_not_split_on_url_dot():
+    html = (
+        '<h3>Step 2 - Regional</h3>'
+        '<div id="URL" class="relative group/bk">'
+        '<p>See https://example.com/path for details. It helps a lot.</p>'
+        '</div>'
+    )
+    metas, _ = parse_page(html, "PL", "https://x/poland")
+    assert metas[0].title == "See https://example.com/path for details."
+
+
+def test_title_truncates_unreasonably_long_first_sentence():
+    long_sentence = (
+        "This is a very long clue description that keeps going on and on "
+        "without any punctuation at all to stop it for quite a long while, "
+        "well beyond what any reasonable title should ever need to contain"
+    )
+    html = (
+        '<h3>Step 2 - Regional</h3>'
+        '<div id="LONG" class="relative group/bk">'
+        f'<p>{long_sentence}.</p>'
+        '</div>'
+    )
+    metas, _ = parse_page(html, "PL", "https://x/poland")
+    title = metas[0].title
+    assert title.endswith("…")
+    assert len(title) <= 185
+    assert not title.endswith(" …")
