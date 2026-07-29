@@ -9,6 +9,7 @@ from typing import Callable
 
 from shapely.geometry import shape
 from shapely.geometry.base import BaseGeometry
+from shapely.ops import unary_union
 
 DATASET_URL = (
     "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/"
@@ -74,6 +75,32 @@ def country_code_for_name(name: str, cache_dir: Path) -> str | None:
                 if code and code != "-99":
                     return code.upper()
     return None
+
+
+def main_landmass(geom: BaseGeometry, min_area_fraction: float = 0.01) -> BaseGeometry:
+    """Écarte les territoires distants qui pèsent une part négligeable.
+
+    Natural Earth rattache à l'Afrique du Sud les îles du Prince-Édouard,
+    à 47° sud : la bounding box du pays devient deux fois plus haute que
+    ce que Plonk It dessine, et l'alignement de calibration part de
+    travers (IoU 0,63 mesuré). Ces territoires ne sont pas sur la carte
+    source, ils n'ont rien à faire dans la référence de calibration.
+
+    Le seuil porte sur la surface, pas sur la distance : un archipel dont
+    les îles comptent vraiment (Indonésie, Grèce) est conservé, alors
+    qu'un confetti à 0,03 % de la surface nationale est écarté.
+
+    N'affecte que la calibration. La géométrie publiée pour une méta
+    nationale reste le pays complet.
+    """
+    parts = list(getattr(geom, "geoms", []))
+    if len(parts) < 2:
+        return geom
+    total = geom.area
+    kept = [p for p in parts if p.area >= min_area_fraction * total]
+    if not kept or len(kept) == len(parts):
+        return geom
+    return unary_union(kept)
 
 
 def country_geometry(iso_a2: str, cache_dir: Path) -> BaseGeometry:

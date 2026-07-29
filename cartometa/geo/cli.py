@@ -12,7 +12,7 @@ from cartometa.atomic_write import write_json_atomic
 from cartometa.config import Config, load_config
 from cartometa.geo.calibrate import Calibration, fit_calibration, load_calibration, save_calibration
 from cartometa.geo.confidence import evaluate
-from cartometa.geo.reference import country_geometry
+from cartometa.geo.reference import country_geometry, main_landmass
 from cartometa.geo.silhouette import find_inset
 from cartometa.geo.vectorize import buffer_km, mask_to_geometry, zone_mask
 
@@ -39,7 +39,9 @@ def _calibration_for(country: str, metas: list[dict], data_dir: Path, cfg: Confi
     if path.exists():
         return load_calibration(path)
 
-    reference = country_geometry(country, data_dir / "cache")
+    # Calibrer sur la masse principale : les territoires distants faussent
+    # l'alignement sans jamais apparaître sur la carte Plonk It.
+    reference = main_landmass(country_geometry(country, data_dir / "cache"))
     # Une méta `spot` est préférée : son pin n'ampute pas la silhouette.
     ordered = sorted(metas, key=lambda m: 0 if m["tier"] == "spot" else 1)
     for meta in ordered:

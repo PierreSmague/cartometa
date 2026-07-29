@@ -40,14 +40,28 @@ def resolve_country(slug: str, cache_dir: Path) -> str:
 def _find_page(input_dir: Path, slug: str) -> Path:
     """Retrouve le .htm sauvegardé pour un pays.
 
+    La comparaison ignore la casse et les séparateurs : le slug d'URL
+    Plonk It s'écrit "south-africa" alors que le navigateur enregistre
+    "South Africa — Plonk It.htm". Sans cette normalisation, tous les pays
+    dont le nom fait plusieurs mots seraient introuvables.
+
     Lève une erreur explicite s'il n'y a aucun candidat ou si plusieurs
     fichiers correspondent (ex. collision de nom d'une seconde sauvegarde
     navigateur, du type "Poland — Plonk It (1).htm") : mieux vaut échouer
     bruyamment qu'en choisir un silencieusement.
     """
-    candidates = [p for p in sorted(input_dir.glob("*.htm*")) if slug in p.stem.lower()]
+    def normalize(value: str) -> str:
+        return " ".join(value.lower().replace("-", " ").replace("_", " ").split())
+
+    target = normalize(slug)
+    pages = sorted(input_dir.glob("*.htm*"))
+    candidates = [p for p in pages if target in normalize(p.stem)]
     if not candidates:
-        raise FileNotFoundError(f"aucune page sauvegardée pour '{slug}' dans {input_dir}")
+        available = ", ".join(p.name for p in pages) or "aucune"
+        raise FileNotFoundError(
+            f"aucune page sauvegardée pour '{slug}' dans {input_dir}. "
+            f"Pages présentes : {available}"
+        )
     if len(candidates) > 1:
         names = ", ".join(p.name for p in candidates)
         raise ValueError(
