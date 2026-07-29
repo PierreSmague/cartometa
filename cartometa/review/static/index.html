@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Cartometa — revue</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    body { margin: 0; font: 14px system-ui, sans-serif; }
+    header { display: flex; gap: 16px; align-items: center; padding: 8px 12px;
+             background: #1c1f24; color: #fff; }
+    header b { font-size: 16px; }
+    #panes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 8px; }
+    #source img { width: 100%; border: 1px solid #ccc; }
+    #map { height: 62vh; border: 1px solid #ccc; }
+    #info { padding: 8px 12px; }
+    #warnings { color: #b00020; }
+    kbd { background: #eee; border-radius: 3px; padding: 1px 5px; border: 1px solid #bbb; }
+  </style>
+</head>
+<body>
+  <header>
+    <b id="progress">…</b>
+    <span id="confidence"></span>
+    <span style="margin-left:auto">
+      <kbd>A</kbd> valider <kbd>R</kbd> rejeter <kbd>Espace</kbd> passer <kbd>U</kbd> annuler
+    </span>
+  </header>
+  <div id="panes">
+    <div id="source"><img id="image" alt=""></div>
+    <div id="map"></div>
+  </div>
+  <div id="info">
+    <h2 id="title"></h2>
+    <p id="description"></p>
+    <p id="warnings"></p>
+    <p id="radius-row" hidden>
+      Rayon <input id="radius" type="range" min="5" max="120" step="5">
+      <span id="radius-value"></span> km — <kbd>Entrée</kbd> pour appliquer
+    </p>
+    <a id="source-link" target="_blank" rel="noopener">source</a>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>
