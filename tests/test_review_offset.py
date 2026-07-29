@@ -160,3 +160,48 @@ def test_geometrie_manuelle_invalide_refusee(data_dir, geometry):
 def test_rectangle_et_decalage_sont_exclusifs(data_dir):
     with pytest.raises(ValueError, match="mutuellement exclusives"):
         server.apply_decision("reg", "validé", None, [0.1, 0.1], RECTANGLE)
+
+
+@pytest.fixture
+def natural_earth(data_dir, monkeypatch):
+    """Jeu Natural Earth minimal, pour ne jamais toucher le réseau."""
+    cache = data_dir / "cache"
+    cache.mkdir()
+    (cache / "ne_10m_admin_0_countries.geojson").write_text(json.dumps({
+        "type": "FeatureCollection",
+        "features": [{
+            "type": "Feature",
+            "properties": {"ISO_A2": "XX", "ISO_A2_EH": "XX", "NAME": "Testland"},
+            "geometry": _square(0.0, 0.0, 4.0),
+        }],
+    }), "utf-8")
+    return cache
+
+
+def test_polygone_du_pays_sur_une_meta_sans_geometrie(data_dir, natural_earth):
+    server.apply_decision("vide", "validé", None, None, None, True)
+
+    feature = _feature(data_dir, "vide")
+    assert feature["properties"]["status"] == "corrigé"
+    assert shape(feature["geometry"]).bounds == pytest.approx((0.0, 0.0, 4.0, 4.0))
+
+
+def test_annuler_le_polygone_du_pays(data_dir, natural_earth):
+    server.apply_decision("vide", "validé", None, None, None, True)
+    server.apply_undo("vide")
+
+    feature = _feature(data_dir, "vide")
+    assert feature["properties"]["status"] == "auto"
+    assert feature["geometry"] is None
+
+
+def test_polygone_du_pays_exclusif_des_autres_corrections(data_dir, natural_earth):
+    with pytest.raises(ValueError, match="mutuellement exclusives"):
+        server.apply_decision("reg", "validé", None, [0.1, 0.1], None, True)
+
+
+def test_pays_absent_de_natural_earth_remonte_une_erreur(data_dir, natural_earth, monkeypatch):
+    """L'interface doit pouvoir dire « indisponible » plutôt qu'attendre."""
+    monkeypatch.setitem(server.STATE, "country", "ZZ")
+    with pytest.raises(KeyError):
+        server.country_polygon()

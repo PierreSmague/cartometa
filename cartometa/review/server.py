@@ -120,6 +120,18 @@ def build_queue() -> dict:
     return {"total": len(items), "reviewed": len(items) - len(pending), "items": pending}
 
 
+def country_polygon() -> dict:
+    """Silhouette Natural Earth du pays en cours de revue, en GeoJSON.
+
+    Sert de repli quand aucune zone n'a pu être vectorisée : une méta
+    valable sur tout le pays vaut mieux qu'une méta rejetée, et c'est déjà
+    la géométrie que le pipeline donne aux métas de tier `country`.
+    """
+    from cartometa.geo.reference import country_geometry
+
+    return mapping(country_geometry(STATE["country"], STATE["data"] / "cache"))
+
+
 def _find_feature(geo: dict, meta_id: str) -> dict | None:
     for feature in geo["features"]:
         if feature["properties"]["id"] == meta_id:
@@ -133,6 +145,7 @@ def apply_decision(
     radius_km: float | None,
     offset_deg: object | None = None,
     geometry: object | None = None,
+    use_country_polygon: bool = False,
 ) -> None:
     metas_path, geo_path = _paths()
     metas = {m["id"]: m for m in json.loads(metas_path.read_text("utf-8"))}
@@ -149,6 +162,7 @@ def apply_decision(
             ("rayon", radius_km or None),
             ("décalage", offset_deg),
             ("polygone manuel", geometry),
+            ("polygone du pays", True if use_country_polygon else None),
         )
         if value is not None
     ]
@@ -158,7 +172,14 @@ def apply_decision(
             f"en appliquer une seule à la fois"
         )
 
-    if geometry is not None:
+    if use_country_polygon:
+        # La silhouette vient de Natural Earth côté serveur, jamais du
+        # client : l'aperçu affiché n'a pas à être une source de vérité.
+        replacement = country_polygon()
+        feature["properties"].setdefault(_GEOMETRY_BACKUP_KEY, feature["geometry"])
+        feature["geometry"] = replacement
+        feature["properties"]["status"] = "corrigé"
+    elif geometry is not None:
         # Pas de garde « géométrie déjà présente » : tracer à la main reste
         # un acte humain explicite, et la sauvegarde ci-dessous rend U
         # capable de revenir à la géométrie automatique.
@@ -237,6 +258,14 @@ class Handler(SimpleHTTPRequestHandler):
         if self.path == "/api/queue":
             self._json(build_queue())
             return
+        if self.path == "/api/country-polygon":
+            try:
+                self._json({"geometry": country_polygon()})
+            except KeyError as exc:
+                # Pays absent de Natural Earth : le dire, plutôt que de
+                # laisser l'interface attendre un aperçu qui ne viendra pas.
+                self._json({"ok": False, "error": str(exc)}, 404)
+            return
         if self.path in ("/", "/index.html"):
             self.path = "/index.html"
             self.directory = str(STATIC)
@@ -262,6 +291,7 @@ class Handler(SimpleHTTPRequestHandler):
                     payload.get("radius_km"),
                     payload.get("offset_deg"),
                     payload.get("geometry"),
+                    bool(payload.get("use_country_polygon")),
                 )
             else:
                 apply_undo(meta_id)
@@ -300,6 +330,7 @@ def main() -> None:
     print("Touches — A valider, R rejeter, Espace passer, U annuler")
     print("          Flèches décaler le polygone (Maj = pas large), 0 remettre à zéro")
     print("          D tracer un rectangle à la main (deux clics sur la carte)")
+    print("          P prendre le polygone du pays entier")
     HTTPServer(("127.0.0.1", args.port), Handler).serve_forever()
 
 
