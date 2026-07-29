@@ -1,0 +1,31 @@
+[cream]
+rgb = [255, 253, 235]
+tolerance = 8
+
+[red]
+hue_min = 340.0
+hue_max = 365.0
+saturation_min = 0.45
+value_min = 0.35
+
+[silhouette]
+min_area_fraction = 0.02
+opening_size = 3
+closing_size = 9
+min_component_px = 1000
+
+[calibration]
+min_iou = 0.90
+
+[vectorize]
+min_component_px = 40
+simplify_tolerance_px = 1.5
+outward_buffer_km = 3.0
+
+[spot]
+default_radius_km = 25.0
+radius_by_category = { vegetation = 50.0, autre = 25.0 }
+
+[paths]
+input = "input"
+data = "data"

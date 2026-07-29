@@ -1368,11 +1368,17 @@ def test_mask_to_geometry_produces_a_valid_polygon():
     assert geom.geom_type in ("Polygon", "MultiPolygon")
 
 
-def test_geometry_is_never_self_intersecting():
+def test_every_ring_is_closed_and_non_self_intersecting():
     rgba = _array(red_shape="zone")
     inset = find_inset(rgba, load_config())
     geom = mask_to_geometry(zone_mask(rgba, inset, load_config()), CALIB, load_config())
-    assert geom.is_valid and geom.is_simple or geom.geom_type == "MultiPolygon"
+    parts = list(geom.geoms) if geom.geom_type == "MultiPolygon" else [geom]
+    assert parts
+    for part in parts:
+        assert part.is_valid
+        for ring in [part.exterior, *part.interiors]:
+            assert ring.is_ring, "anneau non fermé"
+            assert ring.is_simple, "anneau auto-intersectant"
 
 
 def test_mask_to_geometry_returns_none_on_empty_mask():
