@@ -15,6 +15,8 @@
     #map { height: 62vh; border: 1px solid #ccc; }
     #info { padding: 8px 12px; }
     #warnings { color: #b00020; }
+    #offset-row { color: #0057d9; font-weight: bold; }
+    #offset-row[hidden] { display: none; }
     kbd { background: #eee; border-radius: 3px; padding: 1px 5px; border: 1px solid #bbb; }
     #error { background: #b00020; color: #fff; padding: 8px 12px; font-weight: bold; }
     #error[hidden] { display: none; }
@@ -26,6 +28,7 @@
     <span id="confidence"></span>
     <span style="margin-left:auto">
       <kbd>A</kbd> valider <kbd>R</kbd> rejeter <kbd>Espace</kbd> passer <kbd>U</kbd> annuler
+      <kbd>←↑→↓</kbd> décaler (<kbd>Maj</kbd> ×5) <kbd>0</kbd> recentrer
     </span>
   </header>
   <div id="error" hidden></div>
@@ -37,6 +40,7 @@
     <h2 id="title"></h2>
     <p id="description"></p>
     <p id="warnings"></p>
+    <p id="offset-row" hidden></p>
     <p id="radius-row" hidden>
       Rayon <input id="radius" type="range" min="5" max="120" step="5">
       <span id="radius-value"></span> km — <kbd>Entrée</kbd> pour appliquer

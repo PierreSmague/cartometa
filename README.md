@@ -96,6 +96,14 @@ Image source à gauche, polygone généré sur une vraie carte à droite.
 | `R` | rejeter |
 | `Espace` | passer |
 | `U` | annuler la dernière décision |
+| `←↑→↓` | décaler le polygone de 5 km (`Maj` : 25 km) |
+| `0` | annuler le décalage en cours |
+
+Le décalage n'est pas enregistré tout de suite : il se voit à l'écran, le
+contour d'origine reste en pointillé, et c'est `A` qui l'écrit — la méta passe
+alors en `corrigé`. `R` rejette sans tenir compte du décalage. Le pas est
+converti en degrés à la latitude de la zone, donc « 5 km vers l'est » vaut bien
+5 km à toute latitude.
 
 Le point bleu, quand il est présent, est la **vérité terrain** : c'est la
 position du lien Maps de la méta. S'il tombe hors du polygone, rejeter.
