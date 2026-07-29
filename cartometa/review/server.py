@@ -8,6 +8,8 @@ from pathlib import Path
 
 from shapely.geometry import Point, mapping, shape
 
+from cartometa.atomic_write import write_json_atomic
+
 STATIC = Path(__file__).resolve().parent / "static"
 STATE = {"data": Path("data"), "country": "PL"}
 
@@ -18,9 +20,7 @@ def _paths() -> tuple[Path, Path]:
 
 
 def _write_atomic(path: Path, payload: dict) -> None:
-    temporary = path.with_suffix(path.suffix + ".tmp")
-    temporary.write_text(json.dumps(payload, indent=2, ensure_ascii=False), "utf-8")
-    os.replace(temporary, path)
+    write_json_atomic(path, payload)
 
 
 class UnknownMetaError(ValueError):

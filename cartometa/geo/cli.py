@@ -8,6 +8,7 @@ from PIL import Image
 from shapely.geometry import Point, mapping, shape
 from skimage.measure import label, regionprops
 
+from cartometa.atomic_write import write_json_atomic
 from cartometa.config import Config, load_config
 from cartometa.geo.calibrate import Calibration, fit_calibration, load_calibration, save_calibration
 from cartometa.geo.confidence import evaluate
@@ -81,6 +82,12 @@ def build_country(country: str, data_dir: Path, cfg: Config) -> dict:
                 radius = radii.get(meta["category"], cfg.get("spot.default_radius_km"))
                 geometry = buffer_km(Point(lon, lat), radius)
                 stats["spot"] += 1
+            elif meta.get("maps_url"):
+                # Un `maps_url` présent mais sans `maps_latlon` signifie que la
+                # résolution a échoué (souvent un throttling passager côté
+                # Google) — pas que la méta soit dépourvue de lien. Rejouer
+                # `cartometa-extract --retry-failed-links` peut suffire.
+                warnings.append("lien Maps présent mais non résolu")
             else:
                 warnings.append("méta ponctuelle sans lien Maps, position inconnue")
 
@@ -100,6 +107,29 @@ def build_country(country: str, data_dir: Path, cfg: Config) -> dict:
                         1 for r in regionprops(label(mask))
                         if r.area >= cfg.get("vectorize.min_component_px")
                     )
+                    # NOTE (correction, relecture finale) : ce test mesure le
+                    # bord de `inset.bbox`, qui est la boîte englobante de la
+                    # SILHOUETTE DU PAYS détectée par `find_inset` — pas le
+                    # cadre de l'image composite. C'est une mesure honnête de
+                    # « la zone atteint l'extrémité du pays », rien de plus.
+                    #
+                    # Une tentative de mesurer plutôt le vrai bord physique de
+                    # l'image (`rgba.shape`) a été essayée et abandonnée : les
+                    # fermetures/ouvertures morphologiques de `find_inset` et
+                    # `zone_mask` (bruit poivre-et-sel, anti-aliasing) érodent
+                    # systématiquement le masque de plusieurs pixels près des
+                    # bords de l'array — un test vérifié à la main montre un
+                    # masque réellement collé au bord réel de l'image (rangée 0)
+                    # ressortir décalé à la rangée 4 après traitement. Un simple
+                    # test d'égalité au bord literal aurait donc raté les vrais
+                    # cas de troncature, ce qui est pire que le statu quo. Fixer
+                    # une marge de tolérance en pixels serait possible mais
+                    # introduirait une constante non mesurée sur données réelles
+                    # (contraire à la règle du §3 : aucun seuil arbitraire non
+                    # justifié). On choisit donc d'assumer que ce signal n'est
+                    # pas mesurable de façon fiable ici, et de reformuler
+                    # l'avertissement (et retirer son malus, cf. confidence.py)
+                    # plutôt que de prétendre détecter une troncature réelle.
                     x0, y0, x1, y1 = inset.bbox
                     edge = mask[y0:y1, x0:x1]
                     if edge.size:
@@ -133,11 +163,11 @@ def build_country(country: str, data_dir: Path, cfg: Config) -> dict:
             },
         })
 
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(
-        json.dumps({"type": "FeatureCollection", "features": features}, indent=2, ensure_ascii=False),
-        "utf-8",
-    )
+    # Écriture atomique : ce fichier porte les décisions de revue humaine une
+    # fois la revue commencée (cf. cartometa/review/server.py) — une
+    # interruption en plein `cartometa-geo` ne doit jamais pouvoir le
+    # tronquer ou le corrompre.
+    write_json_atomic(out_path, {"type": "FeatureCollection", "features": features})
     stats["total"] = len(features)
     stats["output"] = str(out_path)
     return stats

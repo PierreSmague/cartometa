@@ -1,7 +1,9 @@
 from __future__ import annotations
 import argparse
 import json
+import time
 from pathlib import Path
+from typing import Callable
 
 from cartometa.extract.categories import infer_category
 from cartometa.extract.html_parser import parse_page
@@ -30,9 +32,33 @@ def _find_page(input_dir: Path, slug: str) -> Path:
     return candidates[0]
 
 
+def _would_hit_network(url: str, cache: dict, retry_failed: bool) -> bool:
+    """Vrai si résoudre `url` avec ces réglages appellerait réellement le réseau."""
+    if url not in cache:
+        return True
+    return retry_failed and cache[url] is None
+
+
 def run_extract(
-    input_dir: Path, data_dir: Path, country: str, base_url: str, resolve: bool = True
+    input_dir: Path,
+    data_dir: Path,
+    country: str,
+    base_url: str,
+    resolve: bool = True,
+    retry_failed: bool = False,
+    request_delay: float = 0.0,
+    sleep: Callable[[float], None] = time.sleep,
 ) -> dict:
+    """
+    `retry_failed` : par défaut, un lien déjà mémorisé en échec (`null` en
+    cache) n'est jamais retenté — comportement historique. Passer `True`
+    rejoue uniquement ces échecs (les liens déjà résolus ne sont jamais
+    retapés sur le réseau).
+
+    `request_delay` : pause en secondes avant chaque appel réseau réel, pour
+    rester poli envers Google lors d'un rejeu de plusieurs liens. N'a aucun
+    effet sur les liens déjà en cache (ni succès, ni échec non retenté).
+    """
     slug = base_url.rstrip("/").rsplit("/", 1)[-1]
     html_path = _find_page(input_dir, slug)
     metas, anomalies = parse_page(html_path.read_text("utf-8", errors="replace"), country, base_url)
@@ -50,7 +76,9 @@ def run_extract(
                 anomalies.append(f"bloc {meta.id}: image introuvable ({meta.image})")
                 meta.image = None
         if resolve and meta.maps_url:
-            meta.maps_latlon = resolve_maps_url(meta.maps_url, cache)
+            if request_delay > 0 and _would_hit_network(meta.maps_url, cache, retry_failed):
+                sleep(request_delay)
+            meta.maps_latlon = resolve_maps_url(meta.maps_url, cache, retry_failed=retry_failed)
 
     save_cache(cache_path, cache)
     metas.sort(key=lambda m: m.id)
@@ -81,10 +109,30 @@ def main() -> None:
     parser.add_argument("--input", type=Path, default=Path("input"))
     parser.add_argument("--data", type=Path, default=Path("data"))
     parser.add_argument("--no-resolve", action="store_true", help="ne pas résoudre les liens Maps")
+    parser.add_argument(
+        "--retry-failed-links",
+        action="store_true",
+        help=(
+            "Rejoue les liens Maps mémorisés en échec (null en cache) — par défaut, "
+            "un échec en cache n'est jamais retenté. Les liens déjà résolus ne sont "
+            "jamais retapés sur le réseau."
+        ),
+    )
+    parser.add_argument(
+        "--link-delay",
+        type=float,
+        default=1.5,
+        help="Pause en secondes avant chaque appel réseau réel de résolution de lien (poli envers Google).",
+    )
     args = parser.parse_args()
 
     country, base_url = COUNTRY_BY_SLUG[args.slug]
-    summary = run_extract(args.input, args.data, country, base_url, resolve=not args.no_resolve)
+    summary = run_extract(
+        args.input, args.data, country, base_url,
+        resolve=not args.no_resolve,
+        retry_failed=args.retry_failed_links,
+        request_delay=args.link_delay,
+    )
 
     print(f"{summary['country']}: {summary['total']} métas {summary['by_tier']}")
     print(f"  sans image: {summary['without_image']}   sans coordonnées: {summary['without_latlon']}")
