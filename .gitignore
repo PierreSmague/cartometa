@@ -16,3 +16,6 @@ data/metas/
 
 # Journaux de la tache planifiee
 logs/
+
+# Artefacts de process
+.superpowers/
