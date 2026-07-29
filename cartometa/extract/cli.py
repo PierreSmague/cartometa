@@ -8,8 +8,33 @@ from typing import Callable
 from cartometa.extract.categories import infer_category
 from cartometa.extract.html_parser import parse_page
 from cartometa.extract.maps_links import load_cache, resolve_maps_url, save_cache
+from cartometa.geo.reference import country_code_for_name
 
-COUNTRY_BY_SLUG = {"poland": ("PL", "https://www.plonkit.net/poland")}
+BASE_URL = "https://www.plonkit.net"
+
+# Slugs Plonk It dont le nom ne correspond à aucun nom Natural Earth.
+# N'ajouter une entrée ici qu'en dernier recours : `--country XX` couvre
+# le cas ponctuel sans toucher au code.
+SLUG_OVERRIDES = {"usa": "US", "uk": "GB"}
+
+
+def resolve_country(slug: str, cache_dir: Path) -> str:
+    """Déduit le code ISO alpha-2 du slug Plonk It.
+
+    Passe par les noms Natural Earth, pour qu'un nouveau pays ne demande
+    aucune modification du code (spec §1).
+    """
+    if slug in SLUG_OVERRIDES:
+        return SLUG_OVERRIDES[slug]
+    code = country_code_for_name(slug, cache_dir)
+    if code is None:
+        raise SystemExit(
+            f"Impossible de déduire le code pays du slug « {slug} » : aucun nom "
+            f"Natural Earth ne correspond.\n"
+            f"Relance avec le code explicite, par exemple : "
+            f"cartometa-extract {slug} --country XX"
+        )
+    return code
 
 
 def _find_page(input_dir: Path, slug: str) -> Path:
@@ -108,6 +133,10 @@ def main() -> None:
     parser.add_argument("slug", nargs="?", default="poland", help="pays, ex. poland")
     parser.add_argument("--input", type=Path, default=Path("input"))
     parser.add_argument("--data", type=Path, default=Path("data"))
+    parser.add_argument(
+        "--country",
+        help="Code ISO alpha-2, si le slug ne se déduit pas d'un nom Natural Earth.",
+    )
     parser.add_argument("--no-resolve", action="store_true", help="ne pas résoudre les liens Maps")
     parser.add_argument(
         "--retry-failed-links",
@@ -126,7 +155,8 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    country, base_url = COUNTRY_BY_SLUG[args.slug]
+    country = args.country.upper() if args.country else resolve_country(args.slug, args.data / "cache")
+    base_url = f"{BASE_URL}/{args.slug}"
     summary = run_extract(
         args.input, args.data, country, base_url,
         resolve=not args.no_resolve,
