@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
 
+from shapely.affinity import translate
 from shapely.geometry import Point, mapping, shape
 
 from cartometa.atomic_write import write_json_atomic
@@ -30,6 +32,36 @@ class UnknownMetaError(ValueError):
 # Nom de la propriété où l'on sauvegarde la géométrie écrasée par une
 # correction de rayon, pour pouvoir la restaurer si l'humain annule (touche U).
 _GEOMETRY_BACKUP_KEY = "geometry_before_correction"
+
+# Un décalage au clavier sert à recaler une zone de quelques dizaines de
+# kilomètres, pas à la déplacer sur un autre continent. Au-delà, c'est une
+# erreur de saisie ou un client incorrect : on refuse plutôt que d'écrire.
+MAX_OFFSET_DEG = 5.0
+
+
+def _validate_offset(offset: object) -> tuple[float, float]:
+    """Contrôle le décalage reçu et le renvoie en (Δlongitude, Δlatitude).
+
+    Le client envoie des degrés, pas des kilomètres : la conversion vit là
+    où l'aperçu est dessiné, ce qui garantit que la géométrie enregistrée
+    est exactement celle que l'humain a vue à l'écran.
+    """
+    if not isinstance(offset, (list, tuple)) or len(offset) != 2:
+        raise ValueError("offset_deg doit être une paire [Δlon, Δlat]")
+    try:
+        dlon, dlat = float(offset[0]), float(offset[1])
+    except (TypeError, ValueError):
+        raise ValueError("offset_deg doit contenir deux nombres") from None
+    if not (math.isfinite(dlon) and math.isfinite(dlat)):
+        raise ValueError("offset_deg doit contenir deux nombres finis")
+    if abs(dlon) > MAX_OFFSET_DEG or abs(dlat) > MAX_OFFSET_DEG:
+        raise ValueError(
+            f"décalage trop grand ({dlon:+.3f}, {dlat:+.3f}) : "
+            f"maximum {MAX_OFFSET_DEG}° par axe"
+        )
+    if dlon == 0.0 and dlat == 0.0:
+        raise ValueError("décalage nul : rien à corriger")
+    return dlon, dlat
 
 
 def build_queue() -> dict:
@@ -69,7 +101,12 @@ def _find_feature(geo: dict, meta_id: str) -> dict | None:
     return None
 
 
-def apply_decision(meta_id: str, status: str, radius_km: float | None) -> None:
+def apply_decision(
+    meta_id: str,
+    status: str,
+    radius_km: float | None,
+    offset_deg: object | None = None,
+) -> None:
     metas_path, geo_path = _paths()
     metas = {m["id"]: m for m in json.loads(metas_path.read_text("utf-8"))}
     geo = json.loads(geo_path.read_text("utf-8"))
@@ -79,7 +116,26 @@ def apply_decision(meta_id: str, status: str, radius_km: float | None) -> None:
     if meta is None or feature is None:
         raise UnknownMetaError(f"méta inconnue : {meta_id!r}")
 
-    if radius_km:
+    if radius_km and offset_deg is not None:
+        raise ValueError(
+            "rayon et décalage sont deux corrections distinctes : "
+            "en appliquer une seule à la fois"
+        )
+
+    if offset_deg is not None:
+        dlon, dlat = _validate_offset(offset_deg)
+        if feature["geometry"] is None:
+            raise ValueError(
+                f"impossible de décaler {meta_id!r} : aucune géométrie à corriger"
+            )
+        # setdefault, jamais d'écrasement : si la méta a déjà été corrigée,
+        # la sauvegarde doit rester la géométrie *d'origine*, sinon U
+        # restaurerait un état déjà modifié.
+        feature["properties"].setdefault(_GEOMETRY_BACKUP_KEY, feature["geometry"])
+        moved = translate(shape(feature["geometry"]), xoff=dlon, yoff=dlat)
+        feature["geometry"] = mapping(moved)
+        feature["properties"]["status"] = "corrigé"
+    elif radius_km:
         # La règle « le rayon ne s'applique qu'aux spots » doit être imposée
         # ici, côté serveur : le client ne peut pas être le seul garant de
         # l'intégrité des géométries (un POST direct pourrait sinon écraser
@@ -98,7 +154,7 @@ def apply_decision(meta_id: str, status: str, radius_km: float | None) -> None:
         # On ne bascule le statut en « corrigé » qu'après avoir vérifié que
         # le tampon peut réellement être calculé (cf. bug historique où une
         # méta sans géométrie ressortait « corrigée » sans rien derrière).
-        feature["properties"][_GEOMETRY_BACKUP_KEY] = feature["geometry"]
+        feature["properties"].setdefault(_GEOMETRY_BACKUP_KEY, feature["geometry"])
         centre = shape(feature["geometry"]).centroid
         feature["geometry"] = mapping(buffer_km(Point(centre.x, centre.y), radius_km))
         feature["properties"]["status"] = "corrigé"
@@ -156,7 +212,12 @@ class Handler(SimpleHTTPRequestHandler):
                 raise ValueError("le corps doit être un objet JSON")
             meta_id = payload["id"]
             if self.path == "/api/decision":
-                apply_decision(meta_id, payload["status"], payload.get("radius_km"))
+                apply_decision(
+                    meta_id,
+                    payload["status"],
+                    payload.get("radius_km"),
+                    payload.get("offset_deg"),
+                )
             else:
                 apply_undo(meta_id)
         except json.JSONDecodeError:
@@ -192,6 +253,7 @@ def main() -> None:
     os.chdir(Path.cwd())
     print(f"Revue {args.country} : http://127.0.0.1:{args.port}")
     print("Touches — A valider, R rejeter, Espace passer, U annuler")
+    print("          Flèches décaler le polygone (Maj = pas large), 0 remettre à zéro")
     HTTPServer(("127.0.0.1", args.port), Handler).serve_forever()
 
 
