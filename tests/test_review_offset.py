@@ -112,3 +112,51 @@ def test_decision_simple_inchangee(data_dir):
     feature = _feature(data_dir, "reg")
     assert feature["properties"]["status"] == "rejeté"
     assert shape(feature["geometry"]).bounds == pytest.approx((10.0, 50.0, 11.0, 51.0))
+
+
+RECTANGLE = {"type": "Polygon", "coordinates": [[
+    [12.0, 40.0], [13.0, 40.0], [13.0, 41.0], [12.0, 41.0], [12.0, 40.0]]]}
+
+
+def test_rectangle_manuel_sur_une_meta_sans_geometrie(data_dir):
+    """Cas d'usage principal : le pipeline a échoué, l'humain trace la zone."""
+    server.apply_decision("vide", "validé", None, None, RECTANGLE)
+
+    feature = _feature(data_dir, "vide")
+    assert feature["properties"]["status"] == "corrigé"
+    assert shape(feature["geometry"]).bounds == pytest.approx((12.0, 40.0, 13.0, 41.0))
+
+
+def test_annuler_un_rectangle_manuel_rend_l_absence_de_geometrie(data_dir):
+    server.apply_decision("vide", "validé", None, None, RECTANGLE)
+    server.apply_undo("vide")
+
+    feature = _feature(data_dir, "vide")
+    assert feature["properties"]["status"] == "auto"
+    assert feature["geometry"] is None
+
+
+def test_rectangle_manuel_remplace_une_geometrie_existante(data_dir):
+    server.apply_decision("reg", "validé", None, None, RECTANGLE)
+
+    assert shape(_feature(data_dir, "reg")["geometry"]).bounds == pytest.approx((12.0, 40.0, 13.0, 41.0))
+
+
+@pytest.mark.parametrize("geometry", [
+    {"type": "Point", "coordinates": [1.0, 2.0]},
+    {"type": "Polygon", "coordinates": [[[0.0, 0.0], [1.0, 1.0]]]},
+    {"type": "Polygon", "coordinates": [[[0.0, 0.0], [2.0, 2.0], [2.0, 0.0], [0.0, 2.0], [0.0, 0.0]]]},
+    {"type": "Polygon", "coordinates": [[[0.0, 0.0], [1.0, 0.0], [1.0, 0.0], [0.0, 0.0]]]},
+    {"type": "Polygon", "coordinates": [[[0.0, 0.0], [400.0, 0.0], [400.0, 1.0], [0.0, 1.0], [0.0, 0.0]]]},
+    "pas un objet",
+])
+def test_geometrie_manuelle_invalide_refusee(data_dir, geometry):
+    """Nœud papillon, anneau trop court, surface nulle, hors bornes WGS84."""
+    with pytest.raises(ValueError):
+        server.apply_decision("vide", "validé", None, None, geometry)
+    assert _feature(data_dir, "vide")["properties"]["status"] == "auto"
+
+
+def test_rectangle_et_decalage_sont_exclusifs(data_dir):
+    with pytest.raises(ValueError, match="mutuellement exclusives"):
+        server.apply_decision("reg", "validé", None, [0.1, 0.1], RECTANGLE)

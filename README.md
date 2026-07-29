@@ -97,13 +97,20 @@ Image source à gauche, polygone généré sur une vraie carte à droite.
 | `Espace` | passer |
 | `U` | annuler la dernière décision |
 | `←↑→↓` | décaler le polygone de 5 km (`Maj` : 25 km) |
-| `0` | annuler le décalage en cours |
+| `D` | tracer un rectangle à la main (deux clics sur la carte) |
+| `0` | annuler la correction en cours |
 
-Le décalage n'est pas enregistré tout de suite : il se voit à l'écran, le
+Aucune correction n'est enregistrée tout de suite : elle se voit à l'écran, le
 contour d'origine reste en pointillé, et c'est `A` qui l'écrit — la méta passe
-alors en `corrigé`. `R` rejette sans tenir compte du décalage. Le pas est
+alors en `corrigé`. `R` rejette sans en tenir compte. Le pas de décalage est
 converti en degrés à la latitude de la zone, donc « 5 km vers l'est » vaut bien
 5 km à toute latitude.
+
+`D` sert quand le pipeline a échoué : pas d'encart détecté, pas de zone rouge,
+pas de lien Maps. Plutôt que de rejeter une méta par ailleurs valable, on trace
+son emprise à la main. La carte se centre alors sur le point Maps s'il existe.
+Le rectangle reste grossier — rappel de la spec : une zone un peu trop large
+vaut mieux qu'une méta manquante.
 
 Le point bleu, quand il est présent, est la **vérité terrain** : c'est la
 position du lien Maps de la méta. S'il tombe hors du polygone, rejeter.
