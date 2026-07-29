@@ -107,8 +107,12 @@ est interruptible.
 ### 5. Publier vers le viewer
 
 ```
-uv run cartometa-export <CC>
+uv run cartometa-export
 ```
+
+Sans argument, exporte **tous** les pays présents dans `data/geo/` — un nouveau
+pays entre dans le viewer dès que `cartometa-geo` a tourné, sans changer la
+commande. Passer des codes (`cartometa-export PL`) restreint l'export.
 
 N'exporte que les métas `validé` et `corrigé`, vers `viewer/data/`.
 `--include-auto` inclut aussi les non revues — l'outil affiche alors combien,
