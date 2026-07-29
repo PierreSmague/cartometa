@@ -15,7 +15,7 @@ def discover_countries(data_dir: Path) -> list[str]:
     tout ce qui a été traité, et un nouveau pays y entre dès que
     ``cartometa-geo`` a tourné, sans changer la commande d'export.
     """
-    return sorted(p.stem for p in (data_dir / "geo").glob("*.geojson"))
+    return sorted({p.stem.upper() for p in (data_dir / "geo").glob("*.geojson")})
 
 
 def export_viewer(
