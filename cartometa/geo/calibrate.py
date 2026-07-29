@@ -1,5 +1,6 @@
 from __future__ import annotations
 import json
+import warnings
 from dataclasses import dataclass, asdict
 from pathlib import Path
 
@@ -127,10 +128,21 @@ def fit_calibration(mask: np.ndarray, country: BaseGeometry, cfg: Config) -> Cal
         },
     )
     params = result.x if -result.fun >= -negative_iou(start) else start
+    iou = float(-negative_iou(params))
+
+    min_iou = cfg.get("calibration.min_iou", 0.0)
+    if iou < min_iou:
+        warnings.warn(
+            f"calibration sous le seuil requis : IoU={iou:.4f} < "
+            f"calibration.min_iou={min_iou:.4f} — pays à signaler, pas à "
+            "traiter silencieusement.",
+            stacklevel=2,
+        )
+
     return Calibration(
         ax=float(params[0]), bx=float(params[1]),
         ay=float(params[2]), by=float(params[3]),
-        iou=float(-negative_iou(params)),
+        iou=iou,
     )
 
 
