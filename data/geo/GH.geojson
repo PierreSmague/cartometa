@@ -20904,7 +20904,33 @@
     },
     {
       "type": "Feature",
-      "geometry": null,
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -2.8234863281250004,
+              8.82233101718977
+            ],
+            [
+              0.5053710937500001,
+              8.82233101718977
+            ],
+            [
+              0.5053710937500001,
+              10.93191868867624
+            ],
+            [
+              -2.8234863281250004,
+              10.93191868867624
+            ],
+            [
+              -2.8234863281250004,
+              8.82233101718977
+            ]
+          ]
+        ]
+      },
       "properties": {
         "id": "JppT",
         "confidence": 0.0,
@@ -20912,7 +20938,8 @@
           "encart détecté mais aucun pixel rouge dans la silhouette",
           "aucune géométrie produite"
         ],
-        "status": "auto"
+        "status": "corrigé",
+        "geometry_before_correction": null
       }
     },
     {
@@ -27127,7 +27154,33 @@
     },
     {
       "type": "Feature",
-      "geometry": null,
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.8528137207031251,
+              5.785705234187954
+            ],
+            [
+              1.0224151611328127,
+              5.785705234187954
+            ],
+            [
+              1.0224151611328127,
+              6.034896109676545
+            ],
+            [
+              0.8528137207031251,
+              6.034896109676545
+            ],
+            [
+              0.8528137207031251,
+              5.785705234187954
+            ]
+          ]
+        ]
+      },
       "properties": {
         "id": "Yl0l",
         "confidence": 0.0,
@@ -27135,7 +27188,8 @@
           "méta ponctuelle sans lien Maps, position inconnue",
           "aucune géométrie produite"
         ],
-        "status": "auto"
+        "status": "corrigé",
+        "geometry_before_correction": null
       }
     },
     {
