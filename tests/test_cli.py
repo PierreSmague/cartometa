@@ -132,3 +132,17 @@ def test_run_extract_sleeps_before_real_network_calls_only(tmp_path: Path):
         request_delay=5.0, sleep=sleeps.append,
     )
     assert sleeps == []
+
+
+def test_page_trouvee_malgre_les_tirets_du_slug(tmp_path):
+    """Le slug d'URL s'écrit "south-africa", le navigateur enregistre "South Africa"."""
+    (tmp_path / "South Africa — Plonk It.htm").write_text("<html></html>", "utf-8")
+
+    assert _find_page(tmp_path, "south-africa").name == "South Africa — Plonk It.htm"
+
+
+def test_page_absente_liste_les_pages_disponibles(tmp_path):
+    (tmp_path / "Poland — Plonk It.htm").write_text("<html></html>", "utf-8")
+
+    with pytest.raises(FileNotFoundError, match="Poland"):
+        _find_page(tmp_path, "south-africa")
