@@ -3,7 +3,12 @@ from pathlib import Path
 
 import pytest
 from shapely.geometry import shape
-from cartometa.geo.reference import DATASET_NAME, country_geometry, ensure_dataset
+from cartometa.geo.reference import (
+    DATASET_NAME,
+    country_code_for_name,
+    country_geometry,
+    ensure_dataset,
+)
 
 FAKE = {"type": "FeatureCollection", "features": [
     {"type": "Feature",
@@ -63,3 +68,37 @@ def test_failed_download_leaves_no_file_at_final_path(tmp_path):
     # Aucun fichier temporaire ne doit traîner non plus.
     leftovers = list(tmp_path.glob("*"))
     assert leftovers == []
+
+
+NAMED = {"type": "FeatureCollection", "features": [
+    {"type": "Feature",
+     "properties": {"ISO_A2": "BW", "ISO_A2_EH": "BW", "NAME": "Botswana",
+                    "ADMIN": "Botswana", "FORMAL_EN": "Republic of Botswana"},
+     "geometry": {"type": "Polygon", "coordinates": [[[20.0, -26.0], [29.0, -26.0], [29.0, -17.0], [20.0, -17.0], [20.0, -26.0]]]}},
+    {"type": "Feature",
+     "properties": {"ISO_A2": "-99", "ISO_A2_EH": "-99", "NAME": "Sans Code"},
+     "geometry": {"type": "Polygon", "coordinates": [[[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0], [0.0, 0.0]]]}}]}
+
+
+@pytest.fixture
+def named_cache_dir(tmp_path):
+    (tmp_path / DATASET_NAME).write_text(json.dumps(NAMED), "utf-8")
+    return tmp_path
+
+
+def test_code_depuis_un_slug_minuscule(named_cache_dir):
+    assert country_code_for_name("botswana", named_cache_dir) == "BW"
+
+
+def test_code_depuis_un_slug_a_tirets(named_cache_dir):
+    """Les slugs Plonk It multi-mots utilisent des tirets."""
+    assert country_code_for_name("republic-of-botswana", named_cache_dir) == "BW"
+
+
+def test_nom_inconnu_renvoie_none(named_cache_dir):
+    assert country_code_for_name("atlantide", named_cache_dir) is None
+
+
+def test_code_absent_dans_natural_earth_renvoie_none(named_cache_dir):
+    """Natural Earth encode l'absence de code ISO par "-99", pas par un vide."""
+    assert country_code_for_name("sans-code", named_cache_dir) is None

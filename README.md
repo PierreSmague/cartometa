@@ -48,6 +48,11 @@ Maps, et écrit `data/metas/<CC>.json`. Résout les liens Google Maps en
 coordonnées (mises en cache dans `data/cache/`) — c'est le seul accès réseau,
 avec le téléchargement Natural Earth.
 
+Le code ISO du pays est déduit du slug via les noms Natural Earth
+(`botswana` → `BW`) : aucun pays n'a besoin d'être déclaré dans le code. Si le
+slug Plonk It ne correspond à aucun nom Natural Earth, la commande le dit et
+demande `--country XX`.
+
 Ajouter `--retry-failed-links` pour retenter les liens marqués irrésolvables.
 
 ### 3. Générer les polygones
