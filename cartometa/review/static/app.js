@@ -19,6 +19,17 @@ let busy = false; // évite les doubles soumissions pendant qu'une requête est 
 // à chaque changement de méta.
 let offset = { lon: 0, lat: 0 };
 
+// Rectangle tracé à la main, pour les métas dont le pipeline n'a produit
+// aucune géométrie. `draw` vaut null hors mode tracé ; sinon il porte le
+// premier coin posé (ou null tant qu'aucun clic n'a eu lieu) et le
+// rectangle courant.
+let draw = null;
+
+function clearCorrections() {
+  offset = { lon: 0, lat: 0 };
+  draw = null;
+}
+
 const NUDGE_KM = 5;        // pas fin, ordre de grandeur de la précision visée
 const NUDGE_KM_COARSE = 25; // avec Maj
 const KM_PER_DEG_LAT = 111.32;
@@ -63,6 +74,55 @@ function centroidLatitude(geometry) {
   };
   scan(geometry.coordinates);
   return (min + max) / 2;
+}
+
+function rectangleGeometry(a, b) {
+  const [west, east] = [Math.min(a.lng, b.lng), Math.max(a.lng, b.lng)];
+  const [south, north] = [Math.min(a.lat, b.lat), Math.max(a.lat, b.lat)];
+  return {
+    type: 'Polygon',
+    coordinates: [[
+      [west, south], [east, south], [east, north], [west, north], [west, south],
+    ]],
+  };
+}
+
+function startDrawing() {
+  const item = current();
+  if (!item || busy) return;
+  // Tracer et décaler sont deux corrections distinctes : le serveur les
+  // refuse ensemble, autant ne pas laisser l'humain les cumuler à l'écran.
+  offset = { lon: 0, lat: 0 };
+  draw = { first: null, geometry: null };
+  drawGeometry(item, { keepView: true });
+}
+
+function cancelDrawing() {
+  const item = current();
+  draw = null;
+  if (item) drawGeometry(item, { keepView: true });
+}
+
+function onMapClick(event) {
+  const item = current();
+  if (!draw || !item || busy) return;
+  if (!draw.first) {
+    draw.first = event.latlng;
+    draw.geometry = null;
+  } else {
+    draw.geometry = rectangleGeometry(draw.first, event.latlng);
+    draw.preview = null;
+  }
+  drawGeometry(item, { keepView: true });
+}
+
+function onMapMouseMove(event) {
+  if (!draw || !draw.first || draw.geometry) return;
+  const item = current();
+  if (!item) return;
+  // Aperçu élastique entre le premier coin et le curseur.
+  draw.preview = rectangleGeometry(draw.first, event.latlng);
+  drawGeometry(item, { keepView: true });
 }
 
 function nudge(eastKm, northKm) {
@@ -151,17 +211,32 @@ function render() {
 
 function drawGeometry(item, { keepView }) {
   layers.clearLayers();
-  const moved = offset.lon || offset.lat;
+  const moved = Boolean(offset.lon || offset.lat);
+  const drawn = draw && (draw.geometry || draw.preview);
   if (item.geometry) {
-    if (moved) {
+    if (moved || drawn) {
       // Position d'origine en pointillé : sans elle, on perd la référence
-      // de ce que le décalage est en train de corriger.
+      // de ce que la correction est en train de remplacer.
       L.geoJSON(item.geometry, {
         color: '#c1283a', weight: 1, opacity: 0.4, dashArray: '4 4', fill: false,
       }).addTo(layers);
     }
     const shape = L.geoJSON(shiftedGeometry(item), { color: '#c1283a', weight: 2 }).addTo(layers);
     if (!keepView) map.fitBounds(shape.getBounds(), { padding: [30, 30], maxZoom: 9 });
+  } else if (!keepView && item.latlon) {
+    // Sans géométrie, le point Maps est le seul repère : c'est là qu'il
+    // faut regarder pour tracer un rectangle.
+    map.setView([item.latlon[0], item.latlon[1]], 7);
+  }
+  if (drawn) {
+    L.geoJSON(draw.geometry || draw.preview, {
+      color: '#0a7d2b', weight: 2, dashArray: draw.geometry ? null : '5 5',
+    }).addTo(layers);
+  }
+  if (draw && draw.first) {
+    L.circleMarker([draw.first.lat, draw.first.lng], {
+      radius: 4, color: '#0a7d2b', fillOpacity: 1,
+    }).addTo(layers);
   }
   if (item.latlon) {
     // Vérité terrain : elle ne bouge pas avec le polygone, c'est la cible.
@@ -170,8 +245,18 @@ function drawGeometry(item, { keepView }) {
     }).addTo(layers);
   }
   const row = document.getElementById('offset-row');
-  row.textContent = moved ? `${offsetLabel(item)} — A pour enregistrer, 0 pour annuler` : '';
-  row.hidden = !moved;
+  row.textContent = statusLine(item, { moved });
+  row.hidden = !row.textContent;
+}
+
+function statusLine(item, { moved }) {
+  if (draw) {
+    if (draw.geometry) return 'Rectangle tracé — A pour enregistrer, 0 pour annuler';
+    if (draw.first) return 'Tracé : clique le coin opposé (0 pour annuler)';
+    return 'Tracé : clique le premier coin du rectangle (0 pour annuler)';
+  }
+  if (moved) return `${offsetLabel(item)} — A pour enregistrer, 0 pour annuler`;
+  return '';
 }
 
 async function postJSON(path, body) {
@@ -203,11 +288,17 @@ async function decide(status, radiusKm) {
   // Un décalage en attente transforme la validation en correction : c'est la
   // géométrie déplacée, telle qu'affichée, qui doit être enregistrée.
   const pendingOffset = offset.lon || offset.lat ? [offset.lon, offset.lat] : null;
+  const pendingRectangle = draw && draw.geometry ? draw.geometry : null;
   const body = { id: item.id, status, radius_km: radiusKm ?? null };
   // Un rejet reste un rejet : on ne convertit qu'une validation.
-  if (pendingOffset && !radiusKm && status === 'validé') {
-    body.status = 'corrigé';
-    body.offset_deg = pendingOffset;
+  if (!radiusKm && status === 'validé') {
+    if (pendingRectangle) {
+      body.status = 'corrigé';
+      body.geometry = pendingRectangle;
+    } else if (pendingOffset) {
+      body.status = 'corrigé';
+      body.offset_deg = pendingOffset;
+    }
   }
   busy = true;
   try {
@@ -215,7 +306,7 @@ async function decide(status, radiusKm) {
     clearError();
     history.push({ type: 'decision', id: item.id });
     index += 1;
-    offset = { lon: 0, lat: 0 };
+    clearCorrections();
     render();
   } catch (err) {
     // Échec : on ne fait PAS avancer l'index et on ne persiste rien côté
@@ -234,7 +325,7 @@ async function undo() {
     // localement, sans appel réseau.
     history.pop();
     index = Math.max(0, index - 1);
-    offset = { lon: 0, lat: 0 };
+    clearCorrections();
     render();
     return;
   }
@@ -244,7 +335,7 @@ async function undo() {
     clearError();
     history.pop();
     index = Math.max(0, index - 1);
-    offset = { lon: 0, lat: 0 };
+    clearCorrections();
     render();
   } catch (err) {
     showError(`Annulation impossible pour ${last.id} : ${err.message}`);
@@ -267,7 +358,11 @@ document.addEventListener('keydown', (event) => {
     return;
   }
   switch (event.key.toLowerCase()) {
-    case '0': resetOffset(); break;
+    case 'd': startDrawing(); break;
+    case '0':
+      if (draw) cancelDrawing();
+      else resetOffset();
+      break;
     case 'a': decide('validé'); break;
     case 'r': decide('rejeté'); break;
     case ' ':
@@ -275,7 +370,7 @@ document.addEventListener('keydown', (event) => {
       if (!busy && current()) {
         history.push({ type: 'pass' });
         index += 1;
-        offset = { lon: 0, lat: 0 };
+        clearCorrections();
         render();
       }
       break;
@@ -287,6 +382,9 @@ document.addEventListener('keydown', (event) => {
       break;
   }
 });
+
+map.on('click', onMapClick);
+map.on('mousemove', onMapMouseMove);
 
 const radius = document.getElementById('radius');
 radius.addEventListener('input', () => {

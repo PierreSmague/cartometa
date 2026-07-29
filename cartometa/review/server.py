@@ -64,6 +64,32 @@ def _validate_offset(offset: object) -> tuple[float, float]:
     return dlon, dlat
 
 
+def _validate_manual_geometry(raw: object) -> dict:
+    """Contrôle un polygone tracé à la main avant de l'écrire.
+
+    Sert au cas d'échec du pipeline : quand aucune géométrie n'a pu être
+    vectorisée, l'humain trace un rectangle plutôt que de rejeter une méta
+    par ailleurs valable. Rien n'est écrit sans que shapely ait confirmé
+    que la géométrie est valide et située sur Terre.
+    """
+    if not isinstance(raw, dict) or raw.get("type") != "Polygon":
+        raise ValueError("geometry doit être un objet GeoJSON de type Polygon")
+    try:
+        geom = shape(raw)
+    except Exception as exc:
+        raise ValueError(f"polygone illisible : {exc}") from None
+    if geom.is_empty or not geom.is_valid:
+        raise ValueError("polygone vide ou invalide")
+    min_lon, min_lat, max_lon, max_lat = geom.bounds
+    if not (-180.0 <= min_lon and max_lon <= 180.0 and -90.0 <= min_lat and max_lat <= 90.0):
+        raise ValueError(
+            f"polygone hors des bornes WGS84 : {geom.bounds}"
+        )
+    if geom.area <= 0.0:
+        raise ValueError("polygone de surface nulle")
+    return mapping(geom)
+
+
 def build_queue() -> dict:
     metas_path, geo_path = _paths()
     metas = {m["id"]: m for m in json.loads(metas_path.read_text("utf-8"))}
@@ -106,6 +132,7 @@ def apply_decision(
     status: str,
     radius_km: float | None,
     offset_deg: object | None = None,
+    geometry: object | None = None,
 ) -> None:
     metas_path, geo_path = _paths()
     metas = {m["id"]: m for m in json.loads(metas_path.read_text("utf-8"))}
@@ -116,13 +143,30 @@ def apply_decision(
     if meta is None or feature is None:
         raise UnknownMetaError(f"méta inconnue : {meta_id!r}")
 
-    if radius_km and offset_deg is not None:
+    corrections = [
+        name
+        for name, value in (
+            ("rayon", radius_km or None),
+            ("décalage", offset_deg),
+            ("polygone manuel", geometry),
+        )
+        if value is not None
+    ]
+    if len(corrections) > 1:
         raise ValueError(
-            "rayon et décalage sont deux corrections distinctes : "
-            "en appliquer une seule à la fois"
+            f"corrections mutuellement exclusives ({', '.join(corrections)}) : "
+            f"en appliquer une seule à la fois"
         )
 
-    if offset_deg is not None:
+    if geometry is not None:
+        # Pas de garde « géométrie déjà présente » : tracer à la main reste
+        # un acte humain explicite, et la sauvegarde ci-dessous rend U
+        # capable de revenir à la géométrie automatique.
+        validated = _validate_manual_geometry(geometry)
+        feature["properties"].setdefault(_GEOMETRY_BACKUP_KEY, feature["geometry"])
+        feature["geometry"] = validated
+        feature["properties"]["status"] = "corrigé"
+    elif offset_deg is not None:
         dlon, dlat = _validate_offset(offset_deg)
         if feature["geometry"] is None:
             raise ValueError(
@@ -217,6 +261,7 @@ class Handler(SimpleHTTPRequestHandler):
                     payload["status"],
                     payload.get("radius_km"),
                     payload.get("offset_deg"),
+                    payload.get("geometry"),
                 )
             else:
                 apply_undo(meta_id)
@@ -254,6 +299,7 @@ def main() -> None:
     print(f"Revue {args.country} : http://127.0.0.1:{args.port}")
     print("Touches — A valider, R rejeter, Espace passer, U annuler")
     print("          Flèches décaler le polygone (Maj = pas large), 0 remettre à zéro")
+    print("          D tracer un rectangle à la main (deux clics sur la carte)")
     HTTPServer(("127.0.0.1", args.port), Handler).serve_forever()
 
 
