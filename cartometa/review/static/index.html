@@ -16,6 +16,8 @@
     #info { padding: 8px 12px; }
     #warnings { color: #b00020; }
     kbd { background: #eee; border-radius: 3px; padding: 1px 5px; border: 1px solid #bbb; }
+    #error { background: #b00020; color: #fff; padding: 8px 12px; font-weight: bold; }
+    #error[hidden] { display: none; }
   </style>
 </head>
 <body>
@@ -26,6 +28,7 @@
       <kbd>A</kbd> valider <kbd>R</kbd> rejeter <kbd>Espace</kbd> passer <kbd>U</kbd> annuler
     </span>
   </header>
+  <div id="error" hidden></div>
   <div id="panes">
     <div id="source"><img id="image" alt=""></div>
     <div id="map"></div>

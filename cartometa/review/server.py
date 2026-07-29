@@ -23,6 +23,15 @@ def _write_atomic(path: Path, payload: dict) -> None:
     os.replace(temporary, path)
 
 
+class UnknownMetaError(ValueError):
+    """Levée quand un `id` ne correspond à aucune méta connue."""
+
+
+# Nom de la propriété où l'on sauvegarde la géométrie écrasée par une
+# correction de rayon, pour pouvoir la restaurer si l'humain annule (touche U).
+_GEOMETRY_BACKUP_KEY = "geometry_before_correction"
+
+
 def build_queue() -> dict:
     metas_path, geo_path = _paths()
     metas = {m["id"]: m for m in json.loads(metas_path.read_text("utf-8"))}
@@ -53,20 +62,65 @@ def build_queue() -> dict:
     return {"total": len(items), "reviewed": len(items) - len(pending), "items": pending}
 
 
+def _find_feature(geo: dict, meta_id: str) -> dict | None:
+    for feature in geo["features"]:
+        if feature["properties"]["id"] == meta_id:
+            return feature
+    return None
+
+
 def apply_decision(meta_id: str, status: str, radius_km: float | None) -> None:
+    metas_path, geo_path = _paths()
+    metas = {m["id"]: m for m in json.loads(metas_path.read_text("utf-8"))}
+    geo = json.loads(geo_path.read_text("utf-8"))
+
+    meta = metas.get(meta_id)
+    feature = _find_feature(geo, meta_id)
+    if meta is None or feature is None:
+        raise UnknownMetaError(f"méta inconnue : {meta_id!r}")
+
+    if radius_km:
+        # La règle « le rayon ne s'applique qu'aux spots » doit être imposée
+        # ici, côté serveur : le client ne peut pas être le seul garant de
+        # l'intégrité des géométries (un POST direct pourrait sinon écraser
+        # le polygone d'une méta country/regional par un cercle).
+        if meta["tier"] != "spot":
+            raise ValueError(
+                f"le rayon ne peut être appliqué qu'aux métas de tier 'spot' "
+                f"(méta {meta_id!r} est de tier {meta['tier']!r})"
+            )
+        if feature["geometry"] is None:
+            raise ValueError(
+                f"impossible d'appliquer un rayon à {meta_id!r} : aucune géométrie à corriger"
+            )
+        from cartometa.geo.vectorize import buffer_km
+
+        # On ne bascule le statut en « corrigé » qu'après avoir vérifié que
+        # le tampon peut réellement être calculé (cf. bug historique où une
+        # méta sans géométrie ressortait « corrigée » sans rien derrière).
+        feature["properties"][_GEOMETRY_BACKUP_KEY] = feature["geometry"]
+        centre = shape(feature["geometry"]).centroid
+        feature["geometry"] = mapping(buffer_km(Point(centre.x, centre.y), radius_km))
+        feature["properties"]["status"] = "corrigé"
+    else:
+        feature["properties"]["status"] = status
+    _write_atomic(geo_path, geo)
+
+
+def apply_undo(meta_id: str) -> None:
+    """Annule la dernière décision prise sur `meta_id` : remet `status` à
+    `auto` et restaure la géométrie d'origine si une correction de rayon
+    l'avait écrasée."""
     _, geo_path = _paths()
     geo = json.loads(geo_path.read_text("utf-8"))
-    for feature in geo["features"]:
-        if feature["properties"]["id"] != meta_id:
-            continue
-        feature["properties"]["status"] = status
-        if radius_km and feature["geometry"]:
-            from cartometa.geo.vectorize import buffer_km
+    feature = _find_feature(geo, meta_id)
+    if feature is None:
+        raise UnknownMetaError(f"méta inconnue : {meta_id!r}")
 
-            centre = shape(feature["geometry"]).centroid
-            feature["geometry"] = mapping(buffer_km(Point(centre.x, centre.y), radius_km))
-            feature["properties"]["status"] = "corrigé"
-        break
+    props = feature["properties"]
+    if _GEOMETRY_BACKUP_KEY in props:
+        feature["geometry"] = props.pop(_GEOMETRY_BACKUP_KEY)
+    props["status"] = "auto"
     _write_atomic(geo_path, geo)
 
 
@@ -91,12 +145,35 @@ class Handler(SimpleHTTPRequestHandler):
         super().do_GET()
 
     def do_POST(self) -> None:
-        if self.path != "/api/decision":
+        if self.path not in ("/api/decision", "/api/undo"):
             self.send_error(404)
             return
-        length = int(self.headers.get("Content-Length", 0))
-        payload = json.loads(self.rfile.read(length) or b"{}")
-        apply_decision(payload["id"], payload["status"], payload.get("radius_km"))
+        length = int(self.headers.get("Content-Length", 0) or 0)
+        raw = self.rfile.read(length) if length else b""
+        try:
+            payload = json.loads(raw or b"{}")
+            if not isinstance(payload, dict):
+                raise ValueError("le corps doit être un objet JSON")
+            meta_id = payload["id"]
+            if self.path == "/api/decision":
+                apply_decision(meta_id, payload["status"], payload.get("radius_km"))
+            else:
+                apply_undo(meta_id)
+        except json.JSONDecodeError:
+            self._json({"ok": False, "error": "corps JSON invalide"}, 400)
+            return
+        except KeyError as exc:
+            self._json({"ok": False, "error": f"champ manquant : {exc}"}, 400)
+            return
+        except UnknownMetaError as exc:
+            self._json({"ok": False, "error": str(exc)}, 404)
+            return
+        except ValueError as exc:
+            self._json({"ok": False, "error": str(exc)}, 400)
+            return
+        except Exception as exc:  # garde-fou : jamais de connexion coupée en silence
+            self._json({"ok": False, "error": f"erreur interne : {exc}"}, 500)
+            return
         self._json({"ok": True})
 
     def log_message(self, *args) -> None:

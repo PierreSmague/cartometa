@@ -7,8 +7,24 @@ let queue = [];
 let index = 0;
 let total = 0;
 let reviewed = 0;
+// Chaque entrée est { type: 'decision', id } ou { type: 'pass' }, dans
+// l'ordre exact des actions — U doit défaire précisément la dernière,
+// qu'il s'agisse d'une décision persistée ou d'un simple passage local.
 let history = [];
 let layers = L.layerGroup().addTo(map);
+let busy = false; // évite les doubles soumissions pendant qu'une requête est en vol
+
+function showError(message) {
+  const el = document.getElementById('error');
+  el.textContent = message;
+  el.hidden = false;
+}
+
+function clearError() {
+  const el = document.getElementById('error');
+  el.hidden = true;
+  el.textContent = '';
+}
 
 async function loadQueue() {
   const response = await fetch('/api/queue');
@@ -17,6 +33,7 @@ async function loadQueue() {
   total = data.total;
   reviewed = data.reviewed;
   index = 0;
+  history = [];
   render();
 }
 
@@ -42,8 +59,12 @@ function render() {
   document.getElementById('warnings').textContent = item.warnings.join(' · ');
   document.getElementById('source-link').href = item.source_url;
 
-  const isSpot = item.tier === 'spot';
-  document.getElementById('radius-row').hidden = !isSpot;
+  // Le rayon ne peut aider que sur un spot qui a déjà une géométrie à
+  // recentrer/redimensionner : sans géométrie, il n'y a rien à corriger.
+  // Le serveur applique la même règle indépendamment (défense en
+  // profondeur) : cet affichage n'est qu'un confort, pas le seul garde-fou.
+  const canApplyRadius = item.tier === 'spot' && Boolean(item.geometry);
+  document.getElementById('radius-row').hidden = !canApplyRadius;
 
   layers.clearLayers();
   if (item.geometry) {
@@ -58,17 +79,71 @@ function render() {
   }
 }
 
+async function postJSON(path, body) {
+  let response;
+  try {
+    response = await fetch(path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch (err) {
+    throw new Error(`connexion au serveur perdue : ${err.message}`);
+  }
+  let data = {};
+  try {
+    data = await response.json();
+  } catch (_err) {
+    // pas de corps JSON exploitable : on retombe sur le code HTTP
+  }
+  if (!response.ok || data.ok === false) {
+    throw new Error(data.error || `erreur HTTP ${response.status}`);
+  }
+  return data;
+}
+
 async function decide(status, radiusKm) {
   const item = current();
-  if (!item) return;
-  history.push(item.id);
-  await fetch('/api/decision', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id: item.id, status, radius_km: radiusKm ?? null }),
-  });
-  index += 1;
-  render();
+  if (!item || busy) return;
+  busy = true;
+  try {
+    await postJSON('/api/decision', { id: item.id, status, radius_km: radiusKm ?? null });
+    clearError();
+    history.push({ type: 'decision', id: item.id });
+    index += 1;
+    render();
+  } catch (err) {
+    // Échec : on ne fait PAS avancer l'index et on ne persiste rien côté
+    // historique local — la méta reste affichée, l'erreur est visible.
+    showError(`Décision non enregistrée pour ${item.id} : ${err.message}`);
+  } finally {
+    busy = false;
+  }
+}
+
+async function undo() {
+  if (!history.length || busy) return;
+  const last = history[history.length - 1];
+  if (last.type === 'pass') {
+    // Un passage n'a jamais rien persisté côté serveur : on le défait
+    // localement, sans appel réseau.
+    history.pop();
+    index = Math.max(0, index - 1);
+    render();
+    return;
+  }
+  busy = true;
+  try {
+    await postJSON('/api/undo', { id: last.id });
+    clearError();
+    history.pop();
+    index = Math.max(0, index - 1);
+    render();
+  } catch (err) {
+    showError(`Annulation impossible pour ${last.id} : ${err.message}`);
+  } finally {
+    busy = false;
+  }
 }
 
 document.addEventListener('keydown', (event) => {
@@ -76,16 +151,17 @@ document.addEventListener('keydown', (event) => {
   switch (event.key.toLowerCase()) {
     case 'a': decide('validé'); break;
     case 'r': decide('rejeté'); break;
-    case ' ': event.preventDefault(); index += 1; render(); break;
-    case 'u':
-      if (history.length) {
-        history.pop();
-        index = Math.max(0, index - 1);
+    case ' ':
+      event.preventDefault();
+      if (!busy && current()) {
+        history.push({ type: 'pass' });
+        index += 1;
         render();
       }
       break;
+    case 'u': undo(); break;
     case 'enter':
-      if (current() && current().tier === 'spot') {
+      if (current() && current().tier === 'spot' && current().geometry) {
         decide('corrigé', Number(document.getElementById('radius').value));
       }
       break;
