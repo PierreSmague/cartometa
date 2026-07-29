@@ -98,6 +98,7 @@ Image source à gauche, polygone généré sur une vraie carte à droite.
 | `U` | annuler la dernière décision |
 | `←↑→↓` | décaler le polygone de 5 km (`Maj` : 25 km) |
 | `D` | tracer un rectangle à la main (deux clics sur la carte) |
+| `P` | prendre le polygone du pays entier |
 | `0` | annuler la correction en cours |
 
 Aucune correction n'est enregistrée tout de suite : elle se voit à l'écran, le
@@ -111,6 +112,12 @@ pas de lien Maps. Plutôt que de rejeter une méta par ailleurs valable, on trac
 son emprise à la main. La carte se centre alors sur le point Maps s'il existe.
 Le rectangle reste grossier — rappel de la spec : une zone un peu trop large
 vaut mieux qu'une méta manquante.
+
+`P` va plus loin dans la même logique : la méta reçoit la silhouette Natural
+Earth du pays entier, celle que le pipeline donne déjà aux métas de tier
+`country`. Utile quand l'indice est en réalité national, ou quand rien ne
+permet de délimiter mieux. C'est le serveur qui relit Natural Earth à
+l'enregistrement ; l'affichage n'est qu'un aperçu.
 
 Le point bleu, quand il est présent, est la **vérité terrain** : c'est la
 position du lien Maps de la méta. S'il tombe hors du polygone, rejeter.

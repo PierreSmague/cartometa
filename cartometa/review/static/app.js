@@ -97,6 +97,29 @@ function startDrawing() {
   drawGeometry(item, { keepView: true });
 }
 
+// Silhouette du pays, chargée une seule fois pour l'aperçu. Ce n'est
+// qu'un aperçu : à l'enregistrement, le serveur relit Natural Earth.
+let countryPolygon = null;
+
+async function useCountryPolygon() {
+  const item = current();
+  if (!item || busy) return;
+  if (!countryPolygon) {
+    try {
+      countryPolygon = (await getJSON('/api/country-polygon')).geometry;
+    } catch (err) {
+      showError(`Polygone du pays indisponible : ${err.message}`);
+      return;
+    }
+  }
+  offset = { lon: 0, lat: 0 };
+  draw = { first: null, geometry: countryPolygon, country: true };
+  clearError();
+  // keepView, mais fitTo : c'est le polygone du pays qu'on cadre, pas la
+  // géométrie d'origine (souvent absente, c'est le cas d'usage).
+  drawGeometry(item, { keepView: true, fitTo: countryPolygon });
+}
+
 function cancelDrawing() {
   const item = current();
   draw = null;
@@ -105,7 +128,8 @@ function cancelDrawing() {
 
 function onMapClick(event) {
   const item = current();
-  if (!draw || !item || busy) return;
+  // En mode « polygone du pays », la carte n'attend pas de coins.
+  if (!draw || draw.country || !item || busy) return;
   if (!draw.first) {
     draw.first = event.latlng;
     draw.geometry = null;
@@ -209,7 +233,7 @@ function render() {
   drawGeometry(item, { keepView: false });
 }
 
-function drawGeometry(item, { keepView }) {
+function drawGeometry(item, { keepView, fitTo }) {
   layers.clearLayers();
   const moved = Boolean(offset.lon || offset.lat);
   const drawn = draw && (draw.geometry || draw.preview);
@@ -229,9 +253,10 @@ function drawGeometry(item, { keepView }) {
     map.setView([item.latlon[0], item.latlon[1]], 7);
   }
   if (drawn) {
-    L.geoJSON(draw.geometry || draw.preview, {
+    const traced = L.geoJSON(draw.geometry || draw.preview, {
       color: '#0a7d2b', weight: 2, dashArray: draw.geometry ? null : '5 5',
     }).addTo(layers);
+    if (fitTo) map.fitBounds(traced.getBounds(), { padding: [30, 30] });
   }
   if (draw && draw.first) {
     L.circleMarker([draw.first.lat, draw.first.lng], {
@@ -251,12 +276,32 @@ function drawGeometry(item, { keepView }) {
 
 function statusLine(item, { moved }) {
   if (draw) {
+    if (draw.country) return 'Polygone du pays entier — A pour enregistrer, 0 pour annuler';
     if (draw.geometry) return 'Rectangle tracé — A pour enregistrer, 0 pour annuler';
     if (draw.first) return 'Tracé : clique le coin opposé (0 pour annuler)';
     return 'Tracé : clique le premier coin du rectangle (0 pour annuler)';
   }
   if (moved) return `${offsetLabel(item)} — A pour enregistrer, 0 pour annuler`;
   return '';
+}
+
+async function getJSON(path) {
+  let response;
+  try {
+    response = await fetch(path);
+  } catch (err) {
+    throw new Error(`connexion au serveur perdue : ${err.message}`);
+  }
+  let data = {};
+  try {
+    data = await response.json();
+  } catch (_err) {
+    // pas de corps JSON exploitable : on retombe sur le code HTTP
+  }
+  if (!response.ok || data.ok === false) {
+    throw new Error(data.error || `erreur HTTP ${response.status}`);
+  }
+  return data;
 }
 
 async function postJSON(path, body) {
@@ -292,7 +337,12 @@ async function decide(status, radiusKm) {
   const body = { id: item.id, status, radius_km: radiusKm ?? null };
   // Un rejet reste un rejet : on ne convertit qu'une validation.
   if (!radiusKm && status === 'validé') {
-    if (pendingRectangle) {
+    if (draw && draw.country) {
+      // On envoie un drapeau, pas la silhouette : le serveur la relit
+      // depuis Natural Earth, source unique de vérité.
+      body.status = 'corrigé';
+      body.use_country_polygon = true;
+    } else if (pendingRectangle) {
       body.status = 'corrigé';
       body.geometry = pendingRectangle;
     } else if (pendingOffset) {
@@ -359,6 +409,7 @@ document.addEventListener('keydown', (event) => {
   }
   switch (event.key.toLowerCase()) {
     case 'd': startDrawing(); break;
+    case 'p': useCountryPolygon(); break;
     case '0':
       if (draw) cancelDrawing();
       else resetOffset();
