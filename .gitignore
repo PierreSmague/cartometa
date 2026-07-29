@@ -9,3 +9,13 @@ data/images/
 .venv/
 __pycache__/
 *.pyc
+
+# Textes et images Plonk It — decision utilisateur 2026-07-29
+# Regenerable par: uv run cartometa-extract poland
+data/metas/
+
+# Journaux de la tache planifiee
+logs/
+
+# Artefacts de process
+.superpowers/

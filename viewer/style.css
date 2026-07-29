@@ -1,0 +1,17 @@
+* { box-sizing: border-box; }
+body { margin: 0; font: 15px/1.5 system-ui, sans-serif; }
+#map { position: absolute; inset: 0 380px 0 0; }
+#panel { position: absolute; top: 0; right: 0; bottom: 0; width: 380px;
+         overflow-y: auto; background: #fff; border-left: 1px solid #ddd; padding: 12px; }
+#panel header { display: flex; gap: 8px; margin-bottom: 12px; }
+#panel input, #panel select { flex: 1; min-width: 0; padding: 6px; }
+#results { list-style: none; margin: 0; padding: 0; }
+#results li { border-bottom: 1px solid #eee; padding: 10px 4px; cursor: pointer; }
+#results li:hover { background: #f4f7ff; }
+#results img { width: 100%; border-radius: 4px; margin-top: 6px; }
+.badge { font-size: 12px; background: #eef; border-radius: 3px; padding: 1px 6px; }
+
+@media (max-width: 760px) {
+  #map { inset: 0 0 45vh 0; }
+  #panel { top: auto; height: 45vh; width: 100%; border-left: none; border-top: 1px solid #ddd; }
+}
