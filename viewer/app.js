@@ -70,6 +70,7 @@ function render() {
   for (const entry of entries) {
     const item = document.createElement('li');
     item.innerHTML =
+      `<span class="badge">${entry.country}</span> ` +
       `<span class="badge">${entry.category}</span> <strong>${entry.title}</strong>` +
       `<div>${entry.description}</div>` +
       (entry.image ? `<img loading="lazy" src="../${entry.image}" alt="">` : '') +
