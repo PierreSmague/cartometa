@@ -1,431 +1,252 @@
 import { getJSON } from './api.js';
 import {
-  bboxContains,
-  bboxOf,
-  containsPoint,
-  rectangleGeometry,
-  ringGeometry,
+  bboxContains, bboxOf, containsPoint, rectangleGeometry, ringGeometry,
 } from './geometry.js';
+
+const POSE = { color: '#0a7d2b', weight: 2, fillOpacity: 0.25 };
+const EN_COURS = { color: '#0a7d2b', weight: 2, dashArray: '5 5', fill: false };
+const SURVOL = { color: '#0057d9', weight: 2, fillOpacity: 0.15 };
+
+// Rayon d'accrochage au premier sommet, en pixels écran : c'est le geste qui
+// ferme un contour libre.
+const FERMETURE_PX = 12;
+
+const NOMS = { rect: 'rectangle', contour: 'contour libre', admin1: 'subdivisions' };
 
 export class Sketch {
   constructor(map, layerGroup) {
     this.map = map;
-    this.layerGroup = layerGroup;
+    this.layers = layerGroup;
     this.pieces = [];
     this.mode = null;
-
-    // État de dessin en cours
-    this.inProgress = null;
-    this.inProgressShape = null;
-
-    // État pour les régions admin1
-    this.admin1Features = null;
-    this.admin1BBoxes = null;
-
-    // État pour la saisie au clavier
-    this.currentCountry = null;
+    this.corner = null;     // premier coin d'un rectangle en cours
+    this.vertices = [];     // sommets d'un contour en cours
+    this.preview = null;    // géométrie élastique suivant le curseur
+    this.hovered = null;    // code de la région survolée en mode admin1
+    this.country = null;    // silhouette du pays, chargée une fois
+    this.regions = null;    // index des régions admin-1, chargé une fois
   }
 
-  // Réinitialiser avec une liste de pièces
+  get isEmpty() {
+    return this.pieces.length === 0;
+  }
+
   reset(pieces) {
-    this.pieces = pieces.slice();
-    this.clear();
-    this.render();
+    this.pieces = pieces ? pieces.map((piece) => ({ ...piece })) : [];
+    this.leaveMode();
   }
 
-  // Changer de mode de dessin
-  async setMode(mode) {
-    // Abandonner la pièce en cours, mais garder les pièces placées
-    this.inProgress = null;
-    if (this.inProgressShape) {
-      this.layerGroup.removeLayer(this.inProgressShape);
-      this.inProgressShape = null;
-    }
-
-    this.mode = mode;
-
-    if (mode === 'admin1') {
-      await this.ensureRegions();
-    }
-
-    this.render();
+  leaveMode() {
+    this.mode = null;
+    this.corner = null;
+    this.vertices = [];
+    this.preview = null;
+    this.hovered = null;
   }
 
-  // Ajouter le polygone complet du pays courant
-  async addCountry() {
-    if (!this.currentCountry) {
-      throw new Error('Aucun pays n\'est défini');
-    }
-
-    try {
-      const data = await getJSON(`/api/country-polygon?code=${this.currentCountry}`);
-      this.pieces.push({
-        kind: 'country',
-      });
-      this.render();
-    } catch (err) {
-      throw new Error(`Impossible de charger le pays : ${err.message}`);
-    }
-  }
-
-  // S'assurer qu'on a les données du pays (pré-chargement)
-  async ensureCountry() {
-    if (!this.currentCountry) {
-      throw new Error('Aucun pays n\'est défini');
-    }
-    // Juste un test de connectivité et de disponibilité
-    await getJSON(`/api/country-polygon?code=${this.currentCountry}`);
-  }
-
-  // S'assurer qu'on a les données des régions admin1
-  async ensureRegions() {
-    if (this.admin1Features) {
-      return;
-    }
-
-    if (!this.currentCountry) {
-      throw new Error('Aucun pays n\'est défini');
-    }
-
-    try {
-      const data = await getJSON(`/api/admin1?code=${this.currentCountry}`);
-      // data est une FeatureCollection avec des features portant code et name
-      this.admin1Features = data.features || [];
-      // Pré-calculer les boîtes pour le filtrage rapide au survol
-      this.admin1BBoxes = this.admin1Features.map((f) => ({
-        feature: f,
-        bbox: bboxOf(f.geometry),
-      }));
-    } catch (err) {
-      throw new Error(`Impossible de charger les régions : ${err.message}`);
-    }
-  }
-
-  // Trouver la région admin1 au point donné (latlng)
-  regionAt(latlng) {
-    if (!this.admin1BBoxes) {
-      return null;
-    }
-
-    const { lng, lat } = latlng;
-
-    for (const { feature, bbox } of this.admin1BBoxes) {
-      // Filtre par boîte englobante AVANT la détection de point
-      // (important pour la performance : évite de ray-caster tous les points pour 10m natural earth)
-      if (bboxContains(bbox, lng, lat) && containsPoint(feature.geometry, lng, lat)) {
-        return feature.properties.code;
-      }
-    }
-
-    return null;
-  }
-
-  // Gestionnaire de clic sur la carte
-  onMapClick(latlng) {
-    if (this.mode === 'rect') {
-      if (!this.inProgress) {
-        this.inProgress = { start: latlng };
-      } else {
-        // Finaliser le rectangle
-        const { start } = this.inProgress;
-        const west = Math.min(start.lng, latlng.lng);
-        const east = Math.max(start.lng, latlng.lng);
-        const south = Math.min(start.lat, latlng.lat);
-        const north = Math.max(start.lat, latlng.lat);
-
-        this.pieces.push({
-          kind: 'rect',
-          bounds: [west, south, east, north],
-        });
-
-        this.inProgress = null;
-        if (this.inProgressShape) {
-          this.layerGroup.removeLayer(this.inProgressShape);
-          this.inProgressShape = null;
-        }
-        this.render();
-      }
-    } else if (this.mode === 'contour') {
-      if (!this.inProgress) {
-        this.inProgress = { points: [latlng] };
-      } else {
-        this.inProgress.points.push(latlng);
-      }
-      this.render();
-    } else if (this.mode === 'admin1') {
-      const code = this.regionAt(latlng);
-      if (code) {
-        this.pieces.push({
-          kind: 'admin1',
-          code,
-        });
-        this.render();
-      }
-    }
-  }
-
-  // Gestionnaire de mouvement de souris sur la carte
-  // Retourne true si l'affichage doit être redessine
-  onMapMove(latlng) {
-    let shouldRender = false;
-
-    if (this.mode === 'rect' && this.inProgress) {
-      const { start } = this.inProgress;
-      const west = Math.min(start.lng, latlng.lng);
-      const east = Math.max(start.lng, latlng.lng);
-      const south = Math.min(start.lat, latlng.lat);
-      const north = Math.max(start.lat, latlng.lat);
-
-      const bounds = [[south, west], [north, east]];
-      if (!this.inProgressShape) {
-        this.inProgressShape = L.rectangle(bounds, {
-          color: '#ff7800',
-          weight: 2,
-          fill: true,
-          fillColor: '#ff7800',
-          fillOpacity: 0.1,
-        }).addTo(this.layerGroup);
-      } else {
-        this.inProgressShape.setBounds(bounds);
-      }
-      shouldRender = true;
-    } else if (this.mode === 'contour' && this.inProgress) {
-      // Le contour se redessine à chaque mouvement
-      shouldRender = true;
-    } else if (this.mode === 'admin1') {
-      // Montrer le survol d'une région
-      shouldRender = true;
-    }
-
-    return shouldRender;
-  }
-
-  // Trouver la pièce la plus proche du point donné
-  nearFirst(latlng) {
-    let nearest = null;
-    let minDist = Infinity;
-
-    for (const piece of this.pieces) {
-      const geom = this.geometryFor(piece);
-      if (!geom) continue;
-
-      // Distance approximative au centroïde de la géométrie
-      let centroid = null;
-      if (geom.type === 'Polygon') {
-        centroid = this._centroidOfRings(geom.coordinates);
-      } else if (geom.type === 'MultiPolygon') {
-        centroid = this._centroidOfRings(geom.coordinates[0]);
-      }
-
-      if (centroid) {
-        const dist = Math.hypot(centroid.lng - latlng.lng, centroid.lat - latlng.lat);
-        if (dist < minDist) {
-          minDist = dist;
-          nearest = piece;
-        }
-      }
-    }
-
-    return nearest;
-  }
-
-  // Fermer le contour courant (passer du mode contour à un polygone placé)
-  closeContour() {
-    if (this.mode === 'contour' && this.inProgress && this.inProgress.points.length >= 3) {
-      const ring = this.inProgress.points.map((p) => [p.lng, p.lat]);
-      this.pieces.push({
-        kind: 'polygon',
-        ring,
-      });
-
-      this.inProgress = null;
-      if (this.inProgressShape) {
-        this.layerGroup.removeLayer(this.inProgressShape);
-        this.inProgressShape = null;
-      }
-      this.render();
-    }
-  }
-
-  // Annuler la dernière pièce placée
-  undoLast() {
-    if (this.pieces.length > 0) {
-      this.pieces.pop();
-      this.render();
-    }
-  }
-
-  // Effacer tout (pièces et en-cours)
   clear() {
     this.pieces = [];
-    this.inProgress = null;
-    if (this.inProgressShape) {
-      this.layerGroup.removeLayer(this.inProgressShape);
-      this.inProgressShape = null;
-    }
-    this.render();
+    this.leaveMode();
   }
 
-  // Quitter le mode courant
-  leaveMode() {
-    this.inProgress = null;
-    if (this.inProgressShape) {
-      this.layerGroup.removeLayer(this.inProgressShape);
-      this.inProgressShape = null;
-    }
-    this.mode = null;
-    this.render();
+  async setMode(mode) {
+    // Changer de mode abandonne le morceau en cours mais garde les posés :
+    // c'est le cumul qui est la règle, pas la substitution.
+    this.leaveMode();
+    if (mode === 'admin1') await this.ensureRegions();
+    this.mode = mode;
   }
 
-  // Obtenir la géométrie GeoJSON d'une pièce
+  async ensureCountry() {
+    if (!this.country) this.country = (await getJSON('/api/country-polygon')).geometry;
+    return this.country;
+  }
+
+  async ensureRegions() {
+    if (this.regions) return this.regions;
+    const collection = await getJSON('/api/admin1');
+    // Une région admin-1 au 1:10m peut compter des dizaines de milliers de
+    // sommets. Sans ce filtre par boîte englobante, chaque mouvement de
+    // souris relancerait un lancer de rayon sur toutes les régions du pays.
+    this.regions = collection.features.map((feature) => ({
+      code: feature.properties.code,
+      name: feature.properties.name,
+      geometry: feature.geometry,
+      bbox: bboxOf(feature.geometry),
+    }));
+    return this.regions;
+  }
+
+  async addCountry() {
+    await this.ensureCountry();
+    this.leaveMode();
+    if (!this.pieces.some((piece) => piece.kind === 'country')) {
+      this.pieces.push({ kind: 'country' });
+    }
+  }
+
+  regionAt(latlng) {
+    if (!this.regions) return null;
+    return this.regions.find(
+      (region) => bboxContains(region.bbox, latlng.lng, latlng.lat)
+        && containsPoint(region.geometry, latlng.lng, latlng.lat),
+    ) || null;
+  }
+
+  onMapClick(latlng) {
+    if (this.mode === 'rect') {
+      if (!this.corner) {
+        this.corner = latlng;
+        this.preview = null;
+      } else {
+        this.pieces.push({ kind: 'rect', bounds: boundsOf(this.corner, latlng) });
+        this.corner = null;
+        this.preview = null;
+      }
+      return;
+    }
+    if (this.mode === 'contour') {
+      if (this.vertices.length >= 3 && this.nearFirst(latlng)) {
+        this.closeContour();
+        return;
+      }
+      this.vertices.push(latlng);
+      this.preview = null;
+      return;
+    }
+    if (this.mode === 'admin1') {
+      const region = this.regionAt(latlng);
+      if (!region) return;
+      const already = this.pieces.findIndex(
+        (piece) => piece.kind === 'admin1' && piece.code === region.code,
+      );
+      if (already >= 0) this.pieces.splice(already, 1);
+      else this.pieces.push({ kind: 'admin1', code: region.code });
+    }
+  }
+
+  onMapMove(latlng) {
+    if (this.mode === 'rect' && this.corner) {
+      this.preview = rectangleGeometry(this.corner, latlng);
+      return true;
+    }
+    if (this.mode === 'contour' && this.vertices.length) {
+      this.preview = ringGeometry([...this.vertices, latlng]);
+      return true;
+    }
+    if (this.mode === 'admin1') {
+      const region = this.regionAt(latlng);
+      const code = region ? region.code : null;
+      if (code === this.hovered) return false;
+      this.hovered = code;
+      return true;
+    }
+    return false;
+  }
+
+  nearFirst(latlng) {
+    const first = this.map.latLngToContainerPoint(this.vertices[0]);
+    return first.distanceTo(this.map.latLngToContainerPoint(latlng)) <= FERMETURE_PX;
+  }
+
+  closeContour() {
+    if (this.vertices.length < 3) return;
+    this.pieces.push({
+      kind: 'polygon',
+      ring: this.vertices.map((p) => [p.lng, p.lat]),
+    });
+    this.vertices = [];
+    this.preview = null;
+  }
+
+  undoLast() {
+    // Contextuel : tant qu'un contour est ouvert, ⌫ défait le dernier
+    // sommet. C'est le geste attendu, et sinon un contour raté ne se
+    // corrigerait qu'en le recommençant entièrement.
+    if (this.mode === 'contour' && this.vertices.length) {
+      this.vertices.pop();
+      this.preview = null;
+      return;
+    }
+    if (this.mode === 'rect' && this.corner) {
+      this.corner = null;
+      this.preview = null;
+      return;
+    }
+    this.pieces.pop();
+  }
+
   geometryFor(piece) {
-    if (piece.kind === 'country') {
-      // Le client ne dispose pas de la géométrie du pays ; elle est fournie par le serveur
-      // Cette méthode retournera null pour les pays
-      return null;
-    } else if (piece.kind === 'admin1') {
-      // Chercher dans les features chargées
-      if (this.admin1Features) {
-        const feature = this.admin1Features.find((f) => f.properties.code === piece.code);
-        if (feature) {
-          return feature.geometry;
-        }
-      }
-      return null;
-    } else if (piece.kind === 'rect') {
+    if (piece.kind === 'rect') {
       const [west, south, east, north] = piece.bounds;
-      return rectangleGeometry({ lat: south, lng: west }, { lat: north, lng: east });
-    } else if (piece.kind === 'polygon') {
-      return ringGeometry(piece.ring.map(([lng, lat]) => ({ lng, lat })));
+      return {
+        type: 'Polygon',
+        coordinates: [[
+          [west, south], [east, south], [east, north], [west, north], [west, south],
+        ]],
+      };
     }
-    return null;
+    if (piece.kind === 'polygon') {
+      return { type: 'Polygon', coordinates: [[...piece.ring, piece.ring[0]]] };
+    }
+    if (piece.kind === 'country') return this.country;
+    const region = (this.regions || []).find((r) => r.code === piece.code);
+    return region ? region.geometry : null;
   }
 
-  // Redessiner toutes les pièces et l'en-cours
   render() {
-    this.layerGroup.clearLayers();
-
-    // Redessiner les pièces placées
-    for (const piece of this.pieces) {
-      this._renderPiece(piece);
+    this.pieces.forEach((piece) => {
+      const geometry = this.geometryFor(piece);
+      if (geometry) L.geoJSON(geometry, POSE).addTo(this.layers);
+    });
+    if (this.mode === 'admin1' && this.hovered) {
+      const region = this.regions.find((r) => r.code === this.hovered);
+      const posee = this.pieces.some((p) => p.kind === 'admin1' && p.code === this.hovered);
+      if (region && !posee) L.geoJSON(region.geometry, SURVOL).addTo(this.layers);
     }
-
-    // Redessiner la pièce en cours (rectangle en construction ou contour)
-    if (this.mode === 'rect' && this.inProgress && !this.inProgressShape) {
-      // Le rectangle en cours est géré en onMapMove
-    } else if (this.mode === 'contour' && this.inProgress) {
-      const points = this.inProgress.points;
-      if (points.length > 0) {
-        // Afficher les points du contour
-        for (const point of points) {
-          L.circleMarker(point, {
-            radius: 4,
-            color: '#0080ff',
-            fillColor: '#0080ff',
-            fillOpacity: 1,
-            weight: 1,
-          }).addTo(this.layerGroup);
-        }
-
-        // Afficher les lignes entre les points
-        if (points.length > 1) {
-          for (let i = 0; i < points.length - 1; i++) {
-            L.polyline([points[i], points[i + 1]], {
-              color: '#0080ff',
-              weight: 2,
-              opacity: 0.8,
-            }).addTo(this.layerGroup);
-          }
-        }
-      }
-    } else if (this.mode === 'admin1') {
-      // Montrer les régions disponibles au survol (cela peut être fait à la souris)
-      // On peut optionnellement les préafficher en gris clair
+    if (this.preview) L.geoJSON(this.preview, EN_COURS).addTo(this.layers);
+    this.vertices.forEach((vertex, position) => {
+      L.circleMarker(vertex, {
+        radius: position === 0 ? 6 : 4, color: '#0a7d2b', fillOpacity: 1,
+      }).addTo(this.layers);
+    });
+    if (this.corner) {
+      L.circleMarker(this.corner, {
+        radius: 4, color: '#0a7d2b', fillOpacity: 1,
+      }).addTo(this.layers);
     }
   }
 
-  // Redessiner une pièce unique
-  _renderPiece(piece) {
-    const geom = this.geometryFor(piece);
-
-    if (piece.kind === 'country') {
-      // Les pays sont des pièces sans géométrie côté client
-      // Afficher un marqueur ou une indication
-      L.circleMarker([0, 0], {
-        radius: 6,
-        color: '#008000',
-        fillColor: '#008000',
-        fillOpacity: 1,
-        weight: 2,
-      })
-        .bindPopup(`Pays`)
-        .addTo(this.layerGroup);
-    } else if (piece.kind === 'admin1') {
-      if (geom) {
-        L.geoJSON(geom, {
-          style: {
-            color: '#800080',
-            weight: 2,
-            opacity: 0.7,
-            fillColor: '#800080',
-            fillOpacity: 0.1,
-          },
-        }).addTo(this.layerGroup);
-      }
-    } else if (piece.kind === 'rect') {
-      if (geom) {
-        L.geoJSON(geom, {
-          style: {
-            color: '#ff7800',
-            weight: 2,
-            opacity: 0.7,
-            fillColor: '#ff7800',
-            fillOpacity: 0.1,
-          },
-        }).addTo(this.layerGroup);
-      }
-    } else if (piece.kind === 'polygon') {
-      if (geom) {
-        L.geoJSON(geom, {
-          style: {
-            color: '#0080ff',
-            weight: 2,
-            opacity: 0.7,
-            fillColor: '#0080ff',
-            fillOpacity: 0.1,
-          },
-        }).addTo(this.layerGroup);
-      }
-    }
-  }
-
-  // Calculer le centroïde d'un ensemble d'anneaux (polygone)
-  _centroidOfRings(rings) {
-    if (!rings || rings.length === 0) return null;
-
-    const ring = rings[0]; // Aneau extérieur
-    if (!ring || ring.length === 0) return null;
-
-    let sumLng = 0;
-    let sumLat = 0;
-    for (const [lng, lat] of ring) {
-      sumLng += lng;
-      sumLat += lat;
-    }
-    const count = ring.length;
-    return { lng: sumLng / count, lat: sumLat / count };
-  }
-
-  // Obtenir la ligne d'état (affichage du mode et du nombre de pièces)
   statusLine() {
-    const modeStr = this.mode ? `Mode: ${this.mode}` : 'Mode: inactif';
-    const pieceCount = this.pieces.length;
-    const inProgressStr = this.inProgress ? ' (en cours)' : '';
-    return `${modeStr} | Pièces: ${pieceCount}${inProgressStr}`;
+    const parts = [];
+    if (this.mode) {
+      parts.push(`mode ${NOMS[this.mode]}`);
+      if (this.mode === 'rect') {
+        parts.push(this.corner ? 'clique le coin opposé' : 'clique le premier coin');
+      }
+      if (this.mode === 'contour') {
+        parts.push(this.vertices.length >= 3
+          ? 'reclique le premier sommet pour fermer (ou Entrée)'
+          : `${this.vertices.length}/3 sommets`);
+      }
+      if (this.mode === 'admin1') {
+        const region = this.regions && this.hovered
+          ? this.regions.find((r) => r.code === this.hovered)
+          : null;
+        parts.push(region ? region.name : 'survole une région');
+      }
+    }
+    if (this.pieces.length) {
+      parts.push(`${this.pieces.length} morceau${this.pieces.length > 1 ? 'x' : ''}`);
+      parts.push('A enregistrer · ⌫ retirer · 0 vider');
+    }
+    return parts.join(' — ');
   }
+}
 
-  // Getter pour savoir si le sketch est vide
-  get isEmpty() {
-    return this.pieces.length === 0 && !this.inProgress;
-  }
+function boundsOf(a, b) {
+  return [
+    Math.min(a.lng, b.lng), Math.min(a.lat, b.lat),
+    Math.max(a.lng, b.lng), Math.max(a.lat, b.lat),
+  ];
 }
