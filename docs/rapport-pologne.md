@@ -1,5 +1,9 @@
 # Rapport — verticale Pologne
 
+> **Document historique.** Ce rapport mesure le pipeline de détection
+> automatique de polygones, retiré du dépôt le 2026-07-30. Il ne décrit plus
+> le fonctionnement de Cartometa ; il est conservé pour la trace des mesures.
+
 ## Chiffres mesurés
 
 - Métas extraites : 37 (national 19, régional 12, ponctuel 6)

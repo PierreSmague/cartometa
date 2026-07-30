@@ -55,90 +55,56 @@ demande `--country XX`.
 
 Ajouter `--retry-failed-links` pour retenter les liens marqués irrésolvables.
 
-### 3. Générer les polygones
-
-```
-uv run cartometa-geo <CC>
-```
-
-Écrit `data/geo/<CC>.geojson`. Trois traitements selon la section d'origine de
-la méta :
-
-| Tier | Géométrie |
-|---|---|
-| `country` | silhouette Natural Earth du pays, aucun traitement d'image |
-| `regional` | vectorisation de la zone rouge de l'encart cartographique |
-| `spot` | disque autour des coordonnées du lien Maps |
-
-Au premier passage sur un pays, une **calibration** pixel → WGS84 est ajustée
-sur la silhouette et sauvegardée dans `data/calib/<CC>.json`. Elle est
-réutilisée ensuite ; supprime le fichier pour la recalculer. Un IoU sous 0,90
-déclenche un avertissement.
-
-Les statuts de revue déjà attribués sont préservés entre deux exécutions.
-
-Réglages dans `config/defaults.toml` : seuils de couleur, tolérance de
-simplification, rayons par défaut des métas ponctuelles.
-
-### 4. Revoir à la main
+### 3. Tracer les emprises à la main
 
 ```
 uv run cartometa-review <CC>
 ```
 
-Sert une interface sur <http://127.0.0.1:8765> (écoute sur la boucle locale
-uniquement). File triée par confiance croissante, cas douteux en premier.
-Image source à gauche, polygone généré sur une vraie carte à droite.
+Sert une interface sur <http://127.0.0.1:8765> (boucle locale uniquement).
+Chaque méta arrive **sans géométrie** : c'est à toi de dessiner son emprise.
 
 | Touche | Action |
 |---|---|
-| `A` | valider |
-| `R` | rejeter |
-| `Espace` | passer |
-| `U` | annuler la dernière décision |
-| `←↑→↓` | décaler le polygone de 5 km (`Maj` : 25 km) |
-| `D` | tracer un rectangle à la main (deux clics sur la carte) |
-| `P` | prendre le polygone du pays entier |
-| `0` | annuler la correction en cours |
+| `D` | mode rectangle — deux clics posent un morceau |
+| `C` | mode contour libre — clics successifs, fermeture en repassant sur le premier sommet ou par `Entrée` |
+| `S` | mode subdivisions — chaque clic ajoute/retire la région administrative de niveau 1 sous le curseur |
+| `P` | ajoute la silhouette du pays entier |
+| `Retour arrière` | retire le dernier morceau, ou le dernier sommet si un contour est en cours |
+| `Échap` | sort du mode de dessin sans rien effacer |
+| `0` | vide la zone en cours |
+| `A` | enregistre l'union des morceaux |
+| `R` | rejette la méta |
+| `Espace` / `Maj+Espace` | méta suivante / précédente |
+| `U` | annule la dernière décision |
+| `N` | saisir une méta manuelle (texte + image collée ou déposée) |
 
-Aucune correction n'est enregistrée tout de suite : elle se voit à l'écran, le
-contour d'origine reste en pointillé, et c'est `A` qui l'écrit — la méta passe
-alors en `corrigé`. `R` rejette sans en tenir compte. Le pas de décalage est
-converti en degrés à la latitude de la zone, donc « 5 km vers l'est » vaut bien
-5 km à toute latitude.
+Les modes sont **collants** : après un rectangle posé, poser le suivant ne
+demande aucune touche. Une emprise est l'union de ses morceaux — deux
+rectangles disjoints, trois régions, un contour libre plus le pays entier.
 
-`D` sert quand le pipeline a échoué : pas d'encart détecté, pas de zone rouge,
-pas de lien Maps. Plutôt que de rejeter une méta par ailleurs valable, on trace
-son emprise à la main. La carte se centre alors sur le point Maps s'il existe.
-Le rectangle reste grossier — rappel de la spec : une zone un peu trop large
-vaut mieux qu'une méta manquante.
+Le point bleu, quand il est présent, est la **vérité terrain** : la position
+du lien Maps de la méta.
 
-`P` va plus loin dans la même logique : la méta reçoit la silhouette Natural
-Earth du pays entier, celle que le pipeline donne déjà aux métas de tier
-`country`. Utile quand l'indice est en réalité national, ou quand rien ne
-permet de délimiter mieux. C'est le serveur qui relit Natural Earth à
-l'enregistrement ; l'affichage n'est qu'un aperçu.
+`cartometa-review <CC> --all` rouvre toutes les métas, y compris celles déjà
+tracées, avec leurs morceaux — pour repasser sur un pays quand une nouvelle
+source donne mieux.
 
-Le point bleu, quand il est présent, est la **vérité terrain** : c'est la
-position du lien Maps de la méta. S'il tombe hors du polygone, rejeter.
+Le mode subdivisions télécharge au premier usage le jeu de données Natural
+Earth admin-1 (41 Mo), puis en extrait les régions du pays dans
+`data/cache/admin1/`. Les lancements suivants sont instantanés.
 
-Pour les métas ponctuelles, le rayon est modifiable — c'est la correction la
-plus fréquente. Chaque décision est écrite sur disque immédiatement, la session
-est interruptible.
-
-### 5. Publier vers le viewer
+### 4. Publier vers le viewer
 
 ```
 uv run cartometa-export
 ```
 
 Sans argument, exporte **tous** les pays présents dans `data/geo/` — un nouveau
-pays entre dans le viewer dès que `cartometa-geo` a tourné, sans changer la
+pays entre dans le viewer dès qu'une de ses métas a été tracée, sans changer la
 commande. Passer des codes (`cartometa-export PL`) restreint l'export.
 
-N'exporte que les métas `validé` et `corrigé`, vers `viewer/data/`.
-`--include-auto` inclut aussi les non revues — l'outil affiche alors combien,
-pour qu'une publication de données non validées ne passe pas inaperçue.
+N'exporte que les métas `validé`, vers `viewer/data/`.
 
 ## Développement
 
@@ -147,26 +113,27 @@ uv sync
 uv run pytest
 ```
 
-86 tests. Aucun ne touche le réseau ; ceux marqués `real_data` sont sautés si
+141 tests. Aucun ne touche le réseau ; ceux marqués `real_data` sont sautés si
 `input/` est absent.
 
 ## Où sont les choses
 
 ```
 cartometa/extract/   HTML → métas structurées, résolution des liens Maps
-cartometa/geo/       calibration, silhouette, vectorisation, export
-cartometa/review/    serveur local de revue + interface clavier
+cartometa/geo/       référentiel Natural Earth (pays, régions) et export
+cartometa/review/    serveur local de revue + interface de tracé
 viewer/              carte statique (Leaflet, sans build)
-config/defaults.toml seuils et paramètres
-data/calib/          calibrations par pays (versionnées)
-data/geo/            polygones + statuts de revue (versionnés)
+data/geo/            emprises tracées + statut + morceaux (versionnées)
+data/manual/         métas saisies à la main, textes et images (versionnées)
 data/metas/          textes Plonk It (jamais versionnés, régénérables)
 input/               pages sauvegardées (jamais versionnées)
-docs/                spec, plan, rapport de la verticale Pologne
+docs/                specs, plans, rapports
 ```
 
 ## État
 
-Pologne : 37 métas revues, 33 publiées. Justesse automatique 8/8 sur les métas
-disposant d'une vérité terrain, calibration à ~1,3 km/pixel, latence de requête
-0,2–3,6 ms. Détail et limites dans [`docs/rapport-pologne.md`](docs/rapport-pologne.md).
+Détection automatique retirée le 2026-07-30 : les emprises sont désormais
+tracées à la main. Les géométries produites par l'ancien pipeline ont été
+effacées et sont à refaire — elles restent consultables dans l'historique
+git. `docs/rapport-pologne.md` décrit le pipeline supprimé, conservé comme
+trace historique.
