@@ -113,8 +113,11 @@ uv sync
 uv run pytest
 ```
 
-141 tests. Aucun ne touche le réseau ; ceux marqués `real_data` sont sautés si
-`input/` est absent.
+142 tests. Aucun ne touche le réseau ; ceux marqués `real_data` sont sautés
+seulement si aucun `data/geo/*.geojson` n'existe. Ces fichiers étant suivis
+par git, ils sont toujours présents : tant qu'aucune emprise n'y a été
+tracée, ces tests s'exécutent sur des fichiers vides et passent sans rien
+vérifier.
 
 ## Où sont les choses
 
