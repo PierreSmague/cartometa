@@ -4,7 +4,7 @@ import argparse
 import json
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, unquote, urlparse
 
 from shapely.geometry import mapping
 
@@ -24,6 +24,11 @@ from cartometa.review.store import (
 
 STATIC = Path(__file__).resolve().parent / "static"
 STATE: dict = {"paths": None, "include_all": False}
+
+# En dehors de `static/`, l'interface n'a besoin que des images des métas :
+# celles importées vivent sous `input/`, celles saisies à la main sous
+# `data/manual/`. Rien d'autre du dépôt ne doit être atteignable par ce GET.
+ALLOWED_ROOT_PREFIXES = ("/input/", "/data/manual/")
 
 # Même plafond que `manual.MAX_IMAGE_BYTES`, appliqué avant de lire le corps :
 # on refuse sur l'en-tête plutôt qu'après avoir absorbé les octets.
@@ -103,10 +108,20 @@ class Handler(SimpleHTTPRequestHandler):
         if route in ("/", "/index.html"):
             self.path = "/index.html"
             route = "/index.html"
-        # Les fichiers de l'interface sont servis depuis `static/` ; tout le
-        # reste (images des métas) depuis la racine du projet.
+        # Un ".." (brut ou pourcent-encodé) transformerait la sonde de
+        # fichier ci-dessous en oracle d'existence sur le disque : refusé
+        # d'emblée plutôt que normalisé en silence.
+        if ".." in unquote(route).split("/"):
+            self.send_error(404)
+            return
+        # Les fichiers de l'interface sont servis depuis `static/` ; en
+        # dehors, seules les images des métas (`input/`, `data/manual/`)
+        # sont légitimes — le reste du dépôt n'a rien à faire derrière ce GET.
         if (STATIC / route.lstrip("/")).is_file():
             self.directory = str(STATIC)
+        elif not route.startswith(ALLOWED_ROOT_PREFIXES):
+            self.send_error(404)
+            return
         super().do_GET()
 
     def do_POST(self) -> None:
@@ -158,9 +173,9 @@ class Handler(SimpleHTTPRequestHandler):
 
 
 TOUCHES = """Touches — D rectangle, C contour libre, S subdivisions, P pays entier
-          Retour arriere retirer le dernier morceau, Echap sortir du mode, 0 vider
-          A enregistrer, R rejeter, Espace suivante (Maj+Espace precedente), U annuler
-          N nouvelle meta manuelle"""
+          Retour arrière retirer le dernier morceau, Échap sortir du mode, 0 vider
+          A enregistrer, R rejeter, Espace suivante (Maj+Espace précédente), U annuler
+          N nouvelle méta manuelle"""
 
 
 def main() -> None:
