@@ -94,6 +94,9 @@ async function frame(item) {
     if (current() !== item) return;
     map.fitBounds(L.geoJSON(geometry).getBounds(), { padding: [20, 20] });
   } catch (err) {
+    // Idem : une méta abandonnée ne doit pas lever une alarme sur celle
+    // qui est actuellement affichée.
+    if (current() !== item) return;
     showError(`Cadrage impossible : ${err.message}`);
   }
 }
