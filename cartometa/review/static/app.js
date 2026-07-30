@@ -53,7 +53,13 @@ function render() {
   const item = current();
   layers.clearLayers();
   if (!item) {
-    document.getElementById('progress').textContent = `Terminé — ${done} / ${total}`;
+    // Même formule que le compteur courant : done + queue.length === total
+    // par construction (store.build_queue ne met en file que les métas non
+    // décidées), donc à la file épuisée ce nombre tombe juste sur total.
+    // Imprécision assumée : un passage (Espace) compte comme « dépassé »,
+    // pas comme décidé — c'est une progression dans la file, pas un compte
+    // de décisions, et ça reste cohérent avec le compteur ci-dessous.
+    document.getElementById('progress').textContent = `Terminé — ${done + index} / ${total}`;
     document.getElementById('title').textContent = '';
     document.getElementById('description').textContent = '';
     document.getElementById('image').removeAttribute('src');
