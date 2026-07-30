@@ -6,6 +6,7 @@ from io import BytesIO
 from pathlib import Path
 
 from PIL import Image, UnidentifiedImageError
+from PIL.Image import DecompressionBombError
 
 from cartometa.atomic_write import write_json_atomic
 from cartometa.models import ORIGIN_MANUAL, TIER_MANUAL, MetaRecord
@@ -107,6 +108,8 @@ def save_image(paths: CountryPaths, meta_id: str, raw: bytes) -> str:
         image.verify()
     except (UnidentifiedImageError, OSError, ValueError):
         raise ManualMetaError("les octets reçus ne forment pas une image lisible") from None
+    except DecompressionBombError:
+        raise ManualMetaError("l'image declare des dimensions trop grandes pour etre traitees") from None
     extension = EXTENSION_BY_FORMAT.get(image_format or "")
     if extension is None:
         raise ManualMetaError(f"format d'image non accepté : {image_format!r}")
