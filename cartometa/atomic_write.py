@@ -14,10 +14,9 @@ def write_json_atomic(path: Path, payload: Any, *, indent: int | None = 2) -> No
     qu'une fois l'écriture terminée avec succès (`os.replace` est atomique
     sur le même volume).
 
-    Utilisé à la fois par le serveur de revue (`cartometa/review/server.py`)
-    et par la construction des géométries (`cartometa/geo/cli.py`) : ce
-    dernier fichier porte, une fois la revue commencée, un travail humain
-    irremplaçable.
+    Utilisé par le serveur de revue (`cartometa/review/server.py`), qui porte
+    le seul travail humain irremplaçable du dépôt : les géométries tracées à
+    la main.
     """
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
