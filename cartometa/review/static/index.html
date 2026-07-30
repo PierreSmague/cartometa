@@ -14,21 +14,33 @@
     #source img { width: 100%; border: 1px solid #ccc; }
     #map { height: 62vh; border: 1px solid #ccc; }
     #info { padding: 8px 12px; }
-    #warnings { color: #b00020; }
-    #offset-row { color: #0057d9; font-weight: bold; }
-    #offset-row[hidden] { display: none; }
+    #sketch-row { color: #0a7d2b; font-weight: bold; }
+    #sketch-row[hidden] { display: none; }
     kbd { background: #eee; border-radius: 3px; padding: 1px 5px; border: 1px solid #bbb; }
     #error { background: #b00020; color: #fff; padding: 8px 12px; font-weight: bold; }
     #error[hidden] { display: none; }
+    #manual { position: fixed; inset: 10% 25%; background: #fff; border: 2px solid #1c1f24;
+              padding: 16px; overflow: auto; box-shadow: 0 8px 32px rgba(0,0,0,.4); z-index: 1000; }
+    #manual[hidden] { display: none; }
+    #manual label { display: block; margin: 8px 0 2px; font-weight: bold; }
+    #manual input[type=text], #manual textarea, #manual select { width: 100%; font: inherit; }
+    #manual textarea { height: 5em; }
+    #drop { border: 2px dashed #999; padding: 24px; text-align: center; color: #666;
+            margin-top: 8px; }
+    #drop.filled { border-color: #0a7d2b; color: #0a7d2b; }
+    #drop img { max-height: 120px; display: block; margin: 8px auto 0; }
+    #manual-error { color: #b00020; font-weight: bold; }
   </style>
 </head>
 <body>
   <header>
     <b id="progress">…</b>
-    <span id="confidence"></span>
+    <span id="context"></span>
     <span style="margin-left:auto">
-      <kbd>A</kbd> valider <kbd>R</kbd> rejeter <kbd>Espace</kbd> passer <kbd>U</kbd> annuler
-      <kbd>←↑→↓</kbd> décaler (<kbd>Maj</kbd> ×5) <kbd>D</kbd> tracer <kbd>P</kbd> pays entier <kbd>0</kbd> annuler
+      <kbd>D</kbd> rectangle <kbd>C</kbd> contour <kbd>S</kbd> subdivisions
+      <kbd>P</kbd> pays <kbd>⌫</kbd> retirer <kbd>0</kbd> vider
+      <kbd>A</kbd> enregistrer <kbd>R</kbd> rejeter <kbd>Espace</kbd> suivante
+      <kbd>U</kbd> annuler <kbd>N</kbd> nouvelle méta
     </span>
   </header>
   <div id="error" hidden></div>
@@ -39,14 +51,35 @@
   <div id="info">
     <h2 id="title"></h2>
     <p id="description"></p>
-    <p id="warnings"></p>
-    <p id="offset-row" hidden></p>
-    <p id="radius-row" hidden>
-      Rayon <input id="radius" type="range" min="5" max="120" step="5">
-      <span id="radius-value"></span> km — <kbd>Entrée</kbd> pour appliquer
-    </p>
+    <p id="sketch-row" hidden></p>
     <a id="source-link" target="_blank" rel="noopener">source</a>
   </div>
-  <script src="/app.js"></script>
+
+  <div id="manual" hidden>
+    <h3>Nouvelle méta</h3>
+    <label for="manual-title">Titre</label>
+    <input id="manual-title" type="text">
+    <label for="manual-description">Description</label>
+    <textarea id="manual-description"></textarea>
+    <label for="manual-category">Catégorie</label>
+    <select id="manual-category">
+      <option value="bollards">bollards</option>
+      <option value="poteaux">poteaux</option>
+      <option value="vehicule">vehicule</option>
+      <option value="vegetation">vegetation</option>
+      <option value="signalisation">signalisation</option>
+      <option value="autre" selected>autre</option>
+    </select>
+    <label for="manual-source">Source (URL, facultatif)</label>
+    <input id="manual-source" type="text">
+    <div id="drop">Dépose une image ici, ou colle-la avec Ctrl+V</div>
+    <p id="manual-error"></p>
+    <p>
+      <button id="manual-save" type="button">Créer</button>
+      <button id="manual-cancel" type="button">Annuler (Échap)</button>
+    </p>
+  </div>
+
+  <script type="module" src="/app.js"></script>
 </body>
 </html>
