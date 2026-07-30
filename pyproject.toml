@@ -3,10 +3,7 @@ name = "cartometa"
 version = "0.1.0"
 requires-python = ">=3.14"
 dependencies = [
-    "numpy>=2.5.1",
     "pillow>=12.3.0",
-    "scikit-image>=0.26.0",
-    "scipy>=1.18.0",
     "selectolax>=0.4.11",
     "shapely>=2.1.2",
 ]
@@ -18,7 +15,6 @@ dev = [
 
 [project.scripts]
 cartometa-extract = "cartometa.extract.cli:main"
-cartometa-geo = "cartometa.geo.cli:main"
 cartometa-review = "cartometa.review.server:main"
 cartometa-export = "cartometa.geo.export:main"
 
