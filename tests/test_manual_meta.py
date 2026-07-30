@@ -1,4 +1,6 @@
 import json
+import struct
+import zlib
 from io import BytesIO
 
 import pytest
@@ -18,6 +20,36 @@ def _png(size=(40, 30), color=(200, 30, 30)) -> bytes:
     buffer = BytesIO()
     Image.new("RGB", size, color).save(buffer, format="PNG")
     return buffer.getvalue()
+
+
+def _decompression_bomb_png() -> bytes:
+    """Crée un PNG qui declare des dimensions 60000x60000 avec donnees comprimees minimales.
+
+    PIL refuse de traiter cette image car elle declare trop de pixels (decompression bomb).
+    Cela leve PIL.Image.DecompressionBombError, pas UnidentifiedImageError.
+    """
+    png_data = b'\x89PNG\r\n\x1a\n'
+
+    # IHDR chunk with huge dimensions
+    width = 60000
+    height = 60000
+    ihdr_data = struct.pack('>IIBBBBB', width, height, 8, 2, 0, 0, 0)
+    ihdr_crc = zlib.crc32(b'IHDR' + ihdr_data) & 0xffffffff
+    png_data += struct.pack('>I', len(ihdr_data))
+    png_data += b'IHDR' + ihdr_data + struct.pack('>I', ihdr_crc)
+
+    # Minimal IDAT chunk
+    compressed = zlib.compress(b'\x00' * (width * height * 3))[:100]
+    idat_crc = zlib.crc32(b'IDAT' + compressed) & 0xffffffff
+    png_data += struct.pack('>I', len(compressed))
+    png_data += b'IDAT' + compressed + struct.pack('>I', idat_crc)
+
+    # IEND chunk
+    iend_crc = zlib.crc32(b'IEND') & 0xffffffff
+    png_data += struct.pack('>I', 0)
+    png_data += b'IEND' + struct.pack('>I', iend_crc)
+
+    return png_data
 
 
 @pytest.fixture
@@ -124,6 +156,18 @@ def test_image_trop_lourde_refusee(paths):
 
     with pytest.raises(ManualMetaError):
         save_image(paths, meta["id"], b"\x89PNG" + b"\x00" * MAX_IMAGE_BYTES)
+
+
+def test_bombe_decompression_refusee(paths):
+    """Regression: une bombe de decompression (PNG avec dimensions declarees enormes) leve DecompressionBombError.
+
+    Ce n'est pas UnidentifiedImageError ni OSError ni ValueError, donc sans gestion specifique,
+    l'exception s'echapperait non-convertie en ManualMetaError.
+    """
+    meta = _create(paths)
+
+    with pytest.raises(ManualMetaError):
+        save_image(paths, meta["id"], _decompression_bomb_png())
 
 
 def test_image_pour_une_meta_inconnue_refusee(paths):
