@@ -16,6 +16,9 @@ const sketch = new Sketch(map, layers);
 let queue = [];
 let index = 0;
 let total = 0;
+// Fixé une fois pour la session par loadQueue() : la file ne contient que
+// les métas non décidées, donc c'est index qui porte la progression —
+// ne jamais l'incrémenter/décrémenter dans decide()/undo().
 let done = 0;
 let busy = false;
 // Chaque entrée est { type: 'decision', id } ou { type: 'pass' }, dans
@@ -80,6 +83,9 @@ async function frame(item) {
   }
   try {
     const geometry = await sketch.ensureCountry();
+    // La file a pu avancer pendant l'attente : une méta périmée ne doit
+    // pas recadrer la carte affichée pour la méta suivante.
+    if (current() !== item) return;
     map.fitBounds(L.geoJSON(geometry).getBounds(), { padding: [20, 20] });
   } catch (err) {
     showError(`Cadrage impossible : ${err.message}`);
@@ -116,7 +122,6 @@ async function decide(status) {
     });
     clearError();
     history.push({ type: 'decision', id: item.id });
-    done += 1;
     index += 1;
     render();
   } catch (err) {
@@ -142,7 +147,6 @@ async function undo() {
     await postJSON('/api/undo', { id: last.id });
     clearError();
     history.pop();
-    done = Math.max(0, done - 1);
     index = Math.max(0, index - 1);
     render();
   } catch (err) {
@@ -154,7 +158,14 @@ async function undo() {
 
 function step(offset) {
   if (busy || !current()) return;
-  if (offset > 0) history.push({ type: 'pass' });
+  if (offset > 0) {
+    history.push({ type: 'pass' });
+  } else if (history.length && history[history.length - 1].type === 'pass') {
+    // Reculer défait précisément le passage qu'avancer venait de tracer.
+    // Si la dernière entrée est une décision, elle est persistée sur
+    // disque : seul U peut la défaire, on ne touche pas à l'historique ici.
+    history.pop();
+  }
   index = Math.min(Math.max(0, index + offset), queue.length);
   render();
 }
