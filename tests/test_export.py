@@ -95,15 +95,39 @@ def test_les_metas_manuelles_sont_exportees(tmp_path):
     assert [entry["id"] for entry in index] == ["man-1a2b"]
 
 
-def test_pays_sans_aucune_meta_leve(tmp_path):
+def test_pays_avec_geometrie_tracee_mais_sans_aucune_meta_leve(tmp_path):
+    """Le geojson contient bien une feature exportable : l'échec est réel."""
     data_dir = tmp_path / "data"
     (data_dir / "geo").mkdir(parents=True)
     (data_dir / "geo" / "ZZ.geojson").write_text(json.dumps({
-        "type": "FeatureCollection", "features": [],
+        "type": "FeatureCollection",
+        "features": [{"type": "Feature",
+                      "properties": {"id": "zz1", "status": "validé",
+                                     "pieces": [{"kind": "country"}]},
+                      "geometry": _square(0.0, 0.0, 1.0)}],
     }), "utf-8")
 
     with pytest.raises(SystemExit, match=r"manual.*metas\.json"):
         export_viewer(data_dir, tmp_path / "viewer", ["ZZ"])
+
+
+def test_pays_avec_geojson_vide_et_sans_meta_est_ignore_sans_lever(tmp_path):
+    """Scénario du clone frais : 21 .geojson vides et suivis, aucune méta.
+
+    Un pays sans aucune feature exportable doit être ignoré silencieusement,
+    et les autres pays doivent quand même s'exporter.
+    """
+    data_dir = tmp_path / "data"
+    _write_country(data_dir, "PL", [("pl1", "validé", 3.0)])
+    (data_dir / "geo" / "BD.geojson").write_text(json.dumps({
+        "type": "FeatureCollection", "features": [],
+    }), "utf-8")
+
+    result = export_viewer(data_dir, tmp_path / "viewer", ["BD", "PL"])
+
+    assert result["exported"] == 1
+    index = json.loads((tmp_path / "viewer" / "data" / "index.json").read_text("utf-8"))
+    assert [entry["id"] for entry in index] == ["pl1"]
 
 
 def test_pays_sans_source_importee_mais_avec_metas_manuelles_n_echoue_pas(tmp_path):

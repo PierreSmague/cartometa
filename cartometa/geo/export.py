@@ -32,6 +32,18 @@ def export_viewer(data_dir: Path, out_dir: Path, countries: list[str]) -> dict:
     by_country: dict[str, int] = {}
     for country in countries:
         paths = CountryPaths(data_dir, country)
+        if not paths.geo.exists():
+            continue
+        geo = json.loads(paths.geo.read_text("utf-8"))
+        exportable = [
+            feature for feature in geo["features"]
+            if feature["properties"]["status"] in EXPORTABLE and feature["geometry"]
+        ]
+        if not exportable:
+            # Rien à publier pour ce pays : géojson vide ou tout en `rejeté`.
+            # Un clone frais laisse 21 .geojson vides et suivis — ce n'est
+            # pas une erreur, juste rien à faire ici.
+            continue
         metas = {m["id"]: m for m in load_metas(paths)}
         if not metas:
             raise SystemExit(
@@ -39,11 +51,8 @@ def export_viewer(data_dir: Path, out_dir: Path, countries: list[str]) -> dict:
                 f"Les textes Plonk It ne sont pas versionnés — régénère-les avec "
                 f"cartometa-extract, ou vérifie {paths.manual_metas}."
             )
-        geo = json.loads(paths.geo.read_text("utf-8"))
-        for feature in geo["features"]:
+        for feature in exportable:
             props = feature["properties"]
-            if props["status"] not in EXPORTABLE or not feature["geometry"]:
-                continue
             meta = metas.get(props["id"])
             if meta is None:
                 continue
