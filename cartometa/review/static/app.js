@@ -1,182 +1,28 @@
+import { getJSON, postJSON } from './api.js';
+import { Sketch } from './sketch.js';
+import { closeManualForm, isManualFormOpen, openManualForm } from './manual.js';
+
 const map = L.map('map').setView([52, 19], 5);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap', maxZoom: 18,
 }).addTo(map);
 
+// Les touches pilotent le tracé, pas la carte.
+map.keyboard.disable();
+
+const layers = L.layerGroup().addTo(map);
+const sketch = new Sketch(map, layers);
+
 let queue = [];
 let index = 0;
 let total = 0;
-let reviewed = 0;
+let done = 0;
+let busy = false;
 // Chaque entrée est { type: 'decision', id } ou { type: 'pass' }, dans
-// l'ordre exact des actions — U doit défaire précisément la dernière,
-// qu'il s'agisse d'une décision persistée ou d'un simple passage local.
+// l'ordre exact des actions — U doit défaire précisément la dernière.
 let history = [];
-let layers = L.layerGroup().addTo(map);
-let busy = false; // évite les doubles soumissions pendant qu'une requête est en vol
 
-// Décalage accumulé sur la méta affichée, en degrés. Il n'est jamais
-// persisté seul : il part au serveur avec la validation (A). Remis à zéro
-// à chaque changement de méta.
-let offset = { lon: 0, lat: 0 };
-
-// Rectangle tracé à la main, pour les métas dont le pipeline n'a produit
-// aucune géométrie. `draw` vaut null hors mode tracé ; sinon il porte le
-// premier coin posé (ou null tant qu'aucun clic n'a eu lieu) et le
-// rectangle courant.
-let draw = null;
-
-function clearCorrections() {
-  offset = { lon: 0, lat: 0 };
-  draw = null;
-}
-
-const NUDGE_KM = 5;        // pas fin, ordre de grandeur de la précision visée
-const NUDGE_KM_COARSE = 25; // avec Maj
-const KM_PER_DEG_LAT = 111.32;
-
-// Les flèches pilotent le polygone, pas la carte.
-map.keyboard.disable();
-
-function kmToDegrees(km, latitude) {
-  const dlat = km / KM_PER_DEG_LAT;
-  // Un degré de longitude rétrécit avec la latitude : sans ce cosinus, un
-  // pas « 5 km vers l'est » vaudrait 5 km à l'équateur et 2,5 km à 60°.
-  const dlon = km / (KM_PER_DEG_LAT * Math.cos((latitude * Math.PI) / 180));
-  return { dlat, dlon };
-}
-
-function translateGeometry(geometry, dlon, dlat) {
-  const move = (coords) =>
-    typeof coords[0] === 'number'
-      ? [coords[0] + dlon, coords[1] + dlat]
-      : coords.map(move);
-  return { type: geometry.type, coordinates: move(geometry.coordinates) };
-}
-
-function shiftedGeometry(item) {
-  if (!item.geometry) return null;
-  if (!offset.lon && !offset.lat) return item.geometry;
-  return translateGeometry(item.geometry, offset.lon, offset.lat);
-}
-
-function centroidLatitude(geometry) {
-  // Latitude approximative, prise au milieu de la bounding box : elle ne
-  // sert qu'à dimensionner le pas en longitude.
-  let min = 90;
-  let max = -90;
-  const scan = (coords) => {
-    if (typeof coords[0] === 'number') {
-      min = Math.min(min, coords[1]);
-      max = Math.max(max, coords[1]);
-    } else {
-      coords.forEach(scan);
-    }
-  };
-  scan(geometry.coordinates);
-  return (min + max) / 2;
-}
-
-function rectangleGeometry(a, b) {
-  const [west, east] = [Math.min(a.lng, b.lng), Math.max(a.lng, b.lng)];
-  const [south, north] = [Math.min(a.lat, b.lat), Math.max(a.lat, b.lat)];
-  return {
-    type: 'Polygon',
-    coordinates: [[
-      [west, south], [east, south], [east, north], [west, north], [west, south],
-    ]],
-  };
-}
-
-function startDrawing() {
-  const item = current();
-  if (!item || busy) return;
-  // Tracer et décaler sont deux corrections distinctes : le serveur les
-  // refuse ensemble, autant ne pas laisser l'humain les cumuler à l'écran.
-  offset = { lon: 0, lat: 0 };
-  draw = { first: null, geometry: null };
-  drawGeometry(item, { keepView: true });
-}
-
-// Silhouette du pays, chargée une seule fois pour l'aperçu. Ce n'est
-// qu'un aperçu : à l'enregistrement, le serveur relit Natural Earth.
-let countryPolygon = null;
-
-async function useCountryPolygon() {
-  const item = current();
-  if (!item || busy) return;
-  if (!countryPolygon) {
-    try {
-      countryPolygon = (await getJSON('/api/country-polygon')).geometry;
-    } catch (err) {
-      showError(`Polygone du pays indisponible : ${err.message}`);
-      return;
-    }
-  }
-  offset = { lon: 0, lat: 0 };
-  draw = { first: null, geometry: countryPolygon, country: true };
-  clearError();
-  // keepView, mais fitTo : c'est le polygone du pays qu'on cadre, pas la
-  // géométrie d'origine (souvent absente, c'est le cas d'usage).
-  drawGeometry(item, { keepView: true, fitTo: countryPolygon });
-}
-
-function cancelDrawing() {
-  const item = current();
-  draw = null;
-  if (item) drawGeometry(item, { keepView: true });
-}
-
-function onMapClick(event) {
-  const item = current();
-  // En mode « polygone du pays », la carte n'attend pas de coins.
-  if (!draw || draw.country || !item || busy) return;
-  if (!draw.first) {
-    draw.first = event.latlng;
-    draw.geometry = null;
-  } else {
-    draw.geometry = rectangleGeometry(draw.first, event.latlng);
-    draw.preview = null;
-  }
-  drawGeometry(item, { keepView: true });
-}
-
-function onMapMouseMove(event) {
-  if (!draw || !draw.first || draw.geometry) return;
-  const item = current();
-  if (!item) return;
-  // Aperçu élastique entre le premier coin et le curseur.
-  draw.preview = rectangleGeometry(draw.first, event.latlng);
-  drawGeometry(item, { keepView: true });
-}
-
-function nudge(eastKm, northKm) {
-  const item = current();
-  if (!item || !item.geometry || busy) return;
-  const latitude = centroidLatitude(item.geometry);
-  if (eastKm) offset.lon += kmToDegrees(eastKm, latitude).dlon;
-  if (northKm) offset.lat += kmToDegrees(northKm, latitude).dlat;
-  drawGeometry(item, { keepView: true });
-}
-
-function resetOffset() {
-  const item = current();
-  if (!item || busy || (!offset.lon && !offset.lat)) return;
-  offset = { lon: 0, lat: 0 };
-  drawGeometry(item, { keepView: true });
-}
-
-function offsetLabel(item) {
-  if (!offset.lon && !offset.lat) return '';
-  const latitude = centroidLatitude(item.geometry);
-  const perDegLon = KM_PER_DEG_LAT * Math.cos((latitude * Math.PI) / 180);
-  const east = offset.lon * perDegLon;
-  const north = offset.lat * KM_PER_DEG_LAT;
-  const fmt = (km, positive, negative) =>
-    Math.abs(km) < 0.05 ? '' : `${Math.abs(km).toFixed(0)} km ${km > 0 ? positive : negative}`;
-  return ['décalé', fmt(north, 'nord', 'sud'), fmt(east, 'est', 'ouest')]
-    .filter(Boolean)
-    .join(' ');
-}
+const current = () => queue[index];
 
 function showError(message) {
   const el = document.getElementById('error');
@@ -191,176 +37,90 @@ function clearError() {
 }
 
 async function loadQueue() {
-  const response = await fetch('/api/queue');
-  const data = await response.json();
+  const data = await getJSON('/api/queue');
   queue = data.items;
   total = data.total;
-  reviewed = data.reviewed;
+  done = data.done;
   index = 0;
   history = [];
   render();
 }
 
-function current() {
-  return queue[index];
-}
-
 function render() {
   const item = current();
+  layers.clearLayers();
   if (!item) {
-    document.getElementById('progress').textContent = `Terminé — ${total} métas revues`;
+    document.getElementById('progress').textContent = `Terminé — ${done} / ${total}`;
     document.getElementById('title').textContent = '';
-    layers.clearLayers();
+    document.getElementById('description').textContent = '';
+    document.getElementById('image').removeAttribute('src');
+    document.getElementById('sketch-row').hidden = true;
     return;
   }
-  document.getElementById('progress').textContent =
-    `${reviewed + index} / ${total}`;
-  document.getElementById('confidence').textContent =
-    `confiance ${item.confidence.toFixed(2)} — ${item.tier}`;
-  document.getElementById('image').src = item.image || '';
+  document.getElementById('progress').textContent = `${done + index} / ${total}`;
+  document.getElementById('context').textContent =
+    `${item.category} — ${item.tier}${item.status ? ` — ${item.status}` : ''}`;
+  if (item.image) document.getElementById('image').src = item.image;
+  else document.getElementById('image').removeAttribute('src');
   document.getElementById('title').textContent = item.title;
   document.getElementById('description').textContent = item.description;
-  document.getElementById('warnings').textContent = item.warnings.join(' · ');
-  document.getElementById('source-link').href = item.source_url;
+  document.getElementById('source-link').href = item.source_url || '#';
 
-  // Le rayon ne peut aider que sur un spot qui a déjà une géométrie à
-  // recentrer/redimensionner : sans géométrie, il n'y a rien à corriger.
-  // Le serveur applique la même règle indépendamment (défense en
-  // profondeur) : cet affichage n'est qu'un confort, pas le seul garde-fou.
-  const canApplyRadius = item.tier === 'spot' && Boolean(item.geometry);
-  document.getElementById('radius-row').hidden = !canApplyRadius;
-
-  drawGeometry(item, { keepView: false });
+  sketch.reset(item.pieces);
+  frame(item);
+  draw();
 }
 
-function drawGeometry(item, { keepView, fitTo }) {
-  layers.clearLayers();
-  const moved = Boolean(offset.lon || offset.lat);
-  const drawn = draw && (draw.geometry || draw.preview);
-  if (item.geometry) {
-    if (moved || drawn) {
-      // Position d'origine en pointillé : sans elle, on perd la référence
-      // de ce que la correction est en train de remplacer.
-      L.geoJSON(item.geometry, {
-        color: '#c1283a', weight: 1, opacity: 0.4, dashArray: '4 4', fill: false,
-      }).addTo(layers);
-    }
-    const shape = L.geoJSON(shiftedGeometry(item), { color: '#c1283a', weight: 2 }).addTo(layers);
-    if (!keepView) map.fitBounds(shape.getBounds(), { padding: [30, 30], maxZoom: 9 });
-  } else if (!keepView && item.latlon) {
-    // Sans géométrie, le point Maps est le seul repère : c'est là qu'il
-    // faut regarder pour tracer un rectangle.
-    map.setView([item.latlon[0], item.latlon[1]], 7);
-  }
-  if (drawn) {
-    const traced = L.geoJSON(draw.geometry || draw.preview, {
-      color: '#0a7d2b', weight: 2, dashArray: draw.geometry ? null : '5 5',
-    }).addTo(layers);
-    if (fitTo) map.fitBounds(traced.getBounds(), { padding: [30, 30] });
-  }
-  if (draw && draw.first) {
-    L.circleMarker([draw.first.lat, draw.first.lng], {
-      radius: 4, color: '#0a7d2b', fillOpacity: 1,
-    }).addTo(layers);
-  }
+async function frame(item) {
+  // Tout arrive vierge : le point Maps est le seul repère quand il existe,
+  // sinon on cadre le pays pour ne pas laisser la carte au milieu de rien.
   if (item.latlon) {
-    // Vérité terrain : elle ne bouge pas avec le polygone, c'est la cible.
+    map.setView([item.latlon[0], item.latlon[1]], 8);
+    return;
+  }
+  try {
+    const geometry = await sketch.ensureCountry();
+    map.fitBounds(L.geoJSON(geometry).getBounds(), { padding: [20, 20] });
+  } catch (err) {
+    showError(`Cadrage impossible : ${err.message}`);
+  }
+}
+
+function draw() {
+  const item = current();
+  layers.clearLayers();
+  if (!item) return;
+  sketch.render();
+  if (item.latlon) {
+    // Vérité terrain : elle ne bouge pas, c'est la cible.
     L.circleMarker([item.latlon[0], item.latlon[1]], {
       radius: 6, color: '#0057d9', fillOpacity: 0.9,
     }).addTo(layers);
   }
-  const row = document.getElementById('offset-row');
-  row.textContent = statusLine(item, { moved });
+  const row = document.getElementById('sketch-row');
+  row.textContent = sketch.statusLine();
   row.hidden = !row.textContent;
 }
 
-function statusLine(item, { moved }) {
-  if (draw) {
-    if (draw.country) return 'Polygone du pays entier — A pour enregistrer, 0 pour annuler';
-    if (draw.geometry) return 'Rectangle tracé — A pour enregistrer, 0 pour annuler';
-    if (draw.first) return 'Tracé : clique le coin opposé (0 pour annuler)';
-    return 'Tracé : clique le premier coin du rectangle (0 pour annuler)';
-  }
-  if (moved) return `${offsetLabel(item)} — A pour enregistrer, 0 pour annuler`;
-  return '';
-}
-
-async function getJSON(path) {
-  let response;
-  try {
-    response = await fetch(path);
-  } catch (err) {
-    throw new Error(`connexion au serveur perdue : ${err.message}`);
-  }
-  let data = {};
-  try {
-    data = await response.json();
-  } catch (_err) {
-    // pas de corps JSON exploitable : on retombe sur le code HTTP
-  }
-  if (!response.ok || data.ok === false) {
-    throw new Error(data.error || `erreur HTTP ${response.status}`);
-  }
-  return data;
-}
-
-async function postJSON(path, body) {
-  let response;
-  try {
-    response = await fetch(path, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-  } catch (err) {
-    throw new Error(`connexion au serveur perdue : ${err.message}`);
-  }
-  let data = {};
-  try {
-    data = await response.json();
-  } catch (_err) {
-    // pas de corps JSON exploitable : on retombe sur le code HTTP
-  }
-  if (!response.ok || data.ok === false) {
-    throw new Error(data.error || `erreur HTTP ${response.status}`);
-  }
-  return data;
-}
-
-async function decide(status, radiusKm) {
+async function decide(status) {
   const item = current();
   if (!item || busy) return;
-  // Un décalage en attente transforme la validation en correction : c'est la
-  // géométrie déplacée, telle qu'affichée, qui doit être enregistrée.
-  const pendingOffset = offset.lon || offset.lat ? [offset.lon, offset.lat] : null;
-  const pendingRectangle = draw && draw.geometry ? draw.geometry : null;
-  const body = { id: item.id, status, radius_km: radiusKm ?? null };
-  // Un rejet reste un rejet : on ne convertit qu'une validation.
-  if (!radiusKm && status === 'validé') {
-    if (draw && draw.country) {
-      // On envoie un drapeau, pas la silhouette : le serveur la relit
-      // depuis Natural Earth, source unique de vérité.
-      body.status = 'corrigé';
-      body.use_country_polygon = true;
-    } else if (pendingRectangle) {
-      body.status = 'corrigé';
-      body.geometry = pendingRectangle;
-    } else if (pendingOffset) {
-      body.status = 'corrigé';
-      body.offset_deg = pendingOffset;
-    }
+  if (status === 'validé' && sketch.isEmpty) {
+    showError('Aucun morceau posé : rien à enregistrer.');
+    return;
   }
   busy = true;
   try {
-    await postJSON('/api/decision', body);
+    await postJSON('/api/decision', {
+      id: item.id, status, pieces: status === 'validé' ? sketch.pieces : [],
+    });
     clearError();
     history.push({ type: 'decision', id: item.id });
+    done += 1;
     index += 1;
-    clearCorrections();
     render();
   } catch (err) {
-    // Échec : on ne fait PAS avancer l'index et on ne persiste rien côté
-    // historique local — la méta reste affichée, l'erreur est visible.
+    // Échec : l'index n'avance pas, la méta reste affichée, l'erreur visible.
     showError(`Décision non enregistrée pour ${item.id} : ${err.message}`);
   } finally {
     busy = false;
@@ -371,11 +131,9 @@ async function undo() {
   if (!history.length || busy) return;
   const last = history[history.length - 1];
   if (last.type === 'pass') {
-    // Un passage n'a jamais rien persisté côté serveur : on le défait
-    // localement, sans appel réseau.
+    // Un passage n'a rien persisté : on le défait sans appel réseau.
     history.pop();
     index = Math.max(0, index - 1);
-    clearCorrections();
     render();
     return;
   }
@@ -384,8 +142,8 @@ async function undo() {
     await postJSON('/api/undo', { id: last.id });
     clearError();
     history.pop();
+    done = Math.max(0, done - 1);
     index = Math.max(0, index - 1);
-    clearCorrections();
     render();
   } catch (err) {
     showError(`Annulation impossible pour ${last.id} : ${err.message}`);
@@ -394,52 +152,97 @@ async function undo() {
   }
 }
 
-const ARROWS = {
-  ArrowUp: [0, 1], ArrowDown: [0, -1], ArrowRight: [1, 0], ArrowLeft: [-1, 0],
-};
+function step(offset) {
+  if (busy || !current()) return;
+  if (offset > 0) history.push({ type: 'pass' });
+  index = Math.min(Math.max(0, index + offset), queue.length);
+  render();
+}
+
+async function enterMode(mode) {
+  if (busy || !current()) return;
+  try {
+    await sketch.setMode(mode);
+    clearError();
+  } catch (err) {
+    showError(`Mode ${mode} indisponible : ${err.message}`);
+  }
+  draw();
+}
+
+async function addCountry() {
+  if (busy || !current()) return;
+  try {
+    await sketch.addCountry();
+    clearError();
+  } catch (err) {
+    showError(`Polygone du pays indisponible : ${err.message}`);
+  }
+  draw();
+}
+
+function onManualCreated(meta) {
+  // La méta créée passe devant : on la trace tout de suite, tant qu'on a
+  // sa source sous les yeux.
+  queue.splice(index, 0, {
+    id: meta.id, title: meta.title, description: meta.description,
+    category: meta.category, tier: meta.tier, origin: meta.origin,
+    image: meta.image || null, latlon: null, source_url: meta.source_url,
+    status: null, pieces: [],
+  });
+  total += 1;
+  render();
+}
 
 document.addEventListener('keydown', (event) => {
-  if (event.target.tagName === 'INPUT' && event.key !== 'Enter') return;
-  const arrow = ARROWS[event.key];
-  if (arrow) {
-    event.preventDefault(); // sinon la page défile
-    const step = event.shiftKey ? NUDGE_KM_COARSE : NUDGE_KM;
-    nudge(arrow[0] * step, arrow[1] * step);
+  if (isManualFormOpen()) {
+    if (event.key === 'Escape') closeManualForm();
+    return;
+  }
+  if (event.key === 'Backspace') {
+    event.preventDefault();
+    sketch.undoLast();
+    draw();
+    return;
+  }
+  if (event.key === 'Escape') {
+    sketch.leaveMode();
+    draw();
+    return;
+  }
+  if (event.key === 'Enter') {
+    sketch.closeContour();
+    draw();
+    return;
+  }
+  if (event.key === ' ') {
+    event.preventDefault();
+    step(event.shiftKey ? -1 : 1);
     return;
   }
   switch (event.key.toLowerCase()) {
-    case 'd': startDrawing(); break;
-    case 'p': useCountryPolygon(); break;
-    case '0':
-      if (draw) cancelDrawing();
-      else resetOffset();
-      break;
+    case 'd': enterMode('rect'); break;
+    case 'c': enterMode('contour'); break;
+    case 's': enterMode('admin1'); break;
+    case 'p': addCountry(); break;
+    case '0': sketch.clear(); draw(); break;
     case 'a': decide('validé'); break;
     case 'r': decide('rejeté'); break;
-    case ' ':
-      event.preventDefault();
-      if (!busy && current()) {
-        history.push({ type: 'pass' });
-        index += 1;
-        clearCorrections();
-        render();
-      }
-      break;
     case 'u': undo(); break;
-    case 'enter':
-      if (current() && current().tier === 'spot' && current().geometry) {
-        decide('corrigé', Number(document.getElementById('radius').value));
-      }
-      break;
+    case 'n': openManualForm(onManualCreated); break;
+    default: break;
   }
 });
 
-map.on('click', onMapClick);
-map.on('mousemove', onMapMouseMove);
-
-const radius = document.getElementById('radius');
-radius.addEventListener('input', () => {
-  document.getElementById('radius-value').textContent = radius.value;
+map.on('click', (event) => {
+  if (busy || !current()) return;
+  sketch.onMapClick(event.latlng);
+  draw();
 });
 
-loadQueue();
+map.on('mousemove', (event) => {
+  if (!sketch.mode) return;
+  if (sketch.onMapMove(event.latlng)) draw();
+});
+
+loadQueue().catch((err) => showError(`File indisponible : ${err.message}`));
