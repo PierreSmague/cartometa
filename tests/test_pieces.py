@@ -1,9 +1,7 @@
 import json
 
 import pytest
-from shapely.geometry import shape
 
-from cartometa.geo.admin1 import ADMIN1_NAME
 from cartometa.geo.reference import DATASET_NAME
 from cartometa.review.pieces import PieceError, resolve_pieces
 

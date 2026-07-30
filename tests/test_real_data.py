@@ -11,8 +11,20 @@ STATUTS = {"validé", "rejeté"}
 
 
 def _fichiers():
+    """Fichiers `.geojson` à examiner, ou saut explicite s'il n'y a rien dedans.
+
+    Les 21 pays laissent des `.geojson` suivis mais vides tant qu'aucune
+    méta n'a été tracée : compter les FICHIERS ne suffit pas à décider s'il
+    y a un signal à vérifier, sans quoi ces quatre tests « passent » en
+    parcourant zéro feature, sans jamais rien affirmer — un vert non
+    mérité. C'est le nombre total de features, tous fichiers confondus, qui
+    doit être non nul.
+    """
     fichiers = sorted(GEO_DIR.glob("*.geojson"))
-    if not fichiers:
+    total = sum(
+        len(json.loads(chemin.read_text("utf-8")).get("features", [])) for chemin in fichiers
+    )
+    if total == 0:
         pytest.skip("aucune géométrie : lancer cartometa-review")
     return fichiers
 

@@ -14,7 +14,7 @@ class UnknownMetaError(ValueError):
 
 @dataclass(frozen=True)
 class CountryPaths:
-    """Les cinq chemins d'un pays, en un seul endroit.
+    """Les six chemins d'un pays, en un seul endroit.
 
     Deux sources de métas cohabitent : l'import Plonk It, gitignoré parce que
     régénérable, et la saisie manuelle, versionnée parce qu'irremplaçable.

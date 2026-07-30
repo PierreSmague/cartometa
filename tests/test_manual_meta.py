@@ -1,4 +1,3 @@
-import json
 import struct
 import zlib
 from io import BytesIO

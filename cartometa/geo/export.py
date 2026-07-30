@@ -5,7 +5,7 @@ from pathlib import Path
 
 from shapely.geometry import shape
 
-from cartometa.models import STATUS_TRACED
+from cartometa.models import STATUS_TRACED, STATUSES
 from cartometa.review.store import CountryPaths, load_metas
 
 EXPORTABLE = (STATUS_TRACED,)
@@ -30,11 +30,20 @@ def export_viewer(data_dir: Path, out_dir: Path, countries: list[str]) -> dict:
     """
     index, geometries = [], {}
     by_country: dict[str, int] = {}
+    legacy_statuses = 0
     for country in countries:
         paths = CountryPaths(data_dir, country)
         if not paths.geo.exists():
             continue
         geo = json.loads(paths.geo.read_text("utf-8"))
+        # Anciens fichiers sur disque avec `auto`/`corrigé` : comptés à part
+        # pour que main() puisse avertir, plutôt que de les perdre en
+        # silence (ce sont souvent les enregistrements de meilleure qualité,
+        # issus de la calibration automatique disparue).
+        legacy_statuses += sum(
+            1 for feature in geo["features"]
+            if feature["properties"]["status"] not in STATUSES
+        )
         exportable = [
             feature for feature in geo["features"]
             if feature["properties"]["status"] in EXPORTABLE and feature["geometry"]
@@ -78,6 +87,7 @@ def export_viewer(data_dir: Path, out_dir: Path, countries: list[str]) -> dict:
         "countries": countries,
         "by_country": {c: by_country.get(c, 0) for c in countries},
         "output": str(target),
+        "legacy_statuses": legacy_statuses,
     }
 
 
@@ -100,6 +110,13 @@ def main() -> None:
     result = export_viewer(args.data, args.out, countries)
     detail = ", ".join(f"{c} {n}" for c, n in result["by_country"].items())
     print(f"{result['exported']} métas exportées vers {result['output']} ({detail})")
+    if result["legacy_statuses"]:
+        print(
+            f"Attention : {result['legacy_statuses']} feature(s) portent un statut hérité "
+            f"(ni validé ni rejeté, ex. auto/corrigé) et n'ont pas été exportées. "
+            f"Retrace-les avec cartometa-review, ou supprime le data/geo/<CC>.geojson "
+            f"correspondant s'il est obsolète."
+        )
 
 
 if __name__ == "__main__":

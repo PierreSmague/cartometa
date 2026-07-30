@@ -19,7 +19,7 @@ cartometa-review = "cartometa.review.server:main"
 cartometa-export = "cartometa.geo.export:main"
 
 [tool.pytest.ini_options]
-markers = ["real_data: nécessite input/, sauté si absent"]
+markers = ["real_data: nécessite data/geo/, sauté si absent"]
 
 [build-system]
 requires = ["hatchling"]
