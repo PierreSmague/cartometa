@@ -268,9 +268,12 @@ restreinte à 127.0.0.1.
 | `POST /api/meta/image` | dépose l'image d'une méta manuelle déjà créée |
 
 L'ordre est imposé : `POST /api/meta` d'abord, qui attribue l'identifiant
-`man-*`, puis `POST /api/meta/image` avec cet identifiant. C'est le serveur qui
-nomme le fichier image à partir de l'identifiant qu'il a lui-même attribué, ce
-qui rend impossible l'écriture hors de `data/manual/<CC>/images/`.
+`man-*`, puis `POST /api/meta/image` avec cet identifiant. Le serveur nomme le
+fichier image à partir de cet identifiant, mais avant toute construction de
+chemin il le valide contre la forme mintée (`man-` suivi de quatre caractères
+hexadécimaux, sans composant de chemin) puis le recherche dans
+`metas.json` : c'est cette double vérification, et non une impossibilité
+structurelle, qui empêche l'écriture hors de `data/manual/<CC>/images/`.
 
 Les gardes-fous existants sont conservés : validation shapely de toute
 géométrie avant écriture, bornes WGS84, surface non nulle, écriture atomique

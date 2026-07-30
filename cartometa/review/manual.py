@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import secrets
 from datetime import datetime, timezone
 from io import BytesIO
@@ -20,6 +21,10 @@ MAX_IMAGE_BYTES = 8 * 1024 * 1024
 EXTENSION_BY_FORMAT = {"PNG": ".png", "JPEG": ".jpg", "WEBP": ".webp", "GIF": ".gif"}
 
 CATEGORIES = ("bollards", "poteaux", "vehicule", "vegetation", "signalisation", "autre")
+
+# Forme exacte d'un identifiant frappé par `new_meta_id` : un préfixe fixe
+# suivi de quatre caractères hexadécimaux, rien d'autre.
+_MINTED_ID = re.compile(r"^man-[0-9a-f]{4}$")
 
 
 class ManualMetaError(ValueError):
@@ -98,6 +103,11 @@ def _relative_to_cwd(path: Path) -> str:
 
 def save_image(paths: CountryPaths, meta_id: str, raw: bytes) -> str:
     """Écrit l'image d'une méta manuelle et la rattache à celle-ci."""
+    # Validé avant toute construction de chemin et avant la recherche dans
+    # metas.json : le garde-fou ne doit pas dépendre du contenu du fichier,
+    # seulement de la forme de l'identifiant lui-même.
+    if Path(meta_id).name != meta_id or not _MINTED_ID.fullmatch(meta_id):
+        raise ManualMetaError(f"identifiant de méta invalide : {meta_id!r}")
     if len(raw) > MAX_IMAGE_BYTES:
         raise ManualMetaError(
             f"image trop lourde : {len(raw)} octets, maximum {MAX_IMAGE_BYTES}"
@@ -109,7 +119,7 @@ def save_image(paths: CountryPaths, meta_id: str, raw: bytes) -> str:
     except (UnidentifiedImageError, OSError, ValueError):
         raise ManualMetaError("les octets reçus ne forment pas une image lisible") from None
     except DecompressionBombError:
-        raise ManualMetaError("l'image declare des dimensions trop grandes pour etre traitees") from None
+        raise ManualMetaError("l'image déclare des dimensions trop grandes pour être traitées") from None
     extension = EXTENSION_BY_FORMAT.get(image_format or "")
     if extension is None:
         raise ManualMetaError(f"format d'image non accepté : {image_format!r}")
@@ -119,9 +129,10 @@ def save_image(paths: CountryPaths, meta_id: str, raw: bytes) -> str:
     if target is None:
         raise ManualMetaError(f"méta manuelle inconnue : {meta_id!r}")
 
-    # Le nom du fichier est construit à partir de l'identifiant attribué par
-    # le serveur, jamais d'une donnée reçue : écrire ailleurs que dans
-    # `images/` est structurellement impossible, pas seulement interdit.
+    # Le nom du fichier vient de l'identifiant reçu, mais celui-ci a déjà été
+    # validé contre la forme mintée (`man-` + 4 hex, sans composant de
+    # chemin) puis retrouvé dans metas.json : aucun composant de chemin
+    # fourni par le client ne peut donc atteindre le système de fichiers.
     paths.manual_images.mkdir(parents=True, exist_ok=True)
     destination = paths.manual_images / f"{meta_id}{extension}"
     destination.write_bytes(raw)

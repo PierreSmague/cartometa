@@ -6,6 +6,7 @@ from io import BytesIO
 import pytest
 from PIL import Image
 
+from cartometa.atomic_write import write_json_atomic
 from cartometa.review.manual import (
     MAX_IMAGE_BYTES,
     ManualMetaError,
@@ -185,3 +186,58 @@ def test_aucun_fichier_n_est_ecrit_hors_du_dossier_images(paths):
 
     ecrits = list(paths.manual_images.iterdir())
     assert [p.name for p in ecrits] == [f"{meta['id']}.png"]
+
+
+def _rien_hors_de_images(paths, data_dir) -> None:
+    """Aucun fichier ne doit exister hors de `paths.manual_images`."""
+    for chemin in data_dir.rglob("*"):
+        if chemin.is_file() and chemin.suffix != ".json":
+            assert paths.manual_images in chemin.parents, chemin
+
+
+@pytest.mark.parametrize("identifiant_malveillant", [
+    "../../../evil",
+    "man-abcd/../../evil",
+    "/etc/passwd",
+    "C:/temp/evil",
+    "evil",
+    "man-zzzz",
+])
+def test_identifiant_de_forme_ou_de_chemin_invalide_refuse(paths, identifiant_malveillant):
+    """Attaques directes : la validation de forme doit tout rejeter avant
+    toute écriture, sans dépendre de ce que contient metas.json.
+    """
+    data_dir = paths.data
+    with pytest.raises(ManualMetaError):
+        save_image(paths, identifiant_malveillant, _png())
+
+    _rien_hors_de_images(paths, data_dir)
+
+
+def test_identifiant_present_dans_metas_json_mais_avec_composant_de_chemin_refuse(paths):
+    """L'échappement démontré par le relecteur : un id de forme invalide qui
+    EST présent dans `metas.json` (ex. injecté par une future source
+    d'import) ne doit pas suffire à passer la garde — la validation de
+    forme doit précéder la recherche dans le fichier, pas en dépendre.
+    """
+    identifiant_malveillant = "../../../evil"
+    paths.manual_dir.mkdir(parents=True, exist_ok=True)
+    write_json_atomic(paths.manual_metas, [
+        dict(_meta_stub(identifiant_malveillant)),
+    ])
+
+    with pytest.raises(ManualMetaError):
+        save_image(paths, identifiant_malveillant, _png())
+
+    _rien_hors_de_images(paths, paths.data)
+    # Le fichier vise par l'echappement (data/evil.png) ne doit pas exister.
+    assert not (paths.data / "evil.png").exists()
+
+
+def _meta_stub(meta_id: str) -> dict:
+    return {
+        "id": meta_id, "country": "PL", "tier": "manual",
+        "title": "titre", "description": "description", "category": "autre",
+        "source_url": "", "extracted_at": "2026-07-30T00:00:00+00:00",
+        "description_origin": "manual", "origin": "manual", "image": None,
+    }
