@@ -261,6 +261,7 @@ restreinte à 127.0.0.1.
 | `GET /api/queue` | file de revue : métas fusionnées des deux sources, avec leurs morceaux |
 | `GET /api/country-polygon` | silhouette Natural Earth du pays (aperçu) |
 | `GET /api/admin1` | régions admin-1 du pays, avec `adm1_code` et nom |
+| `GET /api/category?text=…` | catégorie devinée par `infer_category`, pour le pré-remplissage du formulaire manuel |
 | `POST /api/decision` | `{id, status, pieces}` — résout, unit, valide, écrit |
 | `POST /api/undo` | `{id}` — retire le statut et la géométrie de la méta |
 | `POST /api/meta` | crée une méta manuelle (texte) et renvoie son identifiant |
