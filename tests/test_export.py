@@ -102,8 +102,40 @@ def test_pays_sans_aucune_meta_leve(tmp_path):
         "type": "FeatureCollection", "features": [],
     }), "utf-8")
 
-    with pytest.raises(SystemExit):
+    with pytest.raises(SystemExit, match=r"manual.*metas\.json"):
         export_viewer(data_dir, tmp_path / "viewer", ["ZZ"])
+
+
+def test_pays_sans_source_importee_mais_avec_metas_manuelles_n_echoue_pas(tmp_path):
+    """L'absence du fichier importé ne doit pas, à elle seule, être fatale.
+
+    Contrairement à `test_les_metas_manuelles_sont_exportees`, qui écrit un
+    `data/metas/XX.json` existant mais vide, ici `data/metas/YY.json`
+    n'existe pas du tout (le dossier `metas/` n'est même pas créé) : c'est la
+    seconde source, `data/manual/YY/metas.json`, qui doit à elle seule suffire
+    à ce que l'export réussisse.
+    """
+    data_dir = tmp_path / "data"
+    (data_dir / "geo").mkdir(parents=True)
+    manual = data_dir / "manual" / "YY"
+    manual.mkdir(parents=True)
+    (manual / "metas.json").write_text(json.dumps([
+        dict(_meta("man-only1", tier="manual"), origin="manual",
+             image="data/manual/YY/images/man-only1.png"),
+    ]), "utf-8")
+    (data_dir / "geo" / "YY.geojson").write_text(json.dumps({
+        "type": "FeatureCollection",
+        "features": [{"type": "Feature",
+                      "properties": {"id": "man-only1", "status": "validé",
+                                     "pieces": [{"kind": "country"}]},
+                      "geometry": _square(0.0, 0.0, 1.0)}],
+    }), "utf-8")
+
+    result = export_viewer(data_dir, tmp_path / "viewer", ["YY"])
+
+    assert result["exported"] == 1
+    index = json.loads((tmp_path / "viewer" / "data" / "index.json").read_text("utf-8"))
+    assert [entry["id"] for entry in index] == ["man-only1"]
 
 
 def test_discover_countries_trie_et_met_en_majuscules(data_dir):
