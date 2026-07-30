@@ -269,7 +269,7 @@ document.addEventListener('keydown', (event) => {
     case 'd': enterMode('rect'); break;
     case 'c': enterMode('contour'); break;
     case 's': enterMode('admin1'); break;
-    case 'p': addCountry(); break;
+    case 'e': addCountry(); break;
     case '0': sketch.clear(); draw(); break;
     case 'a': decide('validé'); break;
     case 'r': decide('rejeté'); break;

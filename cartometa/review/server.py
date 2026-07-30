@@ -196,7 +196,7 @@ class Handler(SimpleHTTPRequestHandler):
         pass  # silence : le compteur de progression est dans l'interface
 
 
-TOUCHES = """Touches — D rectangle, C contour libre, Entrée fermer le contour, S subdivisions, P pays entier
+TOUCHES = """Touches — D rectangle, C contour libre, Entrée fermer le contour, S subdivisions, E pays entier
           Retour arrière retirer le dernier morceau, Échap sortir du mode, 0 vider
           A enregistrer, R rejeter, Espace suivante (Maj+Espace précédente), U annuler
           N nouvelle méta manuelle"""

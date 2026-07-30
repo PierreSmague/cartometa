@@ -69,7 +69,7 @@ Chaque méta arrive **sans géométrie** : c'est à toi de dessiner son emprise.
 | `D` | mode rectangle — deux clics posent un morceau |
 | `C` | mode contour libre — clics successifs, fermeture en repassant sur le premier sommet ou par `Entrée` |
 | `S` | mode subdivisions — chaque clic ajoute/retire la région administrative de niveau 1 sous le curseur |
-| `P` | ajoute la silhouette du pays entier |
+| `E` | ajoute la silhouette du pays entier |
 | `Retour arrière` | retire le dernier morceau, ou le dernier sommet si un contour est en cours |
 | `Échap` | sort du mode de dessin sans rien effacer |
 | `0` | vide la zone en cours |
