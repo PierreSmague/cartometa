@@ -24,22 +24,35 @@ def _urlretrieve(url: str, dest: Path) -> None:
     urllib.request.urlretrieve(url, dest)
 
 
-def ensure_dataset(cache_dir: Path, downloader: Downloader = _urlretrieve) -> Path:
-    path = cache_dir / DATASET_NAME
-    if not path.exists():
-        cache_dir.mkdir(parents=True, exist_ok=True)
-        tmp_path = path.with_name(path.name + ".part")
-        try:
-            downloader(DATASET_URL, tmp_path)
-            os.replace(tmp_path, path)
-        finally:
-            # Un téléchargement interrompu (réseau, Ctrl-C, disque plein) ne doit
-            # jamais laisser de fichier partiel au chemin final, ni de résidu
-            # temporaire : sinon les exécutions suivantes échoueraient sur une
-            # erreur JSON obscure sans jamais retenter le téléchargement.
-            if tmp_path.exists():
-                tmp_path.unlink()
+def ensure_file(
+    url: str, name: str, cache_dir: Path, downloader: Downloader = _urlretrieve
+) -> Path:
+    """Télécharge `url` vers `cache_dir / name` s'il n'y est pas déjà.
+
+    Partagé entre le dataset des pays (admin-0) et celui des régions
+    (admin-1) : les deux viennent du même dépôt Natural Earth et ont les
+    mêmes contraintes de robustesse.
+    """
+    path = cache_dir / name
+    if path.exists():
+        return path
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    tmp_path = path.with_name(path.name + ".part")
+    try:
+        downloader(url, tmp_path)
+        os.replace(tmp_path, path)
+    finally:
+        # Un téléchargement interrompu (réseau, Ctrl-C, disque plein) ne doit
+        # jamais laisser de fichier partiel au chemin final, ni de résidu
+        # temporaire : sinon les exécutions suivantes échoueraient sur une
+        # erreur JSON obscure sans jamais retenter le téléchargement.
+        if tmp_path.exists():
+            tmp_path.unlink()
     return path
+
+
+def ensure_dataset(cache_dir: Path, downloader: Downloader = _urlretrieve) -> Path:
+    return ensure_file(DATASET_URL, DATASET_NAME, cache_dir, downloader)
 
 
 @lru_cache(maxsize=8)
