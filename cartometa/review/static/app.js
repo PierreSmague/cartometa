@@ -54,11 +54,14 @@ function render() {
   layers.clearLayers();
   if (!item) {
     // Même formule que le compteur courant : done + queue.length === total
-    // par construction (store.build_queue ne met en file que les métas non
-    // décidées), donc à la file épuisée ce nombre tombe juste sur total.
-    // Imprécision assumée : un passage (Espace) compte comme « dépassé »,
-    // pas comme décidé — c'est une progression dans la file, pas un compte
-    // de décisions, et ça reste cohérent avec le compteur ci-dessous.
+    // par construction, dans les deux modes. `done` (store.build_queue) est
+    // le nombre de métas décidées ABSENTES de la file rendue — par défaut
+    // ça compte toutes les décidées, sous --all ça retombe à 0 puisqu'elles
+    // y sont toutes rouvertes — donc à la file épuisée ce nombre tombe
+    // toujours juste sur total. Imprécision assumée : un passage (Espace)
+    // compte comme « dépassé », pas comme décidé — c'est une progression
+    // dans la file, pas un compte de décisions, et ça reste cohérent avec
+    // le compteur ci-dessous.
     document.getElementById('progress').textContent = `Terminé — ${done + index} / ${total}`;
     document.getElementById('title').textContent = '';
     document.getElementById('description').textContent = '';
@@ -77,6 +80,7 @@ function render() {
 
   sketch.reset(item.pieces);
   frame(item);
+  loadPiecesGeometry(item);
   draw();
 }
 
@@ -93,12 +97,33 @@ async function frame(item) {
     // pas recadrer la carte affichée pour la méta suivante.
     if (current() !== item) return;
     map.fitBounds(L.geoJSON(geometry).getBounds(), { padding: [20, 20] });
+    // La silhouette vient d'arriver : si un morceau `country` était déjà
+    // posé (méta rouverte), il n'a rien pu dessiner au draw() synchrone
+    // fait avant cet await — il faut redessiner maintenant qu'elle existe.
+    draw();
   } catch (err) {
     // Idem : une méta abandonnée ne doit pas lever une alarme sur celle
     // qui est actuellement affichée.
     if (current() !== item) return;
     showError(`Cadrage impossible : ${err.message}`);
   }
+}
+
+async function loadPiecesGeometry(item) {
+  // Indépendant de frame() : une méta avec un point Maps (`item.latlon`)
+  // ne charge jamais la silhouette du pays pour se cadrer, mais peut quand
+  // même porter un morceau `country` ou `admin1` posé avant sa réouverture.
+  try {
+    await sketch.ensurePiecesGeometry();
+  } catch (err) {
+    if (current() !== item) return;
+    showError(`Chargement des morceaux impossible : ${err.message}`);
+    return;
+  }
+  // La file a pu avancer pendant l'attente : ne pas redessiner pour une
+  // méta qui n'est plus celle affichée.
+  if (current() !== item) return;
+  draw();
 }
 
 function draw() {
