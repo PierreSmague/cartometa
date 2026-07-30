@@ -96,10 +96,12 @@ def build_queue(paths: CountryPaths, include_all: bool = False) -> dict:
     metas = load_metas(paths)
     geo = load_geo(paths)
     items = []
+    queued_ids = set()
     for meta in metas:
         record = geo.get(meta["id"])
         if record is not None and not include_all:
             continue
+        queued_ids.add(meta["id"])
         items.append({
             "id": meta["id"],
             "title": meta["title"],
@@ -113,10 +115,17 @@ def build_queue(paths: CountryPaths, include_all: bool = False) -> dict:
             "status": record.status if record is not None else None,
             "pieces": record.pieces if record is not None else [],
         })
+    # `done` compte les métas déjà décidées mais ABSENTES de la file rendue,
+    # pas simplement `len(geo)` : par défaut les deux coïncident (une méta
+    # décidée est toujours exclue de la file), mais sous `include_all` tout
+    # est rouvert et remis dans la file, donc `done` retombe à 0. C'est ce
+    # qui permet à l'appelant JS de garder la même formule
+    # `done + index courant` dans les deux modes, sans code spécifique.
+    done = sum(1 for meta_id in geo if meta_id not in queued_ids)
     return {
         "country": paths.country,
         "total": len(metas),
-        "done": len(geo),
+        "done": done,
         "items": items,
     }
 

@@ -77,6 +77,18 @@ export class Sketch {
     return this.regions;
   }
 
+  async ensurePiecesGeometry() {
+    // Une méta rouverte (--all) arrive avec des morceaux qui référencent une
+    // géométrie distante : la silhouette du pays et/ou les régions admin-1
+    // ne sont chargées ici que si un morceau déjà posé en a besoin — sans
+    // attendre que l'utilisateur presse P ou S, sans quoi ces morceaux
+    // resteraient invisibles (et ⌫ retirerait un morceau que rien n'affiche).
+    const tasks = [];
+    if (this.pieces.some((piece) => piece.kind === 'country')) tasks.push(this.ensureCountry());
+    if (this.pieces.some((piece) => piece.kind === 'admin1')) tasks.push(this.ensureRegions());
+    if (tasks.length) await Promise.all(tasks);
+  }
+
   async addCountry() {
     await this.ensureCountry();
     this.leaveMode();

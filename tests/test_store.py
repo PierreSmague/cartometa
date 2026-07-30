@@ -82,6 +82,25 @@ def test_include_all_rouvre_tout_avec_les_morceaux(paths):
     assert rouverte["pieces"] == morceaux
 
 
+def test_done_compte_les_decidees_absentes_de_la_file_dans_les_deux_modes(paths):
+    """`done` doit rester cohérent avec `done + len(items) == total` :
+
+    par défaut la méta décidée est exclue de la file (`done` vaut 1) ; sous
+    `include_all` elle y est réintégrée (`done` retombe à 0), sans quoi la
+    formule de progression du client dépasserait le total (`67/37` observé
+    sur un pays de 37 métas / 30 décidées).
+    """
+    set_decision(paths, "aaaa", STATUS_TRACED, CARRE, [{"kind": "country"}])
+
+    defaut = build_queue(paths)
+    assert defaut["done"] == 1
+    assert defaut["done"] + len(defaut["items"]) == defaut["total"]
+
+    tout = build_queue(paths, include_all=True)
+    assert tout["done"] == 0
+    assert tout["done"] + len(tout["items"]) == tout["total"]
+
+
 def test_une_meta_jamais_traitee_arrive_sans_statut_ni_morceau(paths):
     item = build_queue(paths)["items"][0]
 
