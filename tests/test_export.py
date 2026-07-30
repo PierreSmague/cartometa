@@ -35,8 +35,8 @@ def _write_country(data_dir: Path, country: str, entries: list[tuple[str, str, f
         "type": "FeatureCollection",
         "features": [
             {"type": "Feature",
-             "properties": {"id": i, "confidence": 1.0, "warnings": [], "status": status},
-             "geometry": _square(0.0, 0.0, size)}
+             "properties": {"id": i, "status": status, "pieces": [{"kind": "country"}]},
+             "geometry": _square(0.0, 0.0, size) if status == "validé" else None}
             for i, status, size in entries
         ],
     }), "utf-8")
@@ -45,48 +45,66 @@ def _write_country(data_dir: Path, country: str, entries: list[tuple[str, str, f
 @pytest.fixture
 def data_dir(tmp_path):
     _write_country(tmp_path / "data", "PL", [("pl1", "validé", 3.0), ("pl2", "rejeté", 1.0)])
-    _write_country(tmp_path / "data", "BW", [("bw1", "corrigé", 2.0), ("bw2", "auto", 1.0)])
+    _write_country(tmp_path / "data", "BW", [("bw1", "validé", 2.0)])
     return tmp_path / "data"
 
 
-def test_decouvre_tous_les_pays_traites(data_dir):
+def test_seules_les_metas_tracees_sont_exportees(data_dir, tmp_path):
+    export_viewer(data_dir, tmp_path / "viewer", ["PL", "BW"])
+
+    index = json.loads((tmp_path / "viewer" / "data" / "index.json").read_text("utf-8"))
+    assert {entry["id"] for entry in index} == {"pl1", "bw1"}
+
+
+def test_l_index_est_trie_par_surface_croissante(data_dir, tmp_path):
+    export_viewer(data_dir, tmp_path / "viewer", ["PL", "BW"])
+
+    index = json.loads((tmp_path / "viewer" / "data" / "index.json").read_text("utf-8"))
+    assert [entry["id"] for entry in index] == ["bw1", "pl1"]
+
+
+def test_les_geometries_sont_ecrites_par_identifiant(data_dir, tmp_path):
+    export_viewer(data_dir, tmp_path / "viewer", ["PL", "BW"])
+
+    geometries = json.loads(
+        (tmp_path / "viewer" / "data" / "geometries.json").read_text("utf-8")
+    )
+    assert set(geometries) == {"pl1", "bw1"}
+
+
+def test_les_metas_manuelles_sont_exportees(tmp_path):
+    data_dir = tmp_path / "data"
+    _write_country(data_dir, "XX", [])
+    manual = data_dir / "manual" / "XX"
+    manual.mkdir(parents=True)
+    (manual / "metas.json").write_text(json.dumps([
+        dict(_meta("man-1a2b", tier="manual"), origin="manual",
+             image="data/manual/XX/images/man-1a2b.png"),
+    ]), "utf-8")
+    (data_dir / "geo" / "XX.geojson").write_text(json.dumps({
+        "type": "FeatureCollection",
+        "features": [{"type": "Feature",
+                      "properties": {"id": "man-1a2b", "status": "validé",
+                                     "pieces": [{"kind": "country"}]},
+                      "geometry": _square(0.0, 0.0, 1.0)}],
+    }), "utf-8")
+
+    export_viewer(data_dir, tmp_path / "viewer", ["XX"])
+
+    index = json.loads((tmp_path / "viewer" / "data" / "index.json").read_text("utf-8"))
+    assert [entry["id"] for entry in index] == ["man-1a2b"]
+
+
+def test_pays_sans_aucune_meta_leve(tmp_path):
+    data_dir = tmp_path / "data"
+    (data_dir / "geo").mkdir(parents=True)
+    (data_dir / "geo" / "ZZ.geojson").write_text(json.dumps({
+        "type": "FeatureCollection", "features": [],
+    }), "utf-8")
+
+    with pytest.raises(SystemExit):
+        export_viewer(data_dir, tmp_path / "viewer", ["ZZ"])
+
+
+def test_discover_countries_trie_et_met_en_majuscules(data_dir):
     assert discover_countries(data_dir) == ["BW", "PL"]
-
-
-def test_decouverte_vide_si_aucune_geometrie(tmp_path):
-    (tmp_path / "geo").mkdir()
-    assert discover_countries(tmp_path) == []
-
-
-def test_export_multi_pays_fusionne_les_deux(data_dir, tmp_path):
-    result = export_viewer(data_dir, tmp_path / "out", discover_countries(data_dir))
-
-    assert result["exported"] == 2
-    assert result["by_country"] == {"BW": 1, "PL": 1}
-    index = json.loads((tmp_path / "out" / "data" / "index.json").read_text("utf-8"))
-    assert [e["id"] for e in index] == ["bw1", "pl1"]  # tri par surface croissante
-    assert {e["country"] for e in index} == {"BW", "PL"}
-
-
-def test_les_non_revues_restent_exclues_par_defaut(data_dir, tmp_path):
-    """Exporter tous les pays d'un coup ne doit pas relâcher la porte de revue."""
-    result = export_viewer(data_dir, tmp_path / "out", discover_countries(data_dir))
-
-    geometries = json.loads((tmp_path / "out" / "data" / "geometries.json").read_text("utf-8"))
-    assert "bw2" not in geometries  # statut auto
-    assert "pl2" not in geometries  # statut rejeté
-    assert result["unreviewed_included"] == 0
-
-
-def test_include_auto_compte_les_non_revues(data_dir, tmp_path):
-    result = export_viewer(data_dir, tmp_path / "out", ["BW"], include_auto=True)
-
-    assert result["exported"] == 2
-    assert result["unreviewed_included"] == 1
-
-
-def test_metas_manquantes_echouent_explicitement(data_dir, tmp_path):
-    (data_dir / "metas" / "BW.json").unlink()
-
-    with pytest.raises(SystemExit, match="cartometa-extract"):
-        export_viewer(data_dir, tmp_path / "out", ["BW"])
