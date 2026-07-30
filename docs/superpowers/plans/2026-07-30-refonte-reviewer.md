@@ -3088,7 +3088,7 @@ input/               pages sauvegardées (jamais versionnées)
 docs/                specs, plans, rapports
 ```
 
-- Supprimer la mention de `--include-auto` dans la section d'export.
+- Dans la section d'export : supprimer la mention de `--include-auto`, et remplacer « un nouveau pays entre dans le viewer dès que `cartometa-geo` a tourné » par « un nouveau pays entre dans le viewer dès qu'une de ses métas a été tracée ». Ces deux phrases sont les dernières occurrences de `cartometa-geo` et `--include-auto` dans le dépôt ; l'étape 8 le vérifie par `grep`.
 - Remplacer la section « État » par :
 
 ```markdown
