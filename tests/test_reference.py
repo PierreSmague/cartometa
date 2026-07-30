@@ -7,7 +7,6 @@ from cartometa.geo.reference import (
     DATASET_NAME,
     country_code_for_name,
     country_geometry,
-    main_landmass,
     ensure_dataset,
 )
 
@@ -105,33 +104,3 @@ def test_code_absent_dans_natural_earth_renvoie_none(named_cache_dir):
     assert country_code_for_name("sans-code", named_cache_dir) is None
 
 
-def _box(x0, y0, x1, y1):
-    return {"type": "Polygon", "coordinates": [[[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]]]}
-
-
-def test_territoire_distant_negligeable_ecarte():
-    """Cas Afrique du Sud : les îles du Prince-Édouard tiraient la bbox à 47° sud."""
-    continent = shape(_box(16.0, -35.0, 33.0, -22.0))
-    ilot = shape(_box(37.0, -47.0, 37.2, -46.8))
-    pays = shape({"type": "MultiPolygon", "coordinates": [
-        continent.__geo_interface__["coordinates"], ilot.__geo_interface__["coordinates"]]})
-
-    reduit = main_landmass(pays)
-
-    assert reduit.bounds == pytest.approx((16.0, -35.0, 33.0, -22.0))
-
-
-def test_archipel_significatif_conserve():
-    """Des îles qui pèsent vraiment restent dans la référence."""
-    grande = shape(_box(0.0, 0.0, 10.0, 10.0))
-    moyenne = shape(_box(20.0, 0.0, 25.0, 5.0))
-    pays = shape({"type": "MultiPolygon", "coordinates": [
-        grande.__geo_interface__["coordinates"], moyenne.__geo_interface__["coordinates"]]})
-
-    assert main_landmass(pays).bounds == pytest.approx((0.0, 0.0, 25.0, 10.0))
-
-
-def test_pays_d_un_seul_tenant_inchange():
-    pays = shape(_box(14.0, 49.0, 24.0, 55.0))
-
-    assert main_landmass(pays) is pays

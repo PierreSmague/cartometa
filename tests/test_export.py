@@ -164,3 +164,34 @@ def test_pays_sans_source_importee_mais_avec_metas_manuelles_n_echoue_pas(tmp_pa
 
 def test_discover_countries_trie_et_met_en_majuscules(data_dir):
     assert discover_countries(data_dir) == ["BW", "PL"]
+
+
+def test_les_statuts_herites_sont_comptes_et_non_exportes(tmp_path):
+    """Un ancien fichier avec `auto`/`corrigé` (statuts disparus) ne doit pas
+
+    disparaître en silence : ces enregistrements sont souvent les
+    meilleurs, issus de la calibration automatique retirée.
+    """
+    data_dir = tmp_path / "data"
+    _write_country(data_dir, "LG", [("lg1", "validé", 1.0)])
+    geo_path = data_dir / "geo" / "LG.geojson"
+    geo = json.loads(geo_path.read_text("utf-8"))
+    geo["features"].append({
+        "type": "Feature",
+        "properties": {"id": "lg2", "status": "auto", "pieces": []},
+        "geometry": _square(5.0, 5.0, 1.0),
+    })
+    geo["features"].append({
+        "type": "Feature",
+        "properties": {"id": "lg3", "status": "corrigé", "pieces": []},
+        "geometry": _square(6.0, 6.0, 1.0),
+    })
+    geo_path.write_text(json.dumps(geo), "utf-8")
+    (data_dir / "metas" / "LG.json").write_text(json.dumps([
+        _meta("lg1"), _meta("lg2"), _meta("lg3"),
+    ]), "utf-8")
+
+    result = export_viewer(data_dir, tmp_path / "viewer", ["LG"])
+
+    assert result["exported"] == 1
+    assert result["legacy_statuses"] == 2

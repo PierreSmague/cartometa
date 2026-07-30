@@ -8,7 +8,7 @@ from shapely.geometry import shape
 from shapely.geometry.base import BaseGeometry
 
 from cartometa.atomic_write import write_json_atomic
-from cartometa.geo.reference import Downloader, _urlretrieve, ensure_file
+from cartometa.geo.reference import Downloader, ensure_file, urlretrieve
 
 ADMIN1_URL = (
     "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/"
@@ -49,7 +49,7 @@ def _extract(source: dict, iso_a2: str) -> dict:
 
 
 def country_regions(
-    iso_a2: str, cache_dir: Path, downloader: Downloader = _urlretrieve
+    iso_a2: str, cache_dir: Path, downloader: Downloader = urlretrieve
 ) -> dict:
     """Régions admin-1 du pays, en FeatureCollection GeoJSON.
 

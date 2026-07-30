@@ -232,3 +232,50 @@ def test_get_pyproject_toml_hors_static_est_refuse(live_server):
         _get(live_server, "/pyproject.toml")
 
     assert excinfo.value.code == 404
+
+
+def test_get_input_sans_nom_de_fichier_ne_liste_pas_le_dossier(paths, live_server, monkeypatch):
+    """Le reviewer avait démontré qu'un GET /input/ listait le contenu du
+    dossier : aucun listage de répertoire ne doit être atteignable."""
+    racine = paths.data.parent
+    (racine / "input").mkdir(parents=True, exist_ok=True)
+    (racine / "input" / "photo.jpg").write_bytes(b"contenu-image")
+    monkeypatch.setattr("os.getcwd", lambda: str(racine))
+
+    with pytest.raises(urllib.error.HTTPError) as excinfo:
+        _get(live_server, "/input/")
+
+    assert excinfo.value.code == 404
+
+
+def test_post_decision_cross_origin_est_refuse(paths, live_server):
+    """Le reviewer a démontré qu'un POST avec `Origin: https://evil.example`
+    passait la décision comme un POST légitime : refusé désormais avec 403."""
+    request = urllib.request.Request(
+        live_server + "/api/decision",
+        data=json.dumps({
+            "id": "aaaa", "status": STATUS_REJECTED, "pieces": [],
+        }).encode("utf-8"),
+        method="POST",
+    )
+    request.add_header("Origin", "https://evil.example")
+    with pytest.raises(urllib.error.HTTPError) as excinfo:
+        urllib.request.urlopen(request, timeout=5)
+
+    assert excinfo.value.code == 403
+    body = json.loads(excinfo.value.read())
+    assert body["ok"] is False
+    # La décision cross-origin n'a rien écrit sur le disque.
+    assert load_geo(paths) == {}
+
+
+def test_post_decision_sans_origin_fonctionne_toujours(paths, live_server):
+    """Un POST same-origin classique n'envoie pas d'en-tête Origin : il ne
+    doit pas être affecté par le garde-fou cross-origin."""
+    status, body = _post(live_server, "/api/decision", {
+        "id": "aaaa", "status": STATUS_REJECTED, "pieces": [],
+    })
+
+    assert status == 200
+    assert json.loads(body) == {"ok": True}
+    assert load_geo(paths)["aaaa"].status == STATUS_REJECTED

@@ -50,10 +50,14 @@ def apply_decision(meta_id: str, status: str, pieces: list) -> None:
     if status == STATUS_REJECTED:
         set_decision(paths(), meta_id, STATUS_REJECTED, None, [])
         return
-    if status != STATUS_TRACED:
-        raise ValueError(f"statut inconnu : {status!r}")
-    geometry = resolve_pieces(pieces, paths().country, paths().cache)
-    set_decision(paths(), meta_id, STATUS_TRACED, mapping(geometry), list(pieces))
+    if status == STATUS_TRACED:
+        geometry = resolve_pieces(pieces, paths().country, paths().cache)
+        set_decision(paths(), meta_id, STATUS_TRACED, mapping(geometry), list(pieces))
+        return
+    # Statut ni validé ni rejeté : délègue à set_decision, seul endroit qui
+    # valide le statut, pour ne pas dupliquer la vérification avec un
+    # message moins utile qui ne nomme pas les valeurs acceptées.
+    set_decision(paths(), meta_id, status, None, [])
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -70,6 +74,13 @@ class Handler(SimpleHTTPRequestHandler):
         if length > MAX_BODY_BYTES:
             raise ValueError(f"corps trop volumineux : {length} octets")
         return self.rfile.read(length) if length else b""
+
+    def list_directory(self, path):
+        # Aucun listage de répertoire : `input/` et `data/manual/` ne
+        # doivent exposer que les fichiers nommément demandés, jamais leur
+        # contenu complet.
+        self.send_error(404)
+        return None
 
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
@@ -125,6 +136,13 @@ class Handler(SimpleHTTPRequestHandler):
         super().do_GET()
 
     def do_POST(self) -> None:
+        if self.headers.get("Origin") is not None:
+            # Un en-tête Origin ne peut venir que d'une requête cross-origin
+            # (fetch/XHR) : un same-origin classique ne l'envoie pas. Les
+            # écritures (décision, annulation, méta) ne doivent être
+            # atteignables que depuis l'interface locale elle-même.
+            self._json({"ok": False, "error": "requête cross-origin refusée"}, 403)
+            return
         parsed = urlparse(self.path)
         route, query = parsed.path, parse_qs(parsed.query)
         try:
@@ -172,7 +190,7 @@ class Handler(SimpleHTTPRequestHandler):
         pass  # silence : le compteur de progression est dans l'interface
 
 
-TOUCHES = """Touches — D rectangle, C contour libre, S subdivisions, P pays entier
+TOUCHES = """Touches — D rectangle, C contour libre, Entrée fermer le contour, S subdivisions, P pays entier
           Retour arrière retirer le dernier morceau, Échap sortir du mode, 0 vider
           A enregistrer, R rejeter, Espace suivante (Maj+Espace précédente), U annuler
           N nouvelle méta manuelle"""
