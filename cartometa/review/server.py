@@ -136,13 +136,19 @@ class Handler(SimpleHTTPRequestHandler):
         super().do_GET()
 
     def do_POST(self) -> None:
-        if self.headers.get("Origin") is not None:
-            # Un en-tête Origin ne peut venir que d'une requête cross-origin
-            # (fetch/XHR) : un same-origin classique ne l'envoie pas. Les
-            # écritures (décision, annulation, méta) ne doivent être
-            # atteignables que depuis l'interface locale elle-même.
-            self._json({"ok": False, "error": "requête cross-origin refusée"}, 403)
-            return
+        origin = self.headers.get("Origin")
+        if origin is not None:
+            # D'après la spec Fetch, un navigateur ajoute TOUJOURS `Origin`
+            # sur une requête non-GET/HEAD, y compris same-origin : sa seule
+            # présence ne prouve donc rien. C'est la VALEUR qu'il faut
+            # comparer à l'hôte attendu — comparer avec le `Host` de la
+            # requête, puisque le serveur n'écoute que sur 127.0.0.1.
+            attendu = self.headers.get("Host", "")
+            if urlparse(origin).netloc != attendu:
+                self._json(
+                    {"ok": False, "error": f"requête cross-origin refusée : {origin!r}"}, 403
+                )
+                return
         parsed = urlparse(self.path)
         route, query = parsed.path, parse_qs(parsed.query)
         try:

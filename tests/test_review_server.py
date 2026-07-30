@@ -248,9 +248,32 @@ def test_get_input_sans_nom_de_fichier_ne_liste_pas_le_dossier(paths, live_serve
     assert excinfo.value.code == 404
 
 
-def test_post_decision_cross_origin_est_refuse(paths, live_server):
+def test_post_decision_origin_de_meme_origine_fonctionne(paths, live_server):
+    """D'après la spec Fetch, un navigateur ajoute TOUJOURS `Origin` sur une
+    requête non-GET/HEAD, y compris same-origin : la seule présence ne doit
+    donc rien refuser. L'en-tête est construit à partir du port réellement
+    lié par le serveur de test, pas d'une chaîne en dur."""
+    request = urllib.request.Request(
+        live_server + "/api/decision",
+        data=json.dumps({
+            "id": "aaaa", "status": STATUS_REJECTED, "pieces": [],
+        }).encode("utf-8"),
+        method="POST",
+    )
+    request.add_header("Origin", live_server)
+    with urllib.request.urlopen(request, timeout=5) as resp:
+        status = resp.status
+        body = json.loads(resp.read())
+
+    assert status == 200
+    assert body == {"ok": True}
+    assert load_geo(paths)["aaaa"].status == STATUS_REJECTED
+
+
+def test_post_decision_origin_etrangere_est_refusee_et_rien_n_est_ecrit(paths, live_server):
     """Le reviewer a démontré qu'un POST avec `Origin: https://evil.example`
-    passait la décision comme un POST légitime : refusé désormais avec 403."""
+    passait la décision comme un POST légitime : refusé désormais avec 403,
+    et rien ne doit changer sur le disque (pas seulement le code renvoyé)."""
     request = urllib.request.Request(
         live_server + "/api/decision",
         data=json.dumps({
@@ -270,8 +293,8 @@ def test_post_decision_cross_origin_est_refuse(paths, live_server):
 
 
 def test_post_decision_sans_origin_fonctionne_toujours(paths, live_server):
-    """Un POST same-origin classique n'envoie pas d'en-tête Origin : il ne
-    doit pas être affecté par le garde-fou cross-origin."""
+    """Un client non-navigateur (ex. `urllib.request`) n'envoie pas d'en-tête
+    Origin sur ses POST : ce cas doit rester fonctionnel, garde-fou ou pas."""
     status, body = _post(live_server, "/api/decision", {
         "id": "aaaa", "status": STATUS_REJECTED, "pieces": [],
     })
