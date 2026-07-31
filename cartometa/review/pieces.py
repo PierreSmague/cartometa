@@ -16,6 +16,10 @@ MIN_RING_POINTS = 3
 # qu'un client incorrect fasse tourner shapely sur une liste sans fin.
 MAX_RING_POINTS = 2000
 
+# Seul « morceau » qui ne soit pas une surface à unir mais un modificateur
+# appliqué à l'union : il rogne le résultat aux frontières du pays.
+CLIP = "clip"
+
 
 class PieceError(ValueError):
     """Morceau de zone illisible, invalide, ou hors des bornes terrestres."""
@@ -89,6 +93,21 @@ def _country(country: str, cache_dir: Path) -> BaseGeometry:
         raise PieceError(str(exc)) from None
 
 
+def _clip_to_country(union: BaseGeometry, country: str, cache_dir: Path) -> BaseGeometry:
+    clipped = union.intersection(_country(country, cache_dir))
+    if clipped.geom_type == "GeometryCollection":
+        # Une intersection peut rendre des bouts sans surface — un rectangle
+        # qui effleure la frontière donne un segment. Seul le surfacique est
+        # une emprise ; le reste est du bruit géométrique à jeter.
+        clipped = unary_union([part for part in clipped.geoms if part.area > 0.0])
+    if clipped.is_empty or clipped.area <= 0.0:
+        raise PieceError(
+            "le rognage aux frontières ne laisse aucune surface : "
+            "les morceaux posés sont entièrement hors du pays"
+        )
+    return clipped
+
+
 def resolve_pieces(pieces: list[dict], country: str, cache_dir: Path) -> BaseGeometry:
     """Union des morceaux d'une zone, résolus côté serveur.
 
@@ -96,16 +115,23 @@ def resolve_pieces(pieces: list[dict], country: str, cache_dir: Path) -> BaseGeo
     `{"kind": "admin1", "code": …}` sont résolus ici depuis Natural Earth,
     jamais reçus sous forme de coordonnées. Une silhouette publiée est donc
     toujours celle du référentiel, quoi qu'ait affiché le navigateur.
+
+    `{"kind": "clip"}` est le seul descripteur qui n'apporte pas de surface :
+    il rogne l'union sur la silhouette du pays. Son rang dans la liste n'a
+    aucune importance — il s'applique une fois, à la fin.
     """
     if not isinstance(pieces, (list, tuple)) or not pieces:
         raise PieceError("aucun morceau : il n'y a rien à enregistrer")
 
     geometries = []
+    clip = False
     for piece in pieces:
         if not isinstance(piece, dict):
             raise PieceError(f"morceau illisible : {piece!r}")
         kind = piece.get("kind")
-        if kind == "country":
+        if kind == CLIP:
+            clip = True
+        elif kind == "country":
             geometries.append(_country(country, cache_dir))
         elif kind == "admin1":
             geometries.append(_region(piece, country, cache_dir))
@@ -116,7 +142,10 @@ def resolve_pieces(pieces: list[dict], country: str, cache_dir: Path) -> BaseGeo
         else:
             raise PieceError(f"type de morceau inconnu : {kind!r}")
 
+    if not geometries:
+        raise PieceError("le rognage n'est pas une emprise : aucune surface à rogner")
+
     union = unary_union(geometries)
     if union.is_empty or not union.is_valid or union.area <= 0.0:
         raise PieceError("l'union des morceaux ne donne aucune surface valide")
-    return union
+    return _clip_to_country(union, country, cache_dir) if clip else union

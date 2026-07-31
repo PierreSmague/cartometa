@@ -96,6 +96,75 @@ def test_contour_auto_intersectant_est_repare(cache_dir):
     assert geom.area > 0.0
 
 
+def test_rognage_coupe_ce_qui_depasse_du_pays(cache_dir):
+    """Le geste visé : un rectangle large qui deborde, rogne aux frontieres."""
+    geom = resolve_pieces([
+        {"kind": "rect", "bounds": [10.0, 45.0, 20.0, 52.0]},
+        {"kind": "clip"},
+    ], "PL", cache_dir)
+
+    # Le pays va de 14/49 a 24/55 : l'ouest et le sud du rectangle sont coupes.
+    assert geom.bounds == (14.0, 49.0, 20.0, 52.0)
+
+
+def test_rognage_sans_effet_quand_tout_est_dedans(cache_dir):
+    geom = resolve_pieces([
+        {"kind": "rect", "bounds": [15.0, 50.0, 16.0, 51.0]},
+        {"kind": "clip"},
+    ], "PL", cache_dir)
+
+    assert geom.bounds == (15.0, 50.0, 16.0, 51.0)
+
+
+def test_le_rang_du_rognage_dans_la_liste_ne_change_rien(cache_dir):
+    """C'est un modificateur applique une fois a la fin, pas un operande."""
+    avant = resolve_pieces([
+        {"kind": "clip"},
+        {"kind": "rect", "bounds": [10.0, 45.0, 20.0, 52.0]},
+    ], "PL", cache_dir)
+    apres = resolve_pieces([
+        {"kind": "rect", "bounds": [10.0, 45.0, 20.0, 52.0]},
+        {"kind": "clip"},
+    ], "PL", cache_dir)
+
+    assert avant.equals(apres)
+
+
+def test_le_rognage_s_applique_a_l_union_entiere_pas_au_dernier_morceau(cache_dir):
+    geom = resolve_pieces([
+        {"kind": "rect", "bounds": [10.0, 45.0, 16.0, 52.0]},
+        {"kind": "rect", "bounds": [22.0, 50.0, 30.0, 60.0]},
+        {"kind": "clip"},
+    ], "PL", cache_dir)
+
+    assert geom.bounds == (14.0, 49.0, 24.0, 55.0)
+    assert geom.geom_type == "MultiPolygon"
+
+
+def test_rognage_d_une_zone_entierement_hors_du_pays_refuse(cache_dir):
+    with pytest.raises(PieceError, match="rognage"):
+        resolve_pieces([
+            {"kind": "rect", "bounds": [2.0, 40.0, 3.0, 41.0]},
+            {"kind": "clip"},
+        ], "PL", cache_dir)
+
+
+def test_rognage_seul_sans_surface_refuse(cache_dir):
+    """`clip` n'apporte aucune surface : il n'est pas une emprise a lui seul."""
+    with pytest.raises(PieceError, match="aucune surface"):
+        resolve_pieces([{"kind": "clip"}], "PL", cache_dir)
+
+
+def test_rognage_qui_ne_fait_qu_effleurer_la_frontiere_refuse(cache_dir):
+    """Un rectangle colle a la frontiere ouest : l'intersection est un segment,
+    pas une surface, et shapely peut la rendre en GeometryCollection."""
+    with pytest.raises(PieceError, match="rognage"):
+        resolve_pieces([
+            {"kind": "rect", "bounds": [10.0, 50.0, 14.0, 51.0]},
+            {"kind": "clip"},
+        ], "PL", cache_dir)
+
+
 def test_liste_vide_refusee(cache_dir):
     with pytest.raises(PieceError):
         resolve_pieces([], "PL", cache_dir)

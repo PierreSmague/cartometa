@@ -70,6 +70,7 @@ Chaque méta arrive **sans géométrie** : c'est à toi de dessiner son emprise.
 | `C` | mode contour libre — clics successifs, fermeture en repassant sur le premier sommet ou par `Entrée` |
 | `S` | mode subdivisions — chaque clic ajoute/retire la région administrative de niveau 1 sous le curseur |
 | `E` | ajoute la silhouette du pays entier |
+| `F` | rogne la zone aux frontières du pays — tout ce qui dépasse est retiré ; rappuyer annule le rognage |
 | `Retour arrière` | retire le dernier morceau, ou le dernier sommet si un contour est en cours |
 | `Échap` | sort du mode de dessin sans rien effacer |
 | `0` | vide la zone en cours |
@@ -82,6 +83,13 @@ Chaque méta arrive **sans géométrie** : c'est à toi de dessiner son emprise.
 Les modes sont **collants** : après un rectangle posé, poser le suivant ne
 demande aucune touche. Une emprise est l'union de ses morceaux — deux
 rectangles disjoints, trois régions, un contour libre plus le pays entier.
+
+`F` évite de suivre une côte au clic : on pose un rectangle large qui déborde
+sur la mer et les voisins, puis on rogne. Le rognage reste actif pendant que
+la zone se construit (les morceaux posés ensuite sont rognés aussi) et la
+carte affiche dès lors le résultat rogné, c'est-à-dire exactement ce que `A`
+enregistrera. Le calcul est fait par le serveur sur la silhouette Natural
+Earth, jamais dans le navigateur.
 
 Le point bleu, quand il est présent, est la **vérité terrain** : la position
 du lien Maps de la méta.
