@@ -162,6 +162,15 @@ class Handler(SimpleHTTPRequestHandler):
             if not isinstance(payload, dict):
                 raise ValueError("le corps doit être un objet JSON")
 
+            if route == "/api/resolve":
+                # Aperçu seul : rien n'est écrit. Le navigateur ne sait pas
+                # calculer une intersection ; quand une zone est rognée, il
+                # demande ici la géométrie exacte qu'un `A` enregistrerait.
+                geometry = resolve_pieces(
+                    payload.get("pieces") or [], paths().country, paths().cache
+                )
+                self._json({"ok": True, "geometry": mapping(geometry)})
+                return
             if route == "/api/decision":
                 apply_decision(payload["id"], payload["status"], payload.get("pieces") or [])
             elif route == "/api/undo":
@@ -197,6 +206,7 @@ class Handler(SimpleHTTPRequestHandler):
 
 
 TOUCHES = """Touches — D rectangle, C contour libre, Entrée fermer le contour, S subdivisions, E pays entier
+          F rogner la zone aux frontières du pays (à rappuyer pour dérogner)
           Retour arrière retirer le dernier morceau, Échap sortir du mode, 0 vider
           A enregistrer, R rejeter, Espace suivante (Maj+Espace précédente), U annuler
           N nouvelle méta manuelle"""

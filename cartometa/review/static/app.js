@@ -81,7 +81,7 @@ function render() {
   sketch.reset(item.pieces);
   frame(item);
   loadPiecesGeometry(item);
-  draw();
+  refresh();
 }
 
 async function frame(item) {
@@ -140,6 +140,22 @@ function draw() {
   const row = document.getElementById('sketch-row');
   row.textContent = sketch.statusLine();
   row.hidden = !row.textContent;
+}
+
+function refresh() {
+  // À utiliser dès que les morceaux changent. draw() est synchrone et affiche
+  // l'état connu tout de suite ; si la zone est rognée, son aperçu vient du
+  // serveur (seul à savoir intersecter) et un second draw() suit son arrivée.
+  draw();
+  if (!sketch.needsClip()) return;
+  const item = current();
+  sketch.ensureClip()
+    .then(() => { if (current() === item) draw(); })
+    .catch((err) => {
+      if (current() !== item) return;
+      showError(`Rognage impossible : ${err.message}`);
+      draw();
+    });
 }
 
 async function decide(status) {
@@ -223,7 +239,14 @@ async function addCountry() {
   } catch (err) {
     showError(`Polygone du pays indisponible : ${err.message}`);
   }
-  draw();
+  refresh();
+}
+
+function toggleClip() {
+  if (busy || !current()) return;
+  sketch.toggleClip();
+  clearError();
+  refresh();
 }
 
 function onManualCreated(meta) {
@@ -247,7 +270,7 @@ document.addEventListener('keydown', (event) => {
   if (event.key === 'Backspace') {
     event.preventDefault();
     sketch.undoLast();
-    draw();
+    refresh();
     return;
   }
   if (event.key === 'Escape') {
@@ -257,7 +280,7 @@ document.addEventListener('keydown', (event) => {
   }
   if (event.key === 'Enter') {
     sketch.closeContour();
-    draw();
+    refresh();
     return;
   }
   if (event.key === ' ') {
@@ -270,7 +293,8 @@ document.addEventListener('keydown', (event) => {
     case 'c': enterMode('contour'); break;
     case 's': enterMode('admin1'); break;
     case 'e': addCountry(); break;
-    case '0': sketch.clear(); draw(); break;
+    case 'f': toggleClip(); break;
+    case '0': sketch.clear(); refresh(); break;
     case 'a': decide('validé'); break;
     case 'r': decide('rejeté'); break;
     case 'u': undo(); break;
@@ -282,7 +306,7 @@ document.addEventListener('keydown', (event) => {
 map.on('click', (event) => {
   if (busy || !current()) return;
   sketch.onMapClick(event.latlng);
-  draw();
+  refresh();
 });
 
 map.on('mousemove', (event) => {

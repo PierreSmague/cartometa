@@ -1,4 +1,4 @@
-import { getJSON } from './api.js';
+import { getJSON, postJSON } from './api.js';
 import {
   bboxContains, bboxOf, containsPoint, rectangleGeometry, ringGeometry,
 } from './geometry.js';
@@ -25,14 +25,28 @@ export class Sketch {
     this.hovered = null;    // code de la région survolée en mode admin1
     this.country = null;    // silhouette du pays, chargée une fois
     this.regions = null;    // index des régions admin-1, chargé une fois
+    this.clipped = null;    // union rognée renvoyée par le serveur
+    this.clippedKey = null; // morceaux qui ont produit `clipped`
+  }
+
+  // Le rognage est un modificateur, pas une surface : il n'entre pas dans le
+  // décompte des morceaux, et une zone qui ne contient que lui est vide.
+  get operands() {
+    return this.pieces.filter((piece) => piece.kind !== 'clip');
+  }
+
+  get clipping() {
+    return this.pieces.some((piece) => piece.kind === 'clip');
   }
 
   get isEmpty() {
-    return this.pieces.length === 0;
+    return this.operands.length === 0;
   }
 
   reset(pieces) {
     this.pieces = pieces ? pieces.map((piece) => ({ ...piece })) : [];
+    this.clipped = null;
+    this.clippedKey = null;
     this.leaveMode();
   }
 
@@ -95,6 +109,46 @@ export class Sketch {
     if (!this.pieces.some((piece) => piece.kind === 'country')) {
       this.pieces.push({ kind: 'country' });
     }
+  }
+
+  toggleClip() {
+    const at = this.pieces.findIndex((piece) => piece.kind === 'clip');
+    if (at >= 0) this.pieces.splice(at, 1);
+    else this.pieces.push({ kind: 'clip' });
+  }
+
+  // Signature des morceaux dont dépend l'aperçu rogné, ou null quand il n'y
+  // a rien à rogner.
+  clipKey() {
+    if (!this.clipping || !this.operands.length) return null;
+    return JSON.stringify(this.pieces);
+  }
+
+  needsClip() {
+    return this.clipKey() !== this.clippedKey;
+  }
+
+  // Vrai seulement quand l'aperçu rogné correspond aux morceaux ACTUELS :
+  // un morceau posé pendant l'aller-retour périme l'aperçu, et afficher
+  // l'ancien montrerait une zone sans le morceau qu'on vient de poser.
+  get clipReady() {
+    return this.clipping && this.clipped !== null && !this.needsClip();
+  }
+
+  async ensureClip() {
+    const key = this.clipKey();
+    if (key === this.clippedKey) return;
+    // Marquer la tentative AVANT l'appel : si le serveur refuse (zone
+    // entièrement hors du pays), needsClip() retombe à faux et le rendu
+    // revient aux morceaux bruts au lieu de redemander sans fin.
+    this.clippedKey = key;
+    this.clipped = null;
+    if (!key) return;
+    const { geometry } = await postJSON('/api/resolve', { pieces: this.pieces });
+    // Les morceaux ont pu bouger pendant l'attente : un aperçu périmé ne
+    // doit pas s'afficher. Le prochain draw() relancera la résolution.
+    if (this.clipKey() !== key) return;
+    this.clipped = geometry;
   }
 
   regionAt(latlng) {
@@ -207,10 +261,18 @@ export class Sketch {
   }
 
   render() {
-    this.pieces.forEach((piece) => {
-      const geometry = this.geometryFor(piece);
-      if (geometry) L.geoJSON(geometry, POSE).addTo(this.layers);
-    });
+    if (this.clipReady) {
+      // Zone rognée : c'est l'union rognée par le serveur qui est affichée,
+      // pas les morceaux bruts — ce qu'on voit est exactement ce que `A`
+      // enregistrerait. Tant qu'elle n'est pas arrivée (ou si le serveur l'a
+      // refusée), on retombe sur les morceaux bruts ci-dessous.
+      L.geoJSON(this.clipped, POSE).addTo(this.layers);
+    } else {
+      this.operands.forEach((piece) => {
+        const geometry = this.geometryFor(piece);
+        if (geometry) L.geoJSON(geometry, POSE).addTo(this.layers);
+      });
+    }
     if (this.mode === 'admin1' && this.hovered) {
       const region = this.regions.find((r) => r.code === this.hovered);
       const posee = this.pieces.some((p) => p.kind === 'admin1' && p.code === this.hovered);
@@ -248,9 +310,18 @@ export class Sketch {
         parts.push(region ? region.name : 'survole une région');
       }
     }
-    if (this.pieces.length) {
-      parts.push(`${this.pieces.length} morceau${this.pieces.length > 1 ? 'x' : ''}`);
+    const poses = this.operands.length;
+    if (poses) {
+      parts.push(`${poses} morceau${poses > 1 ? 'x' : ''}`);
+      if (this.clipping) {
+        if (this.clipReady) parts.push('rogné aux frontières');
+        else if (this.needsClip()) parts.push('rognage en cours…');
+        // Tentative faite et sans résultat : le bandeau d'erreur dit pourquoi.
+        else parts.push('rognage impossible');
+      }
       parts.push('A enregistrer · ⌫ retirer · 0 vider');
+    } else if (this.clipping) {
+      parts.push('rognage armé — pose un morceau (F pour l’annuler)');
     }
     return parts.join(' — ');
   }

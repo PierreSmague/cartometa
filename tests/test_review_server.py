@@ -196,6 +196,46 @@ def test_post_content_length_trop_grand_est_refuse_sans_lire_le_corps(live_serve
     assert "volumineux" in body["error"]
 
 
+def test_post_resolve_http_rend_la_geometrie_rognee_sans_rien_ecrire(paths, live_server):
+    """L'aperçu du rognage : le navigateur ne sait pas intersecter, il demande
+    ici — et cette route ne doit rien décider ni rien écrire."""
+    status, body = _post(live_server, "/api/resolve", {"pieces": [
+        {"kind": "rect", "bounds": [10, 45, 20, 52]},
+        {"kind": "clip"},
+    ]})
+
+    assert status == 200
+    payload = json.loads(body)
+    assert shape(payload["geometry"]).bounds == (14.0, 49.0, 20.0, 52.0)
+    assert load_geo(paths) == {}
+
+
+def test_post_resolve_http_zone_hors_du_pays_donne_400(live_server):
+    with pytest.raises(urllib.error.HTTPError) as excinfo:
+        _post(live_server, "/api/resolve", {"pieces": [
+            {"kind": "rect", "bounds": [2, 40, 3, 41]},
+            {"kind": "clip"},
+        ]})
+
+    assert excinfo.value.code == 400
+    assert "rognage" in json.loads(excinfo.value.read())["error"]
+
+
+def test_post_decision_http_rognage_est_applique_a_l_enregistrement(paths, live_server):
+    """Le rognage vu dans l'aperçu doit être celui qui part sur le disque : le
+    descripteur est renvoyé tel quel dans la décision, et résolu pareil."""
+    status, _ = _post(live_server, "/api/decision", {
+        "id": "aaaa", "status": STATUS_TRACED,
+        "pieces": [{"kind": "rect", "bounds": [10, 45, 20, 52]}, {"kind": "clip"}],
+    })
+
+    assert status == 200
+    record = load_geo(paths)["aaaa"]
+    assert shape(record.geometry).bounds == (14.0, 49.0, 20.0, 52.0)
+    # Les morceaux conservés gardent le rognage : rouvrir la méta le retrouve.
+    assert {"kind": "clip"} in record.pieces
+
+
 def test_get_queue_http_reprend_les_metas_de_la_fixture(live_server):
     status, body = _get(live_server, "/api/queue")
 
