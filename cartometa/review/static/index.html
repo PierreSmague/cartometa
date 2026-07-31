@@ -16,7 +16,10 @@
     #info { padding: 8px 12px; }
     #sketch-row { color: #0a7d2b; font-weight: bold; }
     #sketch-row[hidden] { display: none; }
-    kbd { background: #eee; border-radius: 3px; padding: 1px 5px; border: 1px solid #bbb; }
+    /* `color` explicite : sans elle, kbd hérite du blanc de l'en-tête et
+       devient illisible sur son propre fond clair. */
+    kbd { background: #eee; color: #111; border-radius: 3px; padding: 1px 5px;
+          border: 1px solid #bbb; }
     #error { background: #b00020; color: #fff; padding: 8px 12px; font-weight: bold; }
     #error[hidden] { display: none; }
     #manual { position: fixed; inset: 10% 25%; background: #fff; border: 2px solid #1c1f24;
