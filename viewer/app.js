@@ -5,6 +5,7 @@ const etat = {
   resultats: [],
   categorie: '',
   recherche: '',
+  pret: false,   // true seulement une fois manifeste ET index chargés avec succès
 };
 
 const carte = L.map('carte', { worldCopyJump: true }).setView([25, 15], 3);
@@ -20,6 +21,7 @@ async function demarrer() {
     etat.index = await (await fetch(`data/${manifeste.index}`)).json();
     document.getElementById('compteurs').textContent =
       `${manifeste.meta_count} metas · ${Object.keys(manifeste.countries).length} countries`;
+    etat.pret = true;
     restaurerVue();
   } catch (erreur) {
     // Sans ce filet, un manifeste ou un index indisponible laisse une page
@@ -92,6 +94,11 @@ async function interroger(lon, lat) {
 let generation = 0;
 
 carte.on('click', async (evenement) => {
+  // Sans ce garde-fou, un premier clic après un échec au démarrage efface
+  // aussitôt le message d'erreur dans #accueil (hidden = true ci-dessous) et
+  // rend une galerie vide sans exception : le visiteur perd la seule
+  // explication qu'il aura jamais eue.
+  if (!etat.pret) return;
   const { lng: lon, lat } = evenement.latlng;
   const generationDuClic = ++generation;
   document.getElementById('accueil').hidden = true;
