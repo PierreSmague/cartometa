@@ -142,6 +142,17 @@ Deux traitements, dans cet ordre : simplification de Douglas-Peucker
 (`shapely.simplify`, `preserve_topology=True`) puis arrondi des coordonnées à
 5 décimales (~1 m).
 
+**La tolérance est adaptative** : `min(tolérance, diagonale de la bbox / 50)`.
+Une tolérance fixe est plus grande que les emprises « spot », dont le côté
+mesure ~0,005° : mesuré sur les données réelles, 5 emprises perdaient plus de la
+moitié de leur surface et la pire n'en gardait que 24 % — on aurait pu cliquer
+sur l'île de Kusu sans que sa méta sorte. Avec la tolérance adaptative, la pire
+conservation passe à 85 % et deux emprises seulement descendent sous 90 %.
+
+Le correctif ne coûte rien : les grandes emprises ont une diagonale telle que
+`diagonale/50` dépasse la tolérance, elles reçoivent donc la tolérance pleine et
+leur poids est inchangé. Total sur les données actuelles : 40,2 Mo → 12,0 Mo.
+
 Mesures à la tolérance par défaut de 0,01° (~1,1 km) :
 
 | pays | brut | simplifié | transféré (gzip) |
@@ -238,6 +249,16 @@ gratuite) et seule cette valeur change.
 
 `wrangler` ne téléverse que les fichiers dont le contenu a changé : le premier
 déploiement envoie ~160 Mo, les suivants quelques mégaoctets.
+
+**Comportement au plafond** : c'est la *publication* qui échoue, pas le site.
+`wrangler` refuse le déploiement et la version en ligne reste intacte — la panne
+est au build, jamais chez le visiteur. Sorties possibles, par effort croissant :
+supprimer la vignette et ne servir qu'une taille (le compteur est divisé par
+deux, 5 minutes) ; ou déplacer `img/` vers R2 et changer `image_base` dans le
+manifeste (une à deux heures, place pour ~100 000 métas).
+
+Pour ne jamais être surpris, `cartometa-build` affiche le nombre de fichiers
+produits et **avertit dès 15 000**.
 
 ## 10. Interface
 
