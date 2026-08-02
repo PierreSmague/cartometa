@@ -137,5 +137,113 @@ function restaurerVue() {
 carte.on('moveend', memoriserVue);
 demarrer();
 
-function afficherSquelettes() {}
-function rendre() { console.debug(etat.resultats.length, 'résultats'); }
+const galerie = document.getElementById('galerie');
+const loupe = document.getElementById('loupe');
+
+function urlImage(nom) {
+  return etat.manifeste.image_base + nom;
+}
+
+function afficherSquelettes() {
+  galerie.innerHTML = '<div class="squelette"></div>'.repeat(4);
+}
+
+function visibles() {
+  const terme = etat.recherche.trim().toLowerCase();
+  return etat.resultats.filter((meta) => {
+    if (etat.categorie && meta.category !== etat.categorie) return false;
+    if (!terme) return true;
+    return `${meta.title} ${meta.description}`.toLowerCase().includes(terme);
+  });
+}
+
+function rendre() {
+  const metas = visibles();
+  galerie.innerHTML = '';
+  if (!metas.length) {
+    const vide = document.createElement('p');
+    vide.id = 'vide';
+    vide.textContent = etat.resultats.length
+      ? 'No meta matches this filter.'
+      : 'No meta covers this point.';
+    galerie.appendChild(vide);
+    return;
+  }
+  for (const meta of metas) {
+    const bloc = document.createElement('article');
+    bloc.className = 'carte-meta';
+    // textContent plutôt qu'innerHTML : les titres viennent d'un HTML tiers
+    // et peuvent contenir n'importe quoi.
+    // Une meta sans image (le build omet `thumb`/`full` ensemble quand il
+    // n'y a pas de source) garde sa place dans la galerie : seule la
+    // vignette est omise, pas la carte, pour que le compte affiché
+    // corresponde toujours au nombre de metas trouvées.
+    if (meta.thumb) {
+      const image = document.createElement('img');
+      image.loading = 'lazy';
+      image.src = urlImage(meta.thumb);
+      image.alt = '';
+      bloc.appendChild(image);
+    }
+    const legende = document.createElement('p');
+    const code = document.createElement('span');
+    code.className = 'code-pays';
+    code.textContent = meta.code;
+    legende.append(code, document.createTextNode(meta.title));
+    bloc.appendChild(legende);
+    bloc.addEventListener('mouseenter', () => {
+      surlignage.clearLayers();
+      // Couleur en dur et non `var(--accent)` : Leaflet la pose comme attribut
+      // de présentation SVG, où la substitution des variables CSS n'est pas
+      // fiable selon les navigateurs. Garder les deux valeurs synchronisées
+      // avec `--accent` dans style.css.
+      L.geoJSON(etat.pays.get(meta.code).geometries[meta.id], {
+        color: '#c1283a', weight: 2, fillOpacity: 0.18,
+      }).addTo(surlignage);
+    });
+    bloc.addEventListener('click', () => ouvrirLoupe(meta));
+    galerie.appendChild(bloc);
+  }
+}
+
+function ouvrirLoupe(meta) {
+  const image = document.getElementById('loupe-image');
+  // Même défaut que pour la vignette : sans `full`, ne pas demander
+  // « img/undefined » ni ouvrir un agrandissement vide. L'image est
+  // masquée, mais le titre et le lien source restent affichés.
+  image.hidden = !meta.full;
+  image.src = meta.full ? urlImage(meta.full) : '';
+  const texte = document.getElementById('loupe-texte');
+  texte.textContent = `${meta.title} `;
+  const lien = document.createElement('a');
+  lien.href = meta.source_url;
+  lien.target = '_blank';
+  lien.rel = 'noopener';
+  lien.textContent = 'source';
+  texte.appendChild(lien);
+  loupe.hidden = false;
+}
+
+function fermerLoupe() {
+  loupe.hidden = true;
+  document.getElementById('loupe-image').src = '';
+}
+
+document.getElementById('loupe-fermer').addEventListener('click', fermerLoupe);
+loupe.addEventListener('click', (e) => { if (e.target === loupe) fermerLoupe(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fermerLoupe(); });
+
+document.getElementById('recherche').addEventListener('input', (e) => {
+  etat.recherche = e.target.value;
+  rendre();
+});
+
+for (const pastille of document.querySelectorAll('.pastille')) {
+  pastille.addEventListener('click', () => {
+    for (const autre of document.querySelectorAll('.pastille')) {
+      autre.classList.toggle('active', autre === pastille);
+    }
+    etat.categorie = pastille.dataset.categorie;
+    rendre();
+  });
+}
