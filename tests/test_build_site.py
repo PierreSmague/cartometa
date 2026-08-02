@@ -1,10 +1,16 @@
+import fnmatch
 import json
 from pathlib import Path
 
 import pytest
 from PIL import Image
 
-from cartometa.build.site import FILE_COUNT_LIMIT, FILE_COUNT_WARNING, build_site
+from cartometa.build.site import (
+    FILE_COUNT_LIMIT,
+    FILE_COUNT_WARNING,
+    _dumps,
+    build_site,
+)
 
 
 def _carre(x: float, y: float, cote: float) -> dict:
@@ -54,6 +60,24 @@ def _manifeste(dist: Path) -> dict:
     return json.loads((dist / "data" / "manifest.json").read_text("utf-8"))
 
 
+def _regles(headers: str) -> list[tuple[str, dict[str, str]]]:
+    """Découpe un fichier `_headers` en (motif, en-têtes), dans l'ordre.
+
+    Une ligne non indentée ouvre un nouveau motif ; les lignes indentées qui
+    suivent sont ses en-têtes.
+    """
+    regles: list[tuple[str, dict[str, str]]] = []
+    for ligne in headers.splitlines():
+        if not ligne.strip():
+            continue
+        if not ligne[0].isspace():
+            regles.append((ligne.strip(), {}))
+        else:
+            cle, _, valeur = ligne.strip().partition(":")
+            regles[-1][1][cle.strip()] = valeur.strip()
+    return regles
+
+
 def test_le_manifeste_reference_des_fichiers_qui_existent(projet):
     dist = projet / "dist"
 
@@ -100,6 +124,22 @@ def test_image_base_est_dans_le_manifeste(projet):
     assert _manifeste(dist)["image_base"] == "img/"
 
 
+def test_image_base_personnalise_ne_deplace_pas_les_images_sur_le_disque(projet):
+    """L'échappatoire au plafond de fichiers : changer `image_base` ne doit
+    changer que le préfixe inscrit au manifeste. Les images restent
+    toujours écrites sous `out_dir / IMAGE_BASE`, prêtes à être synchronisées
+    vers un bucket sans que le code n'ait besoin de changer."""
+    dist = projet / "dist"
+
+    build_site(
+        projet / "data", dist, projet / "viewer", ["PL"],
+        image_base="https://cdn.example/i/",
+    )
+
+    assert _manifeste(dist)["image_base"] == "https://cdn.example/i/"
+    assert (dist / "img" / "PL").exists()
+
+
 def test_les_gabarits_recoivent_les_noms_empreintes(projet):
     dist = projet / "dist"
 
@@ -111,21 +151,59 @@ def test_les_gabarits_recoivent_les_noms_empreintes(projet):
 
 
 def test_le_fichier_headers_est_produit_avec_les_deux_regimes(projet):
+    """Le manifeste doit être revalidé à chaque visite, et lui seul.
+
+    Un motif qui matcherait aussi `/data/manifest.json` en plus de la règle
+    dédiée rendrait le régime appliqué dépendant d'une priorité Cloudflare
+    non documentée dans ce dépôt — potentiellement `immutable`, ce qui
+    gèlerait le site sur un manifeste périmé pour toujours.
+    """
     dist = projet / "dist"
 
     build_site(projet / "data", dist, projet / "viewer", ["PL"])
 
-    headers = (dist / "_headers").read_text("utf-8")
-    assert "/data/manifest.json" in headers
-    assert "no-cache" in headers
-    assert "immutable" in headers
+    regles = _regles((dist / "_headers").read_text("utf-8"))
+
+    correspondances = [
+        (motif, entetes) for motif, entetes in regles
+        if fnmatch.fnmatchcase("/data/manifest.json", motif)
+    ]
+    assert len(correspondances) == 1, (
+        f"un seul motif doit matcher le manifeste : {correspondances}"
+    )
+    motif, entetes = correspondances[0]
+    assert motif == "/data/manifest.json"
+    assert entetes["Cache-Control"] == "no-cache"
+
+    # Les fichiers empreintés, eux, doivent rester en cache immuable un an.
+    empreinte = [
+        (motif, entetes) for motif, entetes in regles
+        if fnmatch.fnmatchcase("/data/h/index.a1b2c3d4.json", motif)
+    ]
+    assert len(empreinte) == 1
+    assert "immutable" in empreinte[0][1]["Cache-Control"]
+
+
+def test_dumps_est_independant_de_l_ordre_des_cles():
+    """Le tri des clés rend l'empreinte reproductible.
+
+    Sans lui, l'ordre d'insertion suffirait à changer le nom du fichier —
+    et donc à vider le cache de tous les visiteurs — sans qu'aucun contenu
+    n'ait changé.
+    """
+    assert _dumps({"b": 1, "a": 2}) == _dumps({"a": 2, "b": 1})
 
 
 def test_deux_builds_identiques_donnent_les_memes_noms(projet):
     build_site(projet / "data", projet / "d1", projet / "viewer", ["PL"])
     build_site(projet / "data", projet / "d2", projet / "viewer", ["PL"])
 
-    assert _manifeste(projet / "d1")["index"] == _manifeste(projet / "d2")["index"]
+    m1, m2 = _manifeste(projet / "d1"), _manifeste(projet / "d2")
+    assert m1["index"] == m2["index"]
+    # `countries` est le seul payload empreinté qui porte des dictionnaires
+    # (`metas`, `geometries`) plutôt que de simples listes — le seul endroit
+    # où un tri de clés manquant pourrait se voir.
+    assert m1["countries"] == m2["countries"]
 
 
 def test_skip_images_ne_produit_aucune_image(projet):
@@ -159,3 +237,20 @@ def test_un_build_relance_ecrase_sans_laisser_de_residu(projet):
     build_site(projet / "data", dist, projet / "viewer", ["PL"])
 
     assert not (dist / "data" / "vieux.json").exists()
+    # Une vraie sortie de build précédente est toujours remplacée sans que
+    # le garde-fou d'écrasement (voir plus bas) ne s'y oppose.
+    assert (dist / "_headers").exists()
+
+
+def test_le_build_refuse_d_ecraser_un_dossier_qui_ne_ressemble_pas_a_une_sortie(projet):
+    """`--out` pointant par erreur vers `viewer/` ou vers `data/` (une
+    transposition avec `--data`) ne doit jamais être rasé : seul un dossier
+    qui porte déjà la marque d'un build précédent (`_headers`) l'est."""
+    cible = projet / "cible"
+    cible.mkdir()
+    (cible / "important.txt").write_text("travail irremplaçable", "utf-8")
+
+    with pytest.raises(SystemExit, match="_headers"):
+        build_site(projet / "data", cible, projet / "viewer", ["PL"])
+
+    assert (cible / "important.txt").exists()

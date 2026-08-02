@@ -19,6 +19,13 @@ FILE_COUNT_WARNING = 15_000
 
 IMAGE_BASE = "img/"
 
+# Les fichiers empreintés vivent sous `data/h/`, jamais directement sous
+# `data/` où réside `manifest.json`. Un motif `/data/*` recouvrirait aussi le
+# manifeste, et rien dans le dépôt ne fixe lequel des deux régimes (no-cache
+# ou immutable) Cloudflare appliquerait alors : un chevauchement dont l'issue
+# est invérifiable gèlerait silencieusement le site sur un manifeste
+# périmé. On supprime la question en s'assurant qu'aucun motif ne peut
+# jamais matcher les deux chemins à la fois.
 HEADERS = """\
 /index.html
   Cache-Control: no-cache
@@ -26,7 +33,7 @@ HEADERS = """\
   Cache-Control: no-cache
 /data/manifest.json
   Cache-Control: no-cache
-/data/*
+/data/h/*
   Cache-Control: public, max-age=31536000, immutable
 /img/*
   Cache-Control: public, max-age=31536000, immutable
@@ -65,6 +72,20 @@ def build_site(
     """
     jeu = build_dataset(data_dir, countries, tolerance)
 
+    # Garde-fou : `--out` pointant par erreur vers `viewer/` (ancien défaut du
+    # binaire supprimé par cette même migration) ou vers `data/` (une simple
+    # transposition avec `--data`) effacerait respectivement le viewer source
+    # ou des mois de traçage manuel irremplaçable. On ne rase que ce qui
+    # ressemble déjà à une sortie de ce même build.
+    if (
+        out_dir.exists()
+        and any(out_dir.iterdir())
+        and not (out_dir / "_headers").exists()
+    ):
+        raise SystemExit(
+            f"{out_dir} n'est pas vide et ne ressemble pas à une sortie de build "
+            f"(pas de _headers) — refus de l'effacer."
+        )
     if out_dir.exists():
         shutil.rmtree(out_dir)
     out_dir.mkdir(parents=True)
@@ -86,12 +107,14 @@ def build_site(
                 ) from erreur
             meta["thumb"] = f"{pays}/{noms['thumb']}"
             meta["full"] = f"{pays}/{noms['full']}"
-        nom = write_hashed(out_dir / "data" / "c", pays, ".json", _dumps(contenu))
+        nom = write_hashed(out_dir / "data" / "h" / "c", pays, ".json", _dumps(contenu))
         manifeste_pays[pays] = {
-            "file": f"c/{nom}", "count": len(contenu["geometries"])
+            "file": f"h/c/{nom}", "count": len(contenu["geometries"])
         }
 
-    nom_index = write_hashed(out_dir / "data", "index", ".json", _dumps(jeu.index))
+    nom_index = "h/" + write_hashed(
+        out_dir / "data" / "h", "index", ".json", _dumps(jeu.index)
+    )
 
     noms_statiques = {}
     for fichier, marqueur in (("style.css", "__CSS__"), ("app.js", "__JS__")):
