@@ -1,96 +1,106 @@
-const map = L.map('map').setView([52, 19], 5);
+const etat = {
+  manifeste: null,
+  index: [],
+  pays: new Map(),   // code pays -> {metas, geometries}
+  resultats: [],
+  categorie: '',
+  recherche: '',
+};
+
+const carte = L.map('carte', { worldCopyJump: true }).setView([25, 15], 3);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap', maxZoom: 18,
-}).addTo(map);
+}).addTo(carte);
+const surlignage = L.layerGroup().addTo(carte);
 
-let index = [];
-let geometries = {};
-let matches = [];
-const highlight = L.layerGroup().addTo(map);
-
-Promise.all([
-  fetch('data/index.json').then((r) => r.json()),
-  fetch('data/geometries.json').then((r) => r.json()),
-]).then(([loadedIndex, loadedGeometries]) => {
-  index = loadedIndex;
-  geometries = loadedGeometries;
-});
-
-function insideRing(lon, lat, ring) {
-  let inside = false;
-  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-    const [xi, yi] = ring[i];
-    const [xj, yj] = ring[j];
-    if ((yi > lat) !== (yj > lat) && lon < ((xj - xi) * (lat - yi)) / (yj - yi) + xi) {
-      inside = !inside;
-    }
-  }
-  return inside;
+async function demarrer() {
+  const manifeste = await (await fetch('data/manifest.json')).json();
+  etat.manifeste = manifeste;
+  etat.index = await (await fetch(`data/${manifeste.index}`)).json();
+  document.getElementById('compteurs').textContent =
+    `${manifeste.meta_count} metas · ${Object.keys(manifeste.countries).length} countries`;
+  restaurerVue();
 }
 
-function insidePolygon(lon, lat, rings) {
-  if (!insideRing(lon, lat, rings[0])) return false;
-  for (let i = 1; i < rings.length; i += 1) {
-    if (insideRing(lon, lat, rings[i])) return false; // trou
+// Un pays n'est téléchargé qu'une fois, et la promesse est mémorisée : deux
+// clics rapides dans le même pays ne déclenchent pas deux requêtes.
+const enCours = new Map();
+function chargerPays(code) {
+  if (etat.pays.has(code)) return Promise.resolve(etat.pays.get(code));
+  if (enCours.has(code)) return enCours.get(code);
+  const entree = etat.manifeste.countries[code];
+  const promesse = fetch(`data/${entree.file}`)
+    .then((r) => r.json())
+    .then((contenu) => {
+      etat.pays.set(code, contenu);
+      enCours.delete(code);
+      return contenu;
+    });
+  enCours.set(code, promesse);
+  return promesse;
+}
+
+function dansAnneau(lon, lat, anneau) {
+  let dedans = false;
+  for (let i = 0, j = anneau.length - 1; i < anneau.length; j = i++) {
+    const [xi, yi] = anneau[i];
+    const [xj, yj] = anneau[j];
+    if ((yi > lat) !== (yj > lat) && lon < ((xj - xi) * (lat - yi)) / (yj - yi) + xi) {
+      dedans = !dedans;
+    }
+  }
+  return dedans;
+}
+
+function dansPolygone(lon, lat, anneaux) {
+  if (!dansAnneau(lon, lat, anneaux[0])) return false;
+  for (let i = 1; i < anneaux.length; i += 1) {
+    if (dansAnneau(lon, lat, anneaux[i])) return false; // trou
   }
   return true;
 }
 
-function contains(geometry, lon, lat) {
-  if (geometry.type === 'Polygon') return insidePolygon(lon, lat, geometry.coordinates);
-  return geometry.coordinates.some((rings) => insidePolygon(lon, lat, rings));
+function contient(geometrie, lon, lat) {
+  if (geometrie.type === 'Polygon') return dansPolygone(lon, lat, geometrie.coordinates);
+  return geometrie.coordinates.some((anneaux) => dansPolygone(lon, lat, anneaux));
 }
 
-function query(lon, lat) {
-  // Filtre bbox d'abord : élimine la quasi-totalité des candidats en une passe.
-  return index.filter((entry) => {
-    const [minLon, minLat, maxLon, maxLat] = entry.bbox;
-    if (lon < minLon || lon > maxLon || lat < minLat || lat > maxLat) return false;
-    return contains(geometries[entry.id], lon, lat);
-  });
+async function interroger(lon, lat) {
+  // L'index est déjà trié par surface croissante : l'ordre du résultat est
+  // celui du plus spécifique au plus général, sans retrier.
+  const candidats = etat.index.filter(([, , minLon, minLat, maxLon, maxLat]) =>
+    lon >= minLon && lon <= maxLon && lat >= minLat && lat <= maxLat);
+  const codes = [...new Set(candidats.map(([, code]) => code))];
+  await Promise.all(codes.map(chargerPays));
+  return candidats
+    .filter(([id, code]) => contient(etat.pays.get(code).geometries[id], lon, lat))
+    .map(([id, code]) => ({ id, code, ...etat.pays.get(code).metas[id] }));
 }
 
-function visible() {
-  const term = document.getElementById('search').value.trim().toLowerCase();
-  const category = document.getElementById('category').value;
-  return matches.filter((entry) => {
-    if (category && entry.category !== category) return false;
-    if (!term) return true;
-    return (entry.title + ' ' + entry.description).toLowerCase().includes(term);
-  });
-}
-
-function render() {
-  const list = document.getElementById('results');
-  const entries = visible();
-  document.getElementById('hint').textContent = entries.length
-    ? `${entries.length} méta(s) — de la plus spécifique à la plus générale`
-    : 'Aucune méta pour ce point.';
-  list.innerHTML = '';
-  for (const entry of entries) {
-    const item = document.createElement('li');
-    item.innerHTML =
-      `<span class="badge">${entry.country}</span> ` +
-      `<span class="badge">${entry.category}</span> <strong>${entry.title}</strong>` +
-      `<div>${entry.description}</div>` +
-      (entry.image ? `<img loading="lazy" src="../${entry.image}" alt="">` : '') +
-      `<a href="${entry.source_url}" target="_blank" rel="noopener">source</a>`;
-    item.addEventListener('mouseenter', () => {
-      highlight.clearLayers();
-      L.geoJSON(geometries[entry.id], { color: '#c1283a', weight: 2 }).addTo(highlight);
-    });
-    list.appendChild(item);
-  }
-}
-
-map.on('click', (event) => {
-  const started = performance.now();
-  // index est déjà trié par surface croissante : du plus spécifique au plus général.
-  matches = query(event.latlng.lng, event.latlng.lat);
-  console.debug(`requête en ${(performance.now() - started).toFixed(1)} ms`);
-  highlight.clearLayers();
-  render();
+carte.on('click', async (evenement) => {
+  const { lng: lon, lat } = evenement.latlng;
+  document.getElementById('accueil').hidden = true;
+  document.getElementById('filtres').hidden = false;
+  afficherSquelettes();
+  surlignage.clearLayers();
+  etat.resultats = await interroger(lon, lat);
+  rendre();
+  memoriserVue();
 });
 
-document.getElementById('search').addEventListener('input', render);
-document.getElementById('category').addEventListener('change', render);
+function memoriserVue() {
+  const centre = carte.getCenter();
+  history.replaceState(null, '',
+    `#${centre.lat.toFixed(4)},${centre.lng.toFixed(4)},${carte.getZoom()}`);
+}
+
+function restaurerVue() {
+  const [lat, lon, zoom] = location.hash.slice(1).split(',').map(Number);
+  if ([lat, lon, zoom].every(Number.isFinite)) carte.setView([lat, lon], zoom);
+}
+
+carte.on('moveend', memoriserVue);
+demarrer();
+
+function afficherSquelettes() {}
+function rendre() { console.debug(etat.resultats.length, 'résultats'); }

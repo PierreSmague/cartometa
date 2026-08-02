@@ -1,31 +1,57 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cartometa</title>
+  <title>Cartometa — GeoGuessr metas by area</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <link rel="stylesheet" href="style.css">
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="__CSS__">
+  <script defer type="module" src="__JS__"></script>
 </head>
 <body>
-  <div id="map"></div>
-  <aside id="panel">
-    <header>
-      <input id="search" type="search" placeholder="Rechercher…">
-      <select id="category">
-        <option value="">Toutes catégories</option>
-        <option value="bollards">Bollards</option>
-        <option value="poteaux">Poteaux</option>
-        <option value="vehicule">Véhicule</option>
-        <option value="vegetation">Végétation</option>
-        <option value="signalisation">Signalisation</option>
-        <option value="autre">Autre</option>
-      </select>
-    </header>
-    <p id="hint">Cliquez sur la carte pour voir les métas applicables.</p>
-    <ul id="results"></ul>
-  </aside>
-  <script src="app.js"></script>
+  <header id="entete">
+    <div class="marque">
+      <span class="nom">Cartometa</span>
+      <span class="baseline">GeoGuessr metas, by area</span>
+    </div>
+    <span id="compteurs" class="compteurs"></span>
+  </header>
+
+  <main id="principal">
+    <div id="carte"></div>
+    <section id="panneau">
+      <div id="filtres" hidden>
+        <button class="pastille active" data-categorie="">All</button>
+        <button class="pastille" data-categorie="poteaux">Poles</button>
+        <button class="pastille" data-categorie="bollards">Bollards</button>
+        <button class="pastille" data-categorie="signalisation">Signs</button>
+        <button class="pastille" data-categorie="vegetation">Vegetation</button>
+        <button class="pastille" data-categorie="vehicule">Vehicle</button>
+        <button class="pastille" data-categorie="autre">Other</button>
+        <input id="recherche" type="search" placeholder="Filter these results…">
+      </div>
+      <div id="accueil">
+        <h1>Click anywhere on the map</h1>
+        <p>
+          You'll see every meta that covers that point, from the most
+          specific to the most general.
+        </p>
+      </div>
+      <div id="galerie"></div>
+    </section>
+  </main>
+
+  <footer id="pied">
+    Text and images © 2021-2026 Plonk It, CC BY-NC-SA 4.0 ·
+    Imagery © Google · Basemap © OpenStreetMap ·
+    <a href="licence.html">licence and attribution</a>
+  </footer>
+
+  <div id="loupe" hidden>
+    <button id="loupe-fermer" aria-label="Close">×</button>
+    <img id="loupe-image" alt="">
+    <p id="loupe-texte"></p>
+  </div>
 </body>
 </html>
