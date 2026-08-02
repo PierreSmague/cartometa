@@ -6,6 +6,11 @@ const etat = {
   categorie: '',
   recherche: '',
   pret: false,   // true seulement une fois manifeste ET index chargés avec succès
+  // Ces deux drapeaux disent à `rendre()` (et à ses appelants autres que le
+  // clic : recherche, pastilles) ce qu'il y a réellement à l'écran en ce
+  // moment, plutôt que de les laisser deviner d'après `resultats` seul.
+  chargement: false,   // une requête pour le clic courant est en vol
+  erreur: false,       // le dernier clic a échoué ; le message reste affiché
 };
 
 const carte = L.map('carte', { worldCopyJump: true }).setView([25, 15], 3);
@@ -103,6 +108,8 @@ carte.on('click', async (evenement) => {
   const generationDuClic = ++generation;
   document.getElementById('accueil').hidden = true;
   document.getElementById('filtres').hidden = false;
+  etat.chargement = true;
+  etat.erreur = false;
   afficherSquelettes();
   surlignage.clearLayers();
   let resultats;
@@ -112,6 +119,14 @@ carte.on('click', async (evenement) => {
     // Sans ce filet, un pays qui échoue à charger laisse la galerie bloquée
     // sur les squelettes, sans que le visiteur sache que quelque chose a échoué.
     if (generationDuClic !== generation) return; // un clic plus récent a pris le relais
+    // Vider `resultats` est essentiel, pas cosmétique : sans ça, un filtre
+    // tapé juste après cet échec s'appliquerait aux résultats du clic
+    // précédent (ou au tableau initial) et afficherait soit « aucun meta »
+    // pour un simple problème réseau, soit pire, de vraies cartes d'un autre
+    // point comme si elles appartenaient à celui-ci.
+    etat.resultats = [];
+    etat.chargement = false;
+    etat.erreur = true;
     document.getElementById('galerie').innerHTML =
       '<p id="vide">Could not load metas for this area.</p>';
     return;
@@ -119,6 +134,8 @@ carte.on('click', async (evenement) => {
   // Ce clic n'est plus le plus récent : son résultat est périmé, on l'ignore.
   if (generationDuClic !== generation) return;
   etat.resultats = resultats;
+  etat.chargement = false;
+  etat.erreur = false;
   rendre();
   memoriserVue();
 });
@@ -234,12 +251,20 @@ loupe.addEventListener('click', (e) => { if (e.target === loupe) fermerLoupe(); 
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fermerLoupe(); });
 
 document.getElementById('recherche').addEventListener('input', (e) => {
+  // Pendant un chargement ou après une erreur, `resultats` ne correspond à
+  // rien d'affichable pour le clic courant (vide, ou périmé d'un clic
+  // précédent) : filtrer dessus remplacerait le squelette ou le message
+  // d'erreur par un rendu trompeur. On ignore l'interaction ; le clic en
+  // cours (ou le prochain) rendra lui-même l'état à jour.
+  if (etat.chargement || etat.erreur) return;
   etat.recherche = e.target.value;
   rendre();
 });
 
 for (const pastille of document.querySelectorAll('.pastille')) {
   pastille.addEventListener('click', () => {
+    // Même garde-fou que pour la recherche : voir le commentaire ci-dessus.
+    if (etat.chargement || etat.erreur) return;
     for (const autre of document.querySelectorAll('.pastille')) {
       autre.classList.toggle('active', autre === pastille);
     }
