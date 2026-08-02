@@ -1,0 +1,76 @@
+from __future__ import annotations
+
+import argparse
+from pathlib import Path
+
+from cartometa.build.dataset import discover_countries
+from cartometa.build.geometry import DEFAULT_TOLERANCE
+from cartometa.build.site import (
+    FILE_COUNT_LIMIT,
+    FILE_COUNT_WARNING,
+    IMAGE_BASE,
+    build_site,
+)
+
+
+def main() -> None:
+    analyseur = argparse.ArgumentParser(description="Construit le site public")
+    analyseur.add_argument(
+        "countries", nargs="*",
+        help="Codes ISO à publier. Par défaut, tous ceux présents dans data/geo/.",
+    )
+    analyseur.add_argument("--data", type=Path, default=Path("data"))
+    analyseur.add_argument("--out", type=Path, default=Path("dist"))
+    analyseur.add_argument("--viewer", type=Path, default=Path("viewer"))
+    analyseur.add_argument(
+        "--simplify-tolerance", type=float, default=DEFAULT_TOLERANCE,
+        help=f"Tolérance en degrés, plafonnée par emprise (défaut {DEFAULT_TOLERANCE}).",
+    )
+    analyseur.add_argument(
+        "--skip-images", action="store_true",
+        help="Saute l'encodage des images — pour itérer vite sur le code.",
+    )
+    analyseur.add_argument(
+        "--image-base", default=IMAGE_BASE,
+        help=(
+            "Préfixe des URL d'images dans le manifeste. Passer une URL absolue "
+            "(bucket R2 sur domaine personnalisé) déplace les images hors du "
+            f"déploiement sans toucher au code. Défaut : {IMAGE_BASE}"
+        ),
+    )
+    arguments = analyseur.parse_args()
+
+    pays = [c.upper() for c in arguments.countries] or discover_countries(arguments.data)
+    if not pays:
+        raise SystemExit(
+            f"Aucun pays à publier : {arguments.data / 'geo'} ne contient aucun "
+            f".geojson.\nLance d'abord cartometa-extract puis cartometa-review."
+        )
+
+    resultat = build_site(
+        arguments.data, arguments.out, arguments.viewer, pays,
+        arguments.simplify_tolerance, arguments.skip_images,
+        arguments.image_base,
+    )
+
+    detail = ", ".join(f"{p} {n}" for p, n in resultat["countries"].items())
+    print(f"{resultat['metas']} métas publiées vers {resultat['output']} ({detail})")
+    print(f"{resultat['files']} fichiers")
+
+    if resultat["files"] >= FILE_COUNT_WARNING:
+        print(
+            f"\nAttention : {resultat['files']} fichiers, pour une limite de "
+            f"{FILE_COUNT_LIMIT} par déploiement Cloudflare Pages.\n"
+            f"Au plafond, c'est la publication qui échoue, pas le site en ligne.\n"
+            f"Parade : déplacer img/ vers un bucket R2 et changer `image_base` "
+            f"dans le manifeste."
+        )
+    if resultat["legacy_statuses"]:
+        print(
+            f"\nAttention : {resultat['legacy_statuses']} emprise(s) portent un "
+            f"statut hérité (ni validé ni rejeté) et n'ont pas été publiées."
+        )
+
+
+if __name__ == "__main__":
+    main()
