@@ -218,7 +218,9 @@ fichier de ce pays : les visiteurs gardent les 43 autres en cache.
 
 Le facteur limitant n'est ni le volume ni la vitesse, mais le **nombre de
 fichiers accepté par déploiement Cloudflare Pages, soit 20 000**. À deux images
-par méta, le plafond est atteint vers 10 000 métas.
+par méta, le plafond est atteint vers 10 000 métas — **au total, tous pays
+confondus**, et non par pays. À titre de repère, le pays le mieux fourni
+aujourd'hui compte 100 métas.
 
 | métas | images | fichiers | index transféré |
 |---|---|---|---|
@@ -255,8 +257,6 @@ neutre, accent `#c1283a` — celui déjà utilisé pour le surlignage.
   l'interaction, avec les compteurs.
 - **Agrandissement** : clic sur une vignette → image pleine taille en surcouche,
   titre complet, lien « source » vers l'ancre Plonk It.
-- **Mobile** (sous 900 px) : carte en haut sur 55 % de la hauteur, galerie en
-  dessous sur une colonne.
 - **URL partageable** : position et zoom dans le fragment (`#lat,lon,z`),
   restaurés au chargement.
 
@@ -271,10 +271,9 @@ reste possible plus tard par simples variables CSS.
   `© 2021-2026 Plonk It`, indication que le matériel a été modifié (découpage,
   ajout d'emprises), distinction entre ce qui vient de Plonk It et ce qui vient
   du projet, note sur l'imagerie Google sous-jacente, et adresse de contact pour
-  une demande de retrait. **Décision en attente** : quelle adresse. Une adresse
-  personnelle, pas professionnelle — publier un projet non commercial sous une
-  adresse d'entreprise brouille précisément le critère « NC » de la licence.
-  Un `mailto:` suffit ; à défaut, la page renvoie vers les issues du dépôt.
+  une demande de retrait : `psmague@gmail.com`, en `mailto:`. Adresse
+  personnelle et non professionnelle, délibérément : publier un projet non
+  commercial sous une adresse d'entreprise brouillerait le critère « NC ».
 - `LICENSE` (MIT, code) et `LICENSE-DATA` (CC BY-NC-SA 4.0, données) à la racine.
 - `CONTRIBUTING.md` : les contributions sont publiées sous CC BY-NC-SA 4.0.
 - Lien « source » par méta vers l'ancre Plonk It — déjà présent dans les données.
@@ -299,12 +298,17 @@ conservée. Nouveaux tests :
 
 **Dans le jalon** : découpage par pays, simplification, chargement paresseux,
 images à deux tailles, cache par empreinte, attribution et pages de licence,
-interface complète en clair, état d'accueil, agrandissement, mobile, URL
-partageable, sortie de `viewer/data/` du dépôt.
+interface complète en clair, état d'accueil, agrandissement, URL partageable,
+sortie de `viewer/data/` du dépôt.
 
-**Hors jalon, explicitement** : recherche globale sur l'ensemble des métas, page
-par pays, bascule sombre, changement de fournisseur de tuiles, réécriture de
-l'historique git, et tout l'outillage pour contributeurs.
+**Hors jalon, explicitement** : adaptation mobile, recherche globale sur
+l'ensemble des métas, page par pays, bascule sombre, changement de fournisseur
+de tuiles, réécriture de l'historique git, et tout l'outillage pour
+contributeurs.
+
+Conséquence assumée de l'absence d'adaptation mobile : sur un téléphone, la
+mise en page en deux colonnes restera à l'étroit. Le site est conçu pour le
+grand écran dans ce jalon.
 
 **Reporté au lendemain** : le déploiement lui-même, y compris la création du
 compte Cloudflare et le nom de domaine.
