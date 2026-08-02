@@ -1,6 +1,8 @@
 import math
 
 import pytest
+from shapely.geometry import Polygon
+from shapely.geometry.base import BaseGeometry
 
 from cartometa.build.geometry import (
     DEFAULT_TOLERANCE,
@@ -73,13 +75,29 @@ def test_la_simplification_preserve_l_aire_des_petites_emprises():
     assert area_ratio(minuscule, simplifiee) > 0.80
 
 
-def test_la_simplification_ne_vide_jamais_une_geometrie():
-    minuscule = _rectangle(35.51, 33.88, 0.0005, 0.0005, pas=4)
+def test_la_simplification_ne_vide_jamais_une_geometrie(monkeypatch):
+    """Le filet de sécurité contre la dégénérescence, exercé pour de vrai.
 
-    simplifiee = simplify_geometry(minuscule)
+    Avec `preserve_topology=True`, GEOS ne produit jamais de résultat vide ou
+    invalide sur une entrée saine — même une emprise « spot » minuscule ou un
+    anneau extrêmement fin survit intact (vérifié empiriquement : aucune
+    combinaison de taille ni de tolérance ne suffit à le faire dégénérer). Le
+    filet ne protège donc que contre une pathologie que ni la géométrie
+    d'origine ni la tolérance ne peuvent provoquer ici ; on la simule pour de
+    vrai, en forçant GEOS à renvoyer une géométrie vide, comme il pourrait le
+    faire sur des données de terrain vraiment tordues.
+    """
+    geometrie = _rectangle(35.51, 33.88, 0.005, 0.0035, pas=6)
+
+    def simplification_degeneree(self, tolerance, preserve_topology=True):
+        return Polygon()
+
+    monkeypatch.setattr(BaseGeometry, "simplify", simplification_degeneree)
+
+    simplifiee = simplify_geometry(geometrie)
 
     assert simplifiee["coordinates"][0]
-    assert area_ratio(minuscule, simplifiee) > 0.0
+    assert area_ratio(geometrie, simplifiee) == pytest.approx(1.0)
 
 
 def test_la_distance_de_hausdorff_reste_sous_la_tolerance_effective():
