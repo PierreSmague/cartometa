@@ -1,17 +1,166 @@
-* { box-sizing: border-box; }
-body { margin: 0; font: 15px/1.5 system-ui, sans-serif; }
-#map { position: absolute; inset: 0 380px 0 0; }
-#panel { position: absolute; top: 0; right: 0; bottom: 0; width: 380px;
-         overflow-y: auto; background: #fff; border-left: 1px solid #ddd; padding: 12px; }
-#panel header { display: flex; gap: 8px; margin-bottom: 12px; }
-#panel input, #panel select { flex: 1; min-width: 0; padding: 6px; }
-#results { list-style: none; margin: 0; padding: 0; }
-#results li { border-bottom: 1px solid #eee; padding: 10px 4px; cursor: pointer; }
-#results li:hover { background: #f4f7ff; }
-#results img { width: 100%; border-radius: 4px; margin-top: 6px; }
-.badge { font-size: 12px; background: #eef; border-radius: 3px; padding: 1px 6px; }
+:root {
+  --fond: #fbfbfa;
+  --fond-carte: #ffffff;
+  --trait: #e7e7e3;
+  --texte: #1c1c1a;
+  --texte-doux: #86867f;
+  --accent: #c1283a;
+  --rayon: 6px;
+}
 
-@media (max-width: 760px) {
-  #map { inset: 0 0 45vh 0; }
-  #panel { top: auto; height: 45vh; width: 100%; border-left: none; border-top: 1px solid #ddd; }
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--fond);
+  color: var(--texte);
+  font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+#entete {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--trait);
+  background: var(--fond-carte);
+}
+.marque { display: flex; align-items: baseline; gap: 10px; }
+.nom { font-size: 16px; font-weight: 600; letter-spacing: -0.02em; }
+.baseline, .compteurs { font-size: 11.5px; color: var(--texte-doux); }
+
+#principal { flex: 1; display: flex; min-height: 0; }
+#carte { flex: 0 0 46%; }
+#panneau {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--trait);
+  background: var(--fond-carte);
+}
+
+#filtres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--trait);
+}
+.pastille {
+  font: inherit;
+  font-size: 11px;
+  padding: 4px 11px;
+  border: 1px solid var(--trait);
+  border-radius: 99px;
+  background: var(--fond-carte);
+  color: var(--texte-doux);
+  cursor: pointer;
+}
+.pastille.active { background: var(--texte); color: var(--fond-carte); border-color: var(--texte); }
+#recherche {
+  flex: 1;
+  min-width: 140px;
+  font: inherit;
+  font-size: 11.5px;
+  padding: 4px 10px;
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon);
+}
+
+#accueil { padding: 28px 20px; max-width: 44ch; }
+#accueil h1 { font-size: 17px; font-weight: 600; margin: 0 0 8px; }
+#accueil p { margin: 0; color: var(--texte-doux); }
+
+#galerie {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+  padding: 14px 16px;
+  align-content: start;
+}
+#galerie:empty { padding: 0; }
+
+.carte-meta { cursor: zoom-in; }
+.carte-meta img {
+  width: 100%;
+  aspect-ratio: 16 / 8;
+  object-fit: cover;
+  border-radius: var(--rayon);
+  display: block;
+  background: #eeeeeb;
+}
+.carte-meta p {
+  margin: 6px 0 0;
+  font-size: 11.5px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.code-pays {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  padding: 2px 5px;
+  border-radius: 3px;
+  background: var(--texte);
+  color: var(--fond-carte);
+  margin-right: 5px;
+}
+
+.squelette {
+  aspect-ratio: 16 / 8;
+  border-radius: var(--rayon);
+  background: linear-gradient(90deg, #efefec 25%, #f7f7f4 50%, #efefec 75%);
+  background-size: 200% 100%;
+  animation: glisse 1.2s infinite;
+}
+@keyframes glisse { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+#vide { padding: 24px 20px; color: var(--texte-doux); grid-column: 1 / -1; }
+
+#pied {
+  padding: 7px 18px;
+  border-top: 1px solid var(--trait);
+  background: var(--fond-carte);
+  font-size: 10.5px;
+  color: var(--texte-doux);
+}
+#pied a { color: inherit; }
+
+#loupe {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(20, 20, 18, 0.88);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 32px;
+}
+#loupe[hidden] { display: none; }
+#loupe img { max-width: 100%; max-height: 76vh; object-fit: contain; border-radius: var(--rayon); }
+#loupe p { color: #f2f2ee; max-width: 80ch; text-align: center; margin: 0; font-size: 13px; }
+#loupe p a { color: #f2f2ee; }
+#loupe-fermer {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font-size: 26px;
+  line-height: 1;
+  background: none;
+  border: none;
+  color: #f2f2ee;
+  cursor: pointer;
 }
