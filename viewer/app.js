@@ -14,12 +14,19 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const surlignage = L.layerGroup().addTo(carte);
 
 async function demarrer() {
-  const manifeste = await (await fetch('data/manifest.json')).json();
-  etat.manifeste = manifeste;
-  etat.index = await (await fetch(`data/${manifeste.index}`)).json();
-  document.getElementById('compteurs').textContent =
-    `${manifeste.meta_count} metas · ${Object.keys(manifeste.countries).length} countries`;
-  restaurerVue();
+  try {
+    const manifeste = await (await fetch('data/manifest.json')).json();
+    etat.manifeste = manifeste;
+    etat.index = await (await fetch(`data/${manifeste.index}`)).json();
+    document.getElementById('compteurs').textContent =
+      `${manifeste.meta_count} metas · ${Object.keys(manifeste.countries).length} countries`;
+    restaurerVue();
+  } catch (erreur) {
+    // Sans ce filet, un manifeste ou un index indisponible laisse une page
+    // muette, indiscernable d'un simple chargement encore en cours.
+    document.getElementById('accueil').textContent =
+      'Could not load the meta index. Please reload the page.';
+  }
 }
 
 // Un pays n'est téléchargé qu'une fois, et la promesse est mémorisée : deux
@@ -33,9 +40,12 @@ function chargerPays(code) {
     .then((r) => r.json())
     .then((contenu) => {
       etat.pays.set(code, contenu);
-      enCours.delete(code);
       return contenu;
-    });
+    })
+    // Si le fetch échoue, retirer l'entrée dans tous les cas : sinon une simple
+    // coupure réseau bloquerait ce pays derrière une promesse rejetée pour
+    // toujours, et aucun clic ultérieur ne pourrait retenter le chargement.
+    .finally(() => enCours.delete(code));
   enCours.set(code, promesse);
   return promesse;
 }
@@ -77,13 +87,31 @@ async function interroger(lon, lat) {
     .map(([id, code]) => ({ id, code, ...etat.pays.get(code).metas[id] }));
 }
 
+// Compteur de génération : incrémenté à chaque clic, pour qu'un clic plus
+// lent ne vienne pas écraser l'affichage d'un clic plus récent déjà résolu.
+let generation = 0;
+
 carte.on('click', async (evenement) => {
   const { lng: lon, lat } = evenement.latlng;
+  const generationDuClic = ++generation;
   document.getElementById('accueil').hidden = true;
   document.getElementById('filtres').hidden = false;
   afficherSquelettes();
   surlignage.clearLayers();
-  etat.resultats = await interroger(lon, lat);
+  let resultats;
+  try {
+    resultats = await interroger(lon, lat);
+  } catch (erreur) {
+    // Sans ce filet, un pays qui échoue à charger laisse la galerie bloquée
+    // sur les squelettes, sans que le visiteur sache que quelque chose a échoué.
+    if (generationDuClic !== generation) return; // un clic plus récent a pris le relais
+    document.getElementById('galerie').innerHTML =
+      '<p id="vide">Could not load metas for this area.</p>';
+    return;
+  }
+  // Ce clic n'est plus le plus récent : son résultat est périmé, on l'ignore.
+  if (generationDuClic !== generation) return;
+  etat.resultats = resultats;
   rendre();
   memoriserVue();
 });
