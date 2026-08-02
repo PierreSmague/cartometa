@@ -46,8 +46,8 @@ dist/
   _headers                          règles de cache Cloudflare
   data/
     manifest.json                   non caché — unique porte d'entrée
-    index.<hash>.json               index global léger
-    c/<CC>.<hash>.json              un fichier par pays
+    h/index.<hash>.json             index global léger
+    h/c/<CC>.<hash>.json            un fichier par pays
   img/<CC>/<id>.<hash>.webp         vignette et pleine taille
 ```
 
@@ -206,13 +206,13 @@ l'hébergeur. C'est ce qui impose le modèle « artefact de build ».
 Fichier `_headers` :
 
 ```
-/data/manifest.json
-  Cache-Control: no-cache
 /index.html
   Cache-Control: no-cache
 /licence.html
   Cache-Control: no-cache
-/data/*
+/data/manifest.json
+  Cache-Control: no-cache
+/data/h/*
   Cache-Control: public, max-age=31536000, immutable
 /img/*
   Cache-Control: public, max-age=31536000, immutable
@@ -224,6 +224,15 @@ Fichier `_headers` :
 
 L'empreinte étant calculée **par fichier**, ajouter un pays ne renouvelle que le
 fichier de ce pays : les visiteurs gardent les 43 autres en cache.
+
+**Les fichiers empreintés vivent sous `data/h/` pour qu'aucune règle ne recouvre
+`manifest.json`.** Une première rédaction plaçait `/data/manifest.json` en
+`no-cache` puis `/data/*` en immuable : les deux règles s'appliquent au
+manifeste, et la précédence n'était vérifiée nulle part. Si le glob l'emportait,
+le manifeste restait figé un an chez chaque visiteur, ne référençait plus que
+des fichiers d'il y a un an, et aucun déploiement ultérieur ne les atteignait
+— sans la moindre erreur visible. Séparer les chemins supprime la question
+plutôt que d'en dépendre.
 
 ## 9. Mise à l'échelle
 
