@@ -11,7 +11,11 @@
 ## Global Constraints
 
 - Spec de référence : `docs/superpowers/specs/2026-08-02-cartometa-site-public-design.md`.
-- Tous les commentaires, docstrings, noms de tests et messages utilisateur sont **en français**, comme le reste du dépôt.
+- **Langue.** Deux régimes, à ne pas confondre :
+  - *Le dépôt reste en français* — commentaires, docstrings, noms de tests, messages des commandes en ligne, README, `CONTRIBUTING.md`. Comme aujourd'hui.
+  - *Le site public est en anglais* — toute chaîne visible dans le navigateur : `index.html`, `licence.html`, les messages affichés par `app.js`, et `LICENSE-DATA` qui est une notice destinée aux réutilisateurs. Le contenu des 1679 métas est en anglais et la communauté GeoGuessr est internationale ; une coquille française autour d'un contenu anglais n'aurait pas de sens.
+  - *Les identifiants restent en français* — `#carte`, `#panneau`, `#galerie`, `#loupe`, `etat`, `rendre()`. C'est du code, il suit la langue du dépôt.
+  - *Les valeurs `data-categorie` restent les slugs français* (`poteaux`, `bollards`, `signalisation`, `vegetation`, `vehicule`, `autre`) : ce sont les valeurs présentes dans les données, seul le libellé affiché est traduit.
 - **Aucun test ne touche le réseau.** Les tests sur données réelles portent le marqueur `real_data`.
 - Empreinte de contenu = **8 premiers caractères hexadécimaux du SHA-256** des octets écrits.
 - Tolérance de simplification par défaut : `0.01`, **adaptative** — `min(tolérance, diagonale de la bbox / 50)`.
@@ -19,7 +23,7 @@
 - Images : vignette **600 px**, pleine **1400 px**, webp qualité **78**, jamais agrandies.
 - Seul le statut `validé` (`STATUS_TRACED`) est publié.
 - Adresse de contact : `psmague@gmail.com`.
-- Attribution obligatoire sur toutes les pages : `Textes et images © 2021-2026 Plonk It, CC BY-NC-SA 4.0 · Imagery © Google · Fond © OpenStreetMap`.
+- Attribution obligatoire sur toutes les pages du site, **en anglais** : `Text and images © 2021-2026 Plonk It, CC BY-NC-SA 4.0 · Imagery © Google · Basemap © OpenStreetMap`.
 - L'adaptation mobile est **hors périmètre**.
 
 ## Structure des fichiers
@@ -1267,11 +1271,11 @@ git commit -m "feat: commande cartometa-build, manifeste et en-tetes de cache"
 
 ```html
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cartometa — les métas GeoGuessr par emprise</title>
+  <title>Cartometa — GeoGuessr metas by area</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <link rel="stylesheet" href="__CSS__">
@@ -1281,7 +1285,7 @@ git commit -m "feat: commande cartometa-build, manifeste et en-tetes de cache"
   <header id="entete">
     <div class="marque">
       <span class="nom">Cartometa</span>
-      <span class="baseline">les métas GeoGuessr, par emprise</span>
+      <span class="baseline">GeoGuessr metas, by area</span>
     </div>
     <span id="compteurs" class="compteurs"></span>
   </header>
@@ -1290,20 +1294,20 @@ git commit -m "feat: commande cartometa-build, manifeste et en-tetes de cache"
     <div id="carte"></div>
     <section id="panneau">
       <div id="filtres" hidden>
-        <button class="pastille active" data-categorie="">Tout</button>
-        <button class="pastille" data-categorie="poteaux">Poteaux</button>
+        <button class="pastille active" data-categorie="">All</button>
+        <button class="pastille" data-categorie="poteaux">Poles</button>
         <button class="pastille" data-categorie="bollards">Bollards</button>
-        <button class="pastille" data-categorie="signalisation">Signalisation</button>
-        <button class="pastille" data-categorie="vegetation">Végétation</button>
-        <button class="pastille" data-categorie="vehicule">Véhicule</button>
-        <button class="pastille" data-categorie="autre">Autre</button>
-        <input id="recherche" type="search" placeholder="Filtrer ces résultats…">
+        <button class="pastille" data-categorie="signalisation">Signs</button>
+        <button class="pastille" data-categorie="vegetation">Vegetation</button>
+        <button class="pastille" data-categorie="vehicule">Vehicle</button>
+        <button class="pastille" data-categorie="autre">Other</button>
+        <input id="recherche" type="search" placeholder="Filter these results…">
       </div>
       <div id="accueil">
-        <h1>Cliquez n'importe où sur la carte</h1>
+        <h1>Click anywhere on the map</h1>
         <p>
-          Vous verrez toutes les métas qui couvrent ce point, de la plus
-          précise à la plus générale.
+          You'll see every meta that covers that point, from the most
+          specific to the most general.
         </p>
       </div>
       <div id="galerie"></div>
@@ -1311,13 +1315,13 @@ git commit -m "feat: commande cartometa-build, manifeste et en-tetes de cache"
   </main>
 
   <footer id="pied">
-    Textes et images © 2021-2026 Plonk It, CC BY-NC-SA 4.0 ·
-    Imagery © Google · Fond © OpenStreetMap ·
-    <a href="licence.html">licence et attribution</a>
+    Text and images © 2021-2026 Plonk It, CC BY-NC-SA 4.0 ·
+    Imagery © Google · Basemap © OpenStreetMap ·
+    <a href="licence.html">licence and attribution</a>
   </footer>
 
   <div id="loupe" hidden>
-    <button id="loupe-fermer" aria-label="Fermer">×</button>
+    <button id="loupe-fermer" aria-label="Close">×</button>
     <img id="loupe-image" alt="">
     <p id="loupe-texte"></p>
   </div>
@@ -1519,7 +1523,7 @@ async function demarrer() {
   etat.manifeste = manifeste;
   etat.index = await (await fetch(`data/${manifeste.index}`)).json();
   document.getElementById('compteurs').textContent =
-    `${manifeste.meta_count} métas · ${Object.keys(manifeste.countries).length} pays`;
+    `${manifeste.meta_count} metas · ${Object.keys(manifeste.countries).length} countries`;
   restaurerVue();
 }
 
@@ -1676,8 +1680,8 @@ function rendre() {
     const vide = document.createElement('p');
     vide.id = 'vide';
     vide.textContent = etat.resultats.length
-      ? 'Aucune méta ne correspond à ce filtre.'
-      : 'Aucune méta ne couvre ce point.';
+      ? 'No meta matches this filter.'
+      : 'No meta covers this point.';
     galerie.appendChild(vide);
     return;
   }
@@ -1760,8 +1764,10 @@ Liste de contrôle sur <http://127.0.0.1:8010/> :
 - cliquer une vignette ouvre l'image pleine taille, avec le titre complet et le lien « source » ;
 - `Échap`, la croix et un clic sur le fond ferment l'agrandissement ;
 - les pastilles de catégorie et le champ de recherche filtrent les résultats du clic courant ;
-- un clic en pleine mer affiche « Aucune méta ne couvre ce point. » ;
-- le pied de page affiche l'attribution complète.
+- un clic en pleine mer affiche « No meta covers this point. » ;
+- le pied de page affiche l'attribution complète, en anglais ;
+- **toute chaîne visible est en anglais** — aucun mot de français ne subsiste
+  dans la page, en-tête, pastilles et messages compris.
 
 - [ ] **Step 3: Commit**
 
@@ -1808,11 +1814,11 @@ Expected: PASS déjà — la tâche 5 copie `licence.html` quand il existe. Le t
 
 ```html
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cartometa — licence et attribution</title>
+  <title>Cartometa — licence and attribution</title>
   <link rel="stylesheet" href="__CSS__">
   <style>
     body { display: block; }
@@ -1823,51 +1829,51 @@ Expected: PASS déjà — la tâche 5 copie `licence.html` quand il existe. Le t
 </head>
 <body>
   <main>
-    <p><a href="index.html">← retour à la carte</a></p>
-    <h1>Licence et attribution</h1>
+    <p><a href="index.html">← back to the map</a></p>
+    <h1>Licence and attribution</h1>
 
-    <h2>Ce qui vient de Plonk It</h2>
+    <h2>What comes from Plonk It</h2>
     <p>
-      Les titres, descriptions et images des métas proviennent de
+      Meta titles, descriptions and images come from
       <a href="https://www.plonkit.net" rel="noopener">Plonk It</a>,
-      © 2021-2026 Plonk It, publiés sous licence
-      <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr" rel="noopener">
-        Creative Commons Attribution - Pas d'Utilisation Commerciale -
-        Partage dans les Mêmes Conditions 4.0 International</a>.
-      Chaque méta porte un lien « source » vers sa page d'origine.
+      © 2021-2026 Plonk It, published under the
+      <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener">
+        Creative Commons Attribution-NonCommercial-ShareAlike 4.0
+        International</a> licence.
+      Every meta carries a “source” link back to its original page.
     </p>
     <p>
-      <strong>Le matériel a été modifié</strong> : les textes ont été
-      restructurés, et chaque méta s'est vu associer une emprise géographique
-      qui n'existe pas dans la source.
-    </p>
-
-    <h2>Ce qui vient de ce projet</h2>
-    <p>
-      Les emprises géographiques sont tracées à la main, une par une. Elles
-      sont publiées sous la même licence CC BY-NC-SA 4.0, partage à
-      l'identique oblige. Le code du site est distribué séparément sous
-      licence MIT.
+      <strong>The material has been modified</strong>: the texts were
+      restructured, and each meta was paired with a geographic area that
+      does not exist in the source.
     </p>
 
-    <h2>Imagerie</h2>
+    <h2>What comes from this project</h2>
     <p>
-      Les captures de métas proviennent de Google Street View. La licence
-      Creative Commons de Plonk It couvre leurs annotations et leur montage,
-      pas l'imagerie sous-jacente, qui reste © Google. Les filigranes
-      présents dans les images d'origine n'ont pas été retirés.
-      Le fond de carte est © OpenStreetMap et ses contributeurs.
+      The geographic areas are traced by hand, one at a time. They are
+      published under the same CC BY-NC-SA 4.0 licence — ShareAlike leaves
+      no choice, and none is wanted. The site's source code is distributed
+      separately under the MIT licence.
     </p>
 
-    <h2>Usage non commercial</h2>
+    <h2>Imagery</h2>
     <p>
-      Ce site est un projet personnel sans publicité, sans sponsor et sans
-      contrepartie financière d'aucune sorte.
+      The meta screenshots come from Google Street View. Plonk It's Creative
+      Commons licence covers their annotations and their composition, not the
+      underlying imagery, which remains © Google. Watermarks present in the
+      original images have not been removed. The basemap is © OpenStreetMap
+      contributors.
+    </p>
+
+    <h2>Non-commercial use</h2>
+    <p>
+      This site is a personal project. No advertising, no sponsorship, no
+      revenue of any kind.
     </p>
 
     <h2>Contact</h2>
     <p>
-      Pour toute demande, y compris une demande de retrait :
+      For anything, including a takedown request:
       <a href="mailto:psmague@gmail.com">psmague@gmail.com</a>.
     </p>
   </main>
@@ -1884,24 +1890,25 @@ Cette licence couvre le CODE de Cartometa. Les DONNÉES publiées (textes,
 images et emprises) relèvent de LICENSE-DATA.
 ```
 
-`LICENSE-DATA` :
+`LICENSE-DATA` — **en anglais**, c'est une notice destinée aux réutilisateurs,
+qui sont internationaux :
 
 ```
-Les données publiées par Cartometa — titres, descriptions et images des métas,
-ainsi que les emprises géographiques tracées pour ce projet — sont distribuées
-sous licence Creative Commons Attribution - Pas d'Utilisation Commerciale -
-Partage dans les Mêmes Conditions 4.0 International (CC BY-NC-SA 4.0).
+The data published by Cartometa — meta titles, descriptions and images, along
+with the geographic areas traced for this project — is distributed under the
+Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+licence (CC BY-NC-SA 4.0).
 
-https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr
+https://creativecommons.org/licenses/by-nc-sa/4.0/
 
-Les textes et images sont © 2021-2026 Plonk It (https://www.plonkit.net) et
-repris sous cette même licence. Ils ont été modifiés : restructurés, et
-associés à des emprises géographiques absentes de la source.
+Texts and images are © 2021-2026 Plonk It (https://www.plonkit.net) and are
+reused under that same licence. They have been modified: restructured, and
+paired with geographic areas that are absent from the source.
 
-L'imagerie Street View sous-jacente reste © Google et n'est couverte ni par
-la licence de Plonk It ni par la présente.
+The underlying Street View imagery remains © Google and is covered neither by
+Plonk It's licence nor by this one.
 
-Contact : psmague@gmail.com
+Contact: psmague@gmail.com
 ```
 
 `CONTRIBUTING.md` :

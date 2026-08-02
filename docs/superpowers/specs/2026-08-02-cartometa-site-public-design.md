@@ -266,6 +266,13 @@ Structure retenue : **moitié carte, moitié galerie**, au motif que dans une m�
 GeoGuessr l'image porte l'information et le texte la légende. Habillage clair
 neutre, accent `#c1283a` — celui déjà utilisé pour le surlignage.
 
+**Le site est en anglais.** Les 1679 métas ont un contenu intégralement anglais
+et la communauté GeoGuessr est internationale : une interface française autour
+d'un contenu anglais n'aurait pas de sens. Le dépôt, lui, reste en français —
+commentaires, docstrings, tests, README, `CONTRIBUTING.md`, et les identifiants
+du code. Seules les chaînes visibles dans le navigateur sont traduites, ainsi
+que `LICENSE-DATA`, notice destinée aux réutilisateurs.
+
 - **En-tête** : nom, sous-titre, compteurs (métas, pays).
 - **Carte** : 46 % de la largeur, tuiles OSM standard, attribution native.
 - **Galerie** : grille de deux colonnes, vignette en 16/8, code pays et titre
