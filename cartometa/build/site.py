@@ -28,8 +28,21 @@ IMAGE_BASE = "img/"
 # est invérifiable gèlerait silencieusement le site sur un manifeste
 # périmé. On supprime la question en s'assurant qu'aucun motif ne peut
 # jamais matcher les deux chemins à la fois.
+#
+# Les pages HTML sont déclarées sous leurs DEUX formes. Cloudflare Pages sert
+# des URL propres : il redirige `/index.html` vers `/` et `/licence.html` vers
+# `/licence`. Vérifié en production, une règle écrite sur le seul nom de
+# fichier ne s'applique donc qu'à une adresse que personne ne visite, et la
+# vraie page retombe sur le défaut de l'hébergeur. Celui-ci se trouve être
+# équivalent (`max-age=0, must-revalidate`), mais dépendre du défaut d'un
+# tiers pour une garantie qu'on croit avoir écrite est exactement le piège
+# qu'on a déjà rencontré sur le manifeste.
 HEADERS = """\
+/
+  Cache-Control: no-cache
 /index.html
+  Cache-Control: no-cache
+/licence
   Cache-Control: no-cache
 /licence.html
   Cache-Control: no-cache

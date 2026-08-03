@@ -247,7 +247,11 @@ l'hébergeur. C'est ce qui impose le modèle « artefact de build ».
 Fichier `_headers` :
 
 ```
+/
+  Cache-Control: no-cache
 /index.html
+  Cache-Control: no-cache
+/licence
   Cache-Control: no-cache
 /licence.html
   Cache-Control: no-cache
@@ -274,6 +278,15 @@ le manifeste restait figé un an chez chaque visiteur, ne référençait plus qu
 des fichiers d'il y a un an, et aucun déploiement ultérieur ne les atteignait
 — sans la moindre erreur visible. Séparer les chemins supprime la question
 plutôt que d'en dépendre.
+
+**Les pages HTML sont déclarées sous leurs deux formes.** Cloudflare Pages sert
+des URL propres : il redirige `/index.html` vers `/` et `/licence.html` vers
+`/licence`. Constaté en production après le premier déploiement — une règle
+écrite sur le seul nom de fichier ne couvrait donc que l'adresse que personne ne
+visite, et la vraie page retombait sur le défaut de l'hébergeur. Ce défaut se
+trouve être équivalent (`max-age=0, must-revalidate`), mais dépendre du défaut
+d'un tiers pour une garantie qu'on croit avoir écrite est le même piège que
+celui du manifeste, en plus discret.
 
 ## 9. Mise à l'échelle
 
