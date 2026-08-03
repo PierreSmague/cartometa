@@ -14,6 +14,10 @@ __pycache__/
 # Regenerable par: uv run cartometa-extract poland
 data/metas/
 
+# Essais de fond de carte : contient une cle d'API en clair. Le depot est
+# public — un `git add data` suffirait a la publier.
+data/background/
+
 # Journaux de la tache planifiee
 logs/
 

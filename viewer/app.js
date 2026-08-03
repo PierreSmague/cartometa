@@ -19,10 +19,21 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap', maxZoom: 18,
 }).addTo(carte);
 const surlignage = L.layerGroup().addTo(carte);
-// Marque le point réellement interrogé. Utile pour un point venu d'un lien
-// collé, que le visiteur n'a pas désigné à l'écran et ne saurait pas situer
-// autrement : le surlignage montre une emprise entière, pas le point.
+// Marque le point réellement interrogé, qu'il vienne d'un clic ou d'un lien
+// collé : le surlignage montre l'emprise entière d'une méta, jamais le point
+// qui l'a fait apparaître. Indispensable pour un lien collé, que le visiteur
+// n'a pas désigné à l'écran ; utile au clic, où l'emprise seule ne dit pas
+// quel point l'a sélectionnée.
 const pointInterroge = L.layerGroup().addTo(carte);
+// Bleu, et non l'accent rouge du site : celui-ci sert déjà à surligner
+// l'emprise d'une méta au survol, et le repère se confondrait avec ce qu'il
+// est censé distinguer. Même bleu que la vérité terrain de l'outil de tracé
+// (`cartometa/review/static/app.js`), pour un sens identique des deux côtés
+// du projet : voici le point exact dont on parle.
+// En dur pour la même raison que le surlignage ci-dessous : Leaflet pose la
+// couleur en attribut de présentation SVG, où les variables CSS ne sont pas
+// substituées de façon fiable.
+const COULEUR_POINT = '#0057d9';
 
 async function demarrer() {
   try {
@@ -107,7 +118,7 @@ let generation = 0;
 // ou d'un lien collé : un seul endroit porte le compteur de génération, les
 // drapeaux d'état et le traitement d'erreur. Deux copies de cette logique
 // finiraient par divertir l'une de l'autre.
-async function allerAuPoint(lon, lat, { marqueur = false } = {}) {
+async function allerAuPoint(lon, lat) {
   const generationDuClic = ++generation;
   document.getElementById('accueil').hidden = true;
   document.getElementById('filtres').hidden = false;
@@ -116,15 +127,16 @@ async function allerAuPoint(lon, lat, { marqueur = false } = {}) {
   afficherSquelettes();
   surlignage.clearLayers();
   pointInterroge.clearLayers();
-  if (marqueur) {
-    L.circleMarker([lat, lon], {
-      // interactive: false pour la même raison que le surlignage — un calque
-      // interactif capte le clic et rend la carte muette sous le marqueur.
-      interactive: false,
-      radius: 6, color: '#c1283a', weight: 2,
-      fillColor: '#c1283a', fillOpacity: 0.35,
-    }).addTo(pointInterroge);
-  }
+  // Posé avant l'appel réseau : le repère apparaît au clic, sans attendre la
+  // galerie. Il survit aussi à un échec de chargement, où il reste la seule
+  // trace de ce qui a été demandé.
+  L.circleMarker([lat, lon], {
+    // interactive: false pour la même raison que le surlignage — un calque
+    // interactif capte le clic et rend la carte muette sous le marqueur.
+    interactive: false,
+    radius: 6, color: COULEUR_POINT, weight: 2,
+    fillColor: COULEUR_POINT, fillOpacity: 0.35,
+  }).addTo(pointInterroge);
   let resultats;
   try {
     resultats = await interroger(lon, lat);
@@ -435,7 +447,7 @@ async function suivreLien(saisie) {
   direLien('');
   const [lat, lon] = point;
   carte.setView([lat, lon], ZOOM_LIEN);
-  allerAuPoint(lon, lat, { marqueur: true });
+  allerAuPoint(lon, lat);
 }
 
 document.getElementById('barre-lien').addEventListener('submit', (evenement) => {
