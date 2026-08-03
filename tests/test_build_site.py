@@ -595,3 +595,41 @@ def test_build_site_leve_systemexit_quand_la_verification_echoue(monkeypatch, pr
         build_site(projet / "data", projet / "dist", projet / "viewer", ["PL"])
 
     assert appels, "build_site n'a pas appelé verifier_integrite"
+
+
+def _images_produites(dist: Path) -> dict[str, bytes]:
+    return {p.name: p.read_bytes() for p in (dist / "img").rglob("*.webp")}
+
+
+def test_une_seconde_construction_ne_reencode_aucune_image(projet, monkeypatch):
+    """Le build est incrémental sur l'encodage, pas seulement sur le transfert.
+
+    Sans cache, publier trois métas de plus repayait l'encodage des ~3844
+    images déjà produites au build précédent — l'essentiel des dix minutes
+    d'une publication.
+    """
+    build_site(projet / "data", projet / "dist", projet / "viewer", ["PL"])
+    avant = _images_produites(projet / "dist")
+    assert avant, "le premier build n'a produit aucune image"
+
+    import cartometa.build.images as images
+
+    def interdit(*args, **kwargs):
+        raise AssertionError("image réencodée alors que le cache la contenait")
+
+    monkeypatch.setattr(images, "_encode", interdit)
+
+    build_site(projet / "data", projet / "dist", projet / "viewer", ["PL"])
+
+    assert _images_produites(projet / "dist") == avant
+
+
+def test_le_cache_d_images_vit_hors_de_dist(projet):
+    """`dist/` est rasé à chaque build : un cache qui y vivrait ne servirait
+    jamais deux fois."""
+    build_site(projet / "data", projet / "dist", projet / "viewer", ["PL"])
+
+    entrees = list((projet / "data" / "cache" / "images").rglob("*.webp"))
+
+    assert entrees, "aucune entrée de cache écrite"
+    assert not list((projet / "dist").rglob("*.part"))

@@ -10,6 +10,7 @@ from typing import NamedTuple
 from cartometa.build.assets import write_hashed
 from cartometa.build.dataset import build_dataset
 from cartometa.build.geometry import DEFAULT_TOLERANCE
+from cartometa.build.image_cache import ImageCache
 from cartometa.build.images import MissingImageError, render_image_pair
 
 # Cloudflare Pages refuse un déploiement au-delà de 20 000 fichiers. On
@@ -246,6 +247,10 @@ def build_site(
         shutil.rmtree(out_dir)
     out_dir.mkdir(parents=True)
 
+    # Hors de `out_dir`, qui vient d'être rasé : le cache doit survivre au
+    # build qu'il accélère. `data/cache/` est déjà gitignoré.
+    cache_images = ImageCache(data_dir / "cache" / "images")
+
     manifeste_pays: dict[str, dict] = {}
     for pays, contenu in sorted(jeu.countries.items()):
         for identifiant, meta in contenu["metas"].items():
@@ -254,7 +259,7 @@ def build_site(
                 continue
             try:
                 noms = render_image_pair(
-                    Path(source), out_dir / IMAGE_BASE / pays, identifiant
+                    Path(source), out_dir / IMAGE_BASE / pays, identifiant, cache_images
                 )
             except MissingImageError as erreur:
                 raise SystemExit(
