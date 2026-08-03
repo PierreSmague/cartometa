@@ -1,5 +1,6 @@
 import fnmatch
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -57,6 +58,10 @@ def projet(tmp_path, monkeypatch):
     (viewer / "licence.html").write_text(
         "<!doctype html><head>__ICON_SVG__ __SITE_URL__/licence</head><body>__CSS__</body>", "utf-8"
     )
+    (viewer / "404.html").write_text(
+        "<!doctype html><head><link href='/__CSS__'></head>"
+        "<body><a href='/'>retour</a></body>", "utf-8"
+    )
     (viewer / "style.css").write_text("body{margin:0}", "utf-8")
     (viewer / "app.js").write_text("console.log('x')", "utf-8")
     (viewer / "favicon.svg").write_text("<svg xmlns='http://www.w3.org/2000/svg'/>", "utf-8")
@@ -93,6 +98,45 @@ def test_la_page_de_licence_est_publiee(projet):
     build_site(projet / "data", dist, projet / "viewer", ["PL"])
 
     assert (dist / "licence.html").exists()
+
+
+def test_la_page_404_est_publiee_avec_ses_marqueurs_substitues(projet):
+    """Sans elle dans la boucle des gabarits, Cloudflare retombe sur son repli
+    et toute adresse inconnue renvoie l'accueil en 200."""
+    dist = projet / "dist"
+
+    build_site(projet / "data", dist, projet / "viewer", ["PL"])
+
+    page = dist / "404.html"
+    assert page.exists()
+    texte = page.read_text("utf-8")
+    assert "__CSS__" not in texte
+    assert re.search(r'href=./style\.[0-9a-f]{8}\.css.', texte)
+
+
+def test_la_page_404_reelle_reference_ses_actifs_en_absolu():
+    """Le défaut que ce test empêche de revenir.
+
+    Cloudflare sert la page 404 sous l'adresse inconnue demandée, pas sous
+    `/404.html`. Les marqueurs devenant des noms de fichiers nus, un
+    `href="__CSS__"` se résoudrait, sur `/a/b/c`, en `/a/b/style.<hash>.css` :
+    la page d'erreur arriverait sans style ni icône, et son lien de retour
+    pointerait vers `/a/b/`. Seule la barre oblique de tête l'évite — et
+    seules les deux autres pages, servies à la racine, peuvent s'en passer.
+
+    Le contrôle porte sur le gabarit réellement livré, pas sur le fixture :
+    c'est dans `viewer/404.html` que la régression se produirait.
+    """
+    texte = (Path(__file__).resolve().parents[1] / "viewer" / "404.html").read_text("utf-8")
+
+    marqueurs = [m for m in ("__CSS__", "__ICON_SVG__", "__ICON_PNG__") if m in texte]
+    assert marqueurs, "la page 404 ne référence aucun actif : marqueurs renommés ?"
+    for marqueur in marqueurs:
+        for occurrence in re.finditer(re.escape(marqueur), texte):
+            assert texte[occurrence.start() - 1] == "/", (
+                f"{marqueur} doit être précédé d'une barre oblique dans 404.html"
+            )
+    assert 'href="/"' in texte, "le lien de retour doit être absolu"
 
 
 def test_le_manifeste_reference_des_fichiers_qui_existent(projet):
@@ -264,7 +308,7 @@ def test_le_fichier_headers_est_produit_avec_les_deux_regimes(projet):
     # Pages sert des URL propres et redirige `/licence.html` vers `/licence` :
     # une règle écrite sur le seul nom de fichier ne couvre donc que l'adresse
     # que personne ne visite. Vérifié en production avant d'être corrigé ici.
-    for chemin in ("/", "/index.html", "/licence", "/licence.html"):
+    for chemin in ("/", "/index.html", "/licence", "/licence.html", "/404", "/404.html"):
         couvrant = [
             (motif, entetes) for motif, entetes in regles
             if fnmatch.fnmatchcase(chemin, motif)

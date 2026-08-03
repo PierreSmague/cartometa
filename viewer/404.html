@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cartometa — page not found</title>
+  <!-- Une page d'erreur ne doit pas entrer dans un index, et n'a pas de
+       canonique : elle est servie sous l'adresse demandée, quelle qu'elle
+       soit, pas sous une adresse à elle. -->
+  <meta name="robots" content="noindex">
+  <!-- CHEMINS ABSOLUS OBLIGATOIRES, contrairement aux deux autres pages.
+       Les marqueurs sont remplacés par des noms de fichiers NUS
+       (`style.a1b2c3d4.css`). Cloudflare sert cette page sous l'URL demandée :
+       sur `/a/b/c`, un chemin relatif se résoudrait en `/a/b/style.a1b2c3d4.css`
+       et la page arriverait sans style, sans icône et avec un lien de retour
+       cassé. La barre oblique de tête est ce qui l'empêche. -->
+  <link rel="icon" type="image/svg+xml" href="/__ICON_SVG__">
+  <link rel="icon" type="image/png" sizes="32x32" href="/__ICON_PNG__">
+  <link rel="stylesheet" href="/__CSS__">
+  <style>
+    body { display: block; }
+    main { max-width: 52ch; margin: 0 auto; padding: 80px 24px; }
+    h1 { font-size: 22px; }
+    p { color: #45453f; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Page not found</h1>
+    <p>
+      There is nothing at this address. It may have been mistyped, or it may
+      point at something this site no longer publishes.
+    </p>
+    <p><a href="/">← back to the map</a></p>
+  </main>
+</body>
+</html>

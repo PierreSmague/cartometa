@@ -4,6 +4,7 @@ const etat = {
   pays: new Map(),   // code pays -> {metas, geometries}
   resultats: [],
   categorie: '',
+  portee: '',        // '' | 'regional' | 'national', voir scope_de côté build
   recherche: '',
   pret: false,   // true seulement une fois manifeste ET index chargés avec succès
   // Ces deux drapeaux disent à `rendre()` (et à ses appelants autres que le
@@ -18,6 +19,10 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap', maxZoom: 18,
 }).addTo(carte);
 const surlignage = L.layerGroup().addTo(carte);
+// Marque le point réellement interrogé. Utile pour un point venu d'un lien
+// collé, que le visiteur n'a pas désigné à l'écran et ne saurait pas situer
+// autrement : le surlignage montre une emprise entière, pas le point.
+const pointInterroge = L.layerGroup().addTo(carte);
 
 async function demarrer() {
   try {
@@ -98,17 +103,11 @@ async function interroger(lon, lat) {
 // lent ne vienne pas écraser l'affichage d'un clic plus récent déjà résolu.
 let generation = 0;
 
-carte.on('click', async (evenement) => {
-  // Sans ce garde-fou, un premier clic après un échec au démarrage efface
-  // aussitôt le message d'erreur dans #accueil (hidden = true ci-dessous) et
-  // rend une galerie vide sans exception : le visiteur perd la seule
-  // explication qu'il aura jamais eue.
-  if (!etat.pret) return;
-  // `.wrap()` : avec `worldCopyJump`, un clic sur une copie répétée du monde
-  // (zoom ≤ 2) porte une longitude hors ±180°, que rien dans `etat.index`
-  // (des bbox en ±180°) ne peut jamais recouvrir — un clic pourtant valide
-  // ressortirait « aucune méta » sans raison visible.
-  const { lng: lon, lat } = evenement.latlng.wrap();
+// Chemin unique de toute interrogation, qu'elle vienne d'un clic sur la carte
+// ou d'un lien collé : un seul endroit porte le compteur de génération, les
+// drapeaux d'état et le traitement d'erreur. Deux copies de cette logique
+// finiraient par divertir l'une de l'autre.
+async function allerAuPoint(lon, lat, { marqueur = false } = {}) {
   const generationDuClic = ++generation;
   document.getElementById('accueil').hidden = true;
   document.getElementById('filtres').hidden = false;
@@ -116,6 +115,16 @@ carte.on('click', async (evenement) => {
   etat.erreur = false;
   afficherSquelettes();
   surlignage.clearLayers();
+  pointInterroge.clearLayers();
+  if (marqueur) {
+    L.circleMarker([lat, lon], {
+      // interactive: false pour la même raison que le surlignage — un calque
+      // interactif capte le clic et rend la carte muette sous le marqueur.
+      interactive: false,
+      radius: 6, color: '#c1283a', weight: 2,
+      fillColor: '#c1283a', fillOpacity: 0.35,
+    }).addTo(pointInterroge);
+  }
   let resultats;
   try {
     resultats = await interroger(lon, lat);
@@ -142,6 +151,19 @@ carte.on('click', async (evenement) => {
   etat.erreur = false;
   rendre();
   memoriserVue();
+}
+
+carte.on('click', (evenement) => {
+  // Sans ce garde-fou, un premier clic après un échec au démarrage efface
+  // aussitôt le message d'erreur dans #accueil et rend une galerie vide sans
+  // exception : le visiteur perd la seule explication qu'il aura jamais eue.
+  if (!etat.pret) return;
+  // `.wrap()` : avec `worldCopyJump`, un clic sur une copie répétée du monde
+  // (zoom ≤ 2) porte une longitude hors ±180°, que rien dans `etat.index`
+  // (des bbox en ±180°) ne peut jamais recouvrir — un clic pourtant valide
+  // ressortirait « aucune méta » sans raison visible.
+  const { lng: lon, lat } = evenement.latlng.wrap();
+  allerAuPoint(lon, lat);
 });
 
 function memoriserVue() {
@@ -173,6 +195,7 @@ function visibles() {
   const terme = etat.recherche.trim().toLowerCase();
   return etat.resultats.filter((meta) => {
     if (etat.categorie && meta.category !== etat.categorie) return false;
+    if (etat.portee && meta.scope !== etat.portee) return false;
     if (!terme) return true;
     return `${meta.title} ${meta.description}`.toLowerCase().includes(terme);
   });
@@ -278,14 +301,143 @@ document.getElementById('recherche').addEventListener('input', (e) => {
   rendre();
 });
 
-for (const pastille of document.querySelectorAll('.pastille')) {
-  pastille.addEventListener('click', () => {
-    // Même garde-fou que pour la recherche : voir le commentaire ci-dessus.
-    if (etat.chargement || etat.erreur) return;
-    for (const autre of document.querySelectorAll('.pastille')) {
-      autre.classList.toggle('active', autre === pastille);
-    }
-    etat.categorie = pastille.dataset.categorie;
-    rendre();
-  });
+// Les deux filtres se comportent à l'identique : un seul choix actif par
+// groupe, et ils se cumulent entre eux (et avec la recherche) dans `visibles`.
+function brancherGroupe(selecteur, champDonnee, cle) {
+  for (const bouton of document.querySelectorAll(selecteur)) {
+    bouton.addEventListener('click', () => {
+      // Même garde-fou que pour la recherche : voir le commentaire ci-dessus.
+      if (etat.chargement || etat.erreur) return;
+      for (const autre of document.querySelectorAll(selecteur)) {
+        autre.classList.toggle('active', autre === bouton);
+      }
+      etat[cle] = bouton.dataset[champDonnee];
+      rendre();
+    });
+  }
 }
+
+brancherGroupe('.pastille', 'categorie', 'categorie');
+brancherGroupe('.segment', 'portee', 'portee');
+
+// --- Barre de lien Street View ---------------------------------------------
+
+// Assez près pour reconnaître l'endroit, assez large pour situer la ville
+// autour : un lien Street View désigne un point, pas une emprise.
+const ZOOM_LIEN = 14;
+
+// Hôtes des liens raccourcis, alignés sur `MAPS_RE` de
+// cartometa/extract/maps_links.py.
+const LIEN_COURT = /^https?:\/\/(?:maps\.app\.goo\.gl|goo\.gl)\//i;
+
+// Formes porteuses de coordonnées, de la plus fiable à la plus incidente. Les
+// deux premières sont celles réellement observées sur les 2007 liens Plonk It
+// résolus par le build (cf. `LATLON_RE` et `VIEWPOINT_RE`) ; les suivantes
+// couvrent les autres façons dont Google Maps inscrit un point dans une URL.
+const MOTIFS_LATLON = [
+  /\/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/,             // /@LAT,LON — caméra Street View
+  /[?&]viewpoint=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/,  // viewer panorama api=1
+  /!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/,           // fiche de lieu
+  /[?&]cbll=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/,       // ancien Street View
+  /[?&](?:q|query|ll|center)=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/,
+];
+
+function validerLatLon(lat, lon) {
+  const a = Number(lat);
+  const b = Number(lon);
+  if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
+  // Un motif peut coïncider avec autre chose qu'un point — `!3d` sert à
+  // plusieurs usages dans un blob `data=`. Hors bornes, on refuse plutôt que
+  // d'envoyer la carte nulle part.
+  if (a < -90 || a > 90 || b < -180 || b > 180) return null;
+  return [a, b];
+}
+
+function coordsDepuisUrl(texte) {
+  for (const motif of MOTIFS_LATLON) {
+    const trouve = texte.match(motif);
+    if (trouve) {
+      const point = validerLatLon(trouve[1], trouve[2]);
+      if (point) return point;
+    }
+  }
+  return null;
+}
+
+const champLien = document.getElementById('lien');
+const messageLien = document.getElementById('lien-etat');
+
+function direLien(message, echec = false) {
+  messageLien.textContent = message;
+  messageLien.classList.toggle('echec', echec);
+}
+
+async function resoudreLienCourt(url) {
+  // Un lien court est illisible depuis le navigateur : goo.gl n'envoie aucun
+  // en-tête CORS (vérifié), donc la redirection ne peut pas être suivie ici.
+  // `/api/resolve` la suit côté serveur et ne renvoie que le point.
+  const reponse = await fetch(`/api/resolve?url=${encodeURIComponent(url)}`);
+  if (!reponse.ok) return null;
+  const charge = await reponse.json();
+  return Array.isArray(charge.latlon)
+    ? validerLatLon(charge.latlon[0], charge.latlon[1])
+    : null;
+}
+
+// Même raison que `generation` pour les clics : la résolution d'un lien court
+// passe par le réseau, donc un premier collage peut aboutir après un second.
+// Sans ce compteur, le lien le plus lent déplacerait la carte en dernier.
+let generationLien = 0;
+
+// Un lien copié depuis une barre d'adresse arrive parfois sans son schéma.
+// Le rejeter pour ça serait gratuit : on le complète quand la suite ressemble
+// à un hôte, et on laisse `LIEN_COURT` et `new URL` juger ensuite.
+function normaliser(saisie) {
+  return /^[a-z]+:\/\//i.test(saisie) ? saisie : `https://${saisie}`;
+}
+
+async function suivreLien(saisie) {
+  const propre = saisie.trim();
+  if (!propre) return;
+  const brut = normaliser(propre);
+  if (!etat.pret) {
+    direLien('Index not loaded yet.', true);
+    return;
+  }
+  const monTour = ++generationLien;
+  let point = coordsDepuisUrl(brut);
+  if (!point && LIEN_COURT.test(brut)) {
+    direLien('Resolving…');
+    try {
+      point = await resoudreLienCourt(brut);
+    } catch (erreur) {
+      point = null;
+    }
+    if (monTour !== generationLien) return; // un lien plus récent a pris le relais
+  }
+  if (!point) {
+    direLien('No coordinates found in that link.', true);
+    return;
+  }
+  direLien('');
+  const [lat, lon] = point;
+  carte.setView([lat, lon], ZOOM_LIEN);
+  allerAuPoint(lon, lat, { marqueur: true });
+}
+
+document.getElementById('barre-lien').addEventListener('submit', (evenement) => {
+  evenement.preventDefault();
+  suivreLien(champLien.value);
+});
+
+// Coller suffit à partir : c'est le geste attendu, et le bouton comme la
+// touche Entrée restent disponibles. On écrit la valeur soi-même après
+// `preventDefault` pour ne pas dépendre de l'ordre entre l'événement de
+// collage et la mise à jour du champ par le navigateur.
+champLien.addEventListener('paste', (evenement) => {
+  const colle = evenement.clipboardData?.getData('text') ?? '';
+  if (!colle.trim()) return;
+  evenement.preventDefault();
+  champLien.value = colle.trim();
+  suivreLien(champLien.value);
+});

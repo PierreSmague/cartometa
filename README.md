@@ -20,7 +20,18 @@ python -m http.server 8010 --directory dist
 puis <http://127.0.0.1:8010/>. `Ctrl+C` pour arrêter.
 
 Clic sur la carte → galerie des métas triées par surface croissante. Survol
-d'une vignette → son emprise sur la carte. Clic → image pleine taille.
+d'une vignette → son emprise sur la carte. Clic → image pleine taille. Les
+filtres se cumulent : catégorie, portée (régionale / nationale) et recherche
+textuelle.
+
+Coller un lien Google Street View ou Maps dans la barre de l'en-tête recentre
+la carte sur le point et affiche ses métas. Un serveur statique ne sert pas
+`/api/resolve`, donc les **liens raccourcis** (`maps.app.goo.gl`) échouent avec
+la commande ci-dessus. Pour les tester en local, il faut le runtime Cloudflare :
+
+```
+npx wrangler pages dev dist
+```
 
 ## Ajouter un pays
 
@@ -140,6 +151,7 @@ cartometa/extract/   HTML → métas structurées, résolution des liens Maps
 cartometa/geo/       référentiel Natural Earth (pays, régions)
 cartometa/review/    serveur local de revue + interface de tracé
 viewer/              gabarits de la carte (Leaflet), assemblés par cartometa-build
+functions/           seul code serveur : /api/resolve suit les liens Maps courts
 data/geo/            emprises tracées + statut + morceaux (versionnées)
 data/manual/         métas saisies à la main, textes et images (versionnées)
 data/metas/          textes Plonk It (jamais versionnés, régénérables)

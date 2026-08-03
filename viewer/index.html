@@ -37,6 +37,21 @@
       <span class="nom">Cartometa</span>
       <span class="baseline">GeoGuessr metas, by area</span>
     </div>
+    <!-- Un <form> plutôt qu'un <input> seul : la touche Entrée valide alors
+         sans code, et le bouton reste utile à la souris. -->
+    <form id="barre-lien" autocomplete="off">
+      <!-- `type="text"` et non `type="url"` : dans un <form>, `type="url"`
+           déclenche la validation native, qui refuse un lien collé sans
+           `https://` avec une infobulle système et empêche le gestionnaire de
+           s'exécuter. On préfère valider soi-même et expliquer soi-même. -->
+      <input id="lien" type="text" inputmode="url" spellcheck="false"
+             placeholder="Paste a Google Street View or Maps link…"
+             aria-label="Google Street View or Maps link">
+      <button type="submit" id="lien-go">Go</button>
+      <!-- aria-live : le résultat d'un collage (résolution, échec) est
+           annoncé, sinon il n'existe que visuellement. -->
+      <span id="lien-etat" role="status" aria-live="polite"></span>
+    </form>
     <span id="compteurs" class="compteurs"></span>
   </header>
 
@@ -51,6 +66,14 @@
         <button class="pastille" data-categorie="vegetation">Vegetation</button>
         <button class="pastille" data-categorie="vehicule">Vehicle</button>
         <button class="pastille" data-categorie="autre">Other</button>
+        <!-- Contrôle segmenté et non des pastilles : sa forme le distingue du
+             filtre par catégorie, ce qui évite que ses deux « All » se
+             confondent sans avoir à ajouter un libellé. -->
+        <div id="portee" role="group" aria-label="Meta scope">
+          <button class="segment active" data-portee="">All</button>
+          <button class="segment" data-portee="regional">Regional</button>
+          <button class="segment" data-portee="national">National</button>
+        </div>
         <input id="recherche" type="search" placeholder="Filter these results…">
       </div>
       <div id="accueil">
