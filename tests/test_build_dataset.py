@@ -136,3 +136,70 @@ def test_geometries_presentes_mais_aucune_meta_leve(tmp_path):
 
 def test_discover_countries_trie_et_met_en_majuscules(data_dir):
     assert discover_countries(data_dir) == ["BW", "PL"]
+
+
+def _ecrire_meta_manuelle(data_dir: Path, pays: str, meta_id: str,
+                          source_url: str = "") -> None:
+    """Une méta saisie via la touche `N` du reviewer.
+
+    Contrairement aux textes Plonk It, `data/manual/` est versionné : l'image
+    d'un contributeur arrive dans le dépôt avec son tracé. Et son `source_url`
+    est facultatif — ces métas sont souvent trouvées en explorant une carte,
+    sans page d'origine à citer — d'où la chaîne vide par défaut, telle que
+    `cartometa/review/manual.py` l'écrit.
+    """
+    manuel = data_dir / "manual" / pays
+    (manuel / "images").mkdir(parents=True, exist_ok=True)
+    (manuel / "metas.json").write_text(json.dumps([{
+        "id": meta_id, "tier": "manual", "title": f"titre {meta_id}",
+        "description": "description", "category": "autre", "origin": "manual",
+        "image": f"data/manual/{pays}/images/{meta_id}.png",
+        "source_url": source_url,
+    }]), "utf-8")
+    (data_dir / "geo").mkdir(parents=True, exist_ok=True)
+    (data_dir / "geo" / f"{pays}.geojson").write_text(json.dumps({
+        "type": "FeatureCollection",
+        "features": [{"type": "Feature",
+                      "properties": {"id": meta_id, "status": "validé",
+                                     "pieces": []},
+                      "geometry": _carre(0.0, 0.0, 1.0)}],
+    }), "utf-8")
+
+
+def test_une_meta_manuelle_est_publiee(tmp_path):
+    """Couverture restaurée : les deux tests du chemin manuel vivaient dans
+    `tests/test_export.py`, supprimé avec l'ancienne commande d'export sans
+    que personne ne les reporte ici."""
+    data_dir = tmp_path / "data"
+    _ecrire_meta_manuelle(data_dir, "XX", "man-1a2b")
+
+    jeu = build_dataset(data_dir, ["XX"])
+
+    assert [entree[0] for entree in jeu.index] == ["man-1a2b"]
+    meta = jeu.countries["XX"]["metas"]["man-1a2b"]
+    assert meta["image_source"] == "data/manual/XX/images/man-1a2b.png"
+
+
+def test_un_pays_sans_source_importee_mais_avec_des_metas_manuelles_reussit(tmp_path):
+    """L'absence de `data/metas/<CC>.json` ne doit pas être fatale : la seule
+    source manuelle suffit. Le dossier `metas/` n'est même pas créé ici."""
+    data_dir = tmp_path / "data"
+    _ecrire_meta_manuelle(data_dir, "YY", "man-only1")
+
+    jeu = build_dataset(data_dir, ["YY"])
+
+    assert not (data_dir / "metas").exists()
+    assert [entree[0] for entree in jeu.index] == ["man-only1"]
+
+
+def test_une_meta_manuelle_sans_source_traverse_le_build_avec_une_chaine_vide(tmp_path):
+    """Le champ source est facultatif à la saisie et le reste ici : c'est le
+    front qui doit s'abstenir d'afficher un lien « source » vide, pas le build
+    qui doit inventer une URL. On vérifie donc que la chaîne vide arrive
+    intacte jusqu'au fichier pays, sans exception ni valeur fabriquée."""
+    data_dir = tmp_path / "data"
+    _ecrire_meta_manuelle(data_dir, "ZZ", "man-nosrc", source_url="")
+
+    jeu = build_dataset(data_dir, ["ZZ"])
+
+    assert jeu.countries["ZZ"]["metas"]["man-nosrc"]["source_url"] == ""

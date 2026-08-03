@@ -240,13 +240,21 @@ function ouvrirLoupe(meta) {
   image.hidden = !meta.full;
   image.src = meta.full ? urlImage(meta.full) : '';
   const texte = document.getElementById('loupe-texte');
-  texte.textContent = `${meta.title} `;
-  const lien = document.createElement('a');
-  lien.href = meta.source_url;
-  lien.target = '_blank';
-  lien.rel = 'noopener';
-  lien.textContent = 'source';
-  texte.appendChild(lien);
+  // Une méta saisie à la main n'a pas forcément de source : le champ est
+  // facultatif à la saisie, parce que ces métas sont souvent trouvées en
+  // explorant une carte et n'ont aucune page d'origine à citer. Sans garde,
+  // on afficherait un lien « source » qui ne mène nulle part.
+  if (meta.source_url) {
+    texte.textContent = `${meta.title} `;
+    const lien = document.createElement('a');
+    lien.href = meta.source_url;
+    lien.target = '_blank';
+    lien.rel = 'noopener';
+    lien.textContent = 'source';
+    texte.appendChild(lien);
+  } else {
+    texte.textContent = meta.title;
+  }
   loupe.hidden = false;
 }
 
