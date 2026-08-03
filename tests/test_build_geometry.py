@@ -1,7 +1,7 @@
 import math
 
 import pytest
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, mapping, shape
 from shapely.geometry.base import BaseGeometry
 
 from cartometa.build.geometry import (
@@ -98,6 +98,42 @@ def test_la_simplification_ne_vide_jamais_une_geometrie(monkeypatch):
 
     assert simplifiee["coordinates"][0]
     assert area_ratio(geometrie, simplifiee) == pytest.approx(1.0)
+
+
+def test_le_repli_arrondit_l_original_quand_l_arrondi_de_la_simplification_degenere(
+    monkeypatch,
+):
+    """La validité doit être vérifiée sur le résultat arrondi, pas avant.
+
+    Mécanisme réel derrière `VN:s59g` : Douglas-Peucker (avec
+    `preserve_topology=True`) renvoie ici un résultat valide et de surface
+    non nulle, mais dont deux sommets sont si proches (moins de 1e-5°) que
+    l'arrondi à 5 décimales les confond, faisant s'effondrer l'anneau sur un
+    unique point. Vérifier `simplifiee` (avant arrondi) le laisserait passer
+    tel quel ; c'est `round_coordinates(mapping(simplifiee))` qui doit être
+    invalidé pour déclencher le repli sur l'original arrondi — lui indemne
+    puisqu'il ne partage aucun sommet avec la géométrie simplifiée.
+    """
+    original = _rectangle(0.0, 0.0, 10.0, 10.0, pas=4)
+
+    degenere_a_l_arrondi = Polygon(
+        [(0.0, 0.0), (0.000002, 0.0), (0.000001, 0.000002), (0.0, 0.0)]
+    )
+    assert degenere_a_l_arrondi.is_valid and degenere_a_l_arrondi.area > 0
+    # Sanity : c'est bien l'arrondi, et non `degenere_a_l_arrondi` elle-même,
+    # qui casse — sans quoi ce test ne prouverait rien sur le nouvel ordre.
+    arrondie = shape(round_coordinates(mapping(degenere_a_l_arrondi)))
+    assert arrondie.is_empty or not arrondie.is_valid or arrondie.area == 0
+
+    def simplification_qui_degenere_a_l_arrondi(self, tolerance, preserve_topology=True):
+        return degenere_a_l_arrondi
+
+    monkeypatch.setattr(BaseGeometry, "simplify", simplification_qui_degenere_a_l_arrondi)
+
+    resultat = simplify_geometry(original)
+
+    assert shape(resultat).is_valid
+    assert resultat == round_coordinates(original)
 
 
 def test_la_distance_de_hausdorff_reste_sous_la_tolerance_effective():

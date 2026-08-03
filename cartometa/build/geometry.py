@@ -49,6 +49,11 @@ def effective_tolerance(
     return min(tolerance, diagonale / divisor)
 
 
+def _degeneree(geometrie) -> bool:
+    """Vide, invalide ou de surface nulle : rien qu'on veuille publier."""
+    return geometrie.is_empty or not geometrie.is_valid or geometrie.area == 0
+
+
 def simplify_geometry(
     geometry: dict,
     tolerance: float = DEFAULT_TOLERANCE,
@@ -57,18 +62,37 @@ def simplify_geometry(
     """Simplifie puis arrondit.
 
     Dans cet ordre : arrondir d'abord ferait travailler Douglas-Peucker sur
-    des sommets déjà déplacés. En cas de dégénérescence — géométrie vide ou
-    invalide, ce que la simplification topologique peut produire sur des
-    formes pathologiques — on retombe sur l'original arrondi plutôt que de
-    publier une emprise fausse.
+    des sommets déjà déplacés.
+
+    La validité est vérifiée sur ce que la fonction s'apprête réellement à
+    renvoyer, pas sur une étape intermédiaire : l'arrondi fait partie de la
+    transformation, et arrondir à 5 décimales peut à lui seul faire passer un
+    anneau sous le nombre minimal de points requis — un résultat de
+    simplification valide peut donc redevenir invalide *après* l'arrondi.
+    Vérifier `simplifiee` avant arrondi laisserait passer ce cas.
+
+    Trois niveaux de repli, du meilleur au pire :
+    1. simplifiée puis arrondie — le cas normal ;
+    2. si ce résultat est dégénéré (vide, invalide ou de surface nulle) :
+       l'original arrondi ;
+    3. si l'original arrondi l'est aussi (l'arrondi seul peut en principe
+       dégrader une entrée pathologique) : l'original tel quel, sans arrondi.
+       Publier une emprise plus lourde mais exacte vaut toujours mieux que
+       publier une géométrie invalide.
     """
     original = shape(geometry)
     simplifiee = original.simplify(
         effective_tolerance(geometry, tolerance), preserve_topology=True
     )
-    if simplifiee.is_empty or not simplifiee.is_valid or simplifiee.area == 0:
-        return round_coordinates(geometry, precision)
-    return round_coordinates(mapping(simplifiee), precision)
+    candidat = round_coordinates(mapping(simplifiee), precision)
+    if not _degeneree(shape(candidat)):
+        return candidat
+
+    candidat = round_coordinates(geometry, precision)
+    if not _degeneree(shape(candidat)):
+        return candidat
+
+    return geometry
 
 
 def area_ratio(original: dict, simplified: dict) -> float:
