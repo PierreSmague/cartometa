@@ -22,9 +22,10 @@ body {
 
 #entete {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
+  flex-wrap: wrap;
   padding: 10px 18px;
   border-bottom: 1px solid var(--trait);
   background: var(--fond-carte);
@@ -32,6 +33,48 @@ body {
 .marque { display: flex; align-items: baseline; gap: 10px; }
 .nom { font-size: 16px; font-weight: 600; letter-spacing: -0.02em; }
 .baseline, .compteurs { font-size: 11.5px; color: var(--texte-doux); }
+
+/* Barre de collage d'un lien Street View. `min-width: 0` sur le champ : sans
+   lui, la largeur intrinsèque d'un input (~180px) empêche l'élément flexible
+   de se réduire et pousse les compteurs hors de l'en-tête sur une fenêtre
+   étroite. */
+#barre-lien {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1 1 260px;
+  max-width: 520px;
+}
+#lien {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  font-size: 11.5px;
+  padding: 5px 10px;
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon);
+  background: var(--fond);
+}
+#lien-go {
+  font: inherit;
+  font-size: 11px;
+  padding: 5px 12px;
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon);
+  background: var(--fond-carte);
+  color: var(--texte-doux);
+  cursor: pointer;
+  white-space: nowrap;
+}
+#lien-go:hover { color: var(--texte); border-color: var(--texte); }
+#lien-etat {
+  font-size: 11px;
+  color: var(--texte-doux);
+  white-space: nowrap;
+}
+#lien-etat.echec { color: var(--accent); }
+/* Vide, l'élément ne doit pas consommer la gouttière du flex. */
+#lien-etat:empty { display: none; }
 
 #principal { flex: 1; display: flex; min-height: 0; }
 #carte { flex: 0 0 46%; }
@@ -64,6 +107,37 @@ body {
   cursor: pointer;
 }
 .pastille.active { background: var(--texte); color: var(--fond-carte); border-color: var(--texte); }
+/* `flex: 0 0 100%` force le contrôle de portée sur sa propre ligne dans le
+   bandeau qui enveloppe, sans avoir à découper #filtres en sous-conteneurs. */
+#portee { flex: 0 0 100%; display: flex; }
+.segment {
+  font: inherit;
+  font-size: 11px;
+  padding: 4px 12px;
+  border: 1px solid var(--trait);
+  background: var(--fond-carte);
+  color: var(--texte-doux);
+  cursor: pointer;
+  /* Marge négative plutôt que `border-left: 0` : les bordures voisines se
+     confondent en un seul trait, et le segment actif peut porter sa propre
+     bordure sombre sur ses quatre côtés. Sans elle, le trait clair du voisin
+     resterait visible contre le segment actif. */
+  margin-left: -1px;
+}
+.segment:first-child {
+  margin-left: 0;
+  border-radius: var(--rayon) 0 0 var(--rayon);
+}
+.segment:last-child { border-radius: 0 var(--rayon) var(--rayon) 0; }
+.segment.active {
+  background: var(--texte);
+  color: var(--fond-carte);
+  border-color: var(--texte);
+  /* Remonte le segment actif au-dessus de ses voisins pour que sa bordure
+     sombre ne soit pas recouverte par la leur, plus claire. */
+  position: relative;
+  z-index: 1;
+}
 #recherche {
   flex: 1;
   min-width: 140px;
@@ -77,6 +151,9 @@ body {
    passé à une couleur en dur : garde la variable honnête plutôt que morte. */
 #recherche:focus-visible,
 .pastille:focus-visible,
+.segment:focus-visible,
+#lien:focus-visible,
+#lien-go:focus-visible,
 #loupe-fermer:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;

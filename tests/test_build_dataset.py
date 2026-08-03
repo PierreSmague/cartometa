@@ -1,9 +1,16 @@
 import json
+import re
 from pathlib import Path
 
 import pytest
 
-from cartometa.build.dataset import build_dataset, discover_countries
+from cartometa.build.dataset import (
+    SCOPE_NATIONAL,
+    SCOPE_REGIONAL,
+    build_dataset,
+    discover_countries,
+    scope_de,
+)
 
 
 def _carre(x: float, y: float, cote: float) -> dict:
@@ -36,6 +43,80 @@ def _ecrire_pays(data_dir: Path, pays: str, entrees: list[tuple[str, str, float]
             for i, statut, cote in entrees
         ],
     }), "utf-8")
+
+
+def _ecrire_pays_pieces(
+    data_dir: Path, pays: str, entrees: list[tuple[str, list[dict], float]]
+) -> None:
+    """Comme `_ecrire_pays`, mais en fixant les `pieces` de chaque emprise.
+
+    `_ecrire_pays` les laisse vides, ce qui ne permet pas de distinguer une
+    emprise nationale d'une régionale.
+    """
+    (data_dir / "metas").mkdir(parents=True, exist_ok=True)
+    (data_dir / "geo").mkdir(parents=True, exist_ok=True)
+    (data_dir / "metas" / f"{pays}.json").write_text(
+        json.dumps([_meta(i) for i, _, _ in entrees]), "utf-8"
+    )
+    (data_dir / "geo" / f"{pays}.geojson").write_text(json.dumps({
+        "type": "FeatureCollection",
+        "features": [
+            {"type": "Feature",
+             "properties": {"id": i, "status": "validé", "pieces": pieces},
+             "geometry": _carre(0.0, 0.0, cote)}
+            for i, pieces, cote in entrees
+        ],
+    }), "utf-8")
+
+
+@pytest.mark.parametrize("pieces,attendu", [
+    ([{"kind": "country"}], "national"),
+    ([{"kind": "country"}, {"kind": "country"}], "national"),
+    ([{"kind": "polygon"}], "regional"),
+    ([{"kind": "rect"}], "regional"),
+    ([{"kind": "admin1"}], "regional"),
+    ([{"kind": "clip"}, {"kind": "polygon"}], "regional"),
+    # Un pays rogné n'est plus le pays entier : c'est ce que l'égalité
+    # stricte capture et qu'un `"country" in kinds` manquerait.
+    ([{"kind": "country"}, {"kind": "clip"}], "regional"),
+    # Aucune emprise publiée n'a de pieces vides ; le repli garantit
+    # qu'une telle emprise resterait visible sous « All ».
+    ([], "regional"),
+])
+def test_la_portee_se_deduit_du_trace(pieces, attendu):
+    assert scope_de(pieces) == attendu
+
+
+def test_la_portee_est_publiee_pour_chaque_meta(tmp_path):
+    """Sans ce champ dans la charge utile, le site n'a rien à filtrer."""
+    _ecrire_pays_pieces(tmp_path / "data", "PL", [
+        ("pl1", [{"kind": "country"}], 3.0),
+        ("pl2", [{"kind": "polygon"}], 1.0),
+    ])
+
+    jeu = build_dataset(tmp_path / "data", ["PL"])
+
+    metas = jeu.countries["PL"]["metas"]
+    assert metas["pl1"]["scope"] == "national"
+    assert metas["pl2"]["scope"] == "regional"
+
+
+def test_les_valeurs_de_portee_du_front_correspondent_a_celles_du_build():
+    """Contrat entre deux langages, donc invisible au compilateur comme au
+    relecteur d'un seul fichier.
+
+    Le build écrit `scope` dans la charge utile, le gabarit déclare les valeurs
+    à filtrer en `data-portee`, et `app.js` compare les deux. Renommer un côté
+    sans l'autre ne casse rien de bruyant : le filtre cesse simplement de
+    trouver quoi que ce soit, et les onglets Regional et National se vident
+    sans le moindre message.
+    """
+    html = (Path(__file__).resolve().parents[1] / "viewer" / "index.html").read_text("utf-8")
+
+    valeurs = set(re.findall(r'data-portee="([^"]*)"', html))
+
+    # La chaîne vide est le choix « All » : il ne filtre rien.
+    assert valeurs == {"", SCOPE_REGIONAL, SCOPE_NATIONAL}
 
 
 @pytest.fixture

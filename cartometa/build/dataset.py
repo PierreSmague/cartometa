@@ -12,6 +12,36 @@ from cartometa.review.store import CountryPaths, load_metas
 
 EXPORTABLE = (STATUS_TRACED,)
 
+# Portée d'une emprise, telle que le site la donne à filtrer.
+SCOPE_NATIONAL = "national"
+SCOPE_REGIONAL = "regional"
+
+
+def scope_de(pieces: list[dict]) -> str:
+    """`national` si l'emprise EST le pays entier, `regional` sinon.
+
+    Déduit du tracé, pas du `tier` Plonk It. Les deux existent et s'accordent
+    à 96,8 % (mesuré sur les 1710 emprises publiées) mais ne disent pas la
+    même chose : `tier` dit ce que Plonk It a classé, le tracé dit ce que
+    l'emprise couvre réellement sur la carte. C'est cette seconde question que
+    le filtre pose — et surtout, le tracé est *total* : toute emprise publiée
+    en a un par construction, alors que `tier` vaut aussi `manual` pour une
+    méta saisie à la main, valeur qui n'appartient ni au national ni au
+    régional et laisserait ces métas hors des deux filtres.
+
+    L'égalité stricte, et non `"country" in kinds` : une emprise mêlant
+    `country` à un autre morceau est un pays rogné ou complété, donc
+    précisément plus le pays entier. Aucune emprise publiée n'est dans ce cas
+    aujourd'hui (les deux règles y sont équivalentes), mais seule l'égalité
+    reste juste si cela change.
+
+    Une liste vide retombe sur `regional` : aucune emprise publiée n'est dans
+    ce cas non plus, et ce choix garantit qu'aucune méta ne peut disparaître
+    de « All » — un défaut invisible serait pire qu'un classement discutable.
+    """
+    kinds = {piece.get("kind") for piece in pieces}
+    return SCOPE_NATIONAL if kinds == {"country"} else SCOPE_REGIONAL
+
 
 @dataclass
 class Dataset:
@@ -80,6 +110,7 @@ def build_dataset(
                 "title": meta["title"],
                 "description": meta["description"],
                 "category": meta["category"],
+                "scope": scope_de(feature["properties"].get("pieces", [])),
                 "source_url": meta["source_url"],
                 "image_source": meta.get("image"),
             }

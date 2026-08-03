@@ -56,6 +56,13 @@ SITE_URL = "https://cartometa.com"
 # équivalent (`max-age=0, must-revalidate`), mais dépendre du défaut d'un
 # tiers pour une garantie qu'on croit avoir écrite est exactement le piège
 # qu'on a déjà rencontré sur le manifeste.
+#
+# `/404.html` n'est déclarée que sous son nom de fichier, et c'est assumé :
+# Cloudflare sert cette page sous l'adresse inconnue demandée, qu'on ne peut
+# pas énumérer. Le motif fourre-tout `/*` qui les couvrirait toutes
+# recouvrirait aussi `/data/h/*` et `/*.js` — on retomberait exactement dans le
+# chevauchement décrit ci-dessus, en pire. On préfère donc ne rien promettre
+# pour ces adresses plutôt que de mettre en péril le cache immuable.
 HEADERS = """\
 /
   Cache-Control: no-cache
@@ -64,6 +71,10 @@ HEADERS = """\
 /licence
   Cache-Control: no-cache
 /licence.html
+  Cache-Control: no-cache
+/404
+  Cache-Control: no-cache
+/404.html
   Cache-Control: no-cache
 /data/manifest.json
   Cache-Control: no-cache
@@ -268,7 +279,7 @@ def build_site(
         tige, suffixe = chemin.stem, chemin.suffix
         noms_statiques[marqueur] = write_hashed(out_dir, tige, suffixe, octets)
 
-    for page in ("index.html", "licence.html"):
+    for page in ("index.html", "licence.html", "404.html"):
         source = viewer_dir / page
         if not source.exists():
             continue
