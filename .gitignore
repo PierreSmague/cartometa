@@ -24,3 +24,6 @@ logs/
 dist/
 # Données du viewer : régénérées par cartometa-build, jamais versionnées
 viewer/data/
+
+# Etat local de wrangler (CLI Cloudflare)
+.wrangler/
