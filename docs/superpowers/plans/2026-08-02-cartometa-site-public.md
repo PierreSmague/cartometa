@@ -1702,8 +1702,12 @@ function rendre() {
     bloc.append(image, legende);
     bloc.addEventListener('mouseenter', () => {
       surlignage.clearLayers();
+      // Couleur en dur et non `var(--accent)` : Leaflet la pose comme attribut
+      // de présentation SVG, où la substitution des variables CSS n'est pas
+      // fiable selon les navigateurs. Garder les deux valeurs synchronisées
+      // avec `--accent` dans style.css.
       L.geoJSON(etat.pays.get(meta.code).geometries[meta.id], {
-        color: 'var(--accent)', weight: 2, fillOpacity: 0.18,
+        color: '#c1283a', weight: 2, fillOpacity: 0.18,
       }).addTo(surlignage);
     });
     bloc.addEventListener('click', () => ouvrirLoupe(meta));
