@@ -252,78 +252,77 @@ saisie de métas.
 
 ## 7. Proposer la contribution
 
-**Tu n'as aucun droit d'écriture sur le dépôt principal, et c'est normal** :
-personne n'en a à part le mainteneur. On ne contribue pas en poussant une
-branche sur le dépôt d'origine, mais en poussant sur **ta propre copie** —
-ton *fork* — puis en ouvrant une pull request depuis celle-ci.
+**Tu n'as pas besoin de savoir ce qu'est un *fork*.** Sur ce dépôt, on te
+donne directement le droit d'y créer des branches.
 
-Précision qui évite une fausse piste : `git switch -c` **ne demande aucune
-permission**, il crée une branche sur ton disque et réussit toujours. Ce qui
-est refusé, c'est le `git push` qui vient après. Un message parlant de `403`,
-`Permission denied` ou `access denied` désigne cette étape-là, pas la
-création de branche.
+### a. Demande l'accès, une fois
 
-### a. Forke, une fois pour toutes
+[Ouvre une issue](https://github.com/PierreSmague/cartometa/issues/new) en
+indiquant ton identifiant GitHub et le ou les pays qui t'intéressent. Tu
+recevras une invitation par courriel — accepte-la, et c'est réglé pour
+toujours.
 
-Bouton **Fork** sur <https://github.com/PierreSmague/cartometa>, ou :
+Tant que l'invitation n'est pas acceptée, le `git push` de l'étape *c*
+échouera avec `403` ou `Permission denied`. C'est le seul symptôme, et il ne
+veut rien dire d'autre que « l'accès n'est pas encore actif ».
 
-```
-gh repo fork PierreSmague/cartometa --clone=false
-```
+Ce que cet accès permet, et ce qu'il ne permet pas :
 
-Tu obtiens `https://github.com/<ton-compte>/cartometa`, sur lequel tu as tous
-les droits.
+| | |
+|---|---|
+| Créer une branche et y pousser | oui |
+| Ouvrir une pull request | oui |
+| Pousser directement sur `master` | **non**, jamais |
+| Fusionner ta propre pull request | **non** — seul le mainteneur approuve |
 
-### b. Déclare ton fork comme second dépôt distant
+Tu ne peux donc rien casser : ni le site en ligne, ni le travail des autres.
 
-Dans le clone que tu as déjà — inutile de tout recloner :
-
-```
-git remote add fork https://github.com/<ton-compte>/cartometa.git
-git remote -v
-```
-
-`origin` reste le dépôt d'origine, d'où tu reçois les mises à jour ; `fork`
-est le tien, le seul où tu peux pousser.
-
-### c. Branche, commit, pousse sur *ton* fork
+### b. Branche
 
 ```
 git switch -c meta-fr-bollards
-git add data/manual/FR data/geo/FR.geojson
-git commit -m "feat: trois metas manuelles pour la France"
-git push -u fork meta-fr-bollards
 ```
 
 Si `git switch` n'existe pas chez toi (Git antérieur à 2.23), la forme
 équivalente est `git checkout -b meta-fr-bollards`.
 
-Note le `fork` dans la dernière ligne : `git push` tout court viserait
-`origin`, c'est-à-dire le dépôt d'origine, et serait refusé.
+Cette commande est **purement locale** : elle crée une branche sur ton
+disque, ne contacte aucun serveur, et réussit toujours. Si quelque chose est
+refusé, ce n'est jamais ici.
 
-### d. Ouvre la pull request
-
-`git push` affiche une URL toute prête. Sinon, GitHub propose un bandeau sur
-ton fork, ou en ligne de commande :
+### c. Commit et pousse
 
 ```
-gh pr create --repo PierreSmague/cartometa
+git add data/manual/FR data/geo/FR.geojson
+git commit -m "feat: trois metas manuelles pour la France"
+git push -u origin meta-fr-bollards
 ```
 
 Un commit ne doit contenir **que** `data/manual/**` et `data/geo/*.geojson` —
 si `git status` montre autre chose, quelque chose ne va pas.
 
+### d. Ouvre la pull request
+
+`git push` affiche une URL toute prête : ouvre-la, elle crée la pull request.
+GitHub propose aussi un bandeau sur la page du dépôt. En ligne de commande :
+
+```
+gh pr create
+```
+
+Le mainteneur relit, puis fusionne. Tu n'as rien d'autre à faire — et tu ne
+*peux* rien faire d'autre : la fusion dans `master` exige son approbation.
+
 ### Se remettre à jour plus tard
 
 ```
 git switch master
-git pull origin master
+git pull
 ```
 
-`master` est protégée sur le dépôt d'origine : elle n'accepte que des
-fusions par pull request. Cela ne te concerne pas directement — tu ne peux
-de toute façon pas y pousser — mais explique pourquoi personne ne peut
-court-circuiter le circuit.
+`master` n'accepte que des fusions par pull request approuvées par le
+mainteneur : personne, pas même un contributeur de longue date, ne peut y
+pousser directement.
 
 **Licence.** En proposant une contribution, tu acceptes qu'elle soit publiée
 sous **CC BY-NC-SA 4.0**, comme le reste des données du projet. C'est une
@@ -351,7 +350,7 @@ pages sources se capturent à la main, une par une, avec `Ctrl+S`.
 | « format d'image non accepté » | PNG, JPEG, WEBP, GIF uniquement. |
 | « image trop lourde » | Plafond de 8 Mo. Recadrer ou réenregistrer en JPEG. |
 | « Méta créée, mais image refusée » | La méta existe, seule l'image manque. La compléter dans `data/manual/<CC>/metas.json`, champ `image`. |
-| `Permission to PierreSmague/cartometa.git denied` / `403` au `git push` | Tu pousses sur le dépôt d'origine, où personne n'écrit. Pousse sur ton fork : `git push -u fork <branche>`. Voir §7. |
+| `Permission to PierreSmague/cartometa.git denied` / `403` au `git push` | Ton accès n'est pas encore actif : demande-le, puis accepte l'invitation reçue par courriel. Voir §7a. |
 | `git: 'switch' is not a git command` | Git antérieur à 2.23. Utiliser `git checkout -b <branche>`. |
 | `error: src refspec ... does not match any` | Rien n'a été commité : `git commit` avant `git push`. |
 | La file est vide au démarrage | Normal pour un pays neuf. Appuyer sur `N`. |
@@ -367,12 +366,9 @@ uv run cartometa-review FR       # N → saisir, D/C/S/E/F → tracer, A → enr
 uv run cartometa-build FR        # vérifier (le code pays est obligatoire)
 python -m http.server 8010 --directory dist
 
-gh repo fork PierreSmague/cartometa --clone=false     # une fois
-git remote add fork https://github.com/<toi>/cartometa.git
-
-git switch -c meta-fr
+git switch -c meta-fr            # accès demandé et invitation acceptée
 git add data/manual/FR data/geo/FR.geojson
 git commit -m "feat: metas manuelles pour la France"
-git push -u fork meta-fr         # `fork`, jamais `origin`
-gh pr create --repo PierreSmague/cartometa
+git push -u origin meta-fr
+gh pr create
 ```
