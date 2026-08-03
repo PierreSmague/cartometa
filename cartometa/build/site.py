@@ -85,13 +85,20 @@ def verifier_integrite(out_dir: Path, manifeste: dict) -> ResultatVerification:
 
     Fonction pure, sans effet de bord : elle ne fait qu'inspecter `out_dir`
     et le `manifeste` déjà écrit, ce qui la rend testable sans construire un
-    site complet et rejouable après-coup sur un `dist/` déjà déployé.
+    site complet et rejouable après-coup sur un `dist/` déjà déployé — y
+    compris sur un manifeste qu'on n'a pas soi-même produit, donc qui peut
+    être incomplet ou tronqué : un fichier absent, illisible ou une clé
+    manquante sont chacun signalés, jamais laissés remonter en exception.
     """
     manquants: list[str] = []
 
-    chemin_index = out_dir / "data" / manifeste["index"]
-    if not chemin_index.exists():
-        manquants.append(str(chemin_index))
+    index_rel = manifeste.get("index")
+    if index_rel is None:
+        manquants.append("manifeste : clé 'index' absente")
+    else:
+        chemin_index = out_dir / "data" / index_rel
+        if not chemin_index.exists():
+            manquants.append(str(chemin_index))
 
     image_base = manifeste.get("image_base", IMAGE_BASE)
     images_ignorees = _base_est_absolue(image_base)
@@ -105,7 +112,17 @@ def verifier_integrite(out_dir: Path, manifeste: dict) -> ResultatVerification:
         if images_ignorees:
             continue
 
-        contenu = json.loads(chemin_pays.read_text("utf-8"))
+        try:
+            contenu = json.loads(chemin_pays.read_text("utf-8"))
+        except (OSError, json.JSONDecodeError) as erreur:
+            # Un disque plein tronque un fichier qui existe toujours : il
+            # passe le test .exists() ci-dessus mais son JSON est invalide.
+            # C'est un diagnostic distinct d'une absence, pas une exception
+            # à laisser remonter — la fonction doit rester la source fiable
+            # même sur le cas dégradé qui l'a motivée.
+            manquants.append(f"{chemin_pays} (illisible : {erreur})")
+            continue
+
         for meta in contenu.get("metas", {}).values():
             for cle in ("thumb", "full"):
                 relatif = meta.get(cle)

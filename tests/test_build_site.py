@@ -326,6 +326,32 @@ def test_le_fichier_index_manquant_est_signale(tmp_path):
     assert any("index.json" in chemin for chemin in resultat.manquants)
 
 
+def test_un_fichier_pays_corrompu_est_signale_sans_lever(tmp_path):
+    """Le cas motivant le contrôle : un disque plein tronque un fichier qui
+    continue d'exister (il passe le test `.exists()`) mais dont le JSON est
+    invalide. Ça doit rester un diagnostic dans `manquants`, jamais une
+    exception qui remonte — sinon le contrôle échoue précisément sur le cas
+    qu'il a été construit pour couvrir."""
+    manifeste = _arbre_complet(tmp_path)
+    (tmp_path / "data" / "h" / "c" / "PL.json").write_text("{tronqu", "utf-8")
+
+    resultat = verifier_integrite(tmp_path, manifeste)
+
+    assert any("PL.json" in chemin for chemin in resultat.manquants)
+
+
+def test_un_manifeste_sans_cle_index_est_signale_sans_lever(tmp_path):
+    """Rejouable après-coup signifie aussi robuste à un manifeste qu'on n'a
+    pas soi-même produit : une clé requise absente doit être diagnostiquée,
+    pas lever un `KeyError`."""
+    manifeste = _arbre_complet(tmp_path)
+    del manifeste["index"]
+
+    resultat = verifier_integrite(tmp_path, manifeste)
+
+    assert any("index" in chemin for chemin in resultat.manquants)
+
+
 def test_un_image_base_absolu_ignore_les_images(tmp_path):
     """L'échappatoire objet-storage : quand `image_base` est une URL absolue,
     les images ne vivent plus sous `out_dir` — les vérifier y produirait
