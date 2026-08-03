@@ -19,3 +19,8 @@ logs/
 
 # Artefacts de process
 .superpowers/
+
+# Artefact de build du site public
+dist/
+# Données du viewer : régénérées par cartometa-build, jamais versionnées
+viewer/data/
