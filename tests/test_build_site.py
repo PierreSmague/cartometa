@@ -78,6 +78,14 @@ def _regles(headers: str) -> list[tuple[str, dict[str, str]]]:
     return regles
 
 
+def test_la_page_de_licence_est_publiee(projet):
+    dist = projet / "dist"
+
+    build_site(projet / "data", dist, projet / "viewer", ["PL"])
+
+    assert (dist / "licence.html").exists()
+
+
 def test_le_manifeste_reference_des_fichiers_qui_existent(projet):
     dist = projet / "dist"
 

@@ -8,22 +8,15 @@ et ne sont pas versionnés (`input/`, `data/metas/` sont ignorés par git).
 
 ## Consulter la carte
 
-Le viewer est statique mais lit ses données par `fetch`, donc il lui faut un
-serveur HTTP — un double-clic sur `viewer/index.html` échouera (CORS sur
-`file://`). Depuis la racine du dépôt :
-
 ```
-python -m http.server 8010
+uv run cartometa-build
+python -m http.server 8010 --directory dist
 ```
 
-puis <http://127.0.0.1:8010/viewer/>. `Ctrl+C` pour arrêter.
+puis <http://127.0.0.1:8010/>. `Ctrl+C` pour arrêter.
 
-Clic sur la carte → panneau des métas triées par surface croissante.
-Filtres par catégorie et recherche textuelle en haut du panneau.
-
-Deux dépendances externes au moment de l'affichage : Leaflet et les tuiles de
-fond, tous deux chargés depuis Internet. La carte ne fonctionne donc pas hors
-connexion.
+Clic sur la carte → galerie des métas triées par surface croissante. Survol
+d'une vignette → son emprise sur la carte. Clic → image pleine taille.
 
 ## Ajouter un pays
 
@@ -102,26 +95,34 @@ Le mode subdivisions télécharge au premier usage le jeu de données Natural
 Earth admin-1 (41 Mo), puis en extrait les régions du pays dans
 `data/cache/admin1/`. Les lancements suivants sont instantanés.
 
-### 4. Publier vers le viewer
+### 4. Publier
 
 ```
-uv run cartometa-export
+uv run cartometa-build
+npx wrangler pages deploy dist --project-name cartometa
 ```
 
-Sans argument, exporte **tous** les pays présents dans `data/geo/` — un nouveau
-pays entre dans le viewer dès qu'une de ses métas a été tracée, sans changer la
-commande. Passer des codes (`cartometa-export PL`) restreint l'export.
+`cartometa-build` produit un `dist/` autonome et gitignoré : géométries
+simplifiées et découpées par pays, images en deux tailles, empreintes de
+contenu pour le cache. Les images sources vivant dans `input/`, non versionné,
+le site ne peut être construit que localement.
 
-N'exporte que les métas `validé`, vers `viewer/data/`.
+Options utiles : `--skip-images` pour itérer vite sur le code,
+`--simplify-tolerance` pour ajuster la finesse des contours (défaut 0,01°,
+plafonnée par la taille de chaque emprise).
 
 ## Développement
 
 ```
 uv sync
-uv run pytest
+uv run python -m pytest
 ```
 
-142 tests. Aucun ne touche le réseau ; ceux marqués `real_data` sont sautés
+`uv run pytest` échoue sur certaines machines Windows (stratégie de contrôle
+d'applications, `os error 4551`) : ne pas « corriger » l'invocation ci-dessus
+en le retirant, `python -m pytest` est la forme qui fonctionne partout.
+
+200 tests. Aucun ne touche le réseau ; ceux marqués `real_data` sont sautés
 seulement si aucun `data/geo/*.geojson` n'existe. Ces fichiers étant suivis
 par git, ils sont toujours présents : tant qu'aucune emprise n'y a été
 tracée, ces tests s'exécutent sur des fichiers vides et passent sans rien
@@ -130,10 +131,11 @@ vérifier.
 ## Où sont les choses
 
 ```
+cartometa/build/     dataset, géométries, images, gabarits : cartometa-build
 cartometa/extract/   HTML → métas structurées, résolution des liens Maps
-cartometa/geo/       référentiel Natural Earth (pays, régions) et export
+cartometa/geo/       référentiel Natural Earth (pays, régions)
 cartometa/review/    serveur local de revue + interface de tracé
-viewer/              carte statique (Leaflet, sans build)
+viewer/              gabarits de la carte (Leaflet), assemblés par cartometa-build
 data/geo/            emprises tracées + statut + morceaux (versionnées)
 data/manual/         métas saisies à la main, textes et images (versionnées)
 data/metas/          textes Plonk It (jamais versionnés, régénérables)
