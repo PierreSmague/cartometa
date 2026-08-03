@@ -21,6 +21,16 @@ FILE_COUNT_WARNING = 15_000
 
 IMAGE_BASE = "img/"
 
+# Actifs copiés depuis `viewer/` sous un nom empreinté, et le marqueur qu'ils
+# remplacent dans les gabarits HTML. Les ajouter ici suffit : la boucle de
+# copie, la substitution et la vérification d'intégrité en dérivent toutes.
+ACTIFS_STATIQUES = (
+    ("style.css", "__CSS__"),
+    ("app.js", "__JS__"),
+    ("favicon.svg", "__ICON_SVG__"),
+    ("favicon.png", "__ICON_PNG__"),
+)
+
 # Les fichiers empreintés vivent sous `data/h/`, jamais directement sous
 # `data/` où réside `manifest.json`. Un motif `/data/*` recouvrirait aussi le
 # manifeste, et rien dans le dépôt ne fixe lequel des deux régimes (no-cache
@@ -55,6 +65,10 @@ HEADERS = """\
 /*.js
   Cache-Control: public, max-age=31536000, immutable
 /*.css
+  Cache-Control: public, max-age=31536000, immutable
+/*.svg
+  Cache-Control: public, max-age=31536000, immutable
+/*.png
   Cache-Control: public, max-age=31536000, immutable
 """
 
@@ -95,8 +109,8 @@ def verifier_integrite(out_dir: Path, manifeste: dict) -> ResultatVerification:
     sur le disque : l'index global, chaque fichier pays, et — sauf quand
     `image_base` pointe vers un stockage externe — la vignette (`thumb`) et
     l'image pleine taille (`full`) de chaque méta. Vérifie aussi la page
-    elle-même : `index.html`, `_headers`, et les deux fichiers statiques
-    empreintés (`app.<hash>.js`, `style.<hash>.css`) référencés par la page.
+    elle-même : `index.html`, `_headers`, et chaque actif empreinté déclaré
+    dans `ACTIFS_STATIQUES` (script, feuille de style, favicons).
     `licence.html` reste optionnelle : sa présence n'est pas requise ici.
 
     Fonction pure, sans effet de bord : elle ne fait qu'inspecter `out_dir`
@@ -122,7 +136,11 @@ def verifier_integrite(out_dir: Path, manifeste: dict) -> ResultatVerification:
     # manifeste : on vérifie donc le motif plutôt qu'un nom précis, ce qui
     # marche aussi bien juste après ce build que rejoué plus tard sur un
     # `dist/` produit ailleurs.
-    for motif in ("app.*.js", "style.*.css"):
+    # Dérivé de ACTIFS_STATIQUES : ajouter un actif là-bas suffit à ce qu'il
+    # soit vérifié ici, sans risquer d'oublier une des deux listes.
+    for fichier, _ in ACTIFS_STATIQUES:
+        tige, suffixe = Path(fichier).stem, Path(fichier).suffix
+        motif = f"{tige}.*{suffixe}"
         if not any(out_dir.glob(motif)):
             manquants.append(f"{out_dir / motif} (aucun fichier empreinté trouvé)")
 
@@ -234,7 +252,7 @@ def build_site(
     )
 
     noms_statiques = {}
-    for fichier, marqueur in (("style.css", "__CSS__"), ("app.js", "__JS__")):
+    for fichier, marqueur in ACTIFS_STATIQUES:
         chemin = viewer_dir / fichier
         octets = chemin.read_bytes()
         tige, suffixe = chemin.stem, chemin.suffix

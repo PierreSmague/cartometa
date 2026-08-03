@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Epingle de carte. Le disque interieur est blanc et non transparent :
+       sur une barre d'onglets sombre, un trou transparent ferait disparaitre
+       le creux et l'epingle se lirait comme une tache. -->
+  <path d="M16 2C10.2 2 5.5 6.7 5.5 12.5c0 7.6 8.4 15.9 10 17.4.4.4 1 .4 1.4 0
+           1.6-1.5 10-9.8 10-17.4C26.5 6.7 21.8 2 16 2z" fill="#c1283a"/>
+  <circle cx="16" cy="12.5" r="4.2" fill="#ffffff"/>
+</svg>

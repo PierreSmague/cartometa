@@ -50,10 +50,17 @@ def projet(tmp_path, monkeypatch):
 
     viewer = tmp_path / "viewer"
     viewer.mkdir()
-    (viewer / "index.html").write_text("<!doctype html><body>__CSS__ __JS__</body>", "utf-8")
-    (viewer / "licence.html").write_text("<!doctype html><body>__CSS__</body>", "utf-8")
+    (viewer / "index.html").write_text(
+        "<!doctype html><head>__ICON_SVG__ __ICON_PNG__</head>"
+        "<body>__CSS__ __JS__</body>", "utf-8"
+    )
+    (viewer / "licence.html").write_text(
+        "<!doctype html><head>__ICON_SVG__</head><body>__CSS__</body>", "utf-8"
+    )
     (viewer / "style.css").write_text("body{margin:0}", "utf-8")
     (viewer / "app.js").write_text("console.log('x')", "utf-8")
+    (viewer / "favicon.svg").write_text("<svg xmlns='http://www.w3.org/2000/svg'/>", "utf-8")
+    Image.new("RGBA", (32, 32), (193, 40, 58, 255)).save(viewer / "favicon.png")
     return tmp_path
 
 
@@ -157,6 +164,38 @@ def test_les_gabarits_recoivent_les_noms_empreintes(projet):
     page = (dist / "index.html").read_text("utf-8")
     assert "__CSS__" not in page and "__JS__" not in page
     assert "style." in page and ".css" in page
+
+
+def test_les_favicons_sont_publies_empreintes_et_references(projet):
+    """L'onglet du navigateur doit porter l'épingle, sur les deux pages.
+
+    Les deux formats sont déclarés : le SVG pour les navigateurs récents, le
+    PNG en repli. Un favicon non empreinté serait servi immuable un an sans
+    pouvoir être remplacé, d'où le passage par le même mécanisme que le reste.
+    """
+    dist = projet / "dist"
+
+    build_site(projet / "data", dist, projet / "viewer", ["PL"])
+
+    svg = [p.name for p in dist.glob("favicon.*.svg")]
+    png = [p.name for p in dist.glob("favicon.*.png")]
+    assert len(svg) == 1 and len(png) == 1, f"attendu un de chaque : {svg} {png}"
+
+    for page in ("index.html", "licence.html"):
+        texte = (dist / page).read_text("utf-8")
+        assert "__ICON_SVG__" not in texte, f"marqueur non substitué dans {page}"
+        assert svg[0] in texte, f"{page} ne référence pas {svg[0]}"
+
+    # Et ils doivent tomber sous une règle de cache immuable, comme les autres
+    # actifs empreintés.
+    regles = _regles((dist / "_headers").read_text("utf-8"))
+    for nom in (svg[0], png[0]):
+        couvrant = [
+            entetes for motif, entetes in regles
+            if fnmatch.fnmatchcase("/" + nom, motif)
+        ]
+        assert couvrant, f"aucune règle ne couvre /{nom}"
+        assert all("immutable" in e["Cache-Control"] for e in couvrant)
 
 
 def test_le_fichier_headers_est_produit_avec_les_deux_regimes(projet):
@@ -301,6 +340,8 @@ def _arbre_complet(out_dir: Path) -> dict:
     (out_dir / "_headers").write_text("", "utf-8")
     (out_dir / "app.a1b2c3d4.js").write_text("", "utf-8")
     (out_dir / "style.a1b2c3d4.css").write_text("", "utf-8")
+    (out_dir / "favicon.a1b2c3d4.svg").write_text("", "utf-8")
+    (out_dir / "favicon.a1b2c3d4.png").write_bytes(b"")
     return {
         "index": "h/index.json",
         "image_base": "img/",
@@ -398,6 +439,8 @@ def test_un_image_base_absolu_ignore_les_images(tmp_path):
     (tmp_path / "_headers").write_text("", "utf-8")
     (tmp_path / "app.a1b2c3d4.js").write_text("", "utf-8")
     (tmp_path / "style.a1b2c3d4.css").write_text("", "utf-8")
+    (tmp_path / "favicon.a1b2c3d4.svg").write_text("", "utf-8")
+    (tmp_path / "favicon.a1b2c3d4.png").write_bytes(b"")
     manifeste = {
         "index": "h/index.json",
         "image_base": "https://cdn.example/i/",
