@@ -192,6 +192,20 @@ def test_le_fichier_headers_est_produit_avec_les_deux_regimes(projet):
     assert len(empreinte) == 1
     assert "immutable" in empreinte[0][1]["Cache-Control"]
 
+    # Les pages HTML doivent être couvertes sous LEURS DEUX FORMES. Cloudflare
+    # Pages sert des URL propres et redirige `/licence.html` vers `/licence` :
+    # une règle écrite sur le seul nom de fichier ne couvre donc que l'adresse
+    # que personne ne visite. Vérifié en production avant d'être corrigé ici.
+    for chemin in ("/", "/index.html", "/licence", "/licence.html"):
+        couvrant = [
+            (motif, entetes) for motif, entetes in regles
+            if fnmatch.fnmatchcase(chemin, motif)
+        ]
+        assert couvrant, f"aucune règle ne couvre {chemin}"
+        assert all(e["Cache-Control"] == "no-cache" for _, e in couvrant), (
+            f"{chemin} doit être revalidé : {couvrant}"
+        )
+
 
 def test_dumps_est_independant_de_l_ordre_des_cles():
     """Le tri des clés rend l'empreinte reproductible.
