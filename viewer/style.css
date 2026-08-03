@@ -52,6 +52,7 @@ body {
   padding: 10px 16px;
   border-bottom: 1px solid var(--trait);
 }
+#filtres[hidden] { display: none; }
 .pastille {
   font: inherit;
   font-size: 11px;
@@ -71,6 +72,14 @@ body {
   padding: 4px 10px;
   border: 1px solid var(--trait);
   border-radius: var(--rayon);
+}
+/* Seul lecteur restant de --accent depuis que le surlignage de carte (JS) est
+   passé à une couleur en dur : garde la variable honnête plutôt que morte. */
+#recherche:focus-visible,
+.pastille:focus-visible,
+#loupe-fermer:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
 #accueil { padding: 28px 20px; max-width: 44ch; }

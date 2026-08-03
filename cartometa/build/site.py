@@ -81,7 +81,10 @@ def verifier_integrite(out_dir: Path, manifeste: dict) -> ResultatVerification:
     """Vérifie que tout chemin référencé par le manifeste existe réellement
     sur le disque : l'index global, chaque fichier pays, et — sauf quand
     `image_base` pointe vers un stockage externe — la vignette (`thumb`) et
-    l'image pleine taille (`full`) de chaque méta.
+    l'image pleine taille (`full`) de chaque méta. Vérifie aussi la page
+    elle-même : `index.html`, `_headers`, et les deux fichiers statiques
+    empreintés (`app.<hash>.js`, `style.<hash>.css`) référencés par la page.
+    `licence.html` reste optionnelle : sa présence n'est pas requise ici.
 
     Fonction pure, sans effet de bord : elle ne fait qu'inspecter `out_dir`
     et le `manifeste` déjà écrit, ce qui la rend testable sans construire un
@@ -89,8 +92,26 @@ def verifier_integrite(out_dir: Path, manifeste: dict) -> ResultatVerification:
     compris sur un manifeste qu'on n'a pas soi-même produit, donc qui peut
     être incomplet ou tronqué : un fichier absent, illisible ou une clé
     manquante sont chacun signalés, jamais laissés remonter en exception.
+
+    Sans ce volet page, l'incident qui a motivé ce contrôle (un `rmtree`
+    concurrent vidant `dist/` en cours d'écriture) pouvait toujours produire
+    un build qui se déclare réussi alors que la page déployée n'a plus de
+    script ni de feuille de style — un site qui rend blanc, sans la moindre
+    erreur au build.
     """
     manquants: list[str] = []
+
+    if not (out_dir / "index.html").exists():
+        manquants.append(str(out_dir / "index.html"))
+    if not (out_dir / "_headers").exists():
+        manquants.append(str(out_dir / "_headers"))
+    # Le nom exact est empreinté (hash de contenu) et n'est pas repris dans le
+    # manifeste : on vérifie donc le motif plutôt qu'un nom précis, ce qui
+    # marche aussi bien juste après ce build que rejoué plus tard sur un
+    # `dist/` produit ailleurs.
+    for motif in ("app.*.js", "style.*.css"):
+        if not any(out_dir.glob(motif)):
+            manquants.append(f"{out_dir / motif} (aucun fichier empreinté trouvé)")
 
     index_rel = manifeste.get("index")
     if index_rel is None:
@@ -103,8 +124,12 @@ def verifier_integrite(out_dir: Path, manifeste: dict) -> ResultatVerification:
     image_base = manifeste.get("image_base", IMAGE_BASE)
     images_ignorees = _base_est_absolue(image_base)
 
-    for entree in manifeste.get("countries", {}).values():
-        chemin_pays = out_dir / "data" / entree["file"]
+    for code, entree in manifeste.get("countries", {}).items():
+        fichier_rel = entree.get("file")
+        if fichier_rel is None:
+            manquants.append(f"manifeste : pays '{code}' sans clé 'file'")
+            continue
+        chemin_pays = out_dir / "data" / fichier_rel
         if not chemin_pays.exists():
             manquants.append(str(chemin_pays))
             continue  # pas de fichier à lire pour en tirer les métas

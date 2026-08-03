@@ -104,7 +104,11 @@ carte.on('click', async (evenement) => {
   // rend une galerie vide sans exception : le visiteur perd la seule
   // explication qu'il aura jamais eue.
   if (!etat.pret) return;
-  const { lng: lon, lat } = evenement.latlng;
+  // `.wrap()` : avec `worldCopyJump`, un clic sur une copie répétée du monde
+  // (zoom ≤ 2) porte une longitude hors ±180°, que rien dans `etat.index`
+  // (des bbox en ±180°) ne peut jamais recouvrir — un clic pourtant valide
+  // ressortirait « aucune méta » sans raison visible.
+  const { lng: lon, lat } = evenement.latlng.wrap();
   const generationDuClic = ++generation;
   document.getElementById('accueil').hidden = true;
   document.getElementById('filtres').hidden = false;
@@ -215,6 +219,11 @@ function rendre() {
       // fiable selon les navigateurs. Garder les deux valeurs synchronisées
       // avec `--accent` dans style.css.
       L.geoJSON(etat.pays.get(meta.code).geometries[meta.id], {
+        // interactive: false — sinon le calque du surlignage capte le clic
+        // à sa place (Leaflet appelle `DomEvent.fakeStop`, qui empêche
+        // `carte.on('click')` de se déclencher) : la zone entière resterait
+        // muette au premier clic tant que la souris ne l'a pas quittée.
+        interactive: false,
         color: '#c1283a', weight: 2, fillOpacity: 0.18,
       }).addTo(surlignage);
     });
