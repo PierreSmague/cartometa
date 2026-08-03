@@ -70,6 +70,12 @@ def main() -> None:
             f"\nAttention : {resultat['legacy_statuses']} emprise(s) portent un "
             f"statut hérité (ni validé ni rejeté) et n'ont pas été publiées."
         )
+    if arguments.skip_images:
+        print(
+            "\nAttention : --skip-images actif — ce dist/ ne contient aucune "
+            "image. Le contrôle d'intégrité passe quand même (rien à vérifier "
+            "sans clés thumb/full) : ne pas déployer ce dist/ tel quel."
+        )
 
 
 if __name__ == "__main__":

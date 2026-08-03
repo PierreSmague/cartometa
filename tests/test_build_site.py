@@ -283,6 +283,10 @@ def _arbre_complet(out_dir: Path) -> dict:
         "geometries": {},
     }
     (out_dir / "data" / "h" / "c" / "PL.json").write_text(json.dumps(pays), "utf-8")
+    (out_dir / "index.html").write_text("<!doctype html>", "utf-8")
+    (out_dir / "_headers").write_text("", "utf-8")
+    (out_dir / "app.a1b2c3d4.js").write_text("", "utf-8")
+    (out_dir / "style.a1b2c3d4.css").write_text("", "utf-8")
     return {
         "index": "h/index.json",
         "image_base": "img/",
@@ -352,6 +356,18 @@ def test_un_manifeste_sans_cle_index_est_signale_sans_lever(tmp_path):
     assert any("index" in chemin for chemin in resultat.manquants)
 
 
+def test_un_pays_sans_cle_file_est_signale_sans_lever(tmp_path):
+    """Même garde-fou que pour la clé 'index' manquante, mais sur une entrée
+    de pays : un `entree["file"]` non protégé lèverait un `KeyError` au lieu
+    de rapporter l'absence, contredisant la docstring de la fonction."""
+    manifeste = _arbre_complet(tmp_path)
+    del manifeste["countries"]["PL"]["file"]
+
+    resultat = verifier_integrite(tmp_path, manifeste)
+
+    assert any("PL" in chemin and "file" in chemin for chemin in resultat.manquants)
+
+
 def test_un_image_base_absolu_ignore_les_images(tmp_path):
     """L'échappatoire objet-storage : quand `image_base` est une URL absolue,
     les images ne vivent plus sous `out_dir` — les vérifier y produirait
@@ -364,6 +380,10 @@ def test_un_image_base_absolu_ignore_les_images(tmp_path):
         "geometries": {},
     }
     (tmp_path / "data" / "h" / "c" / "PL.json").write_text(json.dumps(pays), "utf-8")
+    (tmp_path / "index.html").write_text("<!doctype html>", "utf-8")
+    (tmp_path / "_headers").write_text("", "utf-8")
+    (tmp_path / "app.a1b2c3d4.js").write_text("", "utf-8")
+    (tmp_path / "style.a1b2c3d4.css").write_text("", "utf-8")
     manifeste = {
         "index": "h/index.json",
         "image_base": "https://cdn.example/i/",
@@ -374,6 +394,46 @@ def test_un_image_base_absolu_ignore_les_images(tmp_path):
 
     assert resultat.manquants == []
     assert resultat.images_ignorees is True
+
+
+# --- Le volet « page » du contrôle (item 4 de la revue finale) : l'index.html,
+# les _headers et les deux actifs statiques empreintés sont désormais couverts,
+# pas seulement les chemins référencés par le manifeste. -------------------
+
+def test_index_html_manquant_est_signale(tmp_path):
+    manifeste = _arbre_complet(tmp_path)
+    (tmp_path / "index.html").unlink()
+
+    resultat = verifier_integrite(tmp_path, manifeste)
+
+    assert any("index.html" in chemin for chemin in resultat.manquants)
+
+
+def test_headers_manquant_est_signale(tmp_path):
+    manifeste = _arbre_complet(tmp_path)
+    (tmp_path / "_headers").unlink()
+
+    resultat = verifier_integrite(tmp_path, manifeste)
+
+    assert any("_headers" in chemin for chemin in resultat.manquants)
+
+
+def test_actif_js_empreinte_manquant_est_signale(tmp_path):
+    manifeste = _arbre_complet(tmp_path)
+    (tmp_path / "app.a1b2c3d4.js").unlink()
+
+    resultat = verifier_integrite(tmp_path, manifeste)
+
+    assert any("app" in chemin for chemin in resultat.manquants)
+
+
+def test_actif_css_empreinte_manquant_est_signale(tmp_path):
+    manifeste = _arbre_complet(tmp_path)
+    (tmp_path / "style.a1b2c3d4.css").unlink()
+
+    resultat = verifier_integrite(tmp_path, manifeste)
+
+    assert any("style" in chemin for chemin in resultat.manquants)
 
 
 def test_build_site_reussit_toujours_avec_la_verification_integree(projet):
