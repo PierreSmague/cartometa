@@ -4,8 +4,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Cartometa — GeoGuessr metas by area</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="icon" type="image/svg+xml" href="__ICON_SVG__">
+  <link rel="icon" type="image/png" sizes="32x32" href="__ICON_PNG__">
+  <!-- Empreintes SHA-384 verifiees identiques sur unpkg, jsdelivr et cdnjs le
+       2026-08-03 : le navigateur refusera d'executer un fichier altere. A
+       recalculer si la version de Leaflet change, sinon la carte disparait
+       sans message. -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H"
+        crossorigin="anonymous">
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH"
+          crossorigin="anonymous"></script>
   <link rel="stylesheet" href="__CSS__">
   <script defer type="module" src="__JS__"></script>
 </head>
