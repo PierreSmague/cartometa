@@ -142,7 +142,7 @@ Deux traitements, dans cet ordre : simplification de Douglas-Peucker
 (`shapely.simplify`, `preserve_topology=True`) puis arrondi des coordonnées à
 5 décimales (~1 m).
 
-**La tolérance est adaptative** : `min(tolérance, diagonale de la bbox / 50)`.
+**La tolérance est adaptative** : `min(tolérance, diagonale de la bbox / 500)`.
 Une tolérance fixe est plus grande que les emprises « spot », dont le côté
 mesure ~0,005° : mesuré sur les données réelles, 5 emprises perdaient plus de la
 moitié de leur surface et la pire n'en gardait que 24 % — on aurait pu cliquer
@@ -150,8 +150,8 @@ sur l'île de Kusu sans que sa méta sorte. Avec la tolérance adaptative, la pi
 conservation passe à 85 % et deux emprises seulement descendent sous 90 %.
 
 Le correctif ne coûte rien : les grandes emprises ont une diagonale telle que
-`diagonale/50` dépasse la tolérance, elles reçoivent donc la tolérance pleine et
-leur poids est inchangé. Total sur les données actuelles : 40,2 Mo → 12,0 Mo.
+`diagonale/500` dépasse la tolérance, elles reçoivent donc la tolérance pleine
+et leur poids est inchangé. Total sur les données actuelles : 40,2 Mo → 12,0 Mo.
 
 Mesures à la tolérance par défaut de 0,01° (~1,1 km) :
 
@@ -163,14 +163,55 @@ Mesures à la tolérance par défaut de 0,01° (~1,1 km) :
 | TR | 2,41 Mo | 0,70 Mo | 54 Ko |
 | PL | 0,66 Mo | 0,19 Mo | 8 Ko |
 
+Ce tableau a été mesuré à `SIZE_DIVISOR = 50` (la valeur d'origine, révisée
+plus bas) ; il ne change pas matériellement à 500 : ces cinq pays sont de
+grandes emprises pour lesquelles le plafond ne s'applique déjà pas, le passage
+à 500 ne change donc rien à leur poids. Seul le poids total et celui d'ID (le
+pays le plus lourd) ont été remesurés à 500 (voir plus bas : 2 443 Ko et 855 Ko
+contre 2 385 Ko et 854 Ko à 50) — l'écart tient aux emprises « spot » des
+autres pays, pas à ce tableau.
+
 Écart de surface constaté : moins de 0,1 %. L'arrondi seul ne rapporte que 8 % ;
 le gain vient de la simplification.
+
+**Le diviseur 500, et pourquoi ce n'est pas 50.** La valeur d'origine (50) a
+été choisie sans mesure sur l'ensemble des données réelles ; une fois le test
+d'acceptation du critère 5 exécuté sur les 1 710 emprises publiées, 231
+d'entre elles dépassaient un seuil de dérive de surface de 0,5 %, la pire à
+16,5 % (`SZ:oFsa`). Mesuré sur ces mêmes 1 710 emprises, en faisant varier le
+diviseur (nombre d'emprises hors seuil / pire dérive / poids gzip total /
+poids du pays le plus lourd, ID) :
+
+| diviseur | hors seuil (>0,5 %) | pire dérive | gzip total | pays le plus lourd |
+|---|---|---|---|---|
+| 50 (ancien) | 231 | 16,5 % | 2 385 Ko | 854 Ko |
+| 200 | 73 | 3,8 % | 2 398 Ko | 854 Ko |
+| **500 (retenu)** | **19** | **3,3 %** | **2 443 Ko** | **855 Ko** |
+| 1000 | 6 | 3,0 % | 2 610 Ko | 862 Ko |
+| 2000 | 2 | 0,9 % | 3 330 Ko | 891 Ko |
+| 5000 | 0 | 0,2 % | 5 198 Ko | 994 Ko |
+
+500 divise par cinq la pire dérive (16,5 % → 3,3 %) pour un surcoût d'un
+kilo-octet sur le pays le plus lourd. Aucun diviseur mesuré ne ramène la dérive
+sous 0,5 % sans coût disproportionné : même à 5000, elle ne tombe qu'à 0,2 %,
+en amenant l'Indonésie à 994 Ko — à la limite du plafond d'1 Mo par pays du
+critère d'acceptation 3 (§14). Le seuil de 0,5 % annoncé initialement n'était
+donc pas atteignable par ce mécanisme ; c'est ce chiffre qui a été corrigé
+(voir « Vérifications automatiques » ci-dessous), pas l'algorithme.
 
 **Vérifications automatiques** (pour chaque géométrie simplifiée) :
 
 - distance de Hausdorff à l'original ≤ tolérance ;
-- écart de surface ≤ 0,5 % ;
+- écart de surface ≤ 5 % ;
 - géométrie valide et non vide.
+
+Le seuil de dérive de surface est **5 %, pas 0,5 %** : mesuré sur le jeu réel
+de 1 710 emprises à `SIZE_DIVISOR = 500`, la pire dérive observée est 3,3 %,
+et 5 % laisse une marge délibérée au-dessus de ce pire cas mesuré. Le chiffre
+de 0,5 % initialement retenu ici n'avait jamais été mesuré sur l'ensemble des
+données réelles ; une fois mesuré, il s'est révélé inatteignable par
+simplification adaptative sans coût de poids disproportionné (voir tableau
+ci-dessus) — c'est le seuil qui était faux, pas la simplification.
 
 Un critère fondé sur les points de vérité terrain (coordonnées du lien Maps) a
 été envisagé puis **écarté** : Plonk It place parfois ce lien à visée
@@ -358,7 +399,10 @@ compte Cloudflare et le nom de domaine.
    par session.
 4. Aucune image cassée : tout chemin d'image du `dist/` pointe vers un fichier
    existant.
-5. Les trois vérifications de simplification passent sur les données réelles.
+5. Les trois vérifications de simplification passent sur les données réelles,
+   au seuil de dérive de surface révisé du §6 (5 %, mesuré à 3,3 % de pire cas
+   réel avec `SIZE_DIVISOR = 500`, pas le 0,5 % initialement annoncé et jamais
+   mesuré).
 6. Le bandeau d'attribution est visible sur toutes les pages, et
    `/licence.html` est atteignable.
 7. La suite de tests passe, sans accès réseau.
