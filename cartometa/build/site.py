@@ -29,7 +29,16 @@ ACTIFS_STATIQUES = (
     ("app.js", "__JS__"),
     ("favicon.svg", "__ICON_SVG__"),
     ("favicon.png", "__ICON_PNG__"),
+    ("og.png", "__OG_IMAGE__"),
 )
+
+# Origine canonique du site, substituée à `__SITE_URL__` dans les gabarits.
+# Les balises Open Graph exigent des URL absolues : un chemin relatif est
+# ignoré par la plupart des robots d'aperçu, et la vignette reste vide. Le site
+# répond aujourd'hui sur trois origines (le domaine, son `www`, et
+# `cartometa.pages.dev`) — d'où un réglage explicite plutôt qu'un domaine
+# codé en dur dans un gabarit servi depuis les trois.
+SITE_URL = "https://cartometa.com"
 
 # Les fichiers empreintés vivent sous `data/h/`, jamais directement sous
 # `data/` où réside `manifest.json`. Un motif `/data/*` recouvrirait aussi le
@@ -199,6 +208,7 @@ def build_site(
     tolerance: float = DEFAULT_TOLERANCE,
     skip_images: bool = False,
     image_base: str = IMAGE_BASE,
+    site_url: str = SITE_URL,
 ) -> dict:
     """Produit un `dist/` complet et autonome.
 
@@ -265,6 +275,9 @@ def build_site(
         texte = source.read_text("utf-8")
         for marqueur, nom in noms_statiques.items():
             texte = texte.replace(marqueur, nom)
+        # Après les noms empreintés : `__SITE_URL__/__OG_IMAGE__` doit d'abord
+        # devenir `__SITE_URL__/og.<hash>.png`, puis l'origine se substitue.
+        texte = texte.replace("__SITE_URL__", site_url.rstrip("/"))
         (out_dir / page).write_text(texte, "utf-8")
 
     (out_dir / "_headers").write_text(HEADERS, "utf-8")

@@ -9,6 +9,7 @@ from cartometa.build.site import (
     FILE_COUNT_LIMIT,
     FILE_COUNT_WARNING,
     IMAGE_BASE,
+    SITE_URL,
     build_site,
 )
 
@@ -38,6 +39,14 @@ def main() -> None:
             f"déploiement sans toucher au code. Défaut : {IMAGE_BASE}"
         ),
     )
+    analyseur.add_argument(
+        "--site-url", default=SITE_URL,
+        help=(
+            "Origine canonique inscrite dans les balises Open Graph, qui "
+            "exigent des URL absolues sous peine d'aperçu vide au partage. "
+            f"Défaut : {SITE_URL}"
+        ),
+    )
     arguments = analyseur.parse_args()
 
     pays = [c.upper() for c in arguments.countries] or discover_countries(arguments.data)
@@ -50,7 +59,7 @@ def main() -> None:
     resultat = build_site(
         arguments.data, arguments.out, arguments.viewer, pays,
         arguments.simplify_tolerance, arguments.skip_images,
-        arguments.image_base,
+        arguments.image_base, arguments.site_url,
     )
 
     detail = ", ".join(f"{p} {n}" for p, n in resultat["countries"].items())
