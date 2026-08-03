@@ -122,6 +122,14 @@ simplifiées et découpées par pays, images en deux tailles, empreintes de
 contenu pour le cache. Les images sources vivant dans `input/`, non versionné,
 le site ne peut être construit que localement.
 
+`dist/` est rasé à chaque appel, mais **les images ne sont réencodées qu'une
+fois**. Elles sont conservées dans `data/cache/images/` (gitignoré, ~230 Mo à
+1922 emprises), indexées sur le contenu de la source et sur les réglages
+d'encodage. Une publication qui n'ajoute que quelques métas prend donc une
+trentaine de secondes au lieu de douze minutes. Changer une largeur ou la
+qualité dans `cartometa/build/images.py` invalide le cache de lui-même. Le
+supprimer est sans danger : le build suivant le reconstruit.
+
 Options utiles : `--skip-images` pour itérer vite sur le code,
 `--simplify-tolerance` pour ajuster la finesse des contours (défaut 0,01°,
 plafonnée par la taille de chaque emprise).
