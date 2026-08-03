@@ -31,6 +31,12 @@ ACTIFS_STATIQUES = (
     ("favicon.svg", "__ICON_SVG__"),
     ("favicon.png", "__ICON_PNG__"),
     ("og.png", "__OG_IMAGE__"),
+    # Greffon Leaflet du fond Google. Publié et empreinté comme les autres,
+    # mais délibérément absent des gabarits : le front va le chercher par le
+    # manifeste, et seulement si le visiteur demande ce fond. Une balise
+    # `<script>` le ferait télécharger par tout le monde, y compris par
+    # l'immense majorité qui ne quittera jamais OpenStreetMap.
+    ("googleMutant.js", "__GOOGLE_MUTANT__"),
 )
 
 # Origine canonique du site, substituée à `__SITE_URL__` dans les gabarits.
@@ -221,6 +227,7 @@ def build_site(
     skip_images: bool = False,
     image_base: str = IMAGE_BASE,
     site_url: str = SITE_URL,
+    google_key: str = "",
 ) -> dict:
     """Produit un `dist/` complet et autonome.
 
@@ -305,8 +312,21 @@ def build_site(
         # bucket R2 se fait en changeant cette seule valeur.
         "image_base": image_base,
         "index": nom_index,
+        # Nom empreinté du greffon, que le front charge à la demande.
+        "google_mutant": noms_statiques["__GOOGLE_MUTANT__"],
         "countries": manifeste_pays,
     }
+    # Absente et non vide quand aucune clé n'est fournie : le front n'affiche
+    # le sélecteur de fond que si la clé existe. Un contributeur construit
+    # sans clé et obtient un site entier, simplement sans fond Google.
+    #
+    # La clé transite par le build plutôt que par le dépôt. Elle finira de
+    # toute façon lisible dans ce manifeste — une clé de navigateur est
+    # publique par nature, c'est la restriction par référent qui la protège,
+    # pas le secret. Mais elle n'a aucune raison d'entrer dans l'historique
+    # git, où elle resterait après toute rotation.
+    if google_key:
+        manifeste["google_key"] = google_key
     (out_dir / "data" / "manifest.json").write_text(
         json.dumps(manifeste, ensure_ascii=False), "utf-8"
     )

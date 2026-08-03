@@ -250,3 +250,26 @@ body {
   color: #f2f2ee;
   cursor: pointer;
 }
+
+/* Sélecteur de fond de carte, en coin de carte. Repris du vocabulaire des
+   segments de #portee : deux boutons accolés, l'actif en inverse vidéo.
+   `box-shadow` plutôt que `border` seule : le contrôle flotte au-dessus des
+   tuiles, où un simple trait clair disparaîtrait sur un fond chargé. */
+.choix-fond {
+  display: flex;
+  border-radius: var(--rayon);
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .28);
+}
+.choix-fond button {
+  font: inherit;
+  font-size: 11px;
+  padding: 5px 10px;
+  border: 0;
+  background: var(--fond-carte);
+  color: var(--texte-doux);
+  cursor: pointer;
+}
+.choix-fond button + button { border-left: 1px solid var(--trait); }
+.choix-fond button.actif { background: var(--texte); color: var(--fond-carte); }
+.choix-fond button:disabled { cursor: not-allowed; opacity: .5; }
