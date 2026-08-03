@@ -1,0 +1,17 @@
+[
+  {
+    "id": "man-d338",
+    "country": "PH",
+    "tier": "manual",
+    "title": "The yellow meters of Panay",
+    "description": "The meters attached to a yellow metal piece are all in the Panay region.",
+    "category": "autre",
+    "source_url": "",
+    "extracted_at": "2026-08-03T15:10:07.962575+00:00",
+    "description_origin": "manual",
+    "origin": "manual",
+    "image": "data/manual/PH/images/man-d338.png",
+    "maps_url": null,
+    "maps_latlon": null
+  }
+]
