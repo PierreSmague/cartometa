@@ -81,14 +81,28 @@ def build_dataset(
         ]
         if not publiables:
             # Géojson vide ou tout en `rejeté` : rien à publier, ce n'est pas
-            # une erreur. Un clone frais est exactement dans ce cas.
+            # une erreur.
             continue
         metas = {m["id"]: m for m in load_metas(chemins)}
         if not metas:
+            # Cas normal sur un clone frais, et non une anomalie : les 1710
+            # emprises de `data/geo/` sont versionnées, leurs textes ne le
+            # sont pas. Un contributeur tombe donc ici au premier
+            # `cartometa-build` sans argument, dès le premier pays. Le
+            # message doit lui donner sa sortie — publier son seul pays — et
+            # pas seulement l'ordre de régénérer 45 pays qu'il ne possède pas.
             raise SystemExit(
-                f"{pays} : géométries présentes mais aucune méta.\n"
-                f"Les textes Plonk It ne sont pas versionnés — régénère-les avec "
-                f"cartometa-extract, ou vérifie {chemins.manual_metas}."
+                f"{pays} : {len(publiables)} emprise(s) versionnée(s), mais aucun "
+                f"texte de méta.\n"
+                f"Les textes Plonk It ne sont pas versionnés (data/metas/ est "
+                f"gitignoré) : sur un clone frais c'est le cas de TOUS les pays, "
+                f"et ce n'est pas une anomalie.\n"
+                f"  - Pour prévisualiser le seul pays sur lequel tu travailles :\n"
+                f"      uv run cartometa-build <CODE_PAYS>\n"
+                f"  - Pour republier {pays} : cartometa-extract le régénère depuis "
+                f"une page Plonk It sauvegardée à la main.\n"
+                f"Les métas saisies à la main sont attendues dans "
+                f"{chemins.manual_metas}."
             )
         entree_pays = {"metas": {}, "geometries": {}}
         for feature in publiables:
