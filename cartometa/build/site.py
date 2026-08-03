@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import NamedTuple
 
 from cartometa.build.assets import write_hashed
 from cartometa.build.dataset import build_dataset
@@ -54,6 +56,66 @@ def _dumps(payload) -> bytes:
     return json.dumps(
         payload, ensure_ascii=False, separators=(",", ":"), sort_keys=True
     ).encode("utf-8")
+
+
+class ResultatVerification(NamedTuple):
+    """Résultat de `verifier_integrite` : ce qui manque, et si les images
+    ont seulement été mises de côté parce qu'elles vivent ailleurs."""
+
+    manquants: list[str]
+    images_ignorees: bool
+
+
+def _base_est_absolue(image_base: str) -> bool:
+    """Vrai quand `image_base` désigne un stockage externe plutôt qu'un
+    chemin sous `out_dir` : un schéma (`https://`, `s3://`...) ou un préfixe
+    protocole-relatif (`//cdn.example/...`). Dans les deux cas les images ne
+    sont plus écrites là où le manifeste les cherche — les vérifier sous
+    `out_dir` produirait des milliers de faux positifs.
+    """
+    a_un_schema = re.match(r"^[a-zA-Z][a-zA-Z0-9+.-]*://", image_base)
+    return bool(a_un_schema) or image_base.startswith("//")
+
+
+def verifier_integrite(out_dir: Path, manifeste: dict) -> ResultatVerification:
+    """Vérifie que tout chemin référencé par le manifeste existe réellement
+    sur le disque : l'index global, chaque fichier pays, et — sauf quand
+    `image_base` pointe vers un stockage externe — la vignette (`thumb`) et
+    l'image pleine taille (`full`) de chaque méta.
+
+    Fonction pure, sans effet de bord : elle ne fait qu'inspecter `out_dir`
+    et le `manifeste` déjà écrit, ce qui la rend testable sans construire un
+    site complet et rejouable après-coup sur un `dist/` déjà déployé.
+    """
+    manquants: list[str] = []
+
+    chemin_index = out_dir / "data" / manifeste["index"]
+    if not chemin_index.exists():
+        manquants.append(str(chemin_index))
+
+    image_base = manifeste.get("image_base", IMAGE_BASE)
+    images_ignorees = _base_est_absolue(image_base)
+
+    for entree in manifeste.get("countries", {}).values():
+        chemin_pays = out_dir / "data" / entree["file"]
+        if not chemin_pays.exists():
+            manquants.append(str(chemin_pays))
+            continue  # pas de fichier à lire pour en tirer les métas
+
+        if images_ignorees:
+            continue
+
+        contenu = json.loads(chemin_pays.read_text("utf-8"))
+        for meta in contenu.get("metas", {}).values():
+            for cle in ("thumb", "full"):
+                relatif = meta.get(cle)
+                if relatif is None:
+                    continue
+                chemin_image = out_dir / image_base / relatif
+                if not chemin_image.exists():
+                    manquants.append(str(chemin_image))
+
+    return ResultatVerification(manquants, images_ignorees)
 
 
 def build_site(
@@ -134,7 +196,7 @@ def build_site(
 
     (out_dir / "_headers").write_text(HEADERS, "utf-8")
 
-    (out_dir / "data" / "manifest.json").write_text(json.dumps({
+    manifeste = {
         "built_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "meta_count": len(jeu.index),
         # Lu par le front, jamais codé en dur : basculer les images vers un
@@ -142,7 +204,25 @@ def build_site(
         "image_base": image_base,
         "index": nom_index,
         "countries": manifeste_pays,
-    }, ensure_ascii=False), "utf-8")
+    }
+    (out_dir / "data" / "manifest.json").write_text(
+        json.dumps(manifeste, ensure_ascii=False), "utf-8"
+    )
+
+    # Contrôle d'intégrité final : un `dist/` tronqué (disque plein, build
+    # interrompu, écriture concurrente qui l'a écrasé en cours de route) ne
+    # doit jamais se déclarer complet. Vécu une fois pour de vrai — un build
+    # survivant avait rapporté 1710 métas sur 45 pays alors que 11 fichiers
+    # pays seulement existaient encore sur le disque.
+    verification = verifier_integrite(out_dir, manifeste)
+    if verification.manquants:
+        n = len(verification.manquants)
+        apercu = "\n".join(f"  - {chemin}" for chemin in verification.manquants[:5])
+        raise SystemExit(
+            f"Build corrompu : {n} chemin(s) référencé(s) par le manifeste "
+            f"sont absents de {out_dir} — ce dist/ ne doit pas être déployé.\n"
+            f"{apercu}"
+        )
 
     fichiers = sum(1 for p in out_dir.rglob("*") if p.is_file())
     return {

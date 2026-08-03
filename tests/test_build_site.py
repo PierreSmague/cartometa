@@ -10,6 +10,7 @@ from cartometa.build.site import (
     FILE_COUNT_WARNING,
     _dumps,
     build_site,
+    verifier_integrite,
 )
 
 
@@ -262,3 +263,117 @@ def test_le_build_refuse_d_ecraser_un_dossier_qui_ne_ressemble_pas_a_une_sortie(
         build_site(projet / "data", cible, projet / "viewer", ["PL"])
 
     assert (cible / "important.txt").exists()
+
+
+# --- Vérification d'intégrité du dist/ (contrôle de non-régression sur la
+# panne réelle : un `dist/` tronqué qui se déclare pourtant complet) --------
+
+def _arbre_complet(out_dir: Path) -> dict:
+    """Construit à la main un `dist/` minimal mais complet, avec son
+    manifeste, sans passer par `build_site` : la fonction pure doit pouvoir
+    être testée sur n'importe quel arbre, pas seulement sur sa propre sortie.
+    """
+    (out_dir / "data" / "h" / "c").mkdir(parents=True)
+    (out_dir / "data" / "h" / "index.json").write_text("{}", "utf-8")
+    (out_dir / "img" / "PL").mkdir(parents=True)
+    (out_dir / "img" / "PL" / "m1.thumb.avif").write_bytes(b"x")
+    (out_dir / "img" / "PL" / "m1.full.avif").write_bytes(b"x")
+    pays = {
+        "metas": {"m1": {"thumb": "PL/m1.thumb.avif", "full": "PL/m1.full.avif"}},
+        "geometries": {},
+    }
+    (out_dir / "data" / "h" / "c" / "PL.json").write_text(json.dumps(pays), "utf-8")
+    return {
+        "index": "h/index.json",
+        "image_base": "img/",
+        "countries": {"PL": {"file": "h/c/PL.json", "count": 1}},
+    }
+
+
+def test_un_arbre_complet_ne_rapporte_rien_de_manquant(tmp_path):
+    manifeste = _arbre_complet(tmp_path)
+
+    resultat = verifier_integrite(tmp_path, manifeste)
+
+    assert resultat.manquants == []
+    assert resultat.images_ignorees is False
+
+
+def test_un_fichier_pays_manquant_est_signale(tmp_path):
+    manifeste = _arbre_complet(tmp_path)
+    (tmp_path / "data" / "h" / "c" / "PL.json").unlink()
+
+    resultat = verifier_integrite(tmp_path, manifeste)
+
+    assert any("PL.json" in chemin for chemin in resultat.manquants)
+
+
+def test_une_image_manquante_est_signalee(tmp_path):
+    manifeste = _arbre_complet(tmp_path)
+    (tmp_path / "img" / "PL" / "m1.thumb.avif").unlink()
+
+    resultat = verifier_integrite(tmp_path, manifeste)
+
+    assert any("m1.thumb.avif" in chemin for chemin in resultat.manquants)
+
+
+def test_le_fichier_index_manquant_est_signale(tmp_path):
+    manifeste = _arbre_complet(tmp_path)
+    (tmp_path / "data" / "h" / "index.json").unlink()
+
+    resultat = verifier_integrite(tmp_path, manifeste)
+
+    assert any("index.json" in chemin for chemin in resultat.manquants)
+
+
+def test_un_image_base_absolu_ignore_les_images(tmp_path):
+    """L'échappatoire objet-storage : quand `image_base` est une URL absolue,
+    les images ne vivent plus sous `out_dir` — les vérifier y produirait
+    des milliers de faux positifs. Le pays et l'index restent, eux, toujours
+    vérifiés : ils sont toujours locaux, quel que soit `image_base`."""
+    (tmp_path / "data" / "h" / "c").mkdir(parents=True)
+    (tmp_path / "data" / "h" / "index.json").write_text("{}", "utf-8")
+    pays = {
+        "metas": {"m1": {"thumb": "PL/m1.thumb.avif", "full": "PL/m1.full.avif"}},
+        "geometries": {},
+    }
+    (tmp_path / "data" / "h" / "c" / "PL.json").write_text(json.dumps(pays), "utf-8")
+    manifeste = {
+        "index": "h/index.json",
+        "image_base": "https://cdn.example/i/",
+        "countries": {"PL": {"file": "h/c/PL.json", "count": 1}},
+    }
+
+    resultat = verifier_integrite(tmp_path, manifeste)
+
+    assert resultat.manquants == []
+    assert resultat.images_ignorees is True
+
+
+def test_build_site_reussit_toujours_avec_la_verification_integree(projet):
+    """La vérification tourne à chaque build ; sur un projet sain elle ne
+    doit jamais faire échouer un build par ailleurs correct."""
+    resultat = build_site(projet / "data", projet / "dist", projet / "viewer", ["PL"])
+
+    assert resultat["metas"] == 1
+
+
+def test_build_site_leve_systemexit_quand_la_verification_echoue(monkeypatch, projet):
+    """Prouve que `build_site` appelle bien la vérification (et pas
+    seulement que la fonction fonctionne isolément) : on la remplace par un
+    faux qui rapporte un chemin manquant, et on vérifie que `build_site`
+    relaie l'échec en `SystemExit` plutôt que de rendre un succès muet."""
+    import cartometa.build.site as site
+
+    appels = []
+
+    def faux_verifier(out_dir, manifeste):
+        appels.append((out_dir, manifeste))
+        return site.ResultatVerification(["dist/fantome.json"], False)
+
+    monkeypatch.setattr(site, "verifier_integrite", faux_verifier)
+
+    with pytest.raises(SystemExit, match="fantome"):
+        build_site(projet / "data", projet / "dist", projet / "viewer", ["PL"])
+
+    assert appels, "build_site n'a pas appelé verifier_integrite"
