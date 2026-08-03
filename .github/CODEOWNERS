@@ -1,0 +1,15 @@
+# Propriétaire de code du dépôt.
+#
+# Couplé au réglage « require_code_owner_reviews » de la protection de
+# `master`, ce fichier a un effet précis : une pull request ne peut être
+# fusionnée qu'avec une approbation **de ce compte**. L'approbation d'un
+# autre contributeur, même avec droit d'écriture, ne la débloque pas.
+#
+# C'est ce qui permet d'ouvrir le droit de pousser des branches largement,
+# tout en gardant une seule main sur ce qui entre dans `master`.
+#
+# GitHub n'offre pas de restriction directe du push sur une branche pour un
+# dépôt personnel — « Only organization repositories can have users and team
+# restrictions » — d'où ce détour, qui obtient le même résultat.
+
+* @PierreSmague
