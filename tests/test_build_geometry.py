@@ -6,6 +6,7 @@ from shapely.geometry.base import BaseGeometry
 
 from cartometa.build.geometry import (
     DEFAULT_TOLERANCE,
+    SIZE_DIVISOR,
     area_ratio,
     effective_tolerance,
     hausdorff,
@@ -47,7 +48,7 @@ def test_la_tolerance_est_plafonnee_par_la_taille_de_l_emprise():
     tolerance = effective_tolerance(minuscule, DEFAULT_TOLERANCE)
 
     diagonale = math.hypot(0.005, 0.0035)
-    assert tolerance == pytest.approx(diagonale / 50)
+    assert tolerance == pytest.approx(diagonale / SIZE_DIVISOR)
     assert tolerance < DEFAULT_TOLERANCE
 
 

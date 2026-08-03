@@ -14,8 +14,31 @@ COORD_PRECISION = 5
 # La tolérance ne dépasse jamais la diagonale de l'emprise divisée par ce
 # nombre. Sans ce plafond, une tolérance fixe de 0,01° est plus grande que
 # les emprises « spot » (~0,005° de côté) et les ampute : mesuré sur les
-# données réelles, la pire n'en gardait que 24 % de sa surface.
-SIZE_DIVISOR = 50
+# données réelles, la pire n'en gardait que 24 % de sa surface. C'est ce
+# plafond, et lui seul, qui empêche la tolérance fixe de détruire ces petites
+# emprises.
+#
+# 500 est un choix mesuré, pas arbitraire : sur les 1 710 emprises réelles de
+# `data/geo/`, faire varier ce diviseur donne (nombre d'emprises hors du
+# seuil de dérive de surface / pire dérive / poids gzip total / poids du
+# pays le plus lourd (ID)) :
+#
+#   50   (ancien) : 231 / 16,5 % / 2385 Ko / 854 Ko
+#   200          :  73 /  3,8 % / 2398 Ko / 854 Ko
+#   500 (retenu) :  19 /  3,3 % / 2443 Ko / 855 Ko
+#   1000         :   6 /  3,0 % / 2610 Ko / 862 Ko
+#   2000         :   2 /  0,9 % / 3330 Ko / 891 Ko
+#   5000         :   0 /  0,2 % / 5198 Ko / 994 Ko
+#
+# 500 divise par cinq la pire dérive (16,5 % → 3,3 %) pour un surcoût d'à
+# peine un kilo-octet sur le pays le plus lourd. Aller plus loin coûte cher
+# sans annuler la dérive : à 5000, elle ne s'annule presque (0,2 %) qu'en
+# amenant l'Indonésie à 994 Ko, à la limite du plafond d'1 Mo par pays de la
+# spec §14 critère 3 — ce n'est donc pas la direction à suivre si ce chiffre
+# doit encore monter. Si ce nombre est revu un jour, remesurer sur les
+# données réelles plutôt que d'ajuster à vue : le compromis n'est pas
+# monotone au-delà d'un certain point.
+SIZE_DIVISOR = 500
 
 
 def _en_listes(valeur: Any) -> Any:
