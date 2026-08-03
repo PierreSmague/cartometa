@@ -64,6 +64,9 @@ def projet(tmp_path, monkeypatch):
     )
     (viewer / "style.css").write_text("body{margin:0}", "utf-8")
     (viewer / "app.js").write_text("console.log('x')", "utf-8")
+    # Greffon Leaflet vendorisé, chargé à la demande par le front : il n'est
+    # référencé par aucun gabarit, seulement par le manifeste.
+    (viewer / "googleMutant.js").write_text("/* greffon */", "utf-8")
     (viewer / "favicon.svg").write_text("<svg xmlns='http://www.w3.org/2000/svg'/>", "utf-8")
     Image.new("RGBA", (32, 32), (193, 40, 58, 255)).save(viewer / "favicon.png")
     Image.new("RGB", (1200, 630), (240, 240, 235)).save(viewer / "og.png")
@@ -412,6 +415,7 @@ def _arbre_complet(out_dir: Path) -> dict:
     (out_dir / "index.html").write_text("<!doctype html>", "utf-8")
     (out_dir / "_headers").write_text("", "utf-8")
     (out_dir / "app.a1b2c3d4.js").write_text("", "utf-8")
+    (out_dir / "googleMutant.a1b2c3d4.js").write_text("", "utf-8")
     (out_dir / "style.a1b2c3d4.css").write_text("", "utf-8")
     (out_dir / "favicon.a1b2c3d4.svg").write_text("", "utf-8")
     (out_dir / "favicon.a1b2c3d4.png").write_bytes(b"")
@@ -512,6 +516,7 @@ def test_un_image_base_absolu_ignore_les_images(tmp_path):
     (tmp_path / "index.html").write_text("<!doctype html>", "utf-8")
     (tmp_path / "_headers").write_text("", "utf-8")
     (tmp_path / "app.a1b2c3d4.js").write_text("", "utf-8")
+    (tmp_path / "googleMutant.a1b2c3d4.js").write_text("", "utf-8")
     (tmp_path / "style.a1b2c3d4.css").write_text("", "utf-8")
     (tmp_path / "favicon.a1b2c3d4.svg").write_text("", "utf-8")
     (tmp_path / "favicon.a1b2c3d4.png").write_bytes(b"")
@@ -633,3 +638,34 @@ def test_le_cache_d_images_vit_hors_de_dist(projet):
 
     assert entrees, "aucune entrée de cache écrite"
     assert not list((projet / "dist").rglob("*.part"))
+
+
+def test_sans_cle_google_le_manifeste_n_en_porte_aucune(projet):
+    """Le bouton « Google » du front n'apparaît que si une clé existe.
+
+    Un contributeur construit le site sans clé : son aperçu doit rester
+    entier, simplement dépourvu du second fond de carte.
+    """
+    build_site(projet / "data", projet / "dist", projet / "viewer", ["PL"])
+
+    assert "google_key" not in _manifeste(projet / "dist")
+
+
+def test_la_cle_google_arrive_dans_le_manifeste(projet):
+    """La clé transite par le build, jamais par le dépôt : elle finira dans le
+    JavaScript livré de toute façon, mais pas dans l'historique git."""
+    build_site(projet / "data", projet / "dist", projet / "viewer", ["PL"],
+               google_key="AIzaSyFausseCle")
+
+    assert _manifeste(projet / "dist")["google_key"] == "AIzaSyFausseCle"
+
+
+def test_le_greffon_google_est_publie_et_reference(projet):
+    """Chargé à la demande par le front, donc désigné par le manifeste et non
+    par une balise script : sans cela tous les visiteurs le téléchargeraient."""
+    build_site(projet / "data", projet / "dist", projet / "viewer", ["PL"])
+
+    nom = _manifeste(projet / "dist")["google_mutant"]
+
+    assert (projet / "dist" / nom).exists()
+    assert nom.startswith("googleMutant.") and nom.endswith(".js")

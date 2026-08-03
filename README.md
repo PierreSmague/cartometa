@@ -134,6 +134,32 @@ Options utiles : `--skip-images` pour itérer vite sur le code,
 `--simplify-tolerance` pour ajuster la finesse des contours (défaut 0,01°,
 plafonnée par la taille de chaque emprise).
 
+### Fond de carte Google (facultatif)
+
+```
+uv run cartometa-build --google-key AIza...
+```
+
+Ajoute un sélecteur `OSM / Google` en coin de carte. **OpenStreetMap reste le
+fond par défaut à chaque chargement**, et rien de Google n'est demandé — ni
+script, ni carte instanciée — tant que le visiteur ne clique pas. Google
+facturant à l'initialisation de carte, un visiteur qui reste sur OSM ne coûte
+donc rien.
+
+Sans `--google-key`, le sélecteur n'apparaît pas : un contributeur construit
+le site en local sans clé et obtient un aperçu complet.
+
+La clé passe par la ligne de commande et **n'est pas versionnée**. Elle sera
+publique dans `data/manifest.json` du site livré — une clé de navigateur l'est
+toujours — mais elle n'a pas à rester dans l'historique git après une
+rotation. Deux protections à régler côté console Google Cloud, sans lesquelles
+n'importe qui peut consommer ton quota : **restriction par référent HTTP** sur
+tes domaines, et **plafond de quota journalier**.
+
+Le greffon `viewer/googleMutant.js` est vendorisé
+([Leaflet.GridLayer.GoogleMutant](https://gitlab.com/IvanSanchez/Leaflet.GridLayer.GoogleMutant/),
+licence BEER-WARE, notice d'auteur conservée).
+
 ## Développement
 
 ```

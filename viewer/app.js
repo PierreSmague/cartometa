@@ -15,7 +15,7 @@ const etat = {
 };
 
 const carte = L.map('carte', { worldCopyJump: true }).setView([25, 15], 3);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+const fondOSM = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap', maxZoom: 18,
 }).addTo(carte);
 const surlignage = L.layerGroup().addTo(carte);
@@ -43,6 +43,7 @@ async function demarrer() {
     document.getElementById('compteurs').textContent =
       `${manifeste.meta_count} metas · ${Object.keys(manifeste.countries).length} countries`;
     etat.pret = true;
+    creerSelecteurDeFond();
     restaurerVue();
   } catch (erreur) {
     // Sans ce filet, un manifeste ou un index indisponible laisse une page
@@ -50,6 +51,114 @@ async function demarrer() {
     document.getElementById('accueil').textContent =
       'Could not load the meta index. Please reload the page.';
   }
+}
+
+// ---------------------------------------------------------------------------
+// Sélecteur de fond de carte
+//
+// OpenStreetMap est le fond par défaut, et le redevient à chaque chargement de
+// page. Rien de Google n'est demandé — ni script, ni carte instanciée — tant
+// que le visiteur n'a pas cliqué sur « Google ». Ce n'est pas une optimisation
+// mais la condition du dispositif : Google facture à l'initialisation de
+// carte, donc un visiteur de passage qui reste sur OSM ne coûte rien et
+// n'apparaît nulle part côté Google.
+//
+// Le choix n'est délibérément pas mémorisé : un habitué ne doit pas se
+// retrouver à solliciter Google sans l'avoir redemandé.
+// ---------------------------------------------------------------------------
+
+let fondGoogle = null;        // construit au premier basculement, jamais avant
+let chargementGoogle = null;  // promesse mémorisée : jamais deux chargements
+
+function chargerScript(src) {
+  return new Promise((resolve, reject) => {
+    const balise = document.createElement('script');
+    balise.src = src;
+    balise.async = true;
+    balise.addEventListener('load', resolve);
+    balise.addEventListener('error', () => reject(new Error(`échec du script ${src}`)));
+    document.head.append(balise);
+  });
+}
+
+async function preparerFondGoogle() {
+  // `loading=async` est la forme réclamée par Google depuis 2023, et elle
+  // impose un `callback`. On ne s'en sert pas : c'est l'événement `load` de la
+  // balise qu'on attend, `Function.prototype` n'est là que pour satisfaire le
+  // paramètre obligatoire.
+  await chargerScript(
+    'https://maps.googleapis.com/maps/api/js'
+    + `?key=${encodeURIComponent(etat.manifeste.google_key)}`
+    + '&loading=async&callback=Function.prototype'
+  );
+  // Le greffon n'a besoin que de Leaflet pour s'enregistrer, mais le charger
+  // ensuite garde les deux échecs possibles dans l'ordre où on les diagnostique.
+  await chargerScript(etat.manifeste.google_mutant);
+  return L.gridLayer.googleMutant({ type: 'roadmap' });
+}
+
+function creerSelecteurDeFond() {
+  // Sans clé, pas de sélecteur du tout : un contributeur qui construit le site
+  // en local obtient un aperçu entier, simplement dépourvu du second fond.
+  if (!etat.manifeste.google_key || !etat.manifeste.google_mutant) return;
+
+  const controle = L.control({ position: 'topright' });
+  controle.onAdd = () => {
+    const boite = L.DomUtil.create('div', 'choix-fond');
+    // Sans cela, cliquer sur le sélecteur déclencherait aussi
+    // `carte.on('click')` : le visiteur changerait de fond ET interrogerait le
+    // point situé sous le bouton.
+    L.DomEvent.disableClickPropagation(boite);
+
+    const boutons = {};
+    const marquer = (actif) => {
+      for (const [nom, bouton] of Object.entries(boutons)) {
+        bouton.classList.toggle('actif', nom === actif);
+        bouton.setAttribute('aria-pressed', String(nom === actif));
+      }
+    };
+
+    async function basculer(vers) {
+      if (vers === 'osm') {
+        if (fondGoogle) carte.removeLayer(fondGoogle);
+        fondOSM.addTo(carte);
+        marquer('osm');
+        return;
+      }
+      marquer('google');
+      if (!fondGoogle) {
+        boutons.google.textContent = '…';
+        try {
+          // Mémorisée : deux clics impatients ne chargent pas deux fois.
+          chargementGoogle = chargementGoogle || preparerFondGoogle();
+          fondGoogle = await chargementGoogle;
+        } catch (erreur) {
+          // Clé invalide, quota dépassé, script bloqué : sans ce repli, la
+          // carte resterait blanche sans que rien ne l'explique.
+          chargementGoogle = null;
+          boutons.google.textContent = 'Google';
+          boutons.google.disabled = true;
+          boutons.google.title = 'Google basemap unavailable';
+          basculer('osm');
+          return;
+        }
+        boutons.google.textContent = 'Google';
+      }
+      carte.removeLayer(fondOSM);
+      fondGoogle.addTo(carte);
+    }
+
+    for (const [nom, libelle] of [['osm', 'OSM'], ['google', 'Google']]) {
+      const bouton = L.DomUtil.create('button', '', boite);
+      bouton.type = 'button';
+      bouton.textContent = libelle;
+      bouton.addEventListener('click', () => basculer(nom));
+      boutons[nom] = bouton;
+    }
+    marquer('osm');
+    return boite;
+  };
+  controle.addTo(carte);
 }
 
 // Un pays n'est téléchargé qu'une fois, et la promesse est mémorisée : deux

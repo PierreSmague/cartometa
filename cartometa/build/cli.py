@@ -47,6 +47,17 @@ def main() -> None:
             f"Défaut : {SITE_URL}"
         ),
     )
+    analyseur.add_argument(
+        "--google-key", default="",
+        help=(
+            "Clé Google Maps activant le second fond de carte. Sans elle, le "
+            "sélecteur n'apparaît pas et le site n'appelle jamais Google. La "
+            "passer ici plutôt que de la versionner : elle sera publique dans "
+            "le manifeste de toute façon, mais n'a pas à rester dans "
+            "l'historique git après une rotation. Restreins-la par référent "
+            "HTTP côté console Google."
+        ),
+    )
     arguments = analyseur.parse_args()
 
     pays = [c.upper() for c in arguments.countries] or discover_countries(arguments.data)
@@ -59,7 +70,7 @@ def main() -> None:
     resultat = build_site(
         arguments.data, arguments.out, arguments.viewer, pays,
         arguments.simplify_tolerance, arguments.skip_images,
-        arguments.image_base, arguments.site_url,
+        arguments.image_base, arguments.site_url, arguments.google_key,
     )
 
     detail = ", ".join(f"{p} {n}" for p, n in resultat["countries"].items())
