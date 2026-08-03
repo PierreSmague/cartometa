@@ -376,8 +376,19 @@ async function resoudreLienCourt(url) {
   // Un lien court est illisible depuis le navigateur : goo.gl n'envoie aucun
   // en-tête CORS (vérifié), donc la redirection ne peut pas être suivie ici.
   // `/api/resolve` la suit côté serveur et ne renvoie que le point.
-  const reponse = await fetch(`/api/resolve?url=${encodeURIComponent(url)}`);
-  if (!reponse.ok) return null;
+  // `v=2` fait partie de la clé de cache du navigateur, et c'est tout son
+  // objet. La première version renvoyait ses échecs avec `max-age=86400` :
+  // un visiteur ayant essuyé une résolution manquée garde cette réponse
+  // négative en cache pendant 24 h, et corriger le serveur n'y change rien
+  // puisque son navigateur ne le rappelle jamais. Changer l'adresse crée une
+  // nouvelle entrée et le tire d'affaire sans rien lui demander. À
+  // incrémenter si un tel épisode se reproduit.
+  const reponse = await fetch(`/api/resolve?v=2&url=${encodeURIComponent(url)}`);
+  // Lever plutôt que rendre `null` : un relais injoignable et un lien sans
+  // coordonnées appellent deux messages différents. Les confondre a
+  // réellement coûté un diagnostic — « aucune coordonnée » accusait le lien
+  // alors que la panne était ailleurs.
+  if (!reponse.ok) throw new Error(`resolve ${reponse.status}`);
   const charge = await reponse.json();
   return Array.isArray(charge.latlon)
     ? validerLatLon(charge.latlon[0], charge.latlon[1])
@@ -411,7 +422,9 @@ async function suivreLien(saisie) {
     try {
       point = await resoudreLienCourt(brut);
     } catch (erreur) {
-      point = null;
+      if (monTour !== generationLien) return;
+      direLien("Couldn't resolve that short link. Try again.", true);
+      return;
     }
     if (monTour !== generationLien) return; // un lien plus récent a pris le relais
   }
