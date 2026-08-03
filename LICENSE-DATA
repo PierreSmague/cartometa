@@ -12,4 +12,10 @@ paired with geographic areas that are absent from the source.
 The underlying Street View imagery remains © Google and is covered neither by
 Plonk It's licence nor by this one.
 
+Many of the traced areas are built from, or clipped to, country and
+first-level administrative boundaries published by Natural Earth
+(https://www.naturalearthdata.com), which are public domain. This licence
+covers this project's own tracing and assembly of those areas, not the
+underlying Natural Earth boundaries themselves.
+
 Contact: psmague@gmail.com
