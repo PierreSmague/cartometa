@@ -51,16 +51,17 @@ def projet(tmp_path, monkeypatch):
     viewer = tmp_path / "viewer"
     viewer.mkdir()
     (viewer / "index.html").write_text(
-        "<!doctype html><head>__ICON_SVG__ __ICON_PNG__</head>"
+        "<!doctype html><head>__ICON_SVG__ __ICON_PNG__ __SITE_URL__/__OG_IMAGE__ Find all relevant metas</head>"
         "<body>__CSS__ __JS__</body>", "utf-8"
     )
     (viewer / "licence.html").write_text(
-        "<!doctype html><head>__ICON_SVG__</head><body>__CSS__</body>", "utf-8"
+        "<!doctype html><head>__ICON_SVG__ __SITE_URL__/licence</head><body>__CSS__</body>", "utf-8"
     )
     (viewer / "style.css").write_text("body{margin:0}", "utf-8")
     (viewer / "app.js").write_text("console.log('x')", "utf-8")
     (viewer / "favicon.svg").write_text("<svg xmlns='http://www.w3.org/2000/svg'/>", "utf-8")
     Image.new("RGBA", (32, 32), (193, 40, 58, 255)).save(viewer / "favicon.png")
+    Image.new("RGB", (1200, 630), (240, 240, 235)).save(viewer / "og.png")
     return tmp_path
 
 
@@ -196,6 +197,34 @@ def test_les_favicons_sont_publies_empreintes_et_references(projet):
         ]
         assert couvrant, f"aucune règle ne couvre /{nom}"
         assert all("immutable" in e["Cache-Control"] for e in couvrant)
+
+
+def test_les_balises_open_graph_portent_des_url_absolues(projet):
+    """Un `og:image` relatif est ignoré par la plupart des robots d'aperçu :
+    le lien partagé s'affiche alors sans vignette. La substitution doit donc
+    produire une URL absolue, image empreintée comprise."""
+    dist = projet / "dist"
+
+    build_site(
+        projet / "data", dist, projet / "viewer", ["PL"],
+        site_url="https://exemple.test/",
+    )
+
+    page = (dist / "index.html").read_text("utf-8")
+    assert "__SITE_URL__" not in page and "__OG_IMAGE__" not in page
+    og = [p.name for p in dist.glob("og.*.png")]
+    assert len(og) == 1
+
+    # L'URL de l'image d'aperçu doit être absolue ET porter le nom empreinté :
+    # les deux substitutions se composent dans le bon ordre.
+    assert f"https://exemple.test/{og[0]}" in page
+    # La barre finale du réglage ne doit pas produire un double slash, qui
+    # casserait l'URL pour une partie des robots d'aperçu.
+    assert "https://exemple.test//" not in page
+    assert "Find all relevant metas" in page
+
+    licence = (dist / "licence.html").read_text("utf-8")
+    assert "__SITE_URL__" not in licence
 
 
 def test_le_fichier_headers_est_produit_avec_les_deux_regimes(projet):
@@ -342,6 +371,7 @@ def _arbre_complet(out_dir: Path) -> dict:
     (out_dir / "style.a1b2c3d4.css").write_text("", "utf-8")
     (out_dir / "favicon.a1b2c3d4.svg").write_text("", "utf-8")
     (out_dir / "favicon.a1b2c3d4.png").write_bytes(b"")
+    (out_dir / "og.a1b2c3d4.png").write_bytes(b"")
     return {
         "index": "h/index.json",
         "image_base": "img/",
@@ -441,6 +471,7 @@ def test_un_image_base_absolu_ignore_les_images(tmp_path):
     (tmp_path / "style.a1b2c3d4.css").write_text("", "utf-8")
     (tmp_path / "favicon.a1b2c3d4.svg").write_text("", "utf-8")
     (tmp_path / "favicon.a1b2c3d4.png").write_bytes(b"")
+    (tmp_path / "og.a1b2c3d4.png").write_bytes(b"")
     manifeste = {
         "index": "h/index.json",
         "image_base": "https://cdn.example/i/",
