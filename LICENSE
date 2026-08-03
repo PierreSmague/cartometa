@@ -1,6 +1,3 @@
-Cette licence couvre le CODE de Cartometa. Les DONNÉES publiées (textes,
-images et emprises) relèvent de LICENSE-DATA.
-
 MIT License
 
 Copyright (c) 2026 Pierre Smague
@@ -22,3 +19,9 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+This licence covers the CODE of Cartometa only. The DATA published alongside
+it (texts, images and traced geographic areas) is covered separately, under
+LICENSE-DATA — do not assume MIT applies to it.
