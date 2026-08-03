@@ -216,14 +216,14 @@ catégorie et de portée.
 
 ### Ton aperçu ne contient que tes métas — c'est normal
 
-Le dépôt versionne **les emprises** (`data/geo/`, 45 pays, 1710 emprises)
+Le dépôt versionne **les emprises** (`data/geo/`, 52 pays, 1922 emprises)
 mais **pas les textes** Plonk It qui vont avec (`data/metas/` est gitignoré,
-usage personnel). Un clone frais a donc les contours de 45 pays et le texte
+usage personnel). Un clone frais a donc les contours de 52 pays et le texte
 d'aucun.
 
 Deux conséquences, toutes deux attendues :
 
-- `uv run cartometa-build` **sans argument** parcourt les 45 pays et
+- `uv run cartometa-build` **sans argument** parcourt les 52 pays et
   s'arrête sur le premier, avec le message
   *« AE : 18 emprise(s) versionnée(s), mais aucun texte de méta »*.
   Ce n'est pas une panne et tu n'as rien cassé. Donne le code de ton pays.
@@ -252,15 +252,78 @@ saisie de métas.
 
 ## 7. Proposer la contribution
 
+**Tu n'as aucun droit d'écriture sur le dépôt principal, et c'est normal** :
+personne n'en a à part le mainteneur. On ne contribue pas en poussant une
+branche sur le dépôt d'origine, mais en poussant sur **ta propre copie** —
+ton *fork* — puis en ouvrant une pull request depuis celle-ci.
+
+Précision qui évite une fausse piste : `git switch -c` **ne demande aucune
+permission**, il crée une branche sur ton disque et réussit toujours. Ce qui
+est refusé, c'est le `git push` qui vient après. Un message parlant de `403`,
+`Permission denied` ou `access denied` désigne cette étape-là, pas la
+création de branche.
+
+### a. Forke, une fois pour toutes
+
+Bouton **Fork** sur <https://github.com/PierreSmague/cartometa>, ou :
+
+```
+gh repo fork PierreSmague/cartometa --clone=false
+```
+
+Tu obtiens `https://github.com/<ton-compte>/cartometa`, sur lequel tu as tous
+les droits.
+
+### b. Déclare ton fork comme second dépôt distant
+
+Dans le clone que tu as déjà — inutile de tout recloner :
+
+```
+git remote add fork https://github.com/<ton-compte>/cartometa.git
+git remote -v
+```
+
+`origin` reste le dépôt d'origine, d'où tu reçois les mises à jour ; `fork`
+est le tien, le seul où tu peux pousser.
+
+### c. Branche, commit, pousse sur *ton* fork
+
 ```
 git switch -c meta-fr-bollards
 git add data/manual/FR data/geo/FR.geojson
 git commit -m "feat: trois metas manuelles pour la France"
+git push -u fork meta-fr-bollards
 ```
 
-puis une pull request. Un commit ne doit contenir **que** `data/manual/**` et
-`data/geo/*.geojson` — si `git status` montre autre chose, quelque chose ne
-va pas.
+Si `git switch` n'existe pas chez toi (Git antérieur à 2.23), la forme
+équivalente est `git checkout -b meta-fr-bollards`.
+
+Note le `fork` dans la dernière ligne : `git push` tout court viserait
+`origin`, c'est-à-dire le dépôt d'origine, et serait refusé.
+
+### d. Ouvre la pull request
+
+`git push` affiche une URL toute prête. Sinon, GitHub propose un bandeau sur
+ton fork, ou en ligne de commande :
+
+```
+gh pr create --repo PierreSmague/cartometa
+```
+
+Un commit ne doit contenir **que** `data/manual/**` et `data/geo/*.geojson` —
+si `git status` montre autre chose, quelque chose ne va pas.
+
+### Se remettre à jour plus tard
+
+```
+git switch master
+git pull origin master
+```
+
+`master` est protégée sur le dépôt d'origine : elle n'accepte que des
+fusions par pull request. Cela ne te concerne pas directement — tu ne peux
+de toute façon pas y pousser — mais explique pourquoi personne ne peut
+court-circuiter le circuit.
 
 **Licence.** En proposant une contribution, tu acceptes qu'elle soit publiée
 sous **CC BY-NC-SA 4.0**, comme le reste des données du projet. C'est une
@@ -288,6 +351,9 @@ pages sources se capturent à la main, une par une, avec `Ctrl+S`.
 | « format d'image non accepté » | PNG, JPEG, WEBP, GIF uniquement. |
 | « image trop lourde » | Plafond de 8 Mo. Recadrer ou réenregistrer en JPEG. |
 | « Méta créée, mais image refusée » | La méta existe, seule l'image manque. La compléter dans `data/manual/<CC>/metas.json`, champ `image`. |
+| `Permission to PierreSmague/cartometa.git denied` / `403` au `git push` | Tu pousses sur le dépôt d'origine, où personne n'écrit. Pousse sur ton fork : `git push -u fork <branche>`. Voir §7. |
+| `git: 'switch' is not a git command` | Git antérieur à 2.23. Utiliser `git checkout -b <branche>`. |
+| `error: src refspec ... does not match any` | Rien n'a été commité : `git commit` avant `git push`. |
 | La file est vide au démarrage | Normal pour un pays neuf. Appuyer sur `N`. |
 | `AE : … emprise(s) versionnée(s), mais aucun texte de méta` | `cartometa-build` a été lancé **sans code pays** sur un clone frais. Attendu. Relancer `uv run cartometa-build <TON_CODE>`. |
 
@@ -298,7 +364,15 @@ pages sources se capturent à la main, une par une, avec `Ctrl+S`.
 ```
 uv sync                          # une fois
 uv run cartometa-review FR       # N → saisir, D/C/S/E/F → tracer, A → enregistrer
-uv run cartometa-build FR        # vérifier
+uv run cartometa-build FR        # vérifier (le code pays est obligatoire)
 python -m http.server 8010 --directory dist
+
+gh repo fork PierreSmague/cartometa --clone=false     # une fois
+git remote add fork https://github.com/<toi>/cartometa.git
+
+git switch -c meta-fr
 git add data/manual/FR data/geo/FR.geojson
+git commit -m "feat: metas manuelles pour la France"
+git push -u fork meta-fr         # `fork`, jamais `origin`
+gh pr create --repo PierreSmague/cartometa
 ```
