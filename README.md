@@ -6,6 +6,10 @@ toutes les métas applicables, de la plus spécifique à la plus générale.
 **Usage personnel.** Les textes et images viennent de [Plonk It](https://www.plonkit.net)
 et ne sont pas versionnés (`input/`, `data/metas/` sont ignorés par git).
 
+Le code est sous licence MIT (`LICENSE`) ; les données publiées (textes,
+images, emprises) sont sous CC BY-NC-SA 4.0 (`LICENSE-DATA`) — ce sont deux
+licences différentes, voir aussi `viewer/licence.html`.
+
 ## Consulter la carte
 
 ```
