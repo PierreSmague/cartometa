@@ -114,8 +114,13 @@ Earth admin-1 (41 Mo), puis en extrait les régions du pays dans
 
 ```
 uv run cartometa-build
-npx wrangler pages deploy dist --project-name cartometa
+npx wrangler pages deploy dist --project-name cartometa --branch main
 ```
+
+`--branch main` n'est pas optionnel : sans lui, `wrangler` déduit la branche du
+dépôt git local, et tout ce qui n'est pas `main` part en *preview* sur une URL
+`<branche>.cartometa.pages.dev` sans toucher au site. Le déploiement réussit,
+mais `cartometa.com` reste sur la version précédente.
 
 `cartometa-build` produit un `dist/` autonome et gitignoré : géométries
 simplifiées et découpées par pays, images en deux tailles, empreintes de
