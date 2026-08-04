@@ -10,6 +10,7 @@ from cartometa.build.geometry import (
     area_ratio,
     effective_tolerance,
     hausdorff,
+    part_bboxes,
     round_coordinates,
     simplify_geometry,
 )
@@ -159,3 +160,59 @@ def test_un_multipolygone_est_simplifie_partie_par_partie():
 
     assert simplifiee["type"] == "MultiPolygon"
     assert len(simplifiee["coordinates"]) == 2
+
+
+def _multi(*rectangles: dict) -> dict:
+    return {"type": "MultiPolygon",
+            "coordinates": [r["coordinates"] for r in rectangles]}
+
+
+def test_un_polygone_donne_une_seule_bbox_egale_a_ses_bornes():
+    geometrie = _rectangle(2.0, 48.0, 3.0, 1.0)
+
+    assert part_bboxes(geometrie) == [(2.0, 48.0, 5.0, 49.0)]
+
+
+def test_les_parties_de_part_et_d_autre_de_l_antimeridien_gardent_leurs_bbox():
+    """Le cas russe : une emprise nationale à cheval sur ±180° a pour bbox
+    globale -180…180, qui recouvre tout l'hémisphère nord — un clic à Londres
+    téléchargeait les 8,3 Mo de la Russie pour rien. Par partie, aucune boîte
+    ne traverse le méridien et le préfiltre redevient discriminant."""
+    geometrie = _multi(
+        _rectangle(170.0, 55.0, 9.0, 10.0),
+        _rectangle(-179.0, 55.0, 9.0, 10.0),
+    )
+
+    boites = part_bboxes(geometrie)
+
+    assert len(boites) == 2
+    assert all(max_lon - min_lon < 30 for min_lon, _, max_lon, _ in boites)
+
+
+def test_une_ile_lointaine_garde_sa_propre_bbox():
+    """Le cas norvégien : Bouvet, à -54° de latitude, étirait la bbox du pays
+    sur 135° de latitude. L'île doit rester dans sa propre boîte."""
+    continent = [_rectangle(5.0 + i, 58.0, 0.8, 0.8) for i in range(5)]
+    bouvet = _rectangle(3.0, -54.5, 0.5, 0.5)
+
+    boites = part_bboxes(_multi(*continent, bouvet))
+
+    assert (3.0, -54.5, 3.5, -54.0) in boites
+    assert all(max_lat - min_lat < 30 for _, min_lat, _, max_lat in boites)
+
+
+def test_le_nombre_de_boites_est_plafonne_et_tout_est_couvert():
+    """Un contour national compte des centaines d'îles : une boîte par île
+    ferait exploser l'index. Au plafond, chaque partie doit rester couverte
+    par au moins une boîte."""
+    parties = [_rectangle(float(i * 7), float((i * 13) % 50), 1.0, 1.0) for i in range(40)]
+
+    boites = part_bboxes(_multi(*parties), max_boxes=4)
+
+    assert len(boites) <= 4
+    for partie in parties:
+        min_lon, min_lat, max_lon, max_lat = shape(partie).bounds
+        assert any(
+            b[0] <= min_lon and b[1] <= min_lat and b[2] >= max_lon and b[3] >= max_lat
+            for b in boites
+        )

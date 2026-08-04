@@ -276,8 +276,11 @@ def build_site(
             meta["thumb"] = f"{pays}/{noms['thumb']}"
             meta["full"] = f"{pays}/{noms['full']}"
         nom = write_hashed(out_dir / "data" / "h" / "c", pays, ".json", _dumps(contenu))
+        # `metas`, pas `geometries` : depuis la dédup par empreinte, plusieurs
+        # métas peuvent partager une géométrie — le compte affiché est celui
+        # des métas.
         manifeste_pays[pays] = {
-            "file": f"h/c/{nom}", "count": len(contenu["geometries"])
+            "file": f"h/c/{nom}", "count": len(contenu["metas"])
         }
 
     nom_index = "h/" + write_hashed(
@@ -305,9 +308,13 @@ def build_site(
 
     (out_dir / "_headers").write_text(HEADERS, "utf-8")
 
+    # Le nombre de métas, pas de lignes d'index : depuis les bbox par partie,
+    # une emprise éclatée occupe plusieurs lignes.
+    nombre_metas = sum(len(c["metas"]) for c in jeu.countries.values())
+
     manifeste = {
         "built_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "meta_count": len(jeu.index),
+        "meta_count": nombre_metas,
         # Lu par le front, jamais codé en dur : basculer les images vers un
         # bucket R2 se fait en changeant cette seule valeur.
         "image_base": image_base,
@@ -348,9 +355,10 @@ def build_site(
 
     fichiers = sum(1 for p in out_dir.rglob("*") if p.is_file())
     return {
-        "metas": len(jeu.index),
+        "metas": nombre_metas,
         "countries": {p: e["count"] for p, e in manifeste_pays.items()},
         "files": fichiers,
         "legacy_statuses": jeu.legacy_statuses,
+        "orphans": jeu.orphans,
         "output": str(out_dir),
     }

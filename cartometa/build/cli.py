@@ -90,6 +90,13 @@ def main() -> None:
             f"\nAttention : {resultat['legacy_statuses']} emprise(s) portent un "
             f"statut hérité (ni validé ni rejeté) et n'ont pas été publiées."
         )
+    if resultat["orphans"]:
+        details = ", ".join(f"{p}:{i}" for p, i in resultat["orphans"])
+        print(
+            f"\nAttention : {len(resultat['orphans'])} emprise(s) tracée(s) sans "
+            f"texte de méta, non publiée(s) : {details}\n"
+            f"Relancer cartometa-extract sur ces pays les republiera."
+        )
     if arguments.skip_images:
         print(
             "\nAttention : --skip-images actif — ce dist/ ne contient aucune "

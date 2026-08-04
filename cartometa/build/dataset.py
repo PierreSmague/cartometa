@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from shapely.geometry import shape
 
-from cartometa.build.geometry import DEFAULT_TOLERANCE, simplify_geometry
+from cartometa.build.geometry import DEFAULT_TOLERANCE, part_bboxes, simplify_geometry
 from cartometa.models import STATUS_TRACED, STATUSES
 from cartometa.review.store import CountryPaths, load_metas
 
@@ -55,6 +56,24 @@ class Dataset:
     index: list[list] = field(default_factory=list)
     countries: dict[str, dict] = field(default_factory=dict)
     legacy_statuses: int = 0
+    # Emprises tracées dont le texte de méta a disparu : (pays, id). Comptées
+    # pour être nommées par le CLI — une donnée qui s'évapore en silence est
+    # pire qu'un build qui râle.
+    orphans: list[tuple[str, str]] = field(default_factory=list)
+
+
+def empreinte_geometrie(geometrie: dict) -> str:
+    """Empreinte de contenu d'une géométrie, clé de sa publication.
+
+    Beaucoup de métas partagent la même emprise — 19 fois le contour national
+    dans le seul fichier russe, 25,9 Mo de doublons byte-identiques sur les
+    34,2 Mo publiés (mesuré). Publier chaque géométrie une seule fois, sous
+    une clé qui ne dépend que de son contenu, supprime le doublon sans que le
+    front ait rien à recalculer. Douze hexdigits suffisent largement : le
+    risque de collision reste négligeable bien au-delà du million d'emprises.
+    """
+    octets = json.dumps(geometrie, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha1(octets).hexdigest()[:12]
 
 
 def discover_countries(data_dir: Path) -> list[str]:
@@ -109,18 +128,27 @@ def build_dataset(
             identifiant = feature["properties"]["id"]
             meta = metas.get(identifiant)
             if meta is None:
+                jeu.orphans.append((pays, identifiant))
                 continue
             geometrie = simplify_geometry(feature["geometry"], tolerance)
             forme = shape(geometrie)
-            min_lon, min_lat, max_lon, max_lat = forme.bounds
-            jeu.index.append([
-                identifiant, pays,
-                round(min_lon, 4), round(min_lat, 4),
-                round(max_lon, 4), round(max_lat, 4),
-                round(forme.area, 6),
-            ])
-            entree_pays["geometries"][identifiant] = geometrie
+            # Une ligne d'index par groupe de parties, pas par emprise : la
+            # bbox globale d'un multipolygone éclaté (Russie sur ±180°,
+            # Norvège jusqu'à Bouvet) couvre la planète et ne préfiltre plus
+            # rien. Même id et même surface sur chaque ligne — le viewer
+            # déduplique les ids, le tri par surface reste stable.
+            surface = round(forme.area, 6)
+            for min_lon, min_lat, max_lon, max_lat in part_bboxes(geometrie):
+                jeu.index.append([
+                    identifiant, pays,
+                    round(min_lon, 4), round(min_lat, 4),
+                    round(max_lon, 4), round(max_lat, 4),
+                    surface,
+                ])
+            empreinte = empreinte_geometrie(geometrie)
+            entree_pays["geometries"][empreinte] = geometrie
             entree_pays["metas"][identifiant] = {
+                "geom": empreinte,
                 "title": meta["title"],
                 "description": meta["description"],
                 "category": meta["category"],
@@ -130,6 +158,21 @@ def build_dataset(
             }
         if entree_pays["geometries"]:
             jeu.countries[pays] = entree_pays
+    # Une orpheline Plonk It est un décalage de régénération, rattrapable en
+    # relançant cartometa-extract : on la compte et le CLI la nomme. Une
+    # orpheline `man-*` est autre chose : data/manual/ est versionné justement
+    # parce que ces saisies sont irremplaçables, donc son texte n'existe plus
+    # nulle part. Publier sans elle serait entériner la perte en silence.
+    perdues = [(pays, i) for pays, i in jeu.orphans if i.startswith("man-")]
+    if perdues:
+        details = "\n".join(f"  - {pays} : {i}" for pays, i in perdues)
+        raise SystemExit(
+            f"{len(perdues)} emprise(s) manuelle(s) sans texte de méta :\n{details}\n"
+            f"Le texte d'une méta manuelle vit dans data/manual/<CC>/metas.json "
+            f"et est versionné : s'il manque, il a été supprimé ou renommé. "
+            f"Restaure-le depuis git, ou retire l'emprise du geojson si la "
+            f"suppression était voulue."
+        )
     # Trié par surface croissante : le viewer affiche du plus spécifique au
     # plus général sans avoir à trier lui-même.
     jeu.index.sort(key=lambda entree: entree[6])
