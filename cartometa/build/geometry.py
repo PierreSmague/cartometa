@@ -118,6 +118,77 @@ def simplify_geometry(
     return geometry
 
 
+# Plafond de boîtes par emprise dans l'index. Quatre suffit aux cas réels qui
+# motivent le découpage : la Russie à cheval sur ±180°, la Norvège avec Jan
+# Mayen et Bouvet, les Pays-Bas avec les Caraïbes. Au-delà, chaque boîte
+# supplémentaire n'affine presque plus le préfiltre mais grossit l'index pour
+# toutes les emprises.
+MAX_BBOXES = 4
+# Au-delà de ce nombre de parties, la fusion gloutonne (quadratique) devient
+# coûteuse : on pré-agrège d'abord les petites parties sur les plus grandes.
+_SEUIL_PRE_AGREGATION = 32
+
+
+def _aire_bbox(boite: tuple[float, float, float, float]) -> float:
+    return (boite[2] - boite[0]) * (boite[3] - boite[1])
+
+
+def _union_bbox(a, b) -> tuple[float, float, float, float]:
+    return (min(a[0], b[0]), min(a[1], b[1]), max(a[2], b[2]), max(a[3], b[3]))
+
+
+def part_bboxes(
+    geometry: dict, max_boxes: int = MAX_BBOXES
+) -> list[tuple[float, float, float, float]]:
+    """Bboxes couvrant l'emprise, une par groupe de parties proches.
+
+    La bbox globale d'un multipolygone aux parties éloignées ne discrimine
+    plus rien : celle de la Russie (à cheval sur l'antiméridien) couvre
+    -180…180, celle de la Norvège descend à Bouvet par -54° de latitude. Le
+    préfiltre du viewer téléchargeait alors des pays entiers pour des clics
+    qui ne les concernent pas — 8,3 Mo de Russie pour un clic à Londres.
+
+    Fusion gloutonne : tant qu'il reste trop de boîtes, fusionner les deux
+    dont l'union gaspille le moins de surface. Les parties proches s'agrègent
+    entre elles ; une île lointaine ne fusionne qu'en dernier recours, donc
+    garde sa propre boîte tant que le plafond le permet. Toute partie reste
+    couverte par construction — les boîtes ne font que grossir.
+    """
+    forme = shape(geometry)
+    parties = list(forme.geoms) if hasattr(forme, "geoms") else [forme]
+    boites = [partie.bounds for partie in parties]
+
+    if len(boites) > _SEUIL_PRE_AGREGATION:
+        # Les contours nationaux comptent des centaines d'îlots : la fusion
+        # quadratique sur tous serait chère pour rien. On garde les plus
+        # grandes boîtes comme graines et on agrège chaque îlot sur celle
+        # qu'il fait le moins grossir.
+        boites.sort(key=_aire_bbox, reverse=True)
+        graines = boites[:_SEUIL_PRE_AGREGATION]
+        for boite in boites[_SEUIL_PRE_AGREGATION:]:
+            meilleure = min(
+                range(len(graines)),
+                key=lambda i: _aire_bbox(_union_bbox(graines[i], boite)) - _aire_bbox(graines[i]),
+            )
+            graines[meilleure] = _union_bbox(graines[meilleure], boite)
+        boites = graines
+
+    while len(boites) > max_boxes:
+        gaspillage_minimal, paire = None, None
+        for i in range(len(boites)):
+            for j in range(i + 1, len(boites)):
+                gaspillage = (
+                    _aire_bbox(_union_bbox(boites[i], boites[j]))
+                    - _aire_bbox(boites[i]) - _aire_bbox(boites[j])
+                )
+                if gaspillage_minimal is None or gaspillage < gaspillage_minimal:
+                    gaspillage_minimal, paire = gaspillage, (i, j)
+        i, j = paire
+        boites[i] = _union_bbox(boites[i], boites[j])
+        del boites[j]
+    return boites
+
+
 def area_ratio(original: dict, simplified: dict) -> float:
     """Part de la surface conservée, entre 0 et 1 (au-delà si elle a grossi)."""
     aire = shape(original).area

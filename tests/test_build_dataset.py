@@ -141,16 +141,26 @@ def test_l_index_est_trie_par_surface_croissante(data_dir):
 def test_chaque_meta_est_dans_le_fichier_de_son_pays_et_nulle_part_ailleurs(data_dir):
     jeu = build_dataset(data_dir, ["PL", "BW"])
 
-    assert set(jeu.countries["PL"]["geometries"]) == {"pl1"}
-    assert set(jeu.countries["BW"]["geometries"]) == {"bw1"}
+    assert set(jeu.countries["PL"]["metas"]) == {"pl1"}
+    assert set(jeu.countries["BW"]["metas"]) == {"bw1"}
 
 
 def test_l_index_et_les_fichiers_pays_portent_exactement_les_memes_identifiants(data_dir):
     jeu = build_dataset(data_dir, ["PL", "BW"])
 
     depuis_index = {entree[0] for entree in jeu.index}
-    depuis_pays = {i for pays in jeu.countries.values() for i in pays["geometries"]}
+    depuis_pays = {i for pays in jeu.countries.values() for i in pays["metas"]}
     assert depuis_index == depuis_pays
+
+
+def test_chaque_meta_reference_une_geometrie_publiee(data_dir):
+    """Le contrat de la dédup : `geom` doit toujours pointer vers une entrée
+    existante de `geometries`, sinon le front n'a rien à dessiner."""
+    jeu = build_dataset(data_dir, ["PL", "BW"])
+
+    for pays in jeu.countries.values():
+        for meta in pays["metas"].values():
+            assert meta["geom"] in pays["geometries"]
 
 
 def test_l_index_porte_la_bbox_et_le_pays(data_dir):
@@ -198,7 +208,7 @@ def test_les_statuts_herites_sont_comptes_et_non_publies(tmp_path):
     jeu = build_dataset(data_dir, ["LG"])
 
     assert jeu.legacy_statuses == 1
-    assert set(jeu.countries["LG"]["geometries"]) == {"lg1"}
+    assert set(jeu.countries["LG"]["metas"]) == {"lg1"}
 
 
 def test_geometries_presentes_mais_aucune_meta_leve(tmp_path):
@@ -217,6 +227,96 @@ def test_geometries_presentes_mais_aucune_meta_leve(tmp_path):
 
 def test_discover_countries_trie_et_met_en_majuscules(data_dir):
     assert discover_countries(data_dir) == ["BW", "PL"]
+
+
+def test_une_emprise_aux_parties_eloignees_donne_plusieurs_lignes_d_index(tmp_path):
+    """Le préfiltre du viewer travaille sur les bbox de l'index : une seule
+    bbox pour une emprise à cheval sur l'antiméridien couvre la planète et ne
+    filtre plus rien. Chaque groupe de parties porte sa propre ligne — même
+    id, même surface, bbox distincte — et le viewer déduplique les ids."""
+    data_dir = tmp_path / "data"
+    (data_dir / "metas").mkdir(parents=True)
+    (data_dir / "geo").mkdir(parents=True)
+    (data_dir / "metas" / "RU.json").write_text(json.dumps([_meta("ru1")]), "utf-8")
+    (data_dir / "geo" / "RU.geojson").write_text(json.dumps({
+        "type": "FeatureCollection",
+        "features": [{"type": "Feature",
+                      "properties": {"id": "ru1", "status": "validé", "pieces": []},
+                      "geometry": {"type": "MultiPolygon", "coordinates": [
+                          _carre(170.0, 55.0, 9.0)["coordinates"],
+                          _carre(-179.0, 55.0, 9.0)["coordinates"],
+                      ]}}],
+    }), "utf-8")
+
+    jeu = build_dataset(data_dir, ["RU"])
+
+    lignes = [e for e in jeu.index if e[0] == "ru1"]
+    assert len(lignes) == 2
+    assert all(e[4] - e[2] < 30 for e in lignes)  # aucune bbox ne traverse ±180°
+    assert len({tuple(e[2:6]) for e in lignes}) == 2
+    assert len({e[6] for e in lignes}) == 1  # même surface : le tri reste stable
+
+
+def test_deux_metas_de_meme_emprise_partagent_une_seule_geometrie(tmp_path):
+    """76 % du répertoire data/ publié était de la géométrie byte-identique
+    dupliquée (25,9 Mo sur 34,2 mesurés) : chaque méta portait sa propre copie
+    de son emprise, et RU stockait 19 fois le même contour national de 330 Ko.
+    Les géométries sont donc publiées une seule fois, indexées par empreinte
+    de contenu, et chaque méta référence la sienne par `geom`."""
+    data_dir = tmp_path / "data"
+    _ecrire_pays(data_dir, "PL", [("pl1", "validé", 2.0), ("pl2", "validé", 2.0)])
+
+    jeu = build_dataset(data_dir, ["PL"])
+
+    pays = jeu.countries["PL"]
+    assert len(pays["geometries"]) == 1
+    empreintes = {pays["metas"][i]["geom"] for i in ("pl1", "pl2")}
+    assert empreintes == set(pays["geometries"])
+
+
+def test_deux_metas_d_emprises_differentes_ne_partagent_rien(tmp_path):
+    data_dir = tmp_path / "data"
+    _ecrire_pays(data_dir, "PL", [("pl1", "validé", 2.0), ("pl2", "validé", 3.0)])
+
+    jeu = build_dataset(data_dir, ["PL"])
+
+    pays = jeu.countries["PL"]
+    assert len(pays["geometries"]) == 2
+    assert pays["metas"]["pl1"]["geom"] != pays["metas"]["pl2"]["geom"]
+
+
+def test_une_emprise_sans_texte_est_comptee_comme_orpheline(tmp_path):
+    """Une géométrie tracée dont la méta a disparu ne doit pas s'évaporer en
+    silence : le build doit la compter et la nommer, comme il le fait déjà
+    pour les statuts hérités. C'est arrivé en vrai : `man-d338` (PH) a été
+    ignorée sans un mot pendant que le build annonçait un succès."""
+    data_dir = tmp_path / "data"
+    _ecrire_pays(data_dir, "PL", [("pl1", "validé", 3.0), ("pl2", "validé", 1.0)])
+    (data_dir / "metas" / "PL.json").write_text(json.dumps([_meta("pl1")]), "utf-8")
+
+    jeu = build_dataset(data_dir, ["PL"])
+
+    assert jeu.orphans == [("PL", "pl2")]
+    assert set(jeu.countries["PL"]["metas"]) == {"pl1"}
+
+
+def test_une_emprise_manuelle_orpheline_fait_echouer_le_build(tmp_path):
+    """`data/manual/` est versionné précisément parce que ces données sont
+    irremplaçables : un tracé `man-*` sans texte est une perte de données,
+    pas un simple décalage de régénération. Le build doit échouer dur."""
+    data_dir = tmp_path / "data"
+    _ecrire_meta_manuelle(data_dir, "XX", "man-1a2b")
+    geo_path = data_dir / "geo" / "XX.geojson"
+    geo = json.loads(geo_path.read_text("utf-8"))
+    geo["features"].append({
+        "type": "Feature",
+        "properties": {"id": "man-perdu", "status": "validé", "pieces": []},
+        "geometry": _carre(5.0, 5.0, 1.0),
+    })
+    geo_path.write_text(json.dumps(geo), "utf-8")
+
+    with pytest.raises(SystemExit, match=r"man-perdu"):
+        build_dataset(data_dir, ["XX"])
 
 
 def _ecrire_meta_manuelle(data_dir: Path, pays: str, meta_id: str,

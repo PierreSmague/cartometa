@@ -95,6 +95,43 @@ def _regles(headers: str) -> list[tuple[str, dict[str, str]]]:
     return regles
 
 
+def test_le_resultat_expose_les_orphelines_pour_que_le_cli_les_nomme(projet):
+    """`build_dataset` compte les emprises dont le texte a disparu ; si le
+    résultat de `build_site` ne les fait pas suivre, le CLI n'a rien à
+    afficher et l'orpheline reste invisible."""
+    geo_path = projet / "data" / "geo" / "PL.geojson"
+    geo = json.loads(geo_path.read_text("utf-8"))
+    geo["features"].append({
+        "type": "Feature",
+        "properties": {"id": "pl-sans-texte", "status": "validé", "pieces": []},
+        "geometry": _carre(15.0, 50.0, 1.0),
+    })
+    geo_path.write_text(json.dumps(geo), "utf-8")
+
+    resultat = build_site(projet / "data", projet / "dist", projet / "viewer", ["PL"])
+
+    assert resultat["orphans"] == [("PL", "pl-sans-texte")]
+
+
+def test_le_compte_de_metas_ne_compte_pas_les_lignes_d_index_en_double(projet):
+    """Depuis les bbox par partie, une emprise éclatée occupe plusieurs lignes
+    d'index : le compte affiché (manifeste et CLI) doit rester celui des
+    métas, pas celui des lignes."""
+    geo_path = projet / "data" / "geo" / "PL.geojson"
+    geo = json.loads(geo_path.read_text("utf-8"))
+    geo["features"][0]["geometry"] = {"type": "MultiPolygon", "coordinates": [
+        _carre(170.0, 55.0, 9.0)["coordinates"],
+        _carre(-179.0, 55.0, 9.0)["coordinates"],
+    ]}
+    geo_path.write_text(json.dumps(geo), "utf-8")
+    dist = projet / "dist"
+
+    resultat = build_site(projet / "data", dist, projet / "viewer", ["PL"])
+
+    assert resultat["metas"] == 1
+    assert _manifeste(dist)["meta_count"] == 1
+
+
 def test_la_page_de_licence_est_publiee(projet):
     dist = projet / "dist"
 

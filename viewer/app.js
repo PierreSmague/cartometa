@@ -207,16 +207,50 @@ function contient(geometrie, lon, lat) {
   return geometrie.coordinates.some((anneaux) => dansPolygone(lon, lat, anneaux));
 }
 
-async function interroger(lon, lat) {
+async function interroger(lon, lat, surPartiel) {
   // L'index est déjà trié par surface croissante : l'ordre du résultat est
-  // celui du plus spécifique au plus général, sans retrier.
-  const candidats = etat.index.filter(([, , minLon, minLat, maxLon, maxLat]) =>
-    lon >= minLon && lon <= maxLon && lat >= minLat && lat <= maxLat);
+  // celui du plus spécifique au plus général, sans retrier. Une emprise aux
+  // parties éloignées (Russie sur ±180°) occupe plusieurs lignes — même id,
+  // bbox distincte — d'où la déduplication : la première ligne dont la bbox
+  // contient le point suffit, le test précis se fait sur la géométrie entière.
+  const vus = new Set();
+  const candidats = [];
+  for (const ligne of etat.index) {
+    const [id, , minLon, minLat, maxLon, maxLat] = ligne;
+    if (lon < minLon || lon > maxLon || lat < minLat || lat > maxLat) continue;
+    if (vus.has(id)) continue;
+    vus.add(id);
+    candidats.push(ligne);
+  }
   const codes = [...new Set(candidats.map(([, code]) => code))];
-  await Promise.all(codes.map(chargerPays));
-  return candidats
-    .filter(([id, code]) => contient(etat.pays.get(code).geometries[id], lon, lat))
+
+  // Le test point-dans-polygone est mémorisé par géométrie : depuis la
+  // déduplication des géométries côté build, les 19 métas nationales russes
+  // partagent le même contour — le tester une fois suffit.
+  const cacheContient = new Map();
+  const charges = new Set();
+  const resultatsCharges = () => candidats
+    .filter(([id, code]) => {
+      if (!charges.has(code)) return false;
+      const pays = etat.pays.get(code);
+      const empreinte = pays.metas[id].geom;
+      const cle = `${code}/${empreinte}`;
+      if (!cacheContient.has(cle)) {
+        cacheContient.set(cle, contient(pays.geometries[empreinte], lon, lat));
+      }
+      return cacheContient.get(cle);
+    })
     .map(([id, code]) => ({ id, code, ...etat.pays.get(code).metas[id] }));
+
+  // Rendu incrémental : chaque pays s'affiche dès qu'il arrive, au lieu
+  // d'attendre le plus lent. `resultatsCharges` recalcule la liste complète
+  // dans l'ordre de l'index, donc l'ordre par surface reste correct quel que
+  // soit l'ordre d'arrivée des fichiers.
+  await Promise.all(codes.map((code) => chargerPays(code).then(() => {
+    charges.add(code);
+    if (surPartiel && charges.size < codes.length) surPartiel(resultatsCharges());
+  })));
+  return resultatsCharges();
 }
 
 // Compteur de génération : incrémenté à chaque clic, pour qu'un clic plus
@@ -248,7 +282,16 @@ async function allerAuPoint(lon, lat) {
   }).addTo(pointInterroge);
   let resultats;
   try {
-    resultats = await interroger(lon, lat);
+    resultats = await interroger(lon, lat, (partiels) => {
+      // Un clic plus récent a repris la main : ses squelettes et ses propres
+      // résultats ne doivent pas être écrasés par ce reliquat.
+      if (generationDuClic !== generation) return;
+      // Tant que rien n'est trouvé, on garde les squelettes : afficher
+      // « aucune méta » alors que des pays chargent encore serait mentir.
+      if (!partiels.length) return;
+      etat.resultats = partiels;
+      rendre();
+    });
   } catch (erreur) {
     // Sans ce filet, un pays qui échoue à charger laisse la galerie bloquée
     // sur les squelettes, sans que le visiteur sache que quelque chose a échoué.
@@ -362,7 +405,7 @@ function rendre() {
       // de présentation SVG, où la substitution des variables CSS n'est pas
       // fiable selon les navigateurs. Garder les deux valeurs synchronisées
       // avec `--accent` dans style.css.
-      L.geoJSON(etat.pays.get(meta.code).geometries[meta.id], {
+      L.geoJSON(etat.pays.get(meta.code).geometries[meta.geom], {
         // interactive: false — sinon le calque du surlignage capte le clic
         // à sa place (Leaflet appelle `DomEvent.fakeStop`, qui empêche
         // `carte.on('click')` de se déclencher) : la zone entière resterait
