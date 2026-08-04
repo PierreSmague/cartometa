@@ -220,12 +220,105 @@ function construireNote(detail, paquet) {
 const CARTE_LARGEUR = 480;
 const CARTE_HAUTEUR = 360;
 const CARTE_MARGE = 20;
+// Seuils d'admission d'une partie du pays dans le cadrage : distance à
+// l'ancre, en multiple de l'étendue de celle-ci, ou surface relative à la
+// sienne. Voir `partiesCadrantes`.
+const CADRE_DISTANCE = 1.5;
+const CADRE_SURFACE = 0.25;
 
 function anneauxDe(geometrie) {
   if (!geometrie) return [];
   if (geometrie.type === 'Polygon') return [geometrie.coordinates];
   if (geometrie.type === 'MultiPolygon') return geometrie.coordinates;
   return [];
+}
+
+// Boîte englobante d'un jeu de polygones. L'anneau extérieur suffit : un trou
+// est toujours dedans.
+function bboxDe(polygones) {
+  let minLon = Infinity;
+  let minLat = Infinity;
+  let maxLon = -Infinity;
+  let maxLat = -Infinity;
+  for (const polygone of polygones) {
+    for (const [lon, lat] of polygone[0]) {
+      if (lon < minLon) minLon = lon;
+      if (lon > maxLon) maxLon = lon;
+      if (lat < minLat) minLat = lat;
+      if (lat > maxLat) maxLat = lat;
+    }
+  }
+  return [minLon, minLat, maxLon, maxLat];
+}
+
+// Écart entre deux boîtes, nul si elles se recouvrent.
+function ecart(a, b) {
+  return Math.hypot(
+    Math.max(0, a[0] - b[2], b[0] - a[2]),
+    Math.max(0, a[1] - b[3], b[1] - a[3]),
+  );
+}
+
+// Surface de l'anneau extérieur (formule du lacet) en degrés carrés : de quoi
+// comparer deux parties entre elles, rien de plus. La bbox ne ferait pas
+// l'affaire — les neuf îlots des Açores s'étalent sur 6° de longitude et leur
+// boîte commune rivalise avec le Portugal continental.
+function surface(polygone) {
+  const anneau = polygone[0];
+  let somme = 0;
+  for (let i = 0, j = anneau.length - 1; i < anneau.length; j = i++) {
+    somme += anneau[j][0] * anneau[i][1] - anneau[i][0] * anneau[j][1];
+  }
+  return Math.abs(somme) / 2;
+}
+
+// Natural Earth donne la Russie de -180° à 180° : cadrer sur cette étendue de
+// 360° rejette la Tchoukotka à l'autre bout du canevas, le pays occupant
+// l'autre moitié. Réexprimer les longitudes négatives au-delà de 180° rend
+// l'ensemble contigu. Appliqué à l'emprise en même temps qu'à la silhouette,
+// sinon les deux ne seraient plus dans le même repère.
+function franchitAntimeridien(polygones) {
+  const [minLon, , maxLon] = bboxDe(polygones);
+  return maxLon - minLon > 180;
+}
+
+function decaler(polygones) {
+  return polygones.map((polygone) => polygone.map(
+    (anneau) => anneau.map(([lon, lat]) => [lon < 0 ? lon + 360 : lon, lat])));
+}
+
+// Les parties du pays sur lesquelles cadrer. Une silhouette Natural Earth
+// porte tous les territoires : cadrer sur leur ensemble réduit la France
+// métropolitaine à 1,2 % du canevas (mesuré sur les 88 pays publiés ; Norvège
+// 1,3 % à cause de l'île Bouvet, Pays-Bas 0,3 % à cause des Antilles) et rend
+// l'emprise rouge invisible. On part donc de la partie qui porte l'emprise —
+// l'ancre, celle qu'il s'agit de montrer — et on ne lui adjoint que ses
+// voisines proches ou de surface comparable : la Guyane, Bouvet et les Açores
+// sortent du cadre, la Papouasie et Mindanao y restent. Les parties écartées
+// sont tracées quand même, simplement rognées par le bord du canevas.
+function partiesCadrantes(parties, zone) {
+  if (parties.length < 2) return parties;
+  const boiteZone = zone.length ? bboxDe(zone) : null;
+  // Sans emprise, ou à égalité de distance (cas d'une emprise nationale, qui
+  // touche tout), c'est la plus grande partie qui sert d'ancre.
+  const ancre = parties.reduce((meilleure, partie) => {
+    if (boiteZone) {
+      const distanceMeilleure = ecart(bboxDe([meilleure]), boiteZone);
+      const distancePartie = ecart(bboxDe([partie]), boiteZone);
+      if (distancePartie !== distanceMeilleure) {
+        return distancePartie < distanceMeilleure ? partie : meilleure;
+      }
+    }
+    return surface(partie) > surface(meilleure) ? partie : meilleure;
+  });
+  const boiteAncre = bboxDe([ancre]);
+  const etendue = Math.max(
+    boiteAncre[2] - boiteAncre[0], boiteAncre[3] - boiteAncre[1],
+  );
+  const surfaceAncre = surface(ancre);
+  return parties.filter((partie) => partie === ancre
+    || ecart(bboxDe([partie]), boiteAncre) <= CADRE_DISTANCE * etendue
+    || surface(partie) >= CADRE_SURFACE * surfaceAncre);
 }
 
 // L'emprise de la méta sur la silhouette du pays, en PNG base64 (le format
@@ -235,24 +328,15 @@ function anneauxDe(geometrie) {
 // build hors ligne), l'emprise se cadre toute seule ; sans rien, null — la
 // carte Anki se fait alors sans mini-carte plutôt que pas du tout.
 function rendreMiniCarte(emprise, contour) {
-  const pays = anneauxDe(contour);
-  const zone = anneauxDe(emprise);
-  const cadre = pays.length ? pays : zone;
-  if (!cadre.length) return null;
-
-  let minLon = Infinity;
-  let minLat = Infinity;
-  let maxLon = -Infinity;
-  let maxLat = -Infinity;
-  for (const polygone of cadre) {
-    // L'anneau extérieur suffit au cadrage : un trou est toujours dedans.
-    for (const [lon, lat] of polygone[0]) {
-      if (lon < minLon) minLon = lon;
-      if (lon > maxLon) maxLon = lon;
-      if (lat < minLat) minLat = lat;
-      if (lat > maxLat) maxLat = lat;
-    }
+  let pays = anneauxDe(contour);
+  let zone = anneauxDe(emprise);
+  if (!pays.length && !zone.length) return null;
+  if (franchitAntimeridien(pays.length ? pays : zone)) {
+    pays = decaler(pays);
+    zone = decaler(zone);
   }
+  const cadre = pays.length ? partiesCadrantes(pays, zone) : zone;
+  const [minLon, minLat, maxLon, maxLat] = bboxDe(cadre);
 
   const latMoyenne = (minLat + maxLat) / 2;
   // Plancher : aux latitudes polaires, cos tend vers 0 et écraserait tout.
