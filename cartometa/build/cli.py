@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 from pathlib import Path
 
 from cartometa.build.dataset import discover_countries
@@ -20,6 +21,36 @@ from cartometa.build.site import (
 # rien ne rattrapait l'oubli. La poser une fois dans l'environnement rend
 # n'importe quel build ultérieur complet par défaut.
 GOOGLE_KEY_ENV = "CARTOMETA_GOOGLE_KEY"
+
+# Forme documentée d'une clé de navigateur Google : « AIza » suivi de 35
+# caractères. On la vérifie parce que rien d'autre ne le fait : le build
+# recopie la valeur dans le manifeste sans la lire, et seul Google tranche —
+# une fois le site en ligne, par un `InvalidKeyMapError` que le visiteur voit
+# et que le build n'a jamais vu.
+#
+# Vécu : une empreinte hexadécimale de 40 caractères, prise pour une clé dans
+# un fichier nommé `api_key.txt`, a été publiée telle quelle. Le build a
+# réussi, annoncé un sélecteur de fond de carte, et le fond Google était mort
+# en production. Un contrôle de forme coûte une ligne et aurait tout arrêté au
+# bon moment.
+FORME_CLE_GOOGLE = re.compile(r"^AIza[0-9A-Za-z_-]{35}$")
+
+
+def verifier_cle_google(cle: str) -> None:
+    """Refuse une valeur qui ne peut pas être une clé Google.
+
+    Ne dit rien de sa validité — seul Google le sait — mais élimine la faute
+    qui coûte le plus cher : publier autre chose qu'une clé.
+    """
+    if cle and not FORME_CLE_GOOGLE.fullmatch(cle):
+        raise SystemExit(
+            f"La clé Google fournie ne peut pas en être une : "
+            f"{len(cle)} caractères, « AIza » + 35 attendus.\n"
+            f"Publier cette valeur construirait un site annonçant un fond "
+            f"Google que l'API refuserait (InvalidKeyMapError), sans que rien "
+            f"ne le signale avant la mise en ligne.\n"
+            f"Vérifie --google-key, ou {GOOGLE_KEY_ENV} si l'option est absente."
+        )
 
 
 def main() -> None:
@@ -69,6 +100,11 @@ def main() -> None:
         ),
     )
     arguments = analyseur.parse_args()
+
+    # Avant tout travail : douze minutes d'encodage d'images pour finir sur une
+    # clé refusée seraient perdues, et surtout le dist/ produit serait bon à
+    # jeter.
+    verifier_cle_google(arguments.google_key)
 
     pays = [c.upper() for c in arguments.countries] or discover_countries(arguments.data)
     if not pays:
