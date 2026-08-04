@@ -142,12 +142,170 @@ function memoriserPaquet(paquet) {
   }
 }
 
-// --- Provisoire : remplacé par la tâche 6 ----------------------------------
+// --- Modèle et note ---------------------------------------------------------
 
 async function assurerModele() {
-  throw new Error('pas encore implémenté');
+  const modeles = await anki('modelNames');
+  if (modeles.includes(MODELE)) return;
+  // MetaId en premier champ, à dessein : Anki exige un premier champ non
+  // vide et fonde dessus son contrôle de doublon. L'image, elle, n'est
+  // remplie par AnkiConnect qu'au moment de l'ajout.
+  await anki('createModel', {
+    modelName: MODELE,
+    inOrderFields: ['MetaId', 'Image', 'RegionMap', 'Explanation', 'Source'],
+    css: [
+      '.card { font-family: system-ui, sans-serif; font-size: 18px;',
+      '  text-align: center; color: #1c1c1c; background: #fff; }',
+      'img { max-width: 100%; }',
+    ].join('\n'),
+    cardTemplates: [{
+      Name: 'Meta',
+      Front: '{{Image}}',
+      Back: '{{FrontSide}}<hr id="answer">{{RegionMap}}'
+        + '<p>{{Explanation}}</p><p>{{Source}}</p>',
+    }],
+  });
+}
+
+// Les champs d'une note Anki sont du HTML : tout texte du dataset passe par
+// ici avant d'y entrer. Même raison que textContent côté galerie — les
+// textes viennent d'un HTML tiers.
+function echapper(texte) {
+  const boite = document.createElement('div');
+  boite.textContent = texte ?? '';
+  return boite.innerHTML;
 }
 
 function construireNote(detail, paquet) {
-  throw new Error('pas encore implémenté');
+  const { meta, pays } = detail;
+  const cle = cleMeta(detail);
+  const note = {
+    deckName: paquet,
+    modelName: MODELE,
+    fields: {
+      MetaId: cle,
+      Image: '',
+      RegionMap: '',
+      Explanation: echapper(meta.description),
+      // Facultative : une méta saisie à la main n'a pas toujours de page
+      // d'origine à citer.
+      Source: meta.source_url
+        ? `<a href="${echapper(meta.source_url)}">Plonk It</a>`
+        : '',
+    },
+    options: { allowDuplicate: false },
+    tags: ['cartometa', meta.code],
+    // `url` et non un blob : c'est Anki (le logiciel de bureau) qui
+    // télécharge l'image depuis le site et la range dans ses médias — elle
+    // se synchronise ensuite vers AnkiWeb et AnkiDroid comme tout média.
+    picture: [{
+      url: detail.imageUrl,
+      filename: `cartometa-${meta.code}-${detail.imageUrl.split('/').pop()}`,
+      fields: ['Image'],
+    }],
+  };
+  const carte = rendreMiniCarte(pays.geometries[meta.geom], pays.outline);
+  if (carte) {
+    note.picture.push({
+      data: carte,
+      filename: `cartometa-${cle}-map.png`,
+      fields: ['RegionMap'],
+    });
+  }
+  return note;
+}
+
+// --- Mini-carte --------------------------------------------------------------
+
+const CARTE_LARGEUR = 480;
+const CARTE_HAUTEUR = 360;
+const CARTE_MARGE = 20;
+
+function anneauxDe(geometrie) {
+  if (!geometrie) return [];
+  if (geometrie.type === 'Polygon') return [geometrie.coordinates];
+  if (geometrie.type === 'MultiPolygon') return geometrie.coordinates;
+  return [];
+}
+
+// L'emprise de la méta sur la silhouette du pays, en PNG base64 (le format
+// de la clé `data` d'AnkiConnect). Projection équirectangulaire corrigée en
+// longitude par cos(latitude moyenne) : il s'agit de situer une région d'un
+// coup d'œil, pas de naviguer. Sans silhouette (pays hors Natural Earth,
+// build hors ligne), l'emprise se cadre toute seule ; sans rien, null — la
+// carte Anki se fait alors sans mini-carte plutôt que pas du tout.
+function rendreMiniCarte(emprise, contour) {
+  const pays = anneauxDe(contour);
+  const zone = anneauxDe(emprise);
+  const cadre = pays.length ? pays : zone;
+  if (!cadre.length) return null;
+
+  let minLon = Infinity;
+  let minLat = Infinity;
+  let maxLon = -Infinity;
+  let maxLat = -Infinity;
+  for (const polygone of cadre) {
+    // L'anneau extérieur suffit au cadrage : un trou est toujours dedans.
+    for (const [lon, lat] of polygone[0]) {
+      if (lon < minLon) minLon = lon;
+      if (lon > maxLon) maxLon = lon;
+      if (lat < minLat) minLat = lat;
+      if (lat > maxLat) maxLat = lat;
+    }
+  }
+
+  const latMoyenne = (minLat + maxLat) / 2;
+  // Plancher : aux latitudes polaires, cos tend vers 0 et écraserait tout.
+  const kx = Math.max(Math.cos((latMoyenne * Math.PI) / 180), 0.05);
+  const echelle = Math.min(
+    (CARTE_LARGEUR - 2 * CARTE_MARGE) / (((maxLon - minLon) * kx) || 1),
+    (CARTE_HAUTEUR - 2 * CARTE_MARGE) / ((maxLat - minLat) || 1),
+  );
+  const projeter = (lon, lat) => [
+    CARTE_LARGEUR / 2 + (lon - (minLon + maxLon) / 2) * kx * echelle,
+    CARTE_HAUTEUR / 2 - (lat - latMoyenne) * echelle,
+  ];
+
+  const canvas = document.createElement('canvas');
+  canvas.width = CARTE_LARGEUR;
+  canvas.height = CARTE_HAUTEUR;
+  const contexte = canvas.getContext('2d');
+  contexte.fillStyle = '#f7f7f2';
+  contexte.fillRect(0, 0, CARTE_LARGEUR, CARTE_HAUTEUR);
+
+  const tracer = (polygones) => {
+    const chemin = new Path2D();
+    for (const polygone of polygones) {
+      for (const anneau of polygone) {
+        anneau.forEach(([lon, lat], i) => {
+          const [x, y] = projeter(lon, lat);
+          if (i === 0) chemin.moveTo(x, y);
+          else chemin.lineTo(x, y);
+        });
+        chemin.closePath();
+      }
+    }
+    return chemin;
+  };
+
+  if (pays.length) {
+    const cheminPays = tracer(pays);
+    contexte.fillStyle = '#e4e4dc';
+    // evenodd : les trous (enclaves) restent des trous.
+    contexte.fill(cheminPays, 'evenodd');
+    contexte.strokeStyle = '#9a9a94';
+    contexte.lineWidth = 1;
+    contexte.stroke(cheminPays);
+  }
+  if (zone.length) {
+    const cheminZone = tracer(zone);
+    // Même rouge que le surlignage d'emprise sur la carte (voir app.js et
+    // --accent dans style.css), pour un sens identique des deux côtés.
+    contexte.fillStyle = 'rgba(193, 40, 58, 0.35)';
+    contexte.fill(cheminZone, 'evenodd');
+    contexte.strokeStyle = '#c1283a';
+    contexte.lineWidth = 2;
+    contexte.stroke(cheminZone);
+  }
+  return canvas.toDataURL('image/png').split(',')[1];
 }
