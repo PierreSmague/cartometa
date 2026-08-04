@@ -4,6 +4,8 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
+from shapely.geometry import Polygon, shape
+
 from cartometa.atomic_write import write_json_atomic
 from cartometa.models import ORIGIN_PLONKIT, STATUSES, GeoRecord
 
@@ -73,11 +75,79 @@ def load_geo(paths: CountryPaths) -> dict[str, GeoRecord]:
     return {record.id: record for record in records}
 
 
+def _arrondi_coords(valeur):
+    """Arrondit récursivement tout flottant à 5 décimales (~1 m au sol).
+
+    Appliqué à la géométrie et aux `pieces`, qui ne portent que des
+    coordonnées : les quinze décimales d'un float64 sérialisé sont du bruit
+    de calcul, pas de l'information — et du poids versionné à chaque trace.
+    """
+    if isinstance(valeur, float):
+        return round(valeur, 5)
+    if isinstance(valeur, list):
+        return [_arrondi_coords(v) for v in valeur]
+    if isinstance(valeur, dict):
+        return {k: _arrondi_coords(v) for k, v in valeur.items()}
+    return valeur
+
+
+def _geometrie_arrondie(geometry: dict | None) -> dict | None:
+    """La géométrie arrondie, ou telle quelle si l'arrondi la dégénère.
+
+    Recoller deux sommets distants de moins de 1e-5° peut faire passer un
+    anneau deux fois par le même point : 8 emprises sur 3617 ont dégénéré
+    ainsi à la première migration. Même philosophie que `simplify_geometry` :
+    stocker plus lourd mais exact vaut toujours mieux que stocker invalide.
+    """
+    if geometry is None:
+        return None
+    arrondie = _arrondi_coords(geometry)
+    try:
+        forme = shape(arrondie)
+        if forme.is_valid and not forme.is_empty:
+            return arrondie
+    except Exception:
+        pass
+    return geometry
+
+
+def _piece_arrondie(piece: dict) -> dict:
+    """Comme la géométrie : un anneau n'est arrondi que sans régression.
+
+    Les anneaux servent à rouvrir une méta (`resolve_pieces` les reconstruit
+    en polygones) : un anneau valide ne doit pas devenir invalide au passage.
+    Un anneau déjà invalide — quatre tracés main le sont — est arrondi tel
+    quel : il n'y a rien à préserver.
+    """
+    arrondie = _arrondi_coords(piece)
+    anneau = piece.get("ring")
+    if piece.get("kind") == "polygon" and anneau and len(anneau) >= 3:
+        try:
+            if Polygon(anneau).is_valid and not Polygon(arrondie["ring"]).is_valid:
+                arrondie["ring"] = anneau
+        except Exception:
+            arrondie["ring"] = anneau
+    return arrondie
+
+
+def _feature_arrondie(feature: dict) -> dict:
+    feature["geometry"] = _geometrie_arrondie(feature["geometry"])
+    feature["properties"]["pieces"] = [
+        _piece_arrondie(p) for p in feature["properties"]["pieces"]
+    ]
+    return feature
+
+
 def save_geo(paths: CountryPaths, records: dict[str, GeoRecord]) -> None:
+    # Compact, pas indenté : l'indentation coûtait un facteur 4 mesuré
+    # (RU.geojson : 90 Mo indenté, 25 Mo compact), sur des fichiers versionnés
+    # réécrits en entier à chaque décision.
     write_json_atomic(paths.geo, {
         "type": "FeatureCollection",
-        "features": [records[key].to_feature() for key in sorted(records)],
-    })
+        "features": [
+            _feature_arrondie(records[key].to_feature()) for key in sorted(records)
+        ],
+    }, indent=None)
 
 
 def _image_url(meta: dict) -> str | None:

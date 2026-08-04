@@ -119,6 +119,75 @@ def test_la_decision_est_relue_a_l_identique(paths):
     assert record.status == STATUS_TRACED
 
 
+def test_le_geojson_est_ecrit_compact(paths):
+    """L'indentation coûtait un facteur 4 mesuré sur les vrais fichiers :
+    RU.geojson pesait 90 Mo (4,1 millions de lignes) contre 25 Mo compact.
+    Chaque coordonnée sur sa propre ligne, versionnée, à chaque re-trace."""
+    set_decision(paths, "aaaa", STATUS_TRACED, CARRE, [{"kind": "country"}])
+
+    texte = paths.geo.read_text("utf-8")
+
+    assert "\n" not in texte.strip()
+
+
+def test_les_coordonnees_sont_arrondies_a_cinq_decimales(paths):
+    """Cinq décimales ≈ 1 m au sol : largement assez pour une emprise de méta,
+    et ~10 % de moins que les quinze décimales d'un float64 sérialisé. Les
+    `pieces` sont arrondies aussi — elles ne portent que des coordonnées."""
+    fin = {"type": "Polygon", "coordinates": [[
+        [2.123456789, 48.987654321], [3.111111111, 48.0],
+        [3.0, 49.222222222], [2.123456789, 48.987654321],
+    ]]}
+    morceaux = [{"kind": "polygon", "ring": [[2.123456789, 48.987654321]]}]
+
+    set_decision(paths, "aaaa", STATUS_TRACED, fin, morceaux)
+
+    record = load_geo(paths)["aaaa"]
+    assert record.geometry["coordinates"][0][0] == [2.12346, 48.98765]
+    assert record.pieces[0]["ring"] == [[2.12346, 48.98765]]
+
+
+# Anneau valide dont l'arrondi à 5 décimales est invalide : le sommet
+# (0.4, 0.399996) rejoint (0.4, 0.4) déjà présent, et l'anneau passe alors
+# deux fois par le même point. C'est arrivé sur les vraies données : 8
+# emprises sur 3617 ont dégénéré ainsi à la première migration.
+ANNEAU_FRAGILE = [
+    [0.0, 0.0], [0.8, 0.0], [0.4, 0.399996], [0.8, 0.8], [0.0, 0.8], [0.4, 0.4],
+    [0.0, 0.0],
+]
+
+
+def test_une_geometrie_que_l_arrondi_invaliderait_garde_sa_precision(paths):
+    from shapely.geometry import shape
+
+    fragile = {"type": "Polygon", "coordinates": [ANNEAU_FRAGILE]}
+    # Préconditions : valide telle quelle, invalide une fois arrondie —
+    # sans quoi ce test ne prouverait rien sur le repli.
+    assert shape(fragile).is_valid
+    arrondie = {"type": "Polygon", "coordinates": [
+        [[round(x, 5), round(y, 5)] for x, y in ANNEAU_FRAGILE]
+    ]}
+    assert not shape(arrondie).is_valid
+
+    set_decision(paths, "aaaa", STATUS_TRACED, fragile, [{"kind": "country"}])
+
+    record = load_geo(paths)["aaaa"]
+    assert shape(record.geometry).is_valid
+    assert record.geometry["coordinates"] == fragile["coordinates"]
+
+
+def test_un_anneau_de_piece_que_l_arrondi_invaliderait_garde_sa_precision(paths):
+    """Les `pieces` servent à rouvrir une méta : `resolve_pieces` reconstruit
+    des polygones depuis leurs anneaux, et un anneau devenu invalide à
+    l'arrondi casserait cette réouverture."""
+    morceaux = [{"kind": "polygon", "ring": ANNEAU_FRAGILE}]
+
+    set_decision(paths, "aaaa", STATUS_TRACED, CARRE, morceaux)
+
+    record = load_geo(paths)["aaaa"]
+    assert record.pieces[0]["ring"] == ANNEAU_FRAGILE
+
+
 def test_annuler_retire_la_meta_du_fichier(paths):
     set_decision(paths, "aaaa", STATUS_TRACED, CARRE, [{"kind": "country"}])
 
