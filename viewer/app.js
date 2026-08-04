@@ -488,12 +488,24 @@ function ouvrirLoupe(meta) {
   } else {
     texte.textContent = meta.title;
   }
+  // Tout ce que le module Anki doit savoir passe par cet événement : app.js
+  // ne connaît pas Anki, anki.js ne connaît ni la carte ni la galerie. L'URL
+  // d'image est absolue parce qu'elle quitte la page — c'est Anki (le
+  // logiciel) qui la téléchargera, pas ce navigateur.
+  document.dispatchEvent(new CustomEvent('cartometa:loupe', {
+    detail: {
+      meta,
+      pays: etat.pays.get(meta.code),
+      imageUrl: meta.full ? new URL(urlImage(meta.full), location.href).href : null,
+    },
+  }));
   loupe.hidden = false;
 }
 
 function fermerLoupe() {
   loupe.hidden = true;
   document.getElementById('loupe-image').src = '';
+  document.dispatchEvent(new Event('cartometa:loupe-fermee'));
 }
 
 document.getElementById('loupe-fermer').addEventListener('click', fermerLoupe);

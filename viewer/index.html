@@ -113,6 +113,31 @@
     <button id="loupe-fermer" aria-label="Close">×</button>
     <img id="loupe-image" alt="">
     <p id="loupe-texte"></p>
+    <div id="anki-zone">
+      <button id="anki-ajouter" type="button" hidden>Add to Anki</button>
+      <span id="anki-etat" role="status" aria-live="polite"></span>
+      <div id="anki-panneau" hidden>
+        <select id="anki-paquets" aria-label="Anki deck"></select>
+        <button id="anki-confirmer" type="button">Add</button>
+      </div>
+      <!-- Replié derrière un simple <summary> : la plupart des joueurs ne se
+           servent pas d'Anki, le guide ne doit exister qu'au moment où le
+           bouton échoue. -->
+      <details id="anki-guide" hidden>
+        <summary>Anki integration</summary>
+        <ol>
+          <li>Install <a href="https://apps.ankiweb.net/" target="_blank" rel="noopener">Anki</a>
+              and the <a href="https://ankiweb.net/shared/info/2055492159" target="_blank"
+              rel="noopener">AnkiConnect</a> add-on (code <code>2055492159</code>).</li>
+          <li>In Anki: Tools &rarr; Add-ons &rarr; AnkiConnect &rarr; Config, add
+              <code>"https://cartometa.com"</code> to <code>webCorsOriginList</code>.</li>
+          <li>Restart Anki, keep it open, and click the button again. Allow the
+              browser&rsquo;s local-network permission if it asks.</li>
+        </ol>
+        <p>Works in Chrome, Edge and Firefox. Safari does not let pages talk to
+           local apps.</p>
+      </details>
+    </div>
   </div>
 </body>
 </html>
