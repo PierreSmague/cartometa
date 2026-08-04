@@ -107,37 +107,6 @@ body {
   cursor: pointer;
 }
 .pastille.active { background: var(--texte); color: var(--fond-carte); border-color: var(--texte); }
-/* `flex: 0 0 100%` force le contrôle de portée sur sa propre ligne dans le
-   bandeau qui enveloppe, sans avoir à découper #filtres en sous-conteneurs. */
-#portee { flex: 0 0 100%; display: flex; }
-.segment {
-  font: inherit;
-  font-size: 11px;
-  padding: 4px 12px;
-  border: 1px solid var(--trait);
-  background: var(--fond-carte);
-  color: var(--texte-doux);
-  cursor: pointer;
-  /* Marge négative plutôt que `border-left: 0` : les bordures voisines se
-     confondent en un seul trait, et le segment actif peut porter sa propre
-     bordure sombre sur ses quatre côtés. Sans elle, le trait clair du voisin
-     resterait visible contre le segment actif. */
-  margin-left: -1px;
-}
-.segment:first-child {
-  margin-left: 0;
-  border-radius: var(--rayon) 0 0 var(--rayon);
-}
-.segment:last-child { border-radius: 0 var(--rayon) var(--rayon) 0; }
-.segment.active {
-  background: var(--texte);
-  color: var(--fond-carte);
-  border-color: var(--texte);
-  /* Remonte le segment actif au-dessus de ses voisins pour que sa bordure
-     sombre ne soit pas recouverte par la leur, plus claire. */
-  position: relative;
-  z-index: 1;
-}
 #recherche {
   flex: 1;
   min-width: 140px;
@@ -151,7 +120,7 @@ body {
    passé à une couleur en dur : garde la variable honnête plutôt que morte. */
 #recherche:focus-visible,
 .pastille:focus-visible,
-.segment:focus-visible,
+.groupe > summary:focus-visible,
 #lien:focus-visible,
 #lien-go:focus-visible,
 #loupe-fermer:focus-visible {
@@ -163,16 +132,64 @@ body {
 #accueil h1 { font-size: 17px; font-weight: 600; margin: 0 0 8px; }
 #accueil p { margin: 0; color: var(--texte-doux); }
 
+/* #galerie ne défile plus qu'en conteneur : la grille est descendue dans
+   .grille, partagée par les squelettes et par chaque section de portée. Le
+   remplissage est porté par .grille et non par #galerie, sinon l'écran
+   d'accueil — où tout le contenu est masqué — garderait une bande vide. */
 #galerie {
   flex: 1;
   overflow-y: auto;
+}
+.grille {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 14px;
   padding: 14px 16px;
-  align-content: start;
 }
-#galerie:empty { padding: 0; }
+/* Obligatoire : la déclaration `display` ci-dessus l'emporterait sinon sur le
+   `display: none` que l'attribut hidden tient de la feuille du navigateur. */
+.grille[hidden] { display: none; }
+
+/* En-tête de section de portée. Les sections restent dépliées par défaut ; on
+   remplace le triangle natif par le nôtre parce que `display: flex` sur un
+   <summary> escamote le marqueur sur une partie des navigateurs — le dessiner
+   soi-même donne le même rendu partout. */
+.groupe[hidden] { display: none; }
+.groupe > summary {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  cursor: pointer;
+  list-style: none;
+  border-bottom: 1px solid var(--trait);
+  /* Collant : avec deux sections dépliées, la liste est longue et l'en-tête
+     dirait sinon à quelle portée on se trouve seulement en haut de page. */
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--fond-carte);
+}
+.groupe > summary::-webkit-details-marker { display: none; }
+/* Triangle en bordures plutôt qu'un caractère : aucune dépendance à une police
+   ni à un jeu d'émojis, et il pivote proprement. */
+.groupe > summary::before {
+  content: '';
+  border-left: 4.5px solid currentColor;
+  border-top: 3.5px solid transparent;
+  border-bottom: 3.5px solid transparent;
+  transition: transform 0.15s;
+}
+.groupe[open] > summary::before { transform: rotate(90deg); }
+.groupe .compte {
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--texte-doux);
+}
 
 .carte-meta { cursor: zoom-in; }
 .carte-meta img {
@@ -212,7 +229,9 @@ body {
 }
 @keyframes glisse { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 
-#vide { padding: 24px 20px; color: var(--texte-doux); grid-column: 1 / -1; }
+/* Sorti de la grille : le message occupe désormais #galerie directement, donc
+   plus besoin de `grid-column` pour tenir toute la largeur. */
+#vide { padding: 24px 20px; color: var(--texte-doux); margin: 0; }
 
 #pied {
   padding: 7px 18px;
@@ -251,8 +270,10 @@ body {
   cursor: pointer;
 }
 
-/* Sélecteur de fond de carte, en coin de carte. Repris du vocabulaire des
-   segments de #portee : deux boutons accolés, l'actif en inverse vidéo.
+/* Sélecteur de fond de carte, en coin de carte : deux boutons accolés, l'actif
+   en inverse vidéo. C'est désormais le seul contrôle segmenté du site — le
+   filtre de portée qui lui avait prêté ce vocabulaire a laissé place aux
+   sections repliables de la galerie.
    `box-shadow` plutôt que `border` seule : le contrôle flotte au-dessus des
    tuiles, où un simple trait clair disparaîtrait sur un fond chargé. */
 .choix-fond {

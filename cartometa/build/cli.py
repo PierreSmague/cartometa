@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 from pathlib import Path
 
 from cartometa.build.dataset import discover_countries
@@ -12,6 +13,13 @@ from cartometa.build.site import (
     SITE_URL,
     build_site,
 )
+
+# Repli de `--google-key`. Le sélecteur de fond de carte a déjà disparu du site
+# une fois parce qu'un build lancé pour autre chose avait omis l'option : la clé
+# ne vit que dans la ligne de commande, et `dist/` n'est pas versionné, donc
+# rien ne rattrapait l'oubli. La poser une fois dans l'environnement rend
+# n'importe quel build ultérieur complet par défaut.
+GOOGLE_KEY_ENV = "CARTOMETA_GOOGLE_KEY"
 
 
 def main() -> None:
@@ -48,14 +56,16 @@ def main() -> None:
         ),
     )
     analyseur.add_argument(
-        "--google-key", default="",
+        "--google-key", default=os.environ.get(GOOGLE_KEY_ENV, ""),
         help=(
             "Clé Google Maps activant le second fond de carte. Sans elle, le "
-            "sélecteur n'apparaît pas et le site n'appelle jamais Google. La "
-            "passer ici plutôt que de la versionner : elle sera publique dans "
-            "le manifeste de toute façon, mais n'a pas à rester dans "
-            "l'historique git après une rotation. Restreins-la par référent "
-            "HTTP côté console Google."
+            "sélecteur n'apparaît pas et le site n'appelle jamais Google. À "
+            f"défaut, la variable d'environnement {GOOGLE_KEY_ENV} est lue : "
+            "un build qui oublie l'option ne retire pas le sélecteur du site "
+            "en silence. La passer ainsi plutôt que de la versionner : elle "
+            "sera publique dans le manifeste de toute façon, mais n'a pas à "
+            "rester dans l'historique git après une rotation. Restreins-la par "
+            "référent HTTP côté console Google."
         ),
     )
     arguments = analyseur.parse_args()
@@ -96,6 +106,13 @@ def main() -> None:
             f"\nAttention : {len(resultat['orphans'])} emprise(s) tracée(s) sans "
             f"texte de méta, non publiée(s) : {details}\n"
             f"Relancer cartometa-extract sur ces pays les republiera."
+        )
+    if not arguments.google_key:
+        print(
+            f"\nAttention : aucune clé Google — ce dist/ n'aura pas de sélecteur "
+            f"de fond de carte, le visiteur restera sur OpenStreetMap.\n"
+            f"Parade : passer --google-key, ou poser {GOOGLE_KEY_ENV} une fois "
+            f"pour toutes dans l'environnement."
         )
     if arguments.skip_images:
         print(

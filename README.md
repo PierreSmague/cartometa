@@ -152,9 +152,22 @@ facturant à l'initialisation de carte, un visiteur qui reste sur OSM ne coûte
 donc rien.
 
 Sans `--google-key`, le sélecteur n'apparaît pas : un contributeur construit
-le site en local sans clé et obtient un aperçu complet.
+le site en local sans clé et obtient un aperçu complet. Le build le signale
+alors en fin de sortie, parce que l'oubli est silencieux côté site — la carte
+s'affiche, seul le second fond manque.
 
-La clé passe par la ligne de commande et **n'est pas versionnée**. Elle sera
+À défaut d'option, la variable d'environnement `CARTOMETA_GOOGLE_KEY` est lue.
+C'est la forme à préférer pour une machine qui publie : `dist/` n'étant pas
+versionné, un build lancé pour tout autre motif (un correctif, une
+optimisation) republierait sinon un site sans sélecteur sans que rien ne le
+rappelle.
+
+```
+setx CARTOMETA_GOOGLE_KEY AIza...        # Windows, une fois pour toutes
+export CARTOMETA_GOOGLE_KEY=AIza...     # shell POSIX
+```
+
+La clé n'est **jamais versionnée**. Elle sera
 publique dans `data/manifest.json` du site livré — une clé de navigateur l'est
 toujours — mais elle n'a pas à rester dans l'historique git après une
 rotation. Deux protections à régler côté console Google Cloud, sans lesquelles
