@@ -4,6 +4,7 @@ import hashlib
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Callable
 
 from shapely.geometry import shape
 
@@ -82,9 +83,17 @@ def discover_countries(data_dir: Path) -> list[str]:
 
 
 def build_dataset(
-    data_dir: Path, countries: list[str], tolerance: float = DEFAULT_TOLERANCE
+    data_dir: Path,
+    countries: list[str],
+    tolerance: float = DEFAULT_TOLERANCE,
+    outline_de: Callable[[str], dict | None] | None = None,
 ) -> Dataset:
-    """Lit les sources, simplifie, découpe par pays et construit l'index."""
+    """Lit les sources, simplifie, découpe par pays et construit l'index.
+
+    `outline_de` fournit, pour un code pays, la silhouette du pays en GeoJSON
+    — ou `None` quand elle est indisponible. Absent, aucun fichier pays ne
+    porte de clé `outline`.
+    """
     jeu = Dataset()
     for pays in countries:
         chemins = CountryPaths(data_dir, pays)
@@ -156,6 +165,13 @@ def build_dataset(
                 "source_url": meta["source_url"],
                 "image_source": meta.get("image"),
             }
+        if entree_pays["geometries"] and outline_de is not None:
+            # Silhouette du pays, fond de la mini-carte des cartes Anki.
+            # Injectée plutôt qu'importée : le dataset Natural Earth vient du
+            # réseau, et ni cette fonction ni ses tests ne doivent y toucher.
+            contour = outline_de(pays)
+            if contour is not None:
+                entree_pays["outline"] = simplify_geometry(contour, tolerance)
         if entree_pays["geometries"]:
             jeu.countries[pays] = entree_pays
     # Une orpheline Plonk It est un décalage de régénération, rattrapable en
