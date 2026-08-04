@@ -14,8 +14,10 @@ __pycache__/
 # Regenerable par: uv run cartometa-extract poland
 data/metas/
 
-# Essais de fond de carte : contient une cle d'API en clair. Le depot est
-# public — un `git add data` suffirait a la publier.
+# Essais de fond de carte : repertoire supprime le 2026-08-04, la cle vit
+# desormais dans la variable d'environnement CARTOMETA_GOOGLE_KEY. La regle
+# reste par precaution — le depot est public, et un `git add data` publierait
+# toute cle qu'on redeposerait ici.
 data/background/
 
 # Journaux de la tache planifiee

@@ -208,7 +208,7 @@ data/geo/            emprises tracées + statut + morceaux (versionnées)
 data/manual/         métas saisies à la main, textes et images (versionnées)
 data/metas/          textes Plonk It (jamais versionnés, régénérables)
 input/               pages sauvegardées (jamais versionnées)
-docs/                specs, plans, rapports
+docs/                specs, plans, guides de contribution
 ```
 
 ## État
@@ -216,5 +216,4 @@ docs/                specs, plans, rapports
 Détection automatique retirée le 2026-07-30 : les emprises sont désormais
 tracées à la main. Les géométries produites par l'ancien pipeline ont été
 effacées et sont à refaire — elles restent consultables dans l'historique
-git. `docs/rapport-pologne.md` décrit le pipeline supprimé, conservé comme
-trace historique.
+git, de même que le rapport de mesures qui les accompagnait.
