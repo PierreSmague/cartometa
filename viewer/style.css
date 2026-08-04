@@ -294,3 +294,30 @@ body {
 .choix-fond button + button { border-left: 1px solid var(--trait); }
 .choix-fond button.actif { background: var(--texte); color: var(--fond-carte); }
 .choix-fond button:disabled { cursor: not-allowed; opacity: .5; }
+
+/* --- Intégration Anki (dans la loupe) ------------------------------------ */
+#anki-zone {
+  color: #f2f2ee;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  max-width: 80ch;
+}
+#anki-zone button {
+  font: inherit;
+  padding: 5px 12px;
+  border: 1px solid #f2f2ee;
+  border-radius: var(--rayon);
+  background: none;
+  color: #f2f2ee;
+  cursor: pointer;
+}
+#anki-zone button:disabled { opacity: 0.55; cursor: default; }
+#anki-panneau { display: flex; gap: 8px; align-items: center; }
+#anki-paquets { font: inherit; max-width: 32ch; }
+#anki-guide { text-align: left; }
+#anki-guide summary { cursor: pointer; text-align: center; }
+#anki-guide a { color: #f2f2ee; }
+#anki-guide code { font-size: 12px; }
