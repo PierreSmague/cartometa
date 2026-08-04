@@ -31,6 +31,7 @@ IMAGE_BASE = "img/"
 ACTIFS_STATIQUES = (
     ("style.css", "__CSS__"),
     ("app.js", "__JS__"),
+    ("anki.js", "__ANKI_JS__"),
     ("favicon.svg", "__ICON_SVG__"),
     ("favicon.png", "__ICON_PNG__"),
     ("og.png", "__OG_IMAGE__"),

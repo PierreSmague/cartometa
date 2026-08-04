@@ -64,6 +64,7 @@ def projet(tmp_path, monkeypatch):
     )
     (viewer / "style.css").write_text("body{margin:0}", "utf-8")
     (viewer / "app.js").write_text("console.log('x')", "utf-8")
+    (viewer / "anki.js").write_text("/* anki */", "utf-8")
     # Greffon Leaflet vendorisé, chargé à la demande par le front : il n'est
     # référencé par aucun gabarit, seulement par le manifeste.
     (viewer / "googleMutant.js").write_text("/* greffon */", "utf-8")
@@ -473,6 +474,7 @@ def _arbre_complet(out_dir: Path) -> dict:
     (out_dir / "index.html").write_text("<!doctype html>", "utf-8")
     (out_dir / "_headers").write_text("", "utf-8")
     (out_dir / "app.a1b2c3d4.js").write_text("", "utf-8")
+    (out_dir / "anki.a1b2c3d4.js").write_text("", "utf-8")
     (out_dir / "googleMutant.a1b2c3d4.js").write_text("", "utf-8")
     (out_dir / "style.a1b2c3d4.css").write_text("", "utf-8")
     (out_dir / "favicon.a1b2c3d4.svg").write_text("", "utf-8")
@@ -574,6 +576,7 @@ def test_un_image_base_absolu_ignore_les_images(tmp_path):
     (tmp_path / "index.html").write_text("<!doctype html>", "utf-8")
     (tmp_path / "_headers").write_text("", "utf-8")
     (tmp_path / "app.a1b2c3d4.js").write_text("", "utf-8")
+    (tmp_path / "anki.a1b2c3d4.js").write_text("", "utf-8")
     (tmp_path / "googleMutant.a1b2c3d4.js").write_text("", "utf-8")
     (tmp_path / "style.a1b2c3d4.css").write_text("", "utf-8")
     (tmp_path / "favicon.a1b2c3d4.svg").write_text("", "utf-8")
