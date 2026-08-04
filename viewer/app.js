@@ -4,7 +4,6 @@ const etat = {
   pays: new Map(),   // code pays -> {metas, geometries}
   resultats: [],
   categorie: '',
-  portee: '',        // '' | 'regional' | 'national', voir scope_de côté build
   recherche: '',
   pret: false,   // true seulement une fois manifeste ET index chargés avec succès
   // Ces deux drapeaux disent à `rendre()` (et à ses appelants autres que le
@@ -118,6 +117,23 @@ function creerSelecteurDeFond() {
       }
     };
 
+    // Repli commun aux deux façons dont Google peut faire défaut. La seconde a
+    // été observée en production : une clé refusée ne fait pas échouer la
+    // promesse du script — celui-ci se charge très bien, puis l'API appelle
+    // `window.gm_authFailure` et se contente de ne rien dessiner. Sans ce
+    // branchement, le visiteur reste devant un rectangle gris, OSM ayant déjà
+    // été retiré, et le bouton continue de s'afficher allumé.
+    function abandonnerGoogle() {
+      chargementGoogle = null;
+      boutons.google.textContent = 'Google';
+      boutons.google.disabled = true;
+      boutons.google.title = 'Google basemap unavailable';
+      basculer('osm');
+    }
+    // Nom imposé par l'API Google, qui l'appelle sur l'objet global : clé
+    // invalide, facturation absente, quota épuisé.
+    window.gm_authFailure = abandonnerGoogle;
+
     async function basculer(vers) {
       if (vers === 'osm') {
         if (fondGoogle) carte.removeLayer(fondGoogle);
@@ -133,13 +149,10 @@ function creerSelecteurDeFond() {
           chargementGoogle = chargementGoogle || preparerFondGoogle();
           fondGoogle = await chargementGoogle;
         } catch (erreur) {
-          // Clé invalide, quota dépassé, script bloqué : sans ce repli, la
-          // carte resterait blanche sans que rien ne l'explique.
-          chargementGoogle = null;
-          boutons.google.textContent = 'Google';
-          boutons.google.disabled = true;
-          boutons.google.title = 'Google basemap unavailable';
-          basculer('osm');
+          // Script injoignable ou bloqué (réseau, bloqueur de contenu) : sans ce
+          // repli, la carte resterait blanche sans que rien ne l'explique. Une
+          // clé refusée, elle, ne passe pas par ici — voir `abandonnerGoogle`.
+          abandonnerGoogle();
           return;
         }
         boutons.google.textContent = 'Google';
@@ -304,8 +317,7 @@ async function allerAuPoint(lon, lat) {
     etat.resultats = [];
     etat.chargement = false;
     etat.erreur = true;
-    document.getElementById('galerie').innerHTML =
-      '<p id="vide">Could not load metas for this area.</p>';
+    montrer({ message: 'Could not load metas for this area.' });
     return;
   }
   // Ce clic n'est plus le plus récent : son résultat est périmé, on l'ignore.
@@ -344,78 +356,112 @@ function restaurerVue() {
 carte.on('moveend', memoriserVue);
 demarrer();
 
-const galerie = document.getElementById('galerie');
 const loupe = document.getElementById('loupe');
+
+// Les sections de portée viennent du gabarit : le script ne fait que remplir
+// leur grille et les masquer, jamais les recréer. C'est ce qui laisse l'état
+// déplié/replié choisi par le visiteur survivre à chaque rendu — un <details>
+// reconstruit à chaque frappe dans la recherche se rouvrirait sous les doigts.
+// L'ordre du DOM (régional puis national) porte l'ordre d'affichage : rien
+// dans le script n'a à le redire.
+const groupes = [...document.querySelectorAll('.groupe')].map((element) => ({
+  element,
+  portee: element.dataset.portee,
+  grille: element.querySelector('.grille'),
+  compte: element.querySelector('.compte'),
+}));
+const squelettes = document.getElementById('squelettes');
+const messageVide = document.getElementById('vide');
 
 function urlImage(nom) {
   return etat.manifeste.image_base + nom;
 }
 
+// Les trois états de la galerie sont exclusifs — squelettes en attente, message
+// seul, ou sections remplies — et chacun doit éteindre les deux autres. Passer
+// par un point unique évite qu'un chemin oublie d'en éteindre un et laisse par
+// exemple un message d'erreur au-dessus des cartes du clic précédent.
+function montrer({ chargement = false, message = '' } = {}) {
+  squelettes.hidden = !chargement;
+  messageVide.hidden = !message;
+  if (message) messageVide.textContent = message;
+  if (chargement || message) {
+    for (const groupe of groupes) groupe.element.hidden = true;
+  }
+}
+
 function afficherSquelettes() {
-  galerie.innerHTML = '<div class="squelette"></div>'.repeat(4);
+  squelettes.innerHTML = '<div class="squelette"></div>'.repeat(4);
+  montrer({ chargement: true });
 }
 
 function visibles() {
   const terme = etat.recherche.trim().toLowerCase();
   return etat.resultats.filter((meta) => {
     if (etat.categorie && meta.category !== etat.categorie) return false;
-    if (etat.portee && meta.scope !== etat.portee) return false;
     if (!terme) return true;
     return `${meta.title} ${meta.description}`.toLowerCase().includes(terme);
   });
 }
 
+function creerCarte(meta) {
+  const bloc = document.createElement('article');
+  bloc.className = 'carte-meta';
+  // textContent plutôt qu'innerHTML : les titres viennent d'un HTML tiers
+  // et peuvent contenir n'importe quoi.
+  // Une meta sans image (le build omet `thumb`/`full` ensemble quand il
+  // n'y a pas de source) garde sa place dans la galerie : seule la
+  // vignette est omise, pas la carte, pour que le compte affiché
+  // corresponde toujours au nombre de metas trouvées.
+  if (meta.thumb) {
+    const image = document.createElement('img');
+    image.loading = 'lazy';
+    image.src = urlImage(meta.thumb);
+    image.alt = '';
+    bloc.appendChild(image);
+  }
+  const legende = document.createElement('p');
+  const code = document.createElement('span');
+  code.className = 'code-pays';
+  code.textContent = meta.code;
+  legende.append(code, document.createTextNode(meta.title));
+  bloc.appendChild(legende);
+  bloc.addEventListener('mouseenter', () => {
+    surlignage.clearLayers();
+    // Couleur en dur et non `var(--accent)` : Leaflet la pose comme attribut
+    // de présentation SVG, où la substitution des variables CSS n'est pas
+    // fiable selon les navigateurs. Garder les deux valeurs synchronisées
+    // avec `--accent` dans style.css.
+    L.geoJSON(etat.pays.get(meta.code).geometries[meta.geom], {
+      // interactive: false — sinon le calque du surlignage capte le clic
+      // à sa place (Leaflet appelle `DomEvent.fakeStop`, qui empêche
+      // `carte.on('click')` de se déclencher) : la zone entière resterait
+      // muette au premier clic tant que la souris ne l'a pas quittée.
+      interactive: false,
+      color: '#c1283a', weight: 2, fillOpacity: 0.18,
+    }).addTo(surlignage);
+  });
+  bloc.addEventListener('click', () => ouvrirLoupe(meta));
+  return bloc;
+}
+
 function rendre() {
   const metas = visibles();
-  galerie.innerHTML = '';
   if (!metas.length) {
-    const vide = document.createElement('p');
-    vide.id = 'vide';
-    vide.textContent = etat.resultats.length
+    montrer({ message: etat.resultats.length
       ? 'No meta matches this filter.'
-      : 'No meta covers this point.';
-    galerie.appendChild(vide);
+      : 'No meta covers this point.' });
     return;
   }
-  for (const meta of metas) {
-    const bloc = document.createElement('article');
-    bloc.className = 'carte-meta';
-    // textContent plutôt qu'innerHTML : les titres viennent d'un HTML tiers
-    // et peuvent contenir n'importe quoi.
-    // Une meta sans image (le build omet `thumb`/`full` ensemble quand il
-    // n'y a pas de source) garde sa place dans la galerie : seule la
-    // vignette est omise, pas la carte, pour que le compte affiché
-    // corresponde toujours au nombre de metas trouvées.
-    if (meta.thumb) {
-      const image = document.createElement('img');
-      image.loading = 'lazy';
-      image.src = urlImage(meta.thumb);
-      image.alt = '';
-      bloc.appendChild(image);
-    }
-    const legende = document.createElement('p');
-    const code = document.createElement('span');
-    code.className = 'code-pays';
-    code.textContent = meta.code;
-    legende.append(code, document.createTextNode(meta.title));
-    bloc.appendChild(legende);
-    bloc.addEventListener('mouseenter', () => {
-      surlignage.clearLayers();
-      // Couleur en dur et non `var(--accent)` : Leaflet la pose comme attribut
-      // de présentation SVG, où la substitution des variables CSS n'est pas
-      // fiable selon les navigateurs. Garder les deux valeurs synchronisées
-      // avec `--accent` dans style.css.
-      L.geoJSON(etat.pays.get(meta.code).geometries[meta.geom], {
-        // interactive: false — sinon le calque du surlignage capte le clic
-        // à sa place (Leaflet appelle `DomEvent.fakeStop`, qui empêche
-        // `carte.on('click')` de se déclencher) : la zone entière resterait
-        // muette au premier clic tant que la souris ne l'a pas quittée.
-        interactive: false,
-        color: '#c1283a', weight: 2, fillOpacity: 0.18,
-      }).addTo(surlignage);
-    });
-    bloc.addEventListener('click', () => ouvrirLoupe(meta));
-    galerie.appendChild(bloc);
+  montrer();
+  for (const groupe of groupes) {
+    const siennes = metas.filter((meta) => meta.scope === groupe.portee);
+    groupe.grille.replaceChildren(...siennes.map(creerCarte));
+    groupe.compte.textContent = siennes.length;
+    // Une section sans résultat est retirée plutôt qu'affichée à zéro : le
+    // point cliqué n'est simplement couvert que par une seule portée, ce n'est
+    // pas un manque à signaler. Le compte de celle qui reste dit déjà tout.
+    groupe.element.hidden = !siennes.length;
   }
 }
 
@@ -465,24 +511,19 @@ document.getElementById('recherche').addEventListener('input', (e) => {
   rendre();
 });
 
-// Les deux filtres se comportent à l'identique : un seul choix actif par
-// groupe, et ils se cumulent entre eux (et avec la recherche) dans `visibles`.
-function brancherGroupe(selecteur, champDonnee, cle) {
-  for (const bouton of document.querySelectorAll(selecteur)) {
-    bouton.addEventListener('click', () => {
-      // Même garde-fou que pour la recherche : voir le commentaire ci-dessus.
-      if (etat.chargement || etat.erreur) return;
-      for (const autre of document.querySelectorAll(selecteur)) {
-        autre.classList.toggle('active', autre === bouton);
-      }
-      etat[cle] = bouton.dataset[champDonnee];
-      rendre();
-    });
-  }
+// Filtre par catégorie : un seul choix actif, cumulé avec la recherche dans
+// `visibles`. La portée n'est plus un filtre — elle répartit les résultats
+// entre les deux sections repliables, qui se lisent donc ensemble.
+const pastilles = [...document.querySelectorAll('.pastille')];
+for (const bouton of pastilles) {
+  bouton.addEventListener('click', () => {
+    // Même garde-fou que pour la recherche : voir le commentaire ci-dessus.
+    if (etat.chargement || etat.erreur) return;
+    for (const autre of pastilles) autre.classList.toggle('active', autre === bouton);
+    etat.categorie = bouton.dataset.categorie;
+    rendre();
+  });
 }
-
-brancherGroupe('.pastille', 'categorie', 'categorie');
-brancherGroupe('.segment', 'portee', 'portee');
 
 // --- Barre de lien Street View ---------------------------------------------
 

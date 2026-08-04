@@ -66,14 +66,6 @@
         <button class="pastille" data-categorie="vegetation">Vegetation</button>
         <button class="pastille" data-categorie="vehicule">Vehicle</button>
         <button class="pastille" data-categorie="autre">Other</button>
-        <!-- Contrôle segmenté et non des pastilles : sa forme le distingue du
-             filtre par catégorie, ce qui évite que ses deux « All » se
-             confondent sans avoir à ajouter un libellé. -->
-        <div id="portee" role="group" aria-label="Meta scope">
-          <button class="segment active" data-portee="">All</button>
-          <button class="segment" data-portee="regional">Regional</button>
-          <button class="segment" data-portee="national">National</button>
-        </div>
         <input id="recherche" type="search" placeholder="Filter these results…">
       </div>
       <div id="accueil">
@@ -83,7 +75,30 @@
           specific to the most general.
         </p>
       </div>
-      <div id="galerie"></div>
+      <!-- Les deux portées sont des sections repliables du gabarit, et non des
+           blocs fabriqués par le script : le libellé et la valeur filtrée
+           restent lisibles ici, et surtout l'état replié d'une section survit
+           aux rendus suivants (frappe dans la recherche, nouveau clic) parce
+           que ces <details> ne sont jamais recréés. Régional d'abord : c'est
+           la portée la plus spécifique, donc la plus utile au premier coup
+           d'œil, dans le même esprit que l'ordre par surface croissante. -->
+      <div id="galerie">
+        <div id="squelettes" class="grille" hidden></div>
+        <!-- `hidden` au départ, `open` quand même : la première est l'affaire du
+             gabarit, qui ne doit pas coiffer l'écran d'accueil de deux en-têtes
+             vides avant le moindre clic ; la seconde est l'état déplié que
+             demande l'énoncé, et c'est celui que le script révélera. Ensuite
+             `rendre()` est seul maître de `hidden`. -->
+        <details class="groupe" data-portee="regional" open hidden>
+          <summary>Regional <span class="compte"></span></summary>
+          <div class="grille"></div>
+        </details>
+        <details class="groupe" data-portee="national" open hidden>
+          <summary>National <span class="compte"></span></summary>
+          <div class="grille"></div>
+        </details>
+        <p id="vide" hidden></p>
+      </div>
     </section>
   </main>
 

@@ -105,18 +105,21 @@ def test_les_valeurs_de_portee_du_front_correspondent_a_celles_du_build():
     """Contrat entre deux langages, donc invisible au compilateur comme au
     relecteur d'un seul fichier.
 
-    Le build écrit `scope` dans la charge utile, le gabarit déclare les valeurs
-    à filtrer en `data-portee`, et `app.js` compare les deux. Renommer un côté
-    sans l'autre ne casse rien de bruyant : le filtre cesse simplement de
-    trouver quoi que ce soit, et les onglets Regional et National se vident
-    sans le moindre message.
+    Le build écrit `scope` dans la charge utile, le gabarit déclare la portée de
+    chaque section repliable en `data-portee`, et `app.js` répartit les métas en
+    comparant les deux. Renommer un côté sans l'autre ne casse rien de bruyant :
+    les deux sections se masquent simplement comme si le point n'était couvert
+    par aucune méta, sans le moindre message.
+
+    L'égalité, et non une inclusion : une valeur de portée qui n'aurait pas sa
+    section n'afficherait nulle part les métas qui la portent, et ce test est le
+    seul endroit du projet où les deux listes se rencontrent.
     """
     html = (Path(__file__).resolve().parents[1] / "viewer" / "index.html").read_text("utf-8")
 
     valeurs = set(re.findall(r'data-portee="([^"]*)"', html))
 
-    # La chaîne vide est le choix « All » : il ne filtre rien.
-    assert valeurs == {"", SCOPE_REGIONAL, SCOPE_NATIONAL}
+    assert valeurs == {SCOPE_REGIONAL, SCOPE_NATIONAL}
 
 
 @pytest.fixture
