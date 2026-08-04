@@ -178,6 +178,29 @@ Le greffon `viewer/googleMutant.js` est vendorisé
 ([Leaflet.GridLayer.GoogleMutant](https://gitlab.com/IvanSanchez/Leaflet.GridLayer.GoogleMutant/),
 licence BEER-WARE, notice d'auteur conservée).
 
+### Envoyer une méta vers Anki (facultatif)
+
+Chaque méta ouverte en grand porte un bouton « Add to Anki » : il crée une
+carte (image au recto ; emprise sur silhouette du pays, explication et lien
+source au verso) dans le paquet choisi, via
+[AnkiConnect](https://ankiweb.net/shared/info/2055492159).
+
+Côté visiteur, trois conditions, expliquées aussi dans le guide replié
+« Anki integration » que le site affiche quand Anki ne répond pas :
+Anki ouvert avec AnkiConnect installé, l'origine du site ajoutée à
+`webCorsOriginList` dans la config du module (`https://cartometa.com`, ou
+`http://127.0.0.1:8010` en local), et la permission « réseau local » que
+Chrome ≥ 142 demande au premier appel. Safari ne permet pas ce dialogue.
+
+Deux notes pour le développement :
+
+- AnkiConnect écoute sur le port 8765 — le même que `cartometa-review`.
+  Anki ouvert pendant une session de tracé, l'un des deux ne démarrera pas.
+- Le build publie dans chaque fichier pays la silhouette Natural Earth
+  (`outline`), fond de la mini-carte. Pays inconnu du dataset ou dataset
+  injoignable : le build passe outre en le signalant, et la mini-carte de ce
+  pays se dessine sans fond.
+
 ## Développement
 
 ```
