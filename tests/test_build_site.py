@@ -73,8 +73,29 @@ def projet(tmp_path, monkeypatch):
     return tmp_path
 
 
+@pytest.fixture(autouse=True)
+def sans_natural_earth(monkeypatch):
+    """Défaut du fichier : Natural Earth injoignable, donc jamais de réseau.
+
+    `build_site` branche `country_geometry` sur `build_dataset` pour publier la
+    silhouette des pays, et ce dataset se télécharge (25 Mo) dès que le cache
+    manque — c'est le cas de tous les `tmp_path` de ce fichier. Le défaut est
+    donc la panne d'accès, précisément ce que `_fabrique_contours` doit
+    absorber : les tests qui veulent une silhouette la fournissent eux-mêmes.
+    """
+    def _hors_ligne(code, cache_dir):
+        raise OSError("dataset non téléchargé (fixture de test)")
+
+    monkeypatch.setattr("cartometa.build.site.country_geometry", _hors_ligne)
+
+
 def _manifeste(dist: Path) -> dict:
     return json.loads((dist / "data" / "manifest.json").read_text("utf-8"))
+
+
+def _fichier_pays(dist: Path, code: str) -> dict:
+    relatif = _manifeste(dist)["countries"][code]["file"]
+    return json.loads((dist / "data" / relatif).read_text("utf-8"))
 
 
 def _regles(headers: str) -> list[tuple[str, dict[str, str]]]:
@@ -706,3 +727,47 @@ def test_le_greffon_google_est_publie_et_reference(projet):
 
     assert (projet / "dist" / nom).exists()
     assert nom.startswith("googleMutant.") and nom.endswith(".js")
+
+
+def test_le_contour_natural_earth_est_publie(projet, monkeypatch):
+    """Le build branche `country_geometry` sur `build_dataset` : c'est le seul
+    endroit où les deux se rencontrent, donc le seul test qui le prouve."""
+    from shapely.geometry import box
+
+    monkeypatch.setattr(
+        "cartometa.build.site.country_geometry",
+        lambda code, cache_dir: box(0.0, 0.0, 5.0, 5.0),
+    )
+    dist = projet / "dist"
+
+    build_site(projet / "data", dist, projet / "viewer", ["PL"])
+
+    assert _fichier_pays(dist, "PL")["outline"]["type"] == "Polygon"
+
+
+def test_un_pays_inconnu_de_natural_earth_se_publie_sans_contour(projet, monkeypatch):
+    """`country_geometry` lève KeyError pour un code hors dataset : la
+    mini-carte perd son fond, jamais le pays sa publication."""
+    def _introuvable(code, cache_dir):
+        raise KeyError(code)
+
+    monkeypatch.setattr("cartometa.build.site.country_geometry", _introuvable)
+    dist = projet / "dist"
+
+    build_site(projet / "data", dist, projet / "viewer", ["PL"])
+
+    assert "outline" not in _fichier_pays(dist, "PL")
+
+
+def test_natural_earth_injoignable_ne_casse_pas_le_build(projet, monkeypatch):
+    """Un clone frais construit hors ligne n'a pas le dataset en cache : le
+    telechargement echoue en OSError et le site doit sortir quand meme."""
+    def _hors_ligne(code, cache_dir):
+        raise OSError("réseau coupé")
+
+    monkeypatch.setattr("cartometa.build.site.country_geometry", _hors_ligne)
+    dist = projet / "dist"
+
+    build_site(projet / "data", dist, projet / "viewer", ["PL"])
+
+    assert "outline" not in _fichier_pays(dist, "PL")
