@@ -78,14 +78,34 @@ Press `N` (focus must be on the page, not in a field). The form opens.
 |---|---|
 | **Title** | required |
 | **Description** | required |
-| **Category** | `bollards`, `poteaux`, `vehicule`, `vegetation`, `signalisation`, `autre` — no other value |
+| **Category** | one of the seven below — no other value |
 | **Source (URL)** | optional; left empty, no link shows on the site |
 | **Image** | optional: `Ctrl+V` to paste a screenshot, or drag a file onto the dashed frame |
 
-The category values are stored data — they are written into `metas.json` and
-read back by the build — so they keep their original French spelling:
-`poteaux` is poles, `vehicule` vehicles, `vegetation` vegetation,
-`signalisation` road signs, `autre` other.
+| Slug | Shown on the site as | What belongs in it |
+|---|---|---|
+| `infrastructure` | Infrastructures | Poles, bollards, signs, road markings, guardrails, kerbs, bridges, bus stops, power lines, meter boxes, road numbering, driving side, public transport |
+| `vegetation` | Vegetation & Agriculture | Any vegetation, cultivated or wild: crops, orchards, plantations, greenhouses, forests, bush, grassland |
+| `landscape` | Landscape | Relief, hydrography, climate: mountains, valleys, lakes, coasts, deserts, volcanoes, snow |
+| `architecture` | Architecture | Anything built: houses, roofs, facades, walls, churches, silos, monuments, ruins |
+| `car` | Car meta | The Google vehicle and its capture: camera, antenna, blur, coverage generations, trekker, number plates |
+| `culture` | Culture | The immaterial: language, writing systems, flags, religion, dialling codes, toponymy, brands |
+| `autre` | Other | What none of the six covers: administrative facts, context notes |
+
+Only `autre` keeps a French spelling. It is the stored value for thousands of
+metas, and renaming it would migrate most of the corpus for a cosmetic gain.
+
+If the form files your meta in the wrong category, do not fight it: pick the
+closest one, then add the correction to `data/categories.json`, keyed by country
+then by meta id.
+
+```json
+{ "FR": { "Izqw": "landscape" } }
+```
+
+That file is versioned and applied when the site is built, so it survives the
+regeneration of `data/metas/` that a future `cartometa-extract` performs — a
+category changed only in `metas.json` would be silently lost.
 
 The category **guesses itself** while you type the title and the description.
 As soon as you pick one from the list, inference goes quiet for good: an
