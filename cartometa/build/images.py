@@ -9,28 +9,28 @@ from PIL import Image
 from cartometa.build.assets import write_hashed
 from cartometa.build.image_cache import ImageCache, cle_de
 
-# La galerie affiche les vignettes autour de 300 px de large ; 600 couvre les
-# écrans à densité double sans gaspiller.
+# The gallery shows thumbnails around 300 px wide; 600 covers double-density
+# screens without waste.
 THUMB_WIDTH = 600
-# Plancher, pas confort : ce sont des montages à plusieurs panneaux annotés,
-# illisibles en dessous.
+# A floor, not comfort: these are multi-panel annotated montages, unreadable
+# below that.
 FULL_WIDTH = 1400
 QUALITY = 78
 
-# Entre dans la clé du cache : toute évolution des réglages d'encodage, ou de
-# l'encodeur lui-même, doit rendre les entrées existantes inutilisables plutôt
-# que de servir des images produites selon des réglages abandonnés.
+# Part of the cache key: any change to the encoding settings, or to the encoder
+# itself, has to make existing entries unusable rather than serve images produced
+# according to abandoned settings.
 SIGNATURE = f"v1-lanczos-{THUMB_WIDTH}-{FULL_WIDTH}-q{QUALITY}"
 
 
 class MissingImageError(FileNotFoundError):
-    """Levée quand une méta référence une image absente du disque."""
+    """Raised when a meta references an image that is missing from disk."""
 
 
 def _encode(image: Image.Image, largeur: int) -> bytes:
     copie = image.copy()
-    # `thumbnail` ne fait que réduire : une source plus petite que la cible
-    # est laissée telle quelle, jamais interpolée vers le haut.
+    # `thumbnail` only ever shrinks: a source smaller than the target is left
+    # as-is, never upscaled.
     copie.thumbnail((largeur, largeur * 10), Image.LANCZOS)
     tampon = io.BytesIO()
     copie.save(tampon, "WEBP", quality=QUALITY, method=4)
@@ -40,13 +40,13 @@ def _encode(image: Image.Image, largeur: int) -> bytes:
 def render_image_pair(
     source: Path, out_dir: Path, stem: str, cache: ImageCache | None = None
 ) -> dict[str, str]:
-    """Produit la vignette et la pleine taille, et renvoie leurs deux noms.
+    """Produce the thumbnail and the full size, and return both their names.
 
-    Avec un `cache`, l'encodage — de loin la partie coûteuse — n'a lieu que
-    la première fois qu'une image source est rencontrée.
+    With a `cache`, the encoding — by far the expensive part — only happens the
+    first time a source image is encountered.
     """
     if not source.exists():
-        raise MissingImageError(f"image introuvable : {source}")
+        raise MissingImageError(f"image not found: {source}")
     octets = source.read_bytes()
     cle = cle_de(octets, SIGNATURE) if cache is not None else ""
     vignette = cache.lire(cle, "t") if cache is not None else None

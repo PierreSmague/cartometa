@@ -17,11 +17,11 @@ from cartometa.build.geometry import (
 
 
 def _rectangle(x: float, y: float, largeur: float, hauteur: float, pas: int = 1) -> dict:
-    """Rectangle dont les côtés portent `pas` sommets intermédiaires alignés.
+    """A rectangle whose sides carry `pas` aligned intermediate vertices.
 
-    Les points intermédiaires sont exactement colinéaires : Douglas-Peucker
-    doit les retirer quelle que soit la tolérance, ce qui donne un résultat
-    prévisible sans dépendre des données réelles.
+    The intermediate points are exactly collinear: Douglas-Peucker must remove them
+    whatever the tolerance, which gives a predictable result without depending on
+    real data.
     """
     bas = [(x + largeur * i / pas, y) for i in range(pas)]
     droite = [(x + largeur, y + hauteur * i / pas) for i in range(pas)]
@@ -32,7 +32,7 @@ def _rectangle(x: float, y: float, largeur: float, hauteur: float, pas: int = 1)
     return {"type": "Polygon", "coordinates": [[list(p) for p in anneau]]}
 
 
-def test_l_arrondi_ramene_a_cinq_decimales():
+def test_rounding_brings_back_to_five_decimals():
     geometrie = {"type": "Polygon", "coordinates": [[
         [1.123456789, 2.987654321], [3.0, 2.0], [3.0, 4.0], [1.123456789, 2.987654321],
     ]]}
@@ -42,8 +42,8 @@ def test_l_arrondi_ramene_a_cinq_decimales():
     assert arrondie["coordinates"][0][0] == [1.12346, 2.98765]
 
 
-def test_la_tolerance_est_plafonnee_par_la_taille_de_l_emprise():
-    """Une emprise « spot » de 0,005° ne doit pas recevoir une tolérance de 0,01."""
+def test_the_tolerance_is_capped_by_the_footprint_size():
+    """A 0.005° "spot" footprint must not be given a tolerance of 0.01."""
     minuscule = _rectangle(35.51, 33.88, 0.005, 0.0035)
 
     tolerance = effective_tolerance(minuscule, DEFAULT_TOLERANCE)
@@ -53,13 +53,13 @@ def test_la_tolerance_est_plafonnee_par_la_taille_de_l_emprise():
     assert tolerance < DEFAULT_TOLERANCE
 
 
-def test_une_grande_emprise_recoit_la_tolerance_pleine():
+def test_a_large_footprint_gets_the_full_tolerance():
     vaste = _rectangle(0.0, 0.0, 10.0, 10.0)
 
     assert effective_tolerance(vaste, DEFAULT_TOLERANCE) == DEFAULT_TOLERANCE
 
 
-def test_la_simplification_retire_les_sommets_colineaires():
+def test_simplification_removes_collinear_vertices():
     dense = _rectangle(0.0, 0.0, 10.0, 10.0, pas=20)
     sommets_avant = len(dense["coordinates"][0])
 
@@ -68,8 +68,8 @@ def test_la_simplification_retire_les_sommets_colineaires():
     assert len(simplifiee["coordinates"][0]) < sommets_avant
 
 
-def test_la_simplification_preserve_l_aire_des_petites_emprises():
-    """Le cas qui motive la tolérance adaptative : sans elle, on tombait à 24 %."""
+def test_simplification_preserves_the_area_of_small_footprints():
+    """The case that motivates the adaptive tolerance: without it, we dropped to 24 %."""
     minuscule = _rectangle(35.51, 33.88, 0.005, 0.0035, pas=6)
 
     simplifiee = simplify_geometry(minuscule)
@@ -77,17 +77,16 @@ def test_la_simplification_preserve_l_aire_des_petites_emprises():
     assert area_ratio(minuscule, simplifiee) > 0.80
 
 
-def test_la_simplification_ne_vide_jamais_une_geometrie(monkeypatch):
-    """Le filet de sécurité contre la dégénérescence, exercé pour de vrai.
+def test_simplification_never_empties_a_geometry(monkeypatch):
+    """The safety net against degeneration, actually exercised.
 
-    Avec `preserve_topology=True`, GEOS ne produit jamais de résultat vide ou
-    invalide sur une entrée saine — même une emprise « spot » minuscule ou un
-    anneau extrêmement fin survit intact (vérifié empiriquement : aucune
-    combinaison de taille ni de tolérance ne suffit à le faire dégénérer). Le
-    filet ne protège donc que contre une pathologie que ni la géométrie
-    d'origine ni la tolérance ne peuvent provoquer ici ; on la simule pour de
-    vrai, en forçant GEOS à renvoyer une géométrie vide, comme il pourrait le
-    faire sur des données de terrain vraiment tordues.
+    With `preserve_topology=True`, GEOS never produces an empty or invalid result on
+    sound input — even a tiny "spot" footprint or an extremely thin ring survives
+    intact (verified empirically: no combination of size and tolerance is enough to
+    make it degenerate). So the net only protects against a pathology that neither the
+    original geometry nor the tolerance can provoke here; we simulate it for real, by
+    forcing GEOS to return an empty geometry, as it could on genuinely twisted field
+    data.
     """
     geometrie = _rectangle(35.51, 33.88, 0.005, 0.0035, pas=6)
 
@@ -102,19 +101,19 @@ def test_la_simplification_ne_vide_jamais_une_geometrie(monkeypatch):
     assert area_ratio(geometrie, simplifiee) == pytest.approx(1.0)
 
 
-def test_le_repli_arrondit_l_original_quand_l_arrondi_de_la_simplification_degenere(
+def test_the_fallback_rounds_the_original_when_the_rounded_simplification_degenerates(
     monkeypatch,
 ):
-    """La validité doit être vérifiée sur le résultat arrondi, pas avant.
+    """Validity has to be checked on the rounded result, not before.
 
-    Mécanisme réel derrière `VN:s59g` : Douglas-Peucker (avec
-    `preserve_topology=True`) renvoie ici un résultat valide et de surface
-    non nulle, mais dont deux sommets sont si proches (moins de 1e-5°) que
-    l'arrondi à 5 décimales les confond, faisant s'effondrer l'anneau sur un
-    unique point. Vérifier `simplifiee` (avant arrondi) le laisserait passer
-    tel quel ; c'est `round_coordinates(mapping(simplifiee))` qui doit être
-    invalidé pour déclencher le repli sur l'original arrondi — lui indemne
-    puisqu'il ne partage aucun sommet avec la géométrie simplifiée.
+    The real mechanism behind `VN:s59g`: Douglas-Peucker (with
+    `preserve_topology=True`) returns a valid result here, with non-zero area, but two
+    of its vertices are so close (less than 1e-5°) that rounding to 5 decimals
+    conflates them, collapsing the ring onto a single point. Checking `simplifiee`
+    (before rounding) would let it through as-is; it is
+    `round_coordinates(mapping(simplifiee))` that has to be invalidated to trigger the
+    fallback to the rounded original — itself unharmed, since it shares no vertex with
+    the simplified geometry.
     """
     original = _rectangle(0.0, 0.0, 10.0, 10.0, pas=4)
 
@@ -122,8 +121,8 @@ def test_le_repli_arrondit_l_original_quand_l_arrondi_de_la_simplification_degen
         [(0.0, 0.0), (0.000002, 0.0), (0.000001, 0.000002), (0.0, 0.0)]
     )
     assert degenere_a_l_arrondi.is_valid and degenere_a_l_arrondi.area > 0
-    # Sanity : c'est bien l'arrondi, et non `degenere_a_l_arrondi` elle-même,
-    # qui casse — sans quoi ce test ne prouverait rien sur le nouvel ordre.
+    # Sanity check: it really is the rounding, and not `degenere_a_l_arrondi` itself,
+    # that breaks — otherwise this test would prove nothing about the new ordering.
     arrondie = shape(round_coordinates(mapping(degenere_a_l_arrondi)))
     assert arrondie.is_empty or not arrondie.is_valid or arrondie.area == 0
 
@@ -138,7 +137,7 @@ def test_le_repli_arrondit_l_original_quand_l_arrondi_de_la_simplification_degen
     assert resultat == round_coordinates(original)
 
 
-def test_la_distance_de_hausdorff_reste_sous_la_tolerance_effective():
+def test_the_hausdorff_distance_stays_under_the_effective_tolerance():
     dense = _rectangle(0.0, 0.0, 10.0, 10.0, pas=20)
 
     simplifiee = simplify_geometry(dense)
@@ -146,11 +145,11 @@ def test_la_distance_de_hausdorff_reste_sous_la_tolerance_effective():
     assert hausdorff(dense, simplifiee) <= DEFAULT_TOLERANCE * 2
 
 
-def test_un_multipolygone_est_simplifie_partie_par_partie():
-    # `["coordinates"]` d'un Polygon est déjà une liste d'anneaux (ici un
-    # seul, l'extérieur) : c'est la forme attendue pour un élément de
-    # MultiPolygon. Indexer `[0]` donnerait l'anneau nu, sans ce niveau
-    # d'imbrication, et `shape()` ne saurait plus le lire.
+def test_a_multipolygon_is_simplified_part_by_part():
+    # A Polygon's `["coordinates"]` is already a list of rings (here just one, the
+    # outer): that is the shape expected for a MultiPolygon element. Indexing `[0]`
+    # would give the bare ring, without that nesting level, and `shape()` would no
+    # longer be able to read it.
     multi = {"type": "MultiPolygon", "coordinates": [
         _rectangle(0.0, 0.0, 5.0, 5.0, pas=10)["coordinates"],
         _rectangle(20.0, 20.0, 5.0, 5.0, pas=10)["coordinates"],
@@ -167,17 +166,17 @@ def _multi(*rectangles: dict) -> dict:
             "coordinates": [r["coordinates"] for r in rectangles]}
 
 
-def test_un_polygone_donne_une_seule_bbox_egale_a_ses_bornes():
+def test_a_polygon_gives_a_single_bbox_equal_to_its_bounds():
     geometrie = _rectangle(2.0, 48.0, 3.0, 1.0)
 
     assert part_bboxes(geometrie) == [(2.0, 48.0, 5.0, 49.0)]
 
 
-def test_les_parties_de_part_et_d_autre_de_l_antimeridien_gardent_leurs_bbox():
-    """Le cas russe : une emprise nationale à cheval sur ±180° a pour bbox
-    globale -180…180, qui recouvre tout l'hémisphère nord — un clic à Londres
-    téléchargeait les 8,3 Mo de la Russie pour rien. Par partie, aucune boîte
-    ne traverse le méridien et le préfiltre redevient discriminant."""
+def test_parts_on_either_side_of_the_antimeridian_keep_their_bboxes():
+    """The Russian case: a national footprint straddling ±180° has -180…180 as its
+    overall bbox, which covers the whole northern hemisphere — a click in London
+    downloaded Russia's 8.3 MB for nothing. Per part, no box crosses the meridian and
+    the prefilter discriminates again."""
     geometrie = _multi(
         _rectangle(170.0, 55.0, 9.0, 10.0),
         _rectangle(-179.0, 55.0, 9.0, 10.0),
@@ -189,9 +188,9 @@ def test_les_parties_de_part_et_d_autre_de_l_antimeridien_gardent_leurs_bbox():
     assert all(max_lon - min_lon < 30 for min_lon, _, max_lon, _ in boites)
 
 
-def test_une_ile_lointaine_garde_sa_propre_bbox():
-    """Le cas norvégien : Bouvet, à -54° de latitude, étirait la bbox du pays
-    sur 135° de latitude. L'île doit rester dans sa propre boîte."""
+def test_a_distant_island_keeps_its_own_bbox():
+    """The Norwegian case: Bouvet, at -54° of latitude, stretched the country's bbox
+    across 135° of latitude. The island must stay in its own box."""
     continent = [_rectangle(5.0 + i, 58.0, 0.8, 0.8) for i in range(5)]
     bouvet = _rectangle(3.0, -54.5, 0.5, 0.5)
 
@@ -201,10 +200,9 @@ def test_une_ile_lointaine_garde_sa_propre_bbox():
     assert all(max_lat - min_lat < 30 for _, min_lat, _, max_lat in boites)
 
 
-def test_le_nombre_de_boites_est_plafonne_et_tout_est_couvert():
-    """Un contour national compte des centaines d'îles : une boîte par île
-    ferait exploser l'index. Au plafond, chaque partie doit rester couverte
-    par au moins une boîte."""
+def test_the_number_of_boxes_is_capped_and_everything_stays_covered():
+    """A national outline has hundreds of islands: one box per island would blow up the
+    index. At the cap, every part must stay covered by at least one box."""
     parties = [_rectangle(float(i * 7), float((i * 13) % 50), 1.0, 1.0) for i in range(40)]
 
     boites = part_bboxes(_multi(*parties), max_boxes=4)

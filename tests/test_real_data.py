@@ -19,25 +19,24 @@ STATUTS = {"validé", "rejeté"}
 
 
 def _fichiers():
-    """Fichiers `.geojson` à examiner, ou saut explicite s'il n'y a rien dedans.
+    """The `.geojson` files to examine, or an explicit skip if there is nothing in them.
 
-    Les 21 pays laissent des `.geojson` suivis mais vides tant qu'aucune
-    méta n'a été tracée : compter les FICHIERS ne suffit pas à décider s'il
-    y a un signal à vérifier, sans quoi ces quatre tests « passent » en
-    parcourant zéro feature, sans jamais rien affirmer — un vert non
-    mérité. C'est le nombre total de features, tous fichiers confondus, qui
-    doit être non nul.
+    The 21 countries leave tracked but empty `.geojson` files as long as no meta has been
+    drawn: counting the FILES is not enough to decide whether there is a signal to check,
+    otherwise these four tests "pass" by walking zero features, without ever asserting
+    anything — an undeserved green. It is the total number of features, across all files,
+    that has to be non-zero.
     """
     fichiers = sorted(GEO_DIR.glob("*.geojson"))
     total = sum(
         len(json.loads(chemin.read_text("utf-8")).get("features", [])) for chemin in fichiers
     )
     if total == 0:
-        pytest.skip("aucune géométrie : lancer cartometa-review")
+        pytest.skip("no geometry: run cartometa-review")
     return fichiers
 
 
-def test_toute_geometrie_enregistree_est_valide():
+def test_every_saved_geometry_is_valid():
     for chemin in _fichiers():
         for feature in json.loads(chemin.read_text("utf-8"))["features"]:
             if feature["geometry"] is None:
@@ -47,24 +46,24 @@ def test_toute_geometrie_enregistree_est_valide():
             assert not geom.is_empty
 
 
-def test_seuls_les_deux_statuts_prevus_existent():
+def test_only_the_two_expected_statuses_exist():
     for chemin in _fichiers():
         for feature in json.loads(chemin.read_text("utf-8"))["features"]:
             statut = feature["properties"]["status"]
-            assert statut in STATUTS, f"{chemin.name}: statut inattendu {statut!r}"
+            assert statut in STATUTS, f"{chemin.name}: unexpected status {statut!r}"
 
 
-def test_une_meta_tracee_a_toujours_une_geometrie_et_ses_morceaux():
+def test_a_drawn_meta_always_has_a_geometry_and_its_pieces():
     for chemin in _fichiers():
         for feature in json.loads(chemin.read_text("utf-8"))["features"]:
             props = feature["properties"]
             if props["status"] != "validé":
                 continue
             assert feature["geometry"] is not None, f"{chemin.name}: {props['id']}"
-            assert props["pieces"], f"{chemin.name}: {props['id']} sans morceau"
+            assert props["pieces"], f"{chemin.name}: {props['id']} has no piece"
 
 
-def test_une_meta_rejetee_ne_porte_aucune_geometrie():
+def test_a_rejected_meta_carries_no_geometry():
     for chemin in _fichiers():
         for feature in json.loads(chemin.read_text("utf-8"))["features"]:
             props = feature["properties"]
@@ -72,24 +71,21 @@ def test_une_meta_rejetee_ne_porte_aucune_geometrie():
                 assert feature["geometry"] is None, f"{chemin.name}: {props['id']}"
 
 
-def test_la_simplification_respecte_les_trois_criteres_du_6_sur_les_donnees_reelles():
-    """Critère d'acceptation 5 (spec §14) : les trois vérifications du §6 —
-    Hausdorff, écart de surface, validité — doivent passer sur les données
-    réelles, pas seulement sur des géométries synthétiques.
+def test_simplification_meets_the_three_criteria_of_section_6_on_real_data():
+    """Acceptance criterion 5 (spec §14): the three checks of §6 — Hausdorff, area drift,
+    validity — must pass on the real data, not only on synthetic geometries.
 
-    Le facteur ×2 sur la tolérance reprend la convention déjà en place dans
-    `tests/test_build_geometry.py::test_la_distance_de_hausdorff_reste_sous_la_tolerance_effective` :
-    Douglas-Peucker garantit une déviation locale bornée par la tolérance,
-    mais la distance de Hausdorff globale peut cumuler deux telles déviations
-    de part et d'autre d'un même segment.
+    The ×2 factor on the tolerance follows the convention already in place in
+    `tests/test_build_geometry.py::test_the_hausdorff_distance_stays_under_the_effective_tolerance`:
+    Douglas-Peucker guarantees a local deviation bounded by the tolerance, but the overall
+    Hausdorff distance can accumulate two such deviations on either side of one segment.
 
-    Si ce test échoue, ne pas desserrer les seuils : une géométrie publiée
-    qui dérive plus que promis par la spec est un problème de fond, pas un
-    problème de test.
+    If this test fails, do not loosen the thresholds: a published geometry that drifts more
+    than the spec promises is a substantive problem, not a test problem.
     """
-    # On accumule toutes les violations au lieu de s'arrêter à la première :
-    # un test qui échoue au premier pays ne dit rien des 44 autres, et c'est
-    # la liste complète qui doit remonter au propriétaire, pas un échantillon.
+    # We accumulate every violation instead of stopping at the first: a test failing on
+    # the first country says nothing about the other 44, and it is the complete list that
+    # has to reach the owner, not a sample.
     violations: list[str] = []
     pires = {"hausdorff_sur_tolerance": 0.0, "derive_aire": 0.0}
     for chemin in _fichiers():
@@ -103,10 +99,10 @@ def test_la_simplification_respecte_les_trois_criteres_du_6_sur_les_donnees_reel
 
             geom_simplifiee = shape(simplifiee)
             if not geom_simplifiee.is_valid:
-                violations.append(f"{identifiant} : géométrie invalide")
+                violations.append(f"{identifiant}: invalid geometry")
                 continue
             if geom_simplifiee.is_empty:
-                violations.append(f"{identifiant} : géométrie vide")
+                violations.append(f"{identifiant}: empty geometry")
                 continue
 
             tolerance = effective_tolerance(original, DEFAULT_TOLERANCE)
@@ -114,20 +110,20 @@ def test_la_simplification_respecte_les_trois_criteres_du_6_sur_les_donnees_reel
             ratio_tolerance = distance / tolerance if tolerance else 0.0
             if distance > tolerance * 2:
                 violations.append(
-                    f"{identifiant} : Hausdorff {distance:.6f}° > "
-                    f"{tolerance * 2:.6f}° (2x tolérance effective {tolerance:.6f}°, "
-                    f"soit {ratio_tolerance:.2f}x)"
+                    f"{identifiant}: Hausdorff {distance:.6f}° > "
+                    f"{tolerance * 2:.6f}° (2x effective tolerance {tolerance:.6f}°, "
+                    f"i.e. {ratio_tolerance:.2f}x)"
                 )
 
-            # Seuil empirique, pas celui d'origine de la spec : mesuré sur les
-            # données réelles à SIZE_DIVISOR = 500, la pire dérive de surface
-            # observée est 3,3 % ; 5 % laisse une marge délibérée au-dessus de
-            # ce pire cas mesuré, sans pour autant tolérer une dérive massive.
+            # An empirical threshold, not the spec's original one: measured on the real
+            # data at SIZE_DIVISOR = 500, the worst area drift observed is 3.3 %; 5 %
+            # leaves a deliberate margin above that measured worst case, without
+            # tolerating massive drift.
             ratio = area_ratio(original, simplifiee)
             derive = abs(1.0 - ratio)
             if derive > 0.05:
                 violations.append(
-                    f"{identifiant} : écart de surface {derive * 100:.3f}% > 5%"
+                    f"{identifiant}: area drift {derive * 100:.3f}% > 5%"
                 )
 
             pires["hausdorff_sur_tolerance"] = max(
@@ -135,14 +131,13 @@ def test_la_simplification_respecte_les_trois_criteres_du_6_sur_les_donnees_reel
             )
             pires["derive_aire"] = max(pires["derive_aire"], derive)
 
-    # Visible avec `-s` : la pire dérive mesurée sur les 45 pays, pour que le
-    # chiffre qui va au propriétaire vienne d'une exécution réelle et non
-    # d'une estimation.
+    # Visible with `-s`: the worst drift measured across the 45 countries, so that the
+    # figure reaching the owner comes from a real run and not from an estimate.
     print(
-        f"\npire Hausdorff / tolérance effective : {pires['hausdorff_sur_tolerance']:.3f}"
-        f"\npire écart de surface : {pires['derive_aire'] * 100:.4f}%"
+        f"\nworst Hausdorff / effective tolerance: {pires['hausdorff_sur_tolerance']:.3f}"
+        f"\nworst area drift: {pires['derive_aire'] * 100:.4f}%"
     )
     assert not violations, (
-        f"{len(violations)} géométrie(s) hors des seuils du §6 :\n"
+        f"{len(violations)} geometry(ies) outside the §6 thresholds:\n"
         + "\n".join(f"  - {v}" for v in violations)
     )

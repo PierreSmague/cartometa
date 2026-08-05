@@ -25,13 +25,13 @@ from cartometa.review.store import (
 STATIC = Path(__file__).resolve().parent / "static"
 STATE: dict = {"paths": None, "include_all": False}
 
-# En dehors de `static/`, l'interface n'a besoin que des images des métas :
-# celles importées vivent sous `input/`, celles saisies à la main sous
-# `data/manual/`. Rien d'autre du dépôt ne doit être atteignable par ce GET.
+# Outside `static/`, the interface only needs the metas' images: imported ones
+# live under `input/`, hand-entered ones under `data/manual/`. Nothing else in the
+# repository must be reachable through this GET.
 ALLOWED_ROOT_PREFIXES = ("/input/", "/data/manual/")
 
-# Même plafond que `manual.MAX_IMAGE_BYTES`, appliqué avant de lire le corps :
-# on refuse sur l'en-tête plutôt qu'après avoir absorbé les octets.
+# Same cap as `manual.MAX_IMAGE_BYTES`, applied before reading the body: we refuse
+# on the header rather than after having swallowed the bytes.
 MAX_BODY_BYTES = 8 * 1024 * 1024
 
 
@@ -40,12 +40,11 @@ def paths() -> CountryPaths:
 
 
 def apply_decision(meta_id: str, status: str, pieces: list) -> None:
-    """Enregistre une décision, en résolvant les morceaux côté serveur.
+    """Record a decision, resolving the pieces server-side.
 
-    Un rejet ne demande aucune géométrie. Une validation, elle, ne passe
-    jamais par la géométrie affichée dans le navigateur : les descripteurs
-    sont relus depuis Natural Earth, puis unis. Rien n'est écrit si la
-    résolution échoue.
+    A rejection needs no geometry. A validation, on the other hand, never goes
+    through the geometry displayed in the browser: the descriptors are re-read from
+    Natural Earth, then united. Nothing is written if the resolution fails.
     """
     if status == STATUS_REJECTED:
         set_decision(paths(), meta_id, STATUS_REJECTED, None, [])
@@ -54,9 +53,9 @@ def apply_decision(meta_id: str, status: str, pieces: list) -> None:
         geometry = resolve_pieces(pieces, paths().country, paths().cache)
         set_decision(paths(), meta_id, STATUS_TRACED, mapping(geometry), list(pieces))
         return
-    # Statut ni validé ni rejeté : délègue à set_decision, seul endroit qui
-    # valide le statut, pour ne pas dupliquer la vérification avec un
-    # message moins utile qui ne nomme pas les valeurs acceptées.
+    # Status neither validated nor rejected: delegate to set_decision, the only
+    # place that validates the status, so as not to duplicate the check with a less
+    # useful message that does not name the accepted values.
     set_decision(paths(), meta_id, status, None, [])
 
 
@@ -72,13 +71,12 @@ class Handler(SimpleHTTPRequestHandler):
     def _body(self) -> bytes:
         length = int(self.headers.get("Content-Length", 0) or 0)
         if length > MAX_BODY_BYTES:
-            raise ValueError(f"corps trop volumineux : {length} octets")
+            raise ValueError(f"body too large: {length} bytes")
         return self.rfile.read(length) if length else b""
 
     def list_directory(self, path):
-        # Aucun listage de répertoire : `input/` et `data/manual/` ne
-        # doivent exposer que les fichiers nommément demandés, jamais leur
-        # contenu complet.
+        # No directory listing: `input/` and `data/manual/` must expose only the
+        # files asked for by name, never their full contents.
         self.send_error(404)
         return None
 
@@ -86,8 +84,8 @@ class Handler(SimpleHTTPRequestHandler):
         parsed = urlparse(self.path)
         route, query = parsed.path, parse_qs(parsed.query)
         if route == "/api/category":
-            # Passe-plat vers l'inférence de l'extraction : le formulaire
-            # manuel propose une catégorie plutôt que d'en imposer une.
+            # Pass-through to the extraction's inference: the manual form suggests
+            # a category rather than imposing one.
             text = (query.get("text") or [""])[0]
             self._json({"category": infer_category(text, text)})
             return
@@ -108,26 +106,26 @@ class Handler(SimpleHTTPRequestHandler):
             except KeyError as exc:
                 self._json({"ok": False, "error": str(exc)}, 404)
             except OSError as exc:
-                # Le dataset admin-1 pèse 41 Mo : son premier téléchargement
-                # peut échouer, et l'interface doit le dire plutôt que
-                # d'attendre un survol qui ne surlignera jamais rien.
+                # The admin-1 dataset weighs 41 MB: its first download can fail, and
+                # the interface has to say so rather than wait for a hover that will
+                # never highlight anything.
                 self._json(
-                    {"ok": False, "error": f"téléchargement admin-1 impossible : {exc}"}, 502
+                    {"ok": False, "error": f"admin-1 download failed: {exc}"}, 502
                 )
             return
 
         if route in ("/", "/index.html"):
             self.path = "/index.html"
             route = "/index.html"
-        # Un ".." (brut ou pourcent-encodé) transformerait la sonde de
-        # fichier ci-dessous en oracle d'existence sur le disque : refusé
-        # d'emblée plutôt que normalisé en silence.
+        # A ".." (raw or percent-encoded) would turn the file probe below into an
+        # existence oracle over the disk: refused outright rather than silently
+        # normalised.
         if ".." in unquote(route).split("/"):
             self.send_error(404)
             return
-        # Les fichiers de l'interface sont servis depuis `static/` ; en
-        # dehors, seules les images des métas (`input/`, `data/manual/`)
-        # sont légitimes — le reste du dépôt n'a rien à faire derrière ce GET.
+        # The interface's files are served from `static/`; outside it, only the
+        # metas' images (`input/`, `data/manual/`) are legitimate — the rest of the
+        # repository has no business behind this GET.
         if (STATIC / route.lstrip("/")).is_file():
             self.directory = str(STATIC)
         elif not route.startswith(ALLOWED_ROOT_PREFIXES):
@@ -138,15 +136,15 @@ class Handler(SimpleHTTPRequestHandler):
     def do_POST(self) -> None:
         origin = self.headers.get("Origin")
         if origin is not None:
-            # D'après la spec Fetch, un navigateur ajoute TOUJOURS `Origin`
-            # sur une requête non-GET/HEAD, y compris same-origin : sa seule
-            # présence ne prouve donc rien. C'est la VALEUR qu'il faut
-            # comparer à l'hôte attendu — comparer avec le `Host` de la
-            # requête, puisque le serveur n'écoute que sur 127.0.0.1.
+            # Per the Fetch spec, a browser ALWAYS adds `Origin` on a non-GET/HEAD
+            # request, same-origin included: its mere presence therefore proves
+            # nothing. It is the VALUE that has to be compared to the expected host —
+            # compared against the request's `Host`, since the server only listens on
+            # 127.0.0.1.
             attendu = self.headers.get("Host", "")
             if urlparse(origin).netloc != attendu:
                 self._json(
-                    {"ok": False, "error": f"requête cross-origin refusée : {origin!r}"}, 403
+                    {"ok": False, "error": f"cross-origin request refused: {origin!r}"}, 403
                 )
                 return
         parsed = urlparse(self.path)
@@ -160,12 +158,12 @@ class Handler(SimpleHTTPRequestHandler):
 
             payload = json.loads(self._body() or b"{}")
             if not isinstance(payload, dict):
-                raise ValueError("le corps doit être un objet JSON")
+                raise ValueError("the body must be a JSON object")
 
             if route == "/api/resolve":
-                # Aperçu seul : rien n'est écrit. Le navigateur ne sait pas
-                # calculer une intersection ; quand une zone est rognée, il
-                # demande ici la géométrie exacte qu'un `A` enregistrerait.
+                # Preview only: nothing is written. The browser cannot compute an
+                # intersection; when an area is clipped, it asks here for the exact
+                # geometry an `A` would save.
                 geometry = resolve_pieces(
                     payload.get("pieces") or [], paths().country, paths().cache
                 )
@@ -189,44 +187,44 @@ class Handler(SimpleHTTPRequestHandler):
                 self.send_error(404)
                 return
         except json.JSONDecodeError:
-            self._json({"ok": False, "error": "corps JSON invalide"}, 400)
+            self._json({"ok": False, "error": "invalid JSON body"}, 400)
         except KeyError as exc:
-            self._json({"ok": False, "error": f"champ manquant : {exc}"}, 400)
+            self._json({"ok": False, "error": f"missing field: {exc}"}, 400)
         except UnknownMetaError as exc:
             self._json({"ok": False, "error": str(exc)}, 404)
         except (PieceError, ManualMetaError, ValueError) as exc:
             self._json({"ok": False, "error": str(exc)}, 400)
-        except Exception as exc:  # garde-fou : jamais de connexion coupée en silence
-            self._json({"ok": False, "error": f"erreur interne : {exc}"}, 500)
+        except Exception as exc:  # safety rail: never a silently dropped connection
+            self._json({"ok": False, "error": f"internal error: {exc}"}, 500)
         else:
             self._json({"ok": True})
 
     def log_message(self, *args) -> None:
-        pass  # silence : le compteur de progression est dans l'interface
+        pass  # silence: the progress counter lives in the interface
 
 
-TOUCHES = """Touches — D rectangle, C contour libre, Entrée fermer le contour, S subdivisions, E pays entier
-          F rogner la zone aux frontières du pays (à rappuyer pour dérogner)
-          Retour arrière retirer le dernier morceau, Échap sortir du mode, 0 vider
-          A enregistrer, R rejeter, Espace suivante (Maj+Espace précédente), U annuler
-          N nouvelle méta manuelle"""
+TOUCHES = """Keys - D rectangle, C freehand outline, Enter close the outline, S subdivisions, E whole country
+       F clip the area to the country borders (press again to unclip)
+       Backspace remove the last piece, Escape leave the mode, 0 empty
+       A save, R reject, Space next (Shift+Space previous), U undo
+       N new manual meta"""
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Interface de revue des géométries")
+    parser = argparse.ArgumentParser(description="Geometry review interface")
     parser.add_argument("country", nargs="?", default="PL")
     parser.add_argument("--data", type=Path, default=Path("data"))
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument(
         "--all",
         action="store_true",
-        help="Rouvrir toutes les métas, y compris celles déjà tracées ou rejetées.",
+        help="Reopen every meta, including those already drawn or rejected.",
     )
     args = parser.parse_args()
     STATE["paths"] = CountryPaths(args.data, args.country.upper())
     STATE["include_all"] = args.all
 
-    print(f"Revue {STATE['paths'].country} : http://127.0.0.1:{args.port}")
+    print(f"Reviewing {STATE['paths'].country}: http://127.0.0.1:{args.port}")
     print(TOUCHES)
     HTTPServer(("127.0.0.1", args.port), Handler).serve_forever()
 

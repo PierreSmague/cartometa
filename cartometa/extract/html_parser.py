@@ -9,13 +9,13 @@ TIER_BY_STEP = {"1": TIER_COUNTRY, "2": TIER_REGIONAL, "3": TIER_SPOT}
 STEP_RE = re.compile(r"step\s*(\d)", re.IGNORECASE)
 MAPS_RE = re.compile(r"^https://(maps\.app\.goo\.gl|goo\.gl/maps)/", re.IGNORECASE)
 
-# Ponctuation/espaces tolérés avant un <strong> qui "ouvre" tout de même le
-# paragraphe (tiret cadratin, guillemets, deux-points...).
+# Punctuation/whitespace tolerated before a <strong> that still counts as
+# "opening" the paragraph (em dash, quotes, colon...).
 _LEADING_INSIGNIFICANT_RE = re.compile(
     r'^[\s"\'‘’“”«»\-‐‑‒–—:;,.]*$'
 )
 
-# Abréviations courantes dont le point ne termine pas une phrase.
+# Common abbreviations whose period does not end a sentence.
 _ABBREVIATIONS = {
     "mr", "mrs", "ms", "dr", "st", "vs", "etc", "e.g", "i.e", "u.s", "u.k",
     "ave", "inc", "jr", "sr", "prof", "no", "approx", "fig", "vol", "cf",
@@ -25,12 +25,12 @@ MAX_TITLE_LENGTH = 180
 
 
 def _clean_text(node) -> str:
-    """Texte complet du noeud, espaces entre éléments préservés et normalisés."""
+    """Full text of the node, whitespace between elements preserved and normalised."""
     return re.sub(r"\s+", " ", node.text(strip=False)).strip()
 
 
 def _truncate_readably(text: str) -> str:
-    """Tronque proprement à la dernière frontière de mot, sans jamais dépasser MAX_TITLE_LENGTH."""
+    """Truncate cleanly at the last word boundary, never exceeding MAX_TITLE_LENGTH."""
     if len(text) <= MAX_TITLE_LENGTH:
         return text
     truncated = text[:MAX_TITLE_LENGTH]
@@ -41,14 +41,14 @@ def _truncate_readably(text: str) -> str:
 
 
 def _first_sentence(text: str) -> str:
-    """Première phrase de `text`, insensible aux abréviations et aux points d'URL."""
+    """First sentence of `text`, immune to abbreviations and to periods in URLs."""
     text = text.strip()
     for match in re.finditer(r"[.!?]", text):
         pos = match.start()
         after = text[pos + 1:]
         if after and not after[0].isspace():
-            # Point suivi immédiatement d'un caractère (URL, décimale, abréviation
-            # collée) : ce n'est pas une fin de phrase.
+            # A period immediately followed by a character (URL, decimal, glued-on
+            # abbreviation): this is not the end of a sentence.
             continue
         preceding = text[:pos]
         word_match = re.search(r"[\w.]+$", preceding)
@@ -60,16 +60,16 @@ def _first_sentence(text: str) -> str:
 
 
 def _visible_text(node) -> str:
-    """Texte visible d'un enfant direct de paragraphe, qu'il s'agisse d'un
-    noeud texte brut ou d'un élément (ex. <span> n'enveloppant qu'un espace)."""
+    """Visible text of a direct paragraph child, be it a raw text node or an
+    element (e.g. a <span> wrapping nothing but a space)."""
     return node.text() if node.tag == "-text" else _clean_text(node)
 
 
 def _derive_title(paragraph, description: str) -> str:
-    """Titre : le <strong> s'il ouvre le paragraphe (tolérance ponctuation/espaces
-    insignifiants avant lui, fusion de <strong> consécutifs en tête même séparés
-    par du HTML ne contenant que des espaces), sinon la première phrase de la
-    description."""
+    """Title: the <strong> if it opens the paragraph (insignificant punctuation or
+    whitespace tolerated before it, consecutive leading <strong>s merged even when
+    separated by HTML containing only whitespace), otherwise the first sentence of
+    the description."""
     children = list(paragraph.iter(include_text=True))
     i = 0
     leading = ""
@@ -91,8 +91,8 @@ def _derive_title(paragraph, description: str) -> str:
                 continue
             if _visible_text(node).strip() != "":
                 break
-            # Espace(s) insignifiant(s) : on ne fusionne que s'ils mènent à un
-            # autre <strong>, sinon on s'arrête sans les consommer inutilement.
+            # Insignificant whitespace: we only merge across it if it leads to
+            # another <strong>, otherwise we stop without consuming it needlessly.
             j = i + 1
             while j < len(children) and _visible_text(children[j]).strip() == "":
                 j += 1
@@ -108,7 +108,7 @@ def _derive_title(paragraph, description: str) -> str:
 
 
 def _widest_srcset(node) -> str | None:
-    """Retient l'URL de plus grande largeur déclarée, sinon le src."""
+    """Keep the URL with the largest declared width, otherwise the src."""
     srcset = node.attributes.get("srcset")
     if srcset:
         best, best_w = None, -1
@@ -145,11 +145,11 @@ def parse_page(html: str, country: str, base_url: str) -> tuple[list[MetaRecord]
         if "group/bk" not in classes or not block_id:
             continue
         if current_tier is None:
-            continue  # Step 4 et hors-section : ignorés volontairement
+            continue  # Step 4 and out-of-section: deliberately ignored
 
         paragraph = node.css_first("p")
         if paragraph is None:
-            anomalies.append(f"bloc {block_id}: description absente, ignoré")
+            anomalies.append(f"block {block_id}: description missing, skipped")
             continue
 
         image_node = node.css_first("img")

@@ -48,10 +48,10 @@ def _ecrire_pays(data_dir: Path, pays: str, entrees: list[tuple[str, str, float]
 def _ecrire_pays_pieces(
     data_dir: Path, pays: str, entrees: list[tuple[str, list[dict], float]]
 ) -> None:
-    """Comme `_ecrire_pays`, mais en fixant les `pieces` de chaque emprise.
+    """Like `_ecrire_pays`, but setting each footprint's `pieces`.
 
-    `_ecrire_pays` les laisse vides, ce qui ne permet pas de distinguer une
-    emprise nationale d'une régionale.
+    `_ecrire_pays` leaves them empty, which makes it impossible to tell a national
+    footprint from a regional one.
     """
     (data_dir / "metas").mkdir(parents=True, exist_ok=True)
     (data_dir / "geo").mkdir(parents=True, exist_ok=True)
@@ -76,19 +76,19 @@ def _ecrire_pays_pieces(
     ([{"kind": "rect"}], "regional"),
     ([{"kind": "admin1"}], "regional"),
     ([{"kind": "clip"}, {"kind": "polygon"}], "regional"),
-    # Un pays rogné n'est plus le pays entier : c'est ce que l'égalité
-    # stricte capture et qu'un `"country" in kinds` manquerait.
+    # A clipped country is no longer the whole country: that is what strict equality
+    # captures and what a `"country" in kinds` would miss.
     ([{"kind": "country"}, {"kind": "clip"}], "regional"),
-    # Aucune emprise publiée n'a de pieces vides ; le repli garantit
-    # qu'une telle emprise resterait visible sous « All ».
+    # No published footprint has empty pieces; the fallback guarantees such a
+    # footprint would stay visible under "All".
     ([], "regional"),
 ])
-def test_la_portee_se_deduit_du_trace(pieces, attendu):
+def test_the_scope_is_derived_from_the_drawing(pieces, attendu):
     assert scope_de(pieces) == attendu
 
 
-def test_la_portee_est_publiee_pour_chaque_meta(tmp_path):
-    """Sans ce champ dans la charge utile, le site n'a rien à filtrer."""
+def test_the_scope_is_published_for_every_meta(tmp_path):
+    """Without this field in the payload, the site has nothing to filter on."""
     _ecrire_pays_pieces(tmp_path / "data", "PL", [
         ("pl1", [{"kind": "country"}], 3.0),
         ("pl2", [{"kind": "polygon"}], 1.0),
@@ -101,19 +101,19 @@ def test_la_portee_est_publiee_pour_chaque_meta(tmp_path):
     assert metas["pl2"]["scope"] == "regional"
 
 
-def test_les_valeurs_de_portee_du_front_correspondent_a_celles_du_build():
-    """Contrat entre deux langages, donc invisible au compilateur comme au
-    relecteur d'un seul fichier.
+def test_the_front_end_scope_values_match_the_build_ones():
+    """A contract between two languages, hence invisible to the compiler and to anyone
+    reviewing a single file.
 
-    Le build écrit `scope` dans la charge utile, le gabarit déclare la portée de
-    chaque section repliable en `data-portee`, et `app.js` répartit les métas en
-    comparant les deux. Renommer un côté sans l'autre ne casse rien de bruyant :
-    les deux sections se masquent simplement comme si le point n'était couvert
-    par aucune méta, sans le moindre message.
+    The build writes `scope` into the payload, the template declares each collapsible
+    section's scope in `data-portee`, and `app.js` splits the metas by comparing the
+    two. Renaming one side without the other breaks nothing loudly: both sections
+    simply hide themselves as if the point were covered by no meta, without a single
+    message.
 
-    L'égalité, et non une inclusion : une valeur de portée qui n'aurait pas sa
-    section n'afficherait nulle part les métas qui la portent, et ce test est le
-    seul endroit du projet où les deux listes se rencontrent.
+    Equality, and not inclusion: a scope value with no section of its own would show
+    the metas carrying it nowhere, and this test is the only place in the project where
+    the two lists meet.
     """
     html = (Path(__file__).resolve().parents[1] / "viewer" / "index.html").read_text("utf-8")
 
@@ -129,26 +129,26 @@ def data_dir(tmp_path):
     return tmp_path / "data"
 
 
-def test_seules_les_metas_validees_entrent_dans_le_jeu(data_dir):
+def test_only_validated_metas_enter_the_dataset(data_dir):
     jeu = build_dataset(data_dir, ["PL", "BW"])
 
     assert {entree[0] for entree in jeu.index} == {"pl1", "bw1"}
 
 
-def test_l_index_est_trie_par_surface_croissante(data_dir):
+def test_the_index_is_sorted_by_increasing_area(data_dir):
     jeu = build_dataset(data_dir, ["PL", "BW"])
 
     assert [entree[0] for entree in jeu.index] == ["bw1", "pl1"]
 
 
-def test_chaque_meta_est_dans_le_fichier_de_son_pays_et_nulle_part_ailleurs(data_dir):
+def test_each_meta_is_in_its_own_country_file_and_nowhere_else(data_dir):
     jeu = build_dataset(data_dir, ["PL", "BW"])
 
     assert set(jeu.countries["PL"]["metas"]) == {"pl1"}
     assert set(jeu.countries["BW"]["metas"]) == {"bw1"}
 
 
-def test_l_index_et_les_fichiers_pays_portent_exactement_les_memes_identifiants(data_dir):
+def test_the_index_and_the_country_files_carry_exactly_the_same_ids(data_dir):
     jeu = build_dataset(data_dir, ["PL", "BW"])
 
     depuis_index = {entree[0] for entree in jeu.index}
@@ -156,9 +156,9 @@ def test_l_index_et_les_fichiers_pays_portent_exactement_les_memes_identifiants(
     assert depuis_index == depuis_pays
 
 
-def test_chaque_meta_reference_une_geometrie_publiee(data_dir):
-    """Le contrat de la dédup : `geom` doit toujours pointer vers une entrée
-    existante de `geometries`, sinon le front n'a rien à dessiner."""
+def test_each_meta_references_a_published_geometry(data_dir):
+    """The deduplication contract: `geom` must always point at an existing entry of
+    `geometries`, otherwise the front end has nothing to draw."""
     jeu = build_dataset(data_dir, ["PL", "BW"])
 
     for pays in jeu.countries.values():
@@ -166,7 +166,7 @@ def test_chaque_meta_reference_une_geometrie_publiee(data_dir):
             assert meta["geom"] in pays["geometries"]
 
 
-def test_l_index_porte_la_bbox_et_le_pays(data_dir):
+def test_the_index_carries_the_bbox_and_the_country(data_dir):
     jeu = build_dataset(data_dir, ["BW"])
 
     identifiant, pays, min_lon, min_lat, max_lon, max_lat, surface = jeu.index[0]
@@ -175,13 +175,13 @@ def test_l_index_porte_la_bbox_et_le_pays(data_dir):
     assert surface == pytest.approx(4.0)
 
 
-def test_la_meta_porte_le_chemin_de_son_image_source(data_dir):
+def test_the_meta_carries_the_path_of_its_source_image(data_dir):
     jeu = build_dataset(data_dir, ["BW"])
 
     assert jeu.countries["BW"]["metas"]["bw1"]["image_source"] == "input/bw1.webp"
 
 
-def test_un_pays_sans_meta_validee_est_absent_du_resultat(tmp_path):
+def test_a_country_with_no_validated_meta_is_absent_from_the_result(tmp_path):
     data_dir = tmp_path / "data"
     _ecrire_pays(data_dir, "PL", [("pl1", "validé", 3.0)])
     (data_dir / "geo" / "BD.geojson").write_text(
@@ -193,7 +193,7 @@ def test_un_pays_sans_meta_validee_est_absent_du_resultat(tmp_path):
     assert set(jeu.countries) == {"PL"}
 
 
-def test_les_statuts_herites_sont_comptes_et_non_publies(tmp_path):
+def test_legacy_statuses_are_counted_and_not_published(tmp_path):
     data_dir = tmp_path / "data"
     _ecrire_pays(data_dir, "LG", [("lg1", "validé", 1.0)])
     chemin = data_dir / "geo" / "LG.geojson"
@@ -214,7 +214,7 @@ def test_les_statuts_herites_sont_comptes_et_non_publies(tmp_path):
     assert set(jeu.countries["LG"]["metas"]) == {"lg1"}
 
 
-def test_geometries_presentes_mais_aucune_meta_leve(tmp_path):
+def test_geometries_present_but_no_meta_raises(tmp_path):
     data_dir = tmp_path / "data"
     (data_dir / "geo").mkdir(parents=True)
     (data_dir / "geo" / "ZZ.geojson").write_text(json.dumps({
@@ -228,15 +228,15 @@ def test_geometries_presentes_mais_aucune_meta_leve(tmp_path):
         build_dataset(data_dir, ["ZZ"])
 
 
-def test_discover_countries_trie_et_met_en_majuscules(data_dir):
+def test_discover_countries_sorts_and_uppercases(data_dir):
     assert discover_countries(data_dir) == ["BW", "PL"]
 
 
-def test_une_emprise_aux_parties_eloignees_donne_plusieurs_lignes_d_index(tmp_path):
-    """Le préfiltre du viewer travaille sur les bbox de l'index : une seule
-    bbox pour une emprise à cheval sur l'antiméridien couvre la planète et ne
-    filtre plus rien. Chaque groupe de parties porte sa propre ligne — même
-    id, même surface, bbox distincte — et le viewer déduplique les ids."""
+def test_a_footprint_with_far_apart_parts_gives_several_index_rows(tmp_path):
+    """The viewer's prefilter works on the index bboxes: a single bbox for a footprint
+    straddling the antimeridian covers the planet and filters nothing any more. Each
+    group of parts carries its own row — same id, same area, distinct bbox — and the
+    viewer dedupes the ids."""
     data_dir = tmp_path / "data"
     (data_dir / "metas").mkdir(parents=True)
     (data_dir / "geo").mkdir(parents=True)
@@ -255,17 +255,16 @@ def test_une_emprise_aux_parties_eloignees_donne_plusieurs_lignes_d_index(tmp_pa
 
     lignes = [e for e in jeu.index if e[0] == "ru1"]
     assert len(lignes) == 2
-    assert all(e[4] - e[2] < 30 for e in lignes)  # aucune bbox ne traverse ±180°
+    assert all(e[4] - e[2] < 30 for e in lignes)  # no bbox crosses ±180°
     assert len({tuple(e[2:6]) for e in lignes}) == 2
-    assert len({e[6] for e in lignes}) == 1  # même surface : le tri reste stable
+    assert len({e[6] for e in lignes}) == 1  # same area: the sort stays stable
 
 
-def test_deux_metas_de_meme_emprise_partagent_une_seule_geometrie(tmp_path):
-    """76 % du répertoire data/ publié était de la géométrie byte-identique
-    dupliquée (25,9 Mo sur 34,2 mesurés) : chaque méta portait sa propre copie
-    de son emprise, et RU stockait 19 fois le même contour national de 330 Ko.
-    Les géométries sont donc publiées une seule fois, indexées par empreinte
-    de contenu, et chaque méta référence la sienne par `geom`."""
+def test_two_metas_with_the_same_footprint_share_a_single_geometry(tmp_path):
+    """76 % of the published data/ directory was duplicated byte-identical geometry
+    (25.9 MB out of 34.2 measured): each meta carried its own copy of its footprint, and
+    RU stored the same 330 KB national outline 19 times over. So geometries are published
+    once, indexed by content fingerprint, and each meta references its own via `geom`."""
     data_dir = tmp_path / "data"
     _ecrire_pays(data_dir, "PL", [("pl1", "validé", 2.0), ("pl2", "validé", 2.0)])
 
@@ -277,7 +276,7 @@ def test_deux_metas_de_meme_emprise_partagent_une_seule_geometrie(tmp_path):
     assert empreintes == set(pays["geometries"])
 
 
-def test_deux_metas_d_emprises_differentes_ne_partagent_rien(tmp_path):
+def test_two_metas_with_different_footprints_share_nothing(tmp_path):
     data_dir = tmp_path / "data"
     _ecrire_pays(data_dir, "PL", [("pl1", "validé", 2.0), ("pl2", "validé", 3.0)])
 
@@ -288,11 +287,11 @@ def test_deux_metas_d_emprises_differentes_ne_partagent_rien(tmp_path):
     assert pays["metas"]["pl1"]["geom"] != pays["metas"]["pl2"]["geom"]
 
 
-def test_une_emprise_sans_texte_est_comptee_comme_orpheline(tmp_path):
-    """Une géométrie tracée dont la méta a disparu ne doit pas s'évaporer en
-    silence : le build doit la compter et la nommer, comme il le fait déjà
-    pour les statuts hérités. C'est arrivé en vrai : `man-d338` (PH) a été
-    ignorée sans un mot pendant que le build annonçait un succès."""
+def test_a_footprint_without_text_is_counted_as_an_orphan(tmp_path):
+    """A drawn geometry whose meta has vanished must not evaporate silently: the build
+    has to count it and name it, as it already does for legacy statuses. It happened for
+    real: `man-d338` (PH) was ignored without a word while the build announced a
+    success."""
     data_dir = tmp_path / "data"
     _ecrire_pays(data_dir, "PL", [("pl1", "validé", 3.0), ("pl2", "validé", 1.0)])
     (data_dir / "metas" / "PL.json").write_text(json.dumps([_meta("pl1")]), "utf-8")
@@ -303,10 +302,10 @@ def test_une_emprise_sans_texte_est_comptee_comme_orpheline(tmp_path):
     assert set(jeu.countries["PL"]["metas"]) == {"pl1"}
 
 
-def test_une_emprise_manuelle_orpheline_fait_echouer_le_build(tmp_path):
-    """`data/manual/` est versionné précisément parce que ces données sont
-    irremplaçables : un tracé `man-*` sans texte est une perte de données,
-    pas un simple décalage de régénération. Le build doit échouer dur."""
+def test_an_orphaned_manual_footprint_fails_the_build(tmp_path):
+    """`data/manual/` is versioned precisely because that data is irreplaceable: a
+    `man-*` drawing without text is data loss, not a mere regeneration lag. The build has
+    to fail hard."""
     data_dir = tmp_path / "data"
     _ecrire_meta_manuelle(data_dir, "XX", "man-1a2b")
     geo_path = data_dir / "geo" / "XX.geojson"
@@ -324,13 +323,12 @@ def test_une_emprise_manuelle_orpheline_fait_echouer_le_build(tmp_path):
 
 def _ecrire_meta_manuelle(data_dir: Path, pays: str, meta_id: str,
                           source_url: str = "") -> None:
-    """Une méta saisie via la touche `N` du reviewer.
+    """A meta entered through the reviewer's `N` key.
 
-    Contrairement aux textes Plonk It, `data/manual/` est versionné : l'image
-    d'un contributeur arrive dans le dépôt avec son tracé. Et son `source_url`
-    est facultatif — ces métas sont souvent trouvées en explorant une carte,
-    sans page d'origine à citer — d'où la chaîne vide par défaut, telle que
-    `cartometa/review/manual.py` l'écrit.
+    Unlike the Plonk It texts, `data/manual/` is versioned: a contributor's image lands
+    in the repository along with their drawing. And its `source_url` is optional — such
+    metas are often found while exploring a map, with no original page to cite — hence
+    the empty string by default, exactly as `cartometa/review/manual.py` writes it.
     """
     manuel = data_dir / "manual" / pays
     (manuel / "images").mkdir(parents=True, exist_ok=True)
@@ -350,10 +348,10 @@ def _ecrire_meta_manuelle(data_dir: Path, pays: str, meta_id: str,
     }), "utf-8")
 
 
-def test_une_meta_manuelle_est_publiee(tmp_path):
-    """Couverture restaurée : les deux tests du chemin manuel vivaient dans
-    `tests/test_export.py`, supprimé avec l'ancienne commande d'export sans
-    que personne ne les reporte ici."""
+def test_a_manual_meta_is_published(tmp_path):
+    """Coverage restored: the two tests of the manual path lived in
+    `tests/test_export.py`, deleted along with the old export command without anyone
+    carrying them over here."""
     data_dir = tmp_path / "data"
     _ecrire_meta_manuelle(data_dir, "XX", "man-1a2b")
 
@@ -364,9 +362,9 @@ def test_une_meta_manuelle_est_publiee(tmp_path):
     assert meta["image_source"] == "data/manual/XX/images/man-1a2b.png"
 
 
-def test_un_pays_sans_source_importee_mais_avec_des_metas_manuelles_reussit(tmp_path):
-    """L'absence de `data/metas/<CC>.json` ne doit pas être fatale : la seule
-    source manuelle suffit. Le dossier `metas/` n'est même pas créé ici."""
+def test_a_country_without_imported_source_but_with_manual_metas_succeeds(tmp_path):
+    """The absence of `data/metas/<CC>.json` must not be fatal: the manual source alone
+    is enough. The `metas/` folder is not even created here."""
     data_dir = tmp_path / "data"
     _ecrire_meta_manuelle(data_dir, "YY", "man-only1")
 
@@ -376,11 +374,11 @@ def test_un_pays_sans_source_importee_mais_avec_des_metas_manuelles_reussit(tmp_
     assert [entree[0] for entree in jeu.index] == ["man-only1"]
 
 
-def test_une_meta_manuelle_sans_source_traverse_le_build_avec_une_chaine_vide(tmp_path):
-    """Le champ source est facultatif à la saisie et le reste ici : c'est le
-    front qui doit s'abstenir d'afficher un lien « source » vide, pas le build
-    qui doit inventer une URL. On vérifie donc que la chaîne vide arrive
-    intacte jusqu'au fichier pays, sans exception ni valeur fabriquée."""
+def test_a_manual_meta_without_source_crosses_the_build_as_an_empty_string(tmp_path):
+    """The source field is optional on entry and stays so here: it is the front end that
+    must refrain from showing an empty "source" link, not the build that must invent a
+    URL. So we check the empty string arrives intact in the country file, with no
+    exception and no fabricated value."""
     data_dir = tmp_path / "data"
     _ecrire_meta_manuelle(data_dir, "ZZ", "man-nosrc", source_url="")
 
@@ -395,10 +393,9 @@ def _contour_carre(pays: str) -> dict:
     ]]}
 
 
-def test_le_contour_du_pays_est_publie_quand_il_est_fourni(tmp_path):
-    """La mini-carte des cartes Anki dessine l'emprise sur la silhouette du
-    pays : sans `outline` dans le fichier pays, le front n'a aucun fond à
-    tracer."""
+def test_the_country_outline_is_published_when_it_is_provided(tmp_path):
+    """The Anki cards' mini-map draws the footprint over the country silhouette: without
+    `outline` in the country file, the front end has no background to draw."""
     _ecrire_pays(tmp_path / "data", "PL", [("pl1", "validé", 1.0)])
 
     jeu = build_dataset(tmp_path / "data", ["PL"], outline_de=_contour_carre)
@@ -407,9 +404,9 @@ def test_le_contour_du_pays_est_publie_quand_il_est_fourni(tmp_path):
     assert contour["type"] == "Polygon"
 
 
-def test_sans_fournisseur_de_contour_la_cle_est_absente(tmp_path):
-    """L'absence de clé (et non une valeur nulle) est le contrat avec le
-    front, qui teste `pays.outline` en vérité booléenne."""
+def test_without_an_outline_provider_the_key_is_absent(tmp_path):
+    """The absence of the key (and not a null value) is the contract with the front end,
+    which tests `pays.outline` for truthiness."""
     _ecrire_pays(tmp_path / "data", "PL", [("pl1", "validé", 1.0)])
 
     jeu = build_dataset(tmp_path / "data", ["PL"])
@@ -417,9 +414,9 @@ def test_sans_fournisseur_de_contour_la_cle_est_absente(tmp_path):
     assert "outline" not in jeu.countries["PL"]
 
 
-def test_un_fournisseur_qui_renvoie_none_n_ecrit_pas_de_contour(tmp_path):
-    """`None` est la valeur de repli du fournisseur (pays absent de Natural
-    Earth, dataset injoignable) : le pays se publie quand même, sans fond."""
+def test_a_provider_returning_none_writes_no_outline(tmp_path):
+    """`None` is the provider's fallback value (country absent from Natural Earth,
+    dataset unreachable): the country is published anyway, without a background."""
     _ecrire_pays(tmp_path / "data", "PL", [("pl1", "validé", 1.0)])
 
     jeu = build_dataset(tmp_path / "data", ["PL"], outline_de=lambda pays: None)

@@ -12,43 +12,42 @@ from cartometa.geo.reference import country_code_for_name
 
 BASE_URL = "https://www.plonkit.net"
 
-# Slugs Plonk It dont le nom ne correspond à aucun nom Natural Earth.
-# N'ajouter une entrée ici qu'en dernier recours : `--country XX` couvre
-# le cas ponctuel sans toucher au code.
+# Plonk It slugs whose name matches no Natural Earth name. Only add an entry
+# here as a last resort: `--country XX` covers the one-off case without touching
+# the code.
 SLUG_OVERRIDES = {"usa": "US", "uk": "GB"}
 
 
 def resolve_country(slug: str, cache_dir: Path) -> str:
-    """Déduit le code ISO alpha-2 du slug Plonk It.
+    """Derive the ISO alpha-2 code from the Plonk It slug.
 
-    Passe par les noms Natural Earth, pour qu'un nouveau pays ne demande
-    aucune modification du code (spec §1).
+    Goes through the Natural Earth names, so that a new country requires no code
+    change (spec §1).
     """
     if slug in SLUG_OVERRIDES:
         return SLUG_OVERRIDES[slug]
     code = country_code_for_name(slug, cache_dir)
     if code is None:
         raise SystemExit(
-            f"Impossible de déduire le code pays du slug « {slug} » : aucun nom "
-            f"Natural Earth ne correspond.\n"
-            f"Relance avec le code explicite, par exemple : "
+            f"Cannot derive the country code from the slug \"{slug}\": no Natural "
+            f"Earth name matches.\n"
+            f"Re-run with the explicit code, for example: "
             f"cartometa-extract {slug} --country XX"
         )
     return code
 
 
 def _find_page(input_dir: Path, slug: str) -> Path:
-    """Retrouve le .htm sauvegardé pour un pays.
+    """Find the saved .htm for a country.
 
-    La comparaison ignore la casse et les séparateurs : le slug d'URL
-    Plonk It s'écrit "south-africa" alors que le navigateur enregistre
-    "South Africa — Plonk It.htm". Sans cette normalisation, tous les pays
-    dont le nom fait plusieurs mots seraient introuvables.
+    The comparison ignores case and separators: the Plonk It URL slug is written
+    "south-africa" while the browser saves "South Africa — Plonk It.htm". Without
+    that normalisation, every country whose name is several words long would be
+    unfindable.
 
-    Lève une erreur explicite s'il n'y a aucun candidat ou si plusieurs
-    fichiers correspondent (ex. collision de nom d'une seconde sauvegarde
-    navigateur, du type "Poland — Plonk It (1).htm") : mieux vaut échouer
-    bruyamment qu'en choisir un silencieusement.
+    Raises an explicit error if there is no candidate, or if several files match
+    (e.g. a name collision from a second browser save, of the "Poland — Plonk It
+    (1).htm" kind): better to fail loudly than to pick one silently.
     """
     def normalize(value: str) -> str:
         return " ".join(value.lower().replace("-", " ").replace("_", " ").split())
@@ -57,22 +56,22 @@ def _find_page(input_dir: Path, slug: str) -> Path:
     pages = sorted(input_dir.glob("*.htm*"))
     candidates = [p for p in pages if target in normalize(p.stem)]
     if not candidates:
-        available = ", ".join(p.name for p in pages) or "aucune"
+        available = ", ".join(p.name for p in pages) or "none"
         raise FileNotFoundError(
-            f"aucune page sauvegardée pour '{slug}' dans {input_dir}. "
-            f"Pages présentes : {available}"
+            f"no saved page for '{slug}' in {input_dir}. "
+            f"Pages present: {available}"
         )
     if len(candidates) > 1:
         names = ", ".join(p.name for p in candidates)
         raise ValueError(
-            f"plusieurs pages sauvegardées correspondent à '{slug}' dans {input_dir} : "
-            f"{names} — supprimez les doublons ou renommez pour lever l'ambiguïté"
+            f"several saved pages match '{slug}' in {input_dir}: "
+            f"{names} - delete the duplicates or rename to remove the ambiguity"
         )
     return candidates[0]
 
 
 def _would_hit_network(url: str, cache: dict, retry_failed: bool) -> bool:
-    """Vrai si résoudre `url` avec ces réglages appellerait réellement le réseau."""
+    """True if resolving `url` with these settings would really hit the network."""
     if url not in cache:
         return True
     return retry_failed and cache[url] is None
@@ -89,14 +88,14 @@ def run_extract(
     sleep: Callable[[float], None] = time.sleep,
 ) -> dict:
     """
-    `retry_failed` : par défaut, un lien déjà mémorisé en échec (`null` en
-    cache) n'est jamais retenté — comportement historique. Passer `True`
-    rejoue uniquement ces échecs (les liens déjà résolus ne sont jamais
-    retapés sur le réseau).
+    `retry_failed`: by default, a link already recorded as failed (`null` in the
+    cache) is never retried — the historical behaviour. Passing `True` replays
+    those failures only (already resolved links are never hit over the network
+    again).
 
-    `request_delay` : pause en secondes avant chaque appel réseau réel, pour
-    rester poli envers Google lors d'un rejeu de plusieurs liens. N'a aucun
-    effet sur les liens déjà en cache (ni succès, ni échec non retenté).
+    `request_delay`: pause in seconds before each real network call, to stay polite
+    towards Google when replaying several links. Has no effect on links already in
+    the cache (neither successes nor failures that are not retried).
     """
     slug = base_url.rstrip("/").rsplit("/", 1)[-1]
     html_path = _find_page(input_dir, slug)
@@ -112,7 +111,7 @@ def run_extract(
             if candidate.exists():
                 meta.image = str(candidate.relative_to(input_dir.parent)).replace("\\", "/")
             else:
-                anomalies.append(f"bloc {meta.id}: image introuvable ({meta.image})")
+                anomalies.append(f"block {meta.id}: image not found ({meta.image})")
                 meta.image = None
         if resolve and meta.maps_url:
             if request_delay > 0 and _would_hit_network(meta.maps_url, cache, retry_failed):
@@ -143,29 +142,29 @@ def run_extract(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Extrait les métas des pages sauvegardées")
-    parser.add_argument("slug", nargs="?", default="poland", help="pays, ex. poland")
+    parser = argparse.ArgumentParser(description="Extracts the metas from the saved pages")
+    parser.add_argument("slug", nargs="?", default="poland", help="country, e.g. poland")
     parser.add_argument("--input", type=Path, default=Path("input"))
     parser.add_argument("--data", type=Path, default=Path("data"))
     parser.add_argument(
         "--country",
-        help="Code ISO alpha-2, si le slug ne se déduit pas d'un nom Natural Earth.",
+        help="ISO alpha-2 code, if the slug cannot be derived from a Natural Earth name.",
     )
-    parser.add_argument("--no-resolve", action="store_true", help="ne pas résoudre les liens Maps")
+    parser.add_argument("--no-resolve", action="store_true", help="do not resolve the Maps links")
     parser.add_argument(
         "--retry-failed-links",
         action="store_true",
         help=(
-            "Rejoue les liens Maps mémorisés en échec (null en cache) — par défaut, "
-            "un échec en cache n'est jamais retenté. Les liens déjà résolus ne sont "
-            "jamais retapés sur le réseau."
+            "Replays the Maps links recorded as failed (null in the cache) - by "
+            "default, a cached failure is never retried. Already resolved links are "
+            "never hit over the network again."
         ),
     )
     parser.add_argument(
         "--link-delay",
         type=float,
         default=1.5,
-        help="Pause en secondes avant chaque appel réseau réel de résolution de lien (poli envers Google).",
+        help="Pause in seconds before each real network call to resolve a link (polite towards Google).",
     )
     args = parser.parse_args()
 
@@ -178,8 +177,8 @@ def main() -> None:
         request_delay=args.link_delay,
     )
 
-    print(f"{summary['country']}: {summary['total']} métas {summary['by_tier']}")
-    print(f"  sans image: {summary['without_image']}   sans coordonnées: {summary['without_latlon']}")
+    print(f"{summary['country']}: {summary['total']} metas {summary['by_tier']}")
+    print(f"  without image: {summary['without_image']}   without coordinates: {summary['without_latlon']}")
     for anomaly in summary["anomalies"]:
-        print(f"  anomalie: {anomaly}")
-    print(f"  écrit: {summary['output']}")
+        print(f"  anomaly: {anomaly}")
+    print(f"  written: {summary['output']}")

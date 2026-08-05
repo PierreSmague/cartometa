@@ -16,18 +16,17 @@ from cartometa.build.image_cache import ImageCache
 from cartometa.build.images import MissingImageError, render_image_pair
 from cartometa.geo.reference import country_geometry
 
-# Cloudflare Pages refuse un déploiement au-delà de 20 000 fichiers. On
-# prévient bien avant pour que le mur soit vu venir des mois à l'avance : la
-# parade (déplacer les images vers R2) demande une à deux heures, pas cinq
-# minutes de panique.
+# Cloudflare Pages refuses a deployment beyond 20,000 files. We warn well ahead
+# of that so the wall is seen coming months in advance: the workaround (moving
+# the images to R2) takes an hour or two, not five minutes of panic.
 FILE_COUNT_LIMIT = 20_000
 FILE_COUNT_WARNING = 15_000
 
 IMAGE_BASE = "img/"
 
-# Actifs copiés depuis `viewer/` sous un nom empreinté, et le marqueur qu'ils
-# remplacent dans les gabarits HTML. Les ajouter ici suffit : la boucle de
-# copie, la substitution et la vérification d'intégrité en dérivent toutes.
+# Assets copied from `viewer/` under a fingerprinted name, and the placeholder
+# they replace in the HTML templates. Adding them here is enough: the copy loop,
+# the substitution and the integrity check all derive from this list.
 ACTIFS_STATIQUES = (
     ("style.css", "__CSS__"),
     ("app.js", "__JS__"),
@@ -35,45 +34,43 @@ ACTIFS_STATIQUES = (
     ("favicon.svg", "__ICON_SVG__"),
     ("favicon.png", "__ICON_PNG__"),
     ("og.png", "__OG_IMAGE__"),
-    # Greffon Leaflet du fond Google. Publié et empreinté comme les autres,
-    # mais délibérément absent des gabarits : le front va le chercher par le
-    # manifeste, et seulement si le visiteur demande ce fond. Une balise
-    # `<script>` le ferait télécharger par tout le monde, y compris par
-    # l'immense majorité qui ne quittera jamais OpenStreetMap.
+    # Leaflet plugin for the Google base map. Published and fingerprinted like
+    # the others, but deliberately absent from the templates: the front end
+    # fetches it through the manifest, and only if the visitor asks for that base
+    # map. A `<script>` tag would have everyone download it, including the vast
+    # majority who will never leave OpenStreetMap.
     ("googleMutant.js", "__GOOGLE_MUTANT__"),
 )
 
-# Origine canonique du site, substituée à `__SITE_URL__` dans les gabarits.
-# Les balises Open Graph exigent des URL absolues : un chemin relatif est
-# ignoré par la plupart des robots d'aperçu, et la vignette reste vide. Le site
-# répond aujourd'hui sur trois origines (le domaine, son `www`, et
-# `cartometa.pages.dev`) — d'où un réglage explicite plutôt qu'un domaine
-# codé en dur dans un gabarit servi depuis les trois.
+# Canonical origin of the site, substituted for `__SITE_URL__` in the templates.
+# Open Graph tags require absolute URLs: a relative path is ignored by most
+# preview crawlers, and the thumbnail stays empty. The site currently answers on
+# three origins (the domain, its `www`, and `cartometa.pages.dev`) — hence an
+# explicit setting rather than a domain hard-coded into a template served from
+# all three.
 SITE_URL = "https://cartometa.com"
 
-# Les fichiers empreintés vivent sous `data/h/`, jamais directement sous
-# `data/` où réside `manifest.json`. Un motif `/data/*` recouvrirait aussi le
-# manifeste, et rien dans le dépôt ne fixe lequel des deux régimes (no-cache
-# ou immutable) Cloudflare appliquerait alors : un chevauchement dont l'issue
-# est invérifiable gèlerait silencieusement le site sur un manifeste
-# périmé. On supprime la question en s'assurant qu'aucun motif ne peut
-# jamais matcher les deux chemins à la fois.
+# Fingerprinted files live under `data/h/`, never directly under `data/` where
+# `manifest.json` sits. A `/data/*` pattern would also cover the manifest, and
+# nothing in the repository settles which of the two regimes (no-cache or
+# immutable) Cloudflare would then apply: an overlap whose outcome cannot be
+# verified would silently freeze the site on a stale manifest. We remove the
+# question by making sure no pattern can ever match both paths at once.
 #
-# Les pages HTML sont déclarées sous leurs DEUX formes. Cloudflare Pages sert
-# des URL propres : il redirige `/index.html` vers `/` et `/licence.html` vers
-# `/licence`. Vérifié en production, une règle écrite sur le seul nom de
-# fichier ne s'applique donc qu'à une adresse que personne ne visite, et la
-# vraie page retombe sur le défaut de l'hébergeur. Celui-ci se trouve être
-# équivalent (`max-age=0, must-revalidate`), mais dépendre du défaut d'un
-# tiers pour une garantie qu'on croit avoir écrite est exactement le piège
-# qu'on a déjà rencontré sur le manifeste.
+# The HTML pages are declared under BOTH their forms. Cloudflare Pages serves
+# clean URLs: it redirects `/index.html` to `/` and `/licence.html` to
+# `/licence`. Verified in production, a rule written on the file name alone
+# therefore only applies to an address nobody visits, and the real page falls
+# back to the host's default. That default happens to be equivalent
+# (`max-age=0, must-revalidate`), but depending on a third party's default for a
+# guarantee you believe you wrote is exactly the trap already hit on the manifest.
 #
-# `/404.html` n'est déclarée que sous son nom de fichier, et c'est assumé :
-# Cloudflare sert cette page sous l'adresse inconnue demandée, qu'on ne peut
-# pas énumérer. Le motif fourre-tout `/*` qui les couvrirait toutes
-# recouvrirait aussi `/data/h/*` et `/*.js` — on retomberait exactement dans le
-# chevauchement décrit ci-dessus, en pire. On préfère donc ne rien promettre
-# pour ces adresses plutôt que de mettre en péril le cache immuable.
+# `/404.html` is declared under its file name only, and that is accepted:
+# Cloudflare serves that page under whatever unknown address was requested, which
+# cannot be enumerated. The catch-all `/*` pattern that would cover them all would
+# also cover `/data/h/*` and `/*.js` — landing us right back in the overlap
+# described above, only worse. So we prefer to promise nothing for those addresses
+# rather than put the immutable cache at risk.
 HEADERS = """\
 /
   Cache-Control: no-cache
@@ -105,11 +102,11 @@ HEADERS = """\
 
 
 def _dumps(payload) -> bytes:
-    """JSON compact et déterministe : sans espaces, clés triées.
+    """Compact, deterministic JSON: no whitespace, sorted keys.
 
-    Le tri des clés est ce qui rend l'empreinte reproductible d'un build à
-    l'autre — sans lui, l'ordre d'insertion suffirait à renouveler le nom du
-    fichier et à vider le cache des visiteurs pour rien.
+    Sorting the keys is what makes the fingerprint reproducible from one build to
+    the next — without it, insertion order alone would be enough to renew the file
+    name and flush the visitors' cache for nothing.
     """
     return json.dumps(
         payload, ensure_ascii=False, separators=(",", ":"), sort_keys=True
@@ -117,45 +114,43 @@ def _dumps(payload) -> bytes:
 
 
 class ResultatVerification(NamedTuple):
-    """Résultat de `verifier_integrite` : ce qui manque, et si les images
-    ont seulement été mises de côté parce qu'elles vivent ailleurs."""
+    """Result of `verifier_integrite`: what is missing, and whether the images
+    were merely set aside because they live elsewhere."""
 
     manquants: list[str]
     images_ignorees: bool
 
 
 def _base_est_absolue(image_base: str) -> bool:
-    """Vrai quand `image_base` désigne un stockage externe plutôt qu'un
-    chemin sous `out_dir` : un schéma (`https://`, `s3://`...) ou un préfixe
-    protocole-relatif (`//cdn.example/...`). Dans les deux cas les images ne
-    sont plus écrites là où le manifeste les cherche — les vérifier sous
-    `out_dir` produirait des milliers de faux positifs.
+    """True when `image_base` denotes external storage rather than a path under
+    `out_dir`: a scheme (`https://`, `s3://`...) or a protocol-relative prefix
+    (`//cdn.example/...`). In both cases the images are no longer written where the
+    manifest looks for them — checking them under `out_dir` would produce thousands
+    of false positives.
     """
     a_un_schema = re.match(r"^[a-zA-Z][a-zA-Z0-9+.-]*://", image_base)
     return bool(a_un_schema) or image_base.startswith("//")
 
 
 def verifier_integrite(out_dir: Path, manifeste: dict) -> ResultatVerification:
-    """Vérifie que tout chemin référencé par le manifeste existe réellement
-    sur le disque : l'index global, chaque fichier pays, et — sauf quand
-    `image_base` pointe vers un stockage externe — la vignette (`thumb`) et
-    l'image pleine taille (`full`) de chaque méta. Vérifie aussi la page
-    elle-même : `index.html`, `_headers`, et chaque actif empreinté déclaré
-    dans `ACTIFS_STATIQUES` (script, feuille de style, favicons).
-    `licence.html` reste optionnelle : sa présence n'est pas requise ici.
+    """Check that every path referenced by the manifest really exists on disk:
+    the global index, each country file, and — except when `image_base` points to
+    external storage — the thumbnail (`thumb`) and the full-size image (`full`) of
+    each meta. Also checks the page itself: `index.html`, `_headers`, and every
+    fingerprinted asset declared in `ACTIFS_STATIQUES` (script, stylesheet,
+    favicons). `licence.html` stays optional: its presence is not required here.
 
-    Fonction pure, sans effet de bord : elle ne fait qu'inspecter `out_dir`
-    et le `manifeste` déjà écrit, ce qui la rend testable sans construire un
-    site complet et rejouable après-coup sur un `dist/` déjà déployé — y
-    compris sur un manifeste qu'on n'a pas soi-même produit, donc qui peut
-    être incomplet ou tronqué : un fichier absent, illisible ou une clé
-    manquante sont chacun signalés, jamais laissés remonter en exception.
+    A pure function, free of side effects: it only inspects `out_dir` and the
+    already-written `manifeste`, which makes it testable without building a
+    complete site and replayable after the fact on an already deployed `dist/` —
+    including on a manifest one did not produce oneself, and which may therefore be
+    incomplete or truncated: a missing file, an unreadable one, or a missing key are
+    each reported, never allowed to surface as an exception.
 
-    Sans ce volet page, l'incident qui a motivé ce contrôle (un `rmtree`
-    concurrent vidant `dist/` en cours d'écriture) pouvait toujours produire
-    un build qui se déclare réussi alors que la page déployée n'a plus de
-    script ni de feuille de style — un site qui rend blanc, sans la moindre
-    erreur au build.
+    Without the page part, the incident that motivated this check (a concurrent
+    `rmtree` emptying `dist/` mid-write) could still produce a build that declares
+    itself successful while the deployed page has neither script nor stylesheet — a
+    site that renders blank, without a single error at build time.
     """
     manquants: list[str] = []
 
@@ -163,21 +158,21 @@ def verifier_integrite(out_dir: Path, manifeste: dict) -> ResultatVerification:
         manquants.append(str(out_dir / "index.html"))
     if not (out_dir / "_headers").exists():
         manquants.append(str(out_dir / "_headers"))
-    # Le nom exact est empreinté (hash de contenu) et n'est pas repris dans le
-    # manifeste : on vérifie donc le motif plutôt qu'un nom précis, ce qui
-    # marche aussi bien juste après ce build que rejoué plus tard sur un
-    # `dist/` produit ailleurs.
-    # Dérivé de ACTIFS_STATIQUES : ajouter un actif là-bas suffit à ce qu'il
-    # soit vérifié ici, sans risquer d'oublier une des deux listes.
+    # The exact name is fingerprinted (content hash) and is not carried in the
+    # manifest: so we check the pattern rather than a precise name, which works
+    # just as well right after this build as replayed later on a `dist/` produced
+    # elsewhere.
+    # Derived from ACTIFS_STATIQUES: adding an asset over there is enough for it to
+    # be checked here, with no risk of forgetting one of the two lists.
     for fichier, _ in ACTIFS_STATIQUES:
         tige, suffixe = Path(fichier).stem, Path(fichier).suffix
         motif = f"{tige}.*{suffixe}"
         if not any(out_dir.glob(motif)):
-            manquants.append(f"{out_dir / motif} (aucun fichier empreinté trouvé)")
+            manquants.append(f"{out_dir / motif} (no fingerprinted file found)")
 
     index_rel = manifeste.get("index")
     if index_rel is None:
-        manquants.append("manifeste : clé 'index' absente")
+        manquants.append("manifest: 'index' key absent")
     else:
         chemin_index = out_dir / "data" / index_rel
         if not chemin_index.exists():
@@ -189,12 +184,12 @@ def verifier_integrite(out_dir: Path, manifeste: dict) -> ResultatVerification:
     for code, entree in manifeste.get("countries", {}).items():
         fichier_rel = entree.get("file")
         if fichier_rel is None:
-            manquants.append(f"manifeste : pays '{code}' sans clé 'file'")
+            manquants.append(f"manifest: country '{code}' has no 'file' key")
             continue
         chemin_pays = out_dir / "data" / fichier_rel
         if not chemin_pays.exists():
             manquants.append(str(chemin_pays))
-            continue  # pas de fichier à lire pour en tirer les métas
+            continue  # no file to read the metas out of
 
         if images_ignorees:
             continue
@@ -202,12 +197,12 @@ def verifier_integrite(out_dir: Path, manifeste: dict) -> ResultatVerification:
         try:
             contenu = json.loads(chemin_pays.read_text("utf-8"))
         except (OSError, json.JSONDecodeError) as erreur:
-            # Un disque plein tronque un fichier qui existe toujours : il
-            # passe le test .exists() ci-dessus mais son JSON est invalide.
-            # C'est un diagnostic distinct d'une absence, pas une exception
-            # à laisser remonter — la fonction doit rester la source fiable
-            # même sur le cas dégradé qui l'a motivée.
-            manquants.append(f"{chemin_pays} (illisible : {erreur})")
+            # A full disk truncates a file that still exists: it passes the
+            # .exists() test above but its JSON is invalid. That is a distinct
+            # diagnosis from an absence, not an exception to let through — this
+            # function has to stay the reliable source even on the degraded case
+            # that motivated it.
+            manquants.append(f"{chemin_pays} (unreadable: {erreur})")
             continue
 
         for meta in contenu.get("metas", {}).values():
@@ -223,13 +218,12 @@ def verifier_integrite(out_dir: Path, manifeste: dict) -> ResultatVerification:
 
 
 def _fabrique_contours(data_dir: Path) -> Callable[[str], dict | None]:
-    """Fournisseur de silhouettes pays pour `build_dataset`.
+    """Provider of country silhouettes for `build_dataset`.
 
-    Trois issues, jamais d'échec de build : la silhouette (cas normal), None
-    pour un pays hors Natural Earth (KeyError), None pour tous les pays dès
-    la première panne d'accès au dataset (OSError : hors ligne sans cache,
-    disque). La panne est mémorisée pour ne pas retenter — et râler — une
-    fois par pays.
+    Three outcomes, never a build failure: the silhouette (the normal case), None
+    for a country outside Natural Earth (KeyError), None for every country from the
+    first dataset access failure onwards (OSError: offline without a cache, disk).
+    The failure is remembered so as not to retry — and complain — once per country.
     """
     panne = False
 
@@ -240,12 +234,12 @@ def _fabrique_contours(data_dir: Path) -> Callable[[str], dict | None]:
         try:
             return mapping(country_geometry(pays, data_dir / "cache"))
         except KeyError:
-            print(f"  ! {pays} absent de Natural Earth : mini-carte sans fond")
+            print(f"  ! {pays} absent from Natural Earth: mini-map without background")
             return None
         except OSError as erreur:
             panne = True
-            print(f"  ! Natural Earth indisponible ({erreur}) : "
-                  f"mini-cartes sans fond de pays")
+            print(f"  ! Natural Earth unavailable ({erreur}): "
+                  f"mini-maps without a country background")
             return None
 
     return contour_de
@@ -262,35 +256,35 @@ def build_site(
     site_url: str = SITE_URL,
     google_key: str = "",
 ) -> dict:
-    """Produit un `dist/` complet et autonome.
+    """Produce a complete, self-contained `dist/`.
 
-    Table rase à chaque appel : un pays retiré des sources doit disparaître
-    du site, pas survivre en fichier orphelin que le déploiement republierait.
+    Clean slate on every call: a country removed from the sources has to disappear
+    from the site, not survive as an orphan file the deployment would republish.
     """
     jeu = build_dataset(
         data_dir, countries, tolerance, outline_de=_fabrique_contours(data_dir)
     )
 
-    # Garde-fou : `--out` pointant par erreur vers `viewer/` (ancien défaut du
-    # binaire supprimé par cette même migration) ou vers `data/` (une simple
-    # transposition avec `--data`) effacerait respectivement le viewer source
-    # ou des mois de traçage manuel irremplaçable. On ne rase que ce qui
-    # ressemble déjà à une sortie de ce même build.
+    # Safety rail: `--out` pointing by mistake at `viewer/` (the old default of the
+    # binary removed by this very migration) or at `data/` (a simple swap with
+    # `--data`) would erase the source viewer or months of irreplaceable manual
+    # drawing respectively. We only wipe what already looks like an output of this
+    # same build.
     if (
         out_dir.exists()
         and any(out_dir.iterdir())
         and not (out_dir / "_headers").exists()
     ):
         raise SystemExit(
-            f"{out_dir} n'est pas vide et ne ressemble pas à une sortie de build "
-            f"(pas de _headers) — refus de l'effacer."
+            f"{out_dir} is not empty and does not look like a build output "
+            f"(no _headers) - refusing to erase it."
         )
     if out_dir.exists():
         shutil.rmtree(out_dir)
     out_dir.mkdir(parents=True)
 
-    # Hors de `out_dir`, qui vient d'être rasé : le cache doit survivre au
-    # build qu'il accélère. `data/cache/` est déjà gitignoré.
+    # Outside `out_dir`, which has just been wiped: the cache has to outlive the
+    # build it speeds up. `data/cache/` is already gitignored.
     cache_images = ImageCache(data_dir / "cache" / "images")
 
     manifeste_pays: dict[str, dict] = {}
@@ -305,15 +299,14 @@ def build_site(
                 )
             except MissingImageError as erreur:
                 raise SystemExit(
-                    f"{pays}/{identifiant} : {erreur}\n"
-                    f"Les pages sources ne sont pas versionnées : vérifie input/."
+                    f"{pays}/{identifiant}: {erreur}\n"
+                    f"The source pages are not versioned: check input/."
                 ) from erreur
             meta["thumb"] = f"{pays}/{noms['thumb']}"
             meta["full"] = f"{pays}/{noms['full']}"
         nom = write_hashed(out_dir / "data" / "h" / "c", pays, ".json", _dumps(contenu))
-        # `metas`, pas `geometries` : depuis la dédup par empreinte, plusieurs
-        # métas peuvent partager une géométrie — le compte affiché est celui
-        # des métas.
+        # `metas`, not `geometries`: since fingerprint deduplication, several metas
+        # can share one geometry — the count shown is the count of metas.
         manifeste_pays[pays] = {
             "file": f"h/c/{nom}", "count": len(contenu["metas"])
         }
@@ -336,55 +329,53 @@ def build_site(
         texte = source.read_text("utf-8")
         for marqueur, nom in noms_statiques.items():
             texte = texte.replace(marqueur, nom)
-        # Après les noms empreintés : `__SITE_URL__/__OG_IMAGE__` doit d'abord
-        # devenir `__SITE_URL__/og.<hash>.png`, puis l'origine se substitue.
+        # After the fingerprinted names: `__SITE_URL__/__OG_IMAGE__` must first
+        # become `__SITE_URL__/og.<hash>.png`, then the origin is substituted.
         texte = texte.replace("__SITE_URL__", site_url.rstrip("/"))
         (out_dir / page).write_text(texte, "utf-8")
 
     (out_dir / "_headers").write_text(HEADERS, "utf-8")
 
-    # Le nombre de métas, pas de lignes d'index : depuis les bbox par partie,
-    # une emprise éclatée occupe plusieurs lignes.
+    # The number of metas, not of index rows: since per-part bboxes, a scattered
+    # footprint takes up several rows.
     nombre_metas = sum(len(c["metas"]) for c in jeu.countries.values())
 
     manifeste = {
         "built_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "meta_count": nombre_metas,
-        # Lu par le front, jamais codé en dur : basculer les images vers un
-        # bucket R2 se fait en changeant cette seule valeur.
+        # Read by the front end, never hard-coded: moving the images over to an R2
+        # bucket is done by changing this single value.
         "image_base": image_base,
         "index": nom_index,
-        # Nom empreinté du greffon, que le front charge à la demande.
+        # Fingerprinted name of the plugin, which the front end loads on demand.
         "google_mutant": noms_statiques["__GOOGLE_MUTANT__"],
         "countries": manifeste_pays,
     }
-    # Absente et non vide quand aucune clé n'est fournie : le front n'affiche
-    # le sélecteur de fond que si la clé existe. Un contributeur construit
-    # sans clé et obtient un site entier, simplement sans fond Google.
+    # Absent rather than empty when no key is supplied: the front end only shows
+    # the base map switch if the key exists. A contributor builds without a key and
+    # gets a whole site, simply without the Google base map.
     #
-    # La clé transite par le build plutôt que par le dépôt. Elle finira de
-    # toute façon lisible dans ce manifeste — une clé de navigateur est
-    # publique par nature, c'est la restriction par référent qui la protège,
-    # pas le secret. Mais elle n'a aucune raison d'entrer dans l'historique
-    # git, où elle resterait après toute rotation.
+    # The key travels through the build rather than through the repository. It will
+    # end up readable in this manifest anyway — a browser key is public by nature,
+    # what protects it is the referrer restriction, not secrecy. But it has no
+    # reason to enter git history, where it would linger after any rotation.
     if google_key:
         manifeste["google_key"] = google_key
     (out_dir / "data" / "manifest.json").write_text(
         json.dumps(manifeste, ensure_ascii=False), "utf-8"
     )
 
-    # Contrôle d'intégrité final : un `dist/` tronqué (disque plein, build
-    # interrompu, écriture concurrente qui l'a écrasé en cours de route) ne
-    # doit jamais se déclarer complet. Vécu une fois pour de vrai — un build
-    # survivant avait rapporté 1710 métas sur 45 pays alors que 11 fichiers
-    # pays seulement existaient encore sur le disque.
+    # Final integrity check: a truncated `dist/` (full disk, interrupted build,
+    # concurrent write that overwrote it halfway through) must never declare itself
+    # complete. Lived through for real once — a surviving build reported 1710 metas
+    # across 45 countries while only 11 country files still existed on disk.
     verification = verifier_integrite(out_dir, manifeste)
     if verification.manquants:
         n = len(verification.manquants)
         apercu = "\n".join(f"  - {chemin}" for chemin in verification.manquants[:5])
         raise SystemExit(
-            f"Build corrompu : {n} chemin(s) référencé(s) par le manifeste "
-            f"sont absents de {out_dir} — ce dist/ ne doit pas être déployé.\n"
+            f"Corrupted build: {n} path(s) referenced by the manifest are absent "
+            f"from {out_dir} - this dist/ must not be deployed.\n"
             f"{apercu}"
         )
 

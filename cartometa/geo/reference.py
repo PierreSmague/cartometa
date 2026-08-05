@@ -26,11 +26,11 @@ def urlretrieve(url: str, dest: Path) -> None:
 def ensure_file(
     url: str, name: str, cache_dir: Path, downloader: Downloader = urlretrieve
 ) -> Path:
-    """Télécharge `url` vers `cache_dir / name` s'il n'y est pas déjà.
+    """Download `url` into `cache_dir / name` if it is not already there.
 
-    Partagé entre le dataset des pays (admin-0) et celui des régions
-    (admin-1) : les deux viennent du même dépôt Natural Earth et ont les
-    mêmes contraintes de robustesse.
+    Shared between the countries dataset (admin-0) and the regions one (admin-1):
+    both come from the same Natural Earth repository and have the same robustness
+    constraints.
     """
     path = cache_dir / name
     if path.exists():
@@ -41,10 +41,10 @@ def ensure_file(
         downloader(url, tmp_path)
         os.replace(tmp_path, path)
     finally:
-        # Un téléchargement interrompu (réseau, Ctrl-C, disque plein) ne doit
-        # jamais laisser de fichier partiel au chemin final, ni de résidu
-        # temporaire : sinon les exécutions suivantes échoueraient sur une
-        # erreur JSON obscure sans jamais retenter le téléchargement.
+        # An interrupted download (network, Ctrl-C, full disk) must never leave a
+        # partial file at the final path, nor a temporary leftover: otherwise later
+        # runs would fail on an obscure JSON error without ever retrying the
+        # download.
         if tmp_path.exists():
             tmp_path.unlink()
     return path
@@ -63,17 +63,17 @@ _NAME_FIELDS = ("NAME", "NAME_LONG", "NAME_EN", "ADMIN", "FORMAL_EN")
 
 
 def _normalize_name(value: str) -> str:
-    """Réduit un nom de pays à sa forme comparable: minuscules, mots seuls."""
+    """Reduce a country name to its comparable form: lowercase, bare words."""
     return " ".join(value.lower().replace("-", " ").replace("_", " ").split())
 
 
 def country_code_for_name(name: str, cache_dir: Path) -> str | None:
-    """Code ISO 3166-1 alpha-2 d'un pays désigné par son nom (ou son slug).
+    """ISO 3166-1 alpha-2 code of a country designated by its name (or its slug).
 
-    Sert à déduire le code pays du slug d'URL Plonk It ("botswana" → "BW"),
-    pour qu'ajouter un pays ne demande aucune modification du code. Renvoie
-    None si aucun nom Natural Earth ne correspond exactement — l'appelant
-    doit alors demander le code explicitement plutôt que de deviner.
+    Used to derive the country code from the Plonk It URL slug ("botswana" → "BW"),
+    so that adding a country requires no code change. Returns None if no Natural
+    Earth name matches exactly — the caller then has to ask for the code explicitly
+    rather than guess.
     """
     target = _normalize_name(name)
     data = _load(str(ensure_dataset(cache_dir)))
@@ -83,14 +83,14 @@ def country_code_for_name(name: str, cache_dir: Path) -> str | None:
             value = props.get(field)
             if value and _normalize_name(value) == target:
                 code = props.get("ISO_A2_EH") or props.get("ISO_A2")
-                # Natural Earth encode l'absence de code par "-99".
+                # Natural Earth encodes a missing code as "-99".
                 if code and code != "-99":
                     return code.upper()
     return None
 
 
 def country_geometry(iso_a2: str, cache_dir: Path) -> BaseGeometry:
-    """Contour Natural Earth 1:10m du pays, en WGS84."""
+    """Natural Earth 1:10m outline of the country, in WGS84."""
     data = _load(str(ensure_dataset(cache_dir)))
     for feature in data["features"]:
         props = feature["properties"]
@@ -98,4 +98,4 @@ def country_geometry(iso_a2: str, cache_dir: Path) -> BaseGeometry:
         if iso_a2.upper() in codes:
             geom = shape(feature["geometry"])
             return geom if geom.is_valid else geom.buffer(0)
-    raise KeyError(f"pays introuvable dans Natural Earth: {iso_a2}")
+    raise KeyError(f"country not found in Natural Earth: {iso_a2}")

@@ -26,10 +26,9 @@ def test_no_leftover_temp_file_after_success(tmp_path: Path):
 
 
 def test_original_file_survives_a_failed_write(tmp_path: Path, monkeypatch):
-    """Une écriture qui échoue en cours de route (disque plein, interruption)
-    ne doit jamais laisser le fichier final tronqué : il doit soit ne pas
-    exister, soit conserver son contenu précédent intact — jamais un état
-    partiel."""
+    """A write that fails halfway through (full disk, interruption) must never leave
+    the final file truncated: it must either not exist, or keep its previous content
+    intact — never a partial state."""
     path = tmp_path / "out.json"
     write_json_atomic(path, {"important": "travail de revue humain"})
 
@@ -42,5 +41,5 @@ def test_original_file_survives_a_failed_write(tmp_path: Path, monkeypatch):
     with pytest.raises(OSError):
         write_json_atomic(path, {"important": "donnee corrompue en cours d'ecriture"})
 
-    # Le fichier final n'a pas bougé : toujours l'ancien contenu valide.
+    # The final file has not moved: still the old, valid content.
     assert json.loads(path.read_text("utf-8")) == {"important": "travail de revue humain"}

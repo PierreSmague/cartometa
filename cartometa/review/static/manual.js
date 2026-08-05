@@ -5,10 +5,10 @@ const drop = document.getElementById('drop');
 const errorLine = document.getElementById('manual-error');
 const categorySelect = document.getElementById('manual-category');
 
-let pendingImage = null;   // Blob en attente, envoyé après création de la méta
+let pendingImage = null;   // Pending blob, sent once the meta has been created
 let onCreated = null;
-// Dès que l'humain a choisi une catégorie, l'inférence se tait : proposer
-// est utile, écraser un choix explicite ne l'est jamais.
+// As soon as the human has picked a category, inference goes quiet: suggesting is
+// useful, overwriting an explicit choice never is.
 let categoryTouched = false;
 let inferTimer = null;
 
@@ -22,7 +22,7 @@ export function openManualForm(callback) {
   categoryTouched = false;
   errorLine.textContent = '';
   drop.className = '';
-  drop.innerHTML = 'Dépose une image ici, ou colle-la avec Ctrl+V';
+  drop.innerHTML = 'Drop an image here, or paste it with Ctrl+V';
   ['manual-title', 'manual-description', 'manual-source'].forEach((id) => {
     document.getElementById(id).value = '';
   });
@@ -40,10 +40,10 @@ function scheduleInference() {
     if (!text.trim()) return;
     try {
       const guessed = await getJSON(`/api/category?text=${encodeURIComponent(text)}`);
-      // Retest après l'aller-retour : l'humain a pu choisir entre-temps.
+      // Re-checked after the round trip: the human may have picked in the meantime.
       if (!categoryTouched) categorySelect.value = guessed.category;
     } catch (_err) {
-      // Deviner la catégorie est un confort : son échec ne bloque rien.
+      // Guessing the category is a convenience: its failure blocks nothing.
     }
   }, 400);
 }
@@ -56,7 +56,7 @@ export function closeManualForm() {
 function showImage(blob) {
   pendingImage = blob;
   drop.className = 'filled';
-  drop.innerHTML = 'Image prête';
+  drop.innerHTML = 'Image ready';
   const preview = document.createElement('img');
   preview.src = URL.createObjectURL(blob);
   drop.appendChild(preview);
@@ -79,12 +79,12 @@ async function save() {
   }
   if (pendingImage) {
     try {
-      // La méta existe déjà : si le dépôt d'image échoue, on ne la perd pas,
-      // on le signale et l'humain pourra la compléter.
+      // The meta already exists: if the image upload fails we do not lose it, we
+      // say so and the human can complete it later.
       const stored = await postBytes(`/api/meta/image?id=${meta.id}`, pendingImage);
       meta.image = stored.image;
     } catch (err) {
-      errorLine.textContent = `Méta créée, mais image refusée : ${err.message}`;
+      errorLine.textContent = `Meta created, but image refused: ${err.message}`;
       return;
     }
   }

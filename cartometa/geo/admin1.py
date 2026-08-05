@@ -27,12 +27,12 @@ def _load(path_str: str) -> dict:
 
 
 def _extract(source: dict, iso_a2: str) -> dict:
-    """Réduit le dataset mondial aux régions d'un pays, propriétés comprises.
+    """Reduce the world dataset to one country's regions, properties included.
 
-    Le fichier source pèse 41 Mo et porte une centaine de champs par région,
-    dont les traductions du nom dans vingt langues. On n'en garde que le code
-    et un libellé : c'est ce qui rend le cache par pays assez léger pour être
-    envoyé tel quel au navigateur.
+    The source file weighs 41 MB and carries about a hundred fields per region,
+    including translations of the name into twenty languages. We keep only the code
+    and one label: that is what makes the per-country cache light enough to be sent
+    to the browser as-is.
     """
     features = []
     for feature in source["features"]:
@@ -51,11 +51,11 @@ def _extract(source: dict, iso_a2: str) -> dict:
 def country_regions(
     iso_a2: str, cache_dir: Path, downloader: Downloader = urlretrieve
 ) -> dict:
-    """Régions admin-1 du pays, en FeatureCollection GeoJSON.
+    """The country's admin-1 regions, as a GeoJSON FeatureCollection.
 
-    Au premier appel sur un pays, le dataset mondial est téléchargé puis
-    réduit dans `cache_dir/admin1/<CC>.geojson`. Les appels suivants ne
-    touchent plus au gros fichier — ni même à son existence.
+    On the first call for a country, the world dataset is downloaded then reduced
+    into `cache_dir/admin1/<CC>.geojson`. Later calls no longer touch the big file
+    — not even its existence.
     """
     iso = iso_a2.upper()
     path = _country_cache(cache_dir, iso)
@@ -63,17 +63,17 @@ def country_regions(
         source_path = ensure_file(ADMIN1_URL, ADMIN1_NAME, cache_dir, downloader)
         extracted = _extract(json.loads(source_path.read_text("utf-8")), iso)
         if not extracted["features"]:
-            # Écrire un cache vide condamnerait le pays : plus jamais de
-            # nouvelle tentative, et un message d'erreur incompréhensible.
-            raise KeyError(f"aucune région admin-1 pour {iso} dans Natural Earth")
+            # Writing an empty cache would condemn the country: never another
+            # attempt, and an incomprehensible error message.
+            raise KeyError(f"no admin-1 region for {iso} in Natural Earth")
         write_json_atomic(path, extracted, indent=None)
     return _load(str(path))
 
 
 def region_geometry(iso_a2: str, code: str, cache_dir: Path) -> BaseGeometry:
-    """Contour d'une région désignée par son `adm1_code` Natural Earth."""
+    """Outline of a region designated by its Natural Earth `adm1_code`."""
     for feature in country_regions(iso_a2, cache_dir)["features"]:
         if feature["properties"]["code"] == code:
             geom = shape(feature["geometry"])
             return geom if geom.is_valid else geom.buffer(0)
-    raise KeyError(f"région admin-1 inconnue pour {iso_a2.upper()} : {code!r}")
+    raise KeyError(f"unknown admin-1 region for {iso_a2.upper()}: {code!r}")

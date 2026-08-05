@@ -18,10 +18,10 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="The Cartometa map, with a highlighted area in South Africa and a gallery of meta hint photographs.">
   <meta name="twitter:card" content="summary_large_image">
-  <!-- Empreintes SHA-384 verifiees identiques sur unpkg, jsdelivr et cdnjs le
-       2026-08-03 : le navigateur refusera d'executer un fichier altere. A
-       recalculer si la version de Leaflet change, sinon la carte disparait
-       sans message. -->
+  <!-- SHA-384 digests verified identical on unpkg, jsdelivr and cdnjs on
+       2026-08-03: the browser will refuse to execute an altered file. To be
+       recomputed if the Leaflet version changes, otherwise the map disappears
+       without a message. -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H"
         crossorigin="anonymous">
@@ -38,19 +38,19 @@
       <span class="nom">Cartometa</span>
       <span class="baseline">GeoGuessr metas, by area</span>
     </div>
-    <!-- Un <form> plutôt qu'un <input> seul : la touche Entrée valide alors
-         sans code, et le bouton reste utile à la souris. -->
+    <!-- A <form> rather than a bare <input>: the Enter key then submits with no
+         code, and the button stays useful for mouse users. -->
     <form id="barre-lien" autocomplete="off">
-      <!-- `type="text"` et non `type="url"` : dans un <form>, `type="url"`
-           déclenche la validation native, qui refuse un lien collé sans
-           `https://` avec une infobulle système et empêche le gestionnaire de
-           s'exécuter. On préfère valider soi-même et expliquer soi-même. -->
+      <!-- `type="text"` and not `type="url"`: inside a <form>, `type="url"`
+           triggers native validation, which refuses a link pasted without
+           `https://` with a system tooltip and stops the handler from running. We
+           prefer to validate ourselves and explain ourselves. -->
       <input id="lien" type="text" inputmode="url" spellcheck="false"
              placeholder="Paste a Google Street View or Maps link…"
              aria-label="Google Street View or Maps link">
       <button type="submit" id="lien-go">Go</button>
-      <!-- aria-live : le résultat d'un collage (résolution, échec) est
-           annoncé, sinon il n'existe que visuellement. -->
+      <!-- aria-live: the outcome of a paste (resolution, failure) gets announced,
+           otherwise it only exists visually. -->
       <span id="lien-etat" role="status" aria-live="polite"></span>
     </form>
     <span id="compteurs" class="compteurs"></span>
@@ -76,20 +76,19 @@
           specific to the most general.
         </p>
       </div>
-      <!-- Les deux portées sont des sections repliables du gabarit, et non des
-           blocs fabriqués par le script : le libellé et la valeur filtrée
-           restent lisibles ici, et surtout l'état replié d'une section survit
-           aux rendus suivants (frappe dans la recherche, nouveau clic) parce
-           que ces <details> ne sont jamais recréés. Régional d'abord : c'est
-           la portée la plus spécifique, donc la plus utile au premier coup
-           d'œil, dans le même esprit que l'ordre par surface croissante. -->
+      <!-- Both scopes are collapsible sections of the template, not blocks built by
+           the script: the label and the filtered value stay readable here, and above
+           all a section's collapsed state survives later renders (typing in the
+           search box, a new click) because these <details> are never recreated.
+           Regional first: it is the most specific scope, hence the most useful at a
+           glance, in the same spirit as the ordering by increasing area. -->
       <div id="galerie">
         <div id="squelettes" class="grille" hidden></div>
-        <!-- `hidden` au départ, `open` quand même : la première est l'affaire du
-             gabarit, qui ne doit pas coiffer l'écran d'accueil de deux en-têtes
-             vides avant le moindre clic ; la seconde est l'état déplié que
-             demande l'énoncé, et c'est celui que le script révélera. Ensuite
-             `rendre()` est seul maître de `hidden`. -->
+        <!-- `hidden` to start with, `open` all the same: the former is the
+             template's business, which must not top the welcome screen with two
+             empty headers before a single click; the latter is the expanded state
+             the spec asks for, and that is the one the script will reveal. After
+             that, `rendre()` is the sole owner of `hidden`. -->
         <details class="groupe" data-portee="regional" open hidden>
           <summary>Regional <span class="compte"></span></summary>
           <div class="grille"></div>
@@ -120,9 +119,8 @@
         <select id="anki-paquets" aria-label="Anki deck"></select>
         <button id="anki-confirmer" type="button">Add</button>
       </div>
-      <!-- Replié derrière un simple <summary> : la plupart des joueurs ne se
-           servent pas d'Anki, le guide ne doit exister qu'au moment où le
-           bouton échoue. -->
+      <!-- Collapsed behind a plain <summary>: most players do not use Anki, so the
+           guide should only exist at the moment the button fails. -->
       <details id="anki-guide" hidden>
         <summary>Anki integration</summary>
         <ol>

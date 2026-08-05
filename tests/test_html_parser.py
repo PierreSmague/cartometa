@@ -110,8 +110,8 @@ def test_title_merges_consecutive_leading_strong_runs():
 
 
 def test_title_merges_consecutive_leading_strong_runs_across_span_wrapped_whitespace():
-    """Reproduit le HTML réel Plonk It, où le séparateur entre deux <strong>
-    de tête est un espace enveloppé dans un <span>, pas un simple noeud texte."""
+    """Reproduces the real Plonk It HTML, where the separator between two leading
+    <strong>s is a space wrapped in a <span>, not a plain text node."""
     html = (
         '<h3>Step 2 - Regional</h3>'
         '<div id="TWIN2" class="relative group/bk">'

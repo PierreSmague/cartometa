@@ -4,16 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Cartometa — page not found</title>
-  <!-- Une page d'erreur ne doit pas entrer dans un index, et n'a pas de
-       canonique : elle est servie sous l'adresse demandée, quelle qu'elle
-       soit, pas sous une adresse à elle. -->
+  <!-- An error page must not enter an index, and has no canonical: it is served
+       under whatever address was requested, not under an address of its own. -->
   <meta name="robots" content="noindex">
-  <!-- CHEMINS ABSOLUS OBLIGATOIRES, contrairement aux deux autres pages.
-       Les marqueurs sont remplacés par des noms de fichiers NUS
-       (`style.a1b2c3d4.css`). Cloudflare sert cette page sous l'URL demandée :
-       sur `/a/b/c`, un chemin relatif se résoudrait en `/a/b/style.a1b2c3d4.css`
-       et la page arriverait sans style, sans icône et avec un lien de retour
-       cassé. La barre oblique de tête est ce qui l'empêche. -->
+  <!-- ABSOLUTE PATHS ARE MANDATORY, unlike on the other two pages. The
+       placeholders are replaced by BARE file names (`style.a1b2c3d4.css`).
+       Cloudflare serves this page under the requested URL: on `/a/b/c`, a relative
+       path would resolve to `/a/b/style.a1b2c3d4.css` and the page would arrive
+       without styling, without an icon and with a broken back link. The leading
+       slash is what prevents that. -->
   <link rel="icon" type="image/svg+xml" href="/__ICON_SVG__">
   <link rel="icon" type="image/png" sizes="32x32" href="/__ICON_PNG__">
   <link rel="stylesheet" href="/__CSS__">

@@ -41,13 +41,13 @@ def paths(tmp_path):
     return p
 
 
-def test_la_file_fusionne_les_deux_sources(paths):
+def test_the_queue_merges_both_sources(paths):
     queue = build_queue(paths)
 
     assert [item["id"] for item in queue["items"]] == ["aaaa", "bbbb", "man-1a2b"]
 
 
-def test_la_file_expose_le_chemin_d_image_en_url(paths):
+def test_the_queue_exposes_the_image_path_as_a_url(paths):
     queue = build_queue(paths)
 
     images = {item["id"]: item["image"] for item in queue["items"]}
@@ -55,7 +55,7 @@ def test_la_file_expose_le_chemin_d_image_en_url(paths):
     assert images["man-1a2b"] == "/data/manual/PL/images/man-1a2b.png"
 
 
-def test_la_file_ignore_par_defaut_les_metas_deja_traitees(paths):
+def test_the_queue_skips_already_handled_metas_by_default(paths):
     set_decision(paths, "aaaa", STATUS_TRACED, CARRE, [{"kind": "rect", "bounds": [2, 48, 3, 49]}])
 
     queue = build_queue(paths)
@@ -65,13 +65,13 @@ def test_la_file_ignore_par_defaut_les_metas_deja_traitees(paths):
     assert queue["total"] == 3
 
 
-def test_une_meta_rejetee_ne_revient_pas_dans_la_file(paths):
+def test_a_rejected_meta_does_not_come_back_in_the_queue(paths):
     set_decision(paths, "bbbb", STATUS_REJECTED, None, [])
 
     assert "bbbb" not in {item["id"] for item in build_queue(paths)["items"]}
 
 
-def test_include_all_rouvre_tout_avec_les_morceaux(paths):
+def test_include_all_reopens_everything_with_its_pieces(paths):
     morceaux = [{"kind": "admin1", "code": "POL-1"}]
     set_decision(paths, "aaaa", STATUS_TRACED, CARRE, morceaux)
 
@@ -82,13 +82,13 @@ def test_include_all_rouvre_tout_avec_les_morceaux(paths):
     assert rouverte["pieces"] == morceaux
 
 
-def test_done_compte_les_decidees_absentes_de_la_file_dans_les_deux_modes(paths):
-    """`done` doit rester cohérent avec `done + len(items) == total` :
+def test_done_counts_decided_metas_absent_from_the_queue_in_both_modes(paths):
+    """`done` has to stay consistent with `done + len(items) == total`:
 
-    par défaut la méta décidée est exclue de la file (`done` vaut 1) ; sous
-    `include_all` elle y est réintégrée (`done` retombe à 0), sans quoi la
-    formule de progression du client dépasserait le total (`67/37` observé
-    sur un pays de 37 métas / 30 décidées).
+    by default the decided meta is excluded from the queue (`done` is 1); under
+    `include_all` it is put back in (`done` falls back to 0), otherwise the client's
+    progress formula would exceed the total (`67/37` observed on a country of 37 metas /
+    30 decided).
     """
     set_decision(paths, "aaaa", STATUS_TRACED, CARRE, [{"kind": "country"}])
 
@@ -101,14 +101,14 @@ def test_done_compte_les_decidees_absentes_de_la_file_dans_les_deux_modes(paths)
     assert tout["done"] + len(tout["items"]) == tout["total"]
 
 
-def test_une_meta_jamais_traitee_arrive_sans_statut_ni_morceau(paths):
+def test_a_never_handled_meta_arrives_without_status_or_piece(paths):
     item = build_queue(paths)["items"][0]
 
     assert item["status"] is None
     assert item["pieces"] == []
 
 
-def test_la_decision_est_relue_a_l_identique(paths):
+def test_the_decision_is_read_back_identically(paths):
     morceaux = [{"kind": "rect", "bounds": [2.0, 48.0, 3.0, 49.0]}]
     set_decision(paths, "aaaa", STATUS_TRACED, CARRE, morceaux)
 
@@ -119,10 +119,10 @@ def test_la_decision_est_relue_a_l_identique(paths):
     assert record.status == STATUS_TRACED
 
 
-def test_le_geojson_est_ecrit_compact(paths):
-    """L'indentation coûtait un facteur 4 mesuré sur les vrais fichiers :
-    RU.geojson pesait 90 Mo (4,1 millions de lignes) contre 25 Mo compact.
-    Chaque coordonnée sur sa propre ligne, versionnée, à chaque re-trace."""
+def test_the_geojson_is_written_compact(paths):
+    """Indentation cost a measured factor of 4 on the real files: RU.geojson weighed
+    90 MB (4.1 million lines) against 25 MB compact. Every coordinate on its own line,
+    versioned, on every redraw."""
     set_decision(paths, "aaaa", STATUS_TRACED, CARRE, [{"kind": "country"}])
 
     texte = paths.geo.read_text("utf-8")
@@ -130,10 +130,10 @@ def test_le_geojson_est_ecrit_compact(paths):
     assert "\n" not in texte.strip()
 
 
-def test_les_coordonnees_sont_arrondies_a_cinq_decimales(paths):
-    """Cinq décimales ≈ 1 m au sol : largement assez pour une emprise de méta,
-    et ~10 % de moins que les quinze décimales d'un float64 sérialisé. Les
-    `pieces` sont arrondies aussi — elles ne portent que des coordonnées."""
+def test_the_coordinates_are_rounded_to_five_decimals(paths):
+    """Five decimals ≈ 1 m on the ground: plenty for a meta footprint, and ~10 % smaller
+    than the fifteen decimals of a serialised float64. The `pieces` are rounded too —
+    they carry nothing but coordinates."""
     fin = {"type": "Polygon", "coordinates": [[
         [2.123456789, 48.987654321], [3.111111111, 48.0],
         [3.0, 49.222222222], [2.123456789, 48.987654321],
@@ -147,22 +147,22 @@ def test_les_coordonnees_sont_arrondies_a_cinq_decimales(paths):
     assert record.pieces[0]["ring"] == [[2.12346, 48.98765]]
 
 
-# Anneau valide dont l'arrondi à 5 décimales est invalide : le sommet
-# (0.4, 0.399996) rejoint (0.4, 0.4) déjà présent, et l'anneau passe alors
-# deux fois par le même point. C'est arrivé sur les vraies données : 8
-# emprises sur 3617 ont dégénéré ainsi à la première migration.
+# A valid ring whose rounding to 5 decimals is invalid: the vertex (0.4, 0.399996)
+# joins the already present (0.4, 0.4), and the ring then passes twice through the same
+# point. It happened on the real data: 8 footprints out of 3617 degenerated that way
+# during the first migration.
 ANNEAU_FRAGILE = [
     [0.0, 0.0], [0.8, 0.0], [0.4, 0.399996], [0.8, 0.8], [0.0, 0.8], [0.4, 0.4],
     [0.0, 0.0],
 ]
 
 
-def test_une_geometrie_que_l_arrondi_invaliderait_garde_sa_precision(paths):
+def test_a_geometry_that_rounding_would_invalidate_keeps_its_precision(paths):
     from shapely.geometry import shape
 
     fragile = {"type": "Polygon", "coordinates": [ANNEAU_FRAGILE]}
-    # Préconditions : valide telle quelle, invalide une fois arrondie —
-    # sans quoi ce test ne prouverait rien sur le repli.
+    # Preconditions: valid as-is, invalid once rounded — otherwise this test would prove
+    # nothing about the fallback.
     assert shape(fragile).is_valid
     arrondie = {"type": "Polygon", "coordinates": [
         [[round(x, 5), round(y, 5)] for x, y in ANNEAU_FRAGILE]
@@ -176,10 +176,10 @@ def test_une_geometrie_que_l_arrondi_invaliderait_garde_sa_precision(paths):
     assert record.geometry["coordinates"] == fragile["coordinates"]
 
 
-def test_un_anneau_de_piece_que_l_arrondi_invaliderait_garde_sa_precision(paths):
-    """Les `pieces` servent à rouvrir une méta : `resolve_pieces` reconstruit
-    des polygones depuis leurs anneaux, et un anneau devenu invalide à
-    l'arrondi casserait cette réouverture."""
+def test_a_piece_ring_that_rounding_would_invalidate_keeps_its_precision(paths):
+    """The `pieces` are what makes reopening a meta possible: `resolve_pieces` rebuilds
+    polygons from their rings, and a ring turned invalid by rounding would break that
+    reopening."""
     morceaux = [{"kind": "polygon", "ring": ANNEAU_FRAGILE}]
 
     set_decision(paths, "aaaa", STATUS_TRACED, CARRE, morceaux)
@@ -188,7 +188,7 @@ def test_un_anneau_de_piece_que_l_arrondi_invaliderait_garde_sa_precision(paths)
     assert record.pieces[0]["ring"] == ANNEAU_FRAGILE
 
 
-def test_annuler_retire_la_meta_du_fichier(paths):
+def test_undoing_removes_the_meta_from_the_file(paths):
     set_decision(paths, "aaaa", STATUS_TRACED, CARRE, [{"kind": "country"}])
 
     clear_decision(paths, "aaaa")
@@ -196,23 +196,23 @@ def test_annuler_retire_la_meta_du_fichier(paths):
     assert "aaaa" not in load_geo(paths)
 
 
-def test_annuler_une_meta_sans_decision_leve(paths):
+def test_undoing_a_meta_with_no_decision_raises(paths):
     with pytest.raises(UnknownMetaError):
         clear_decision(paths, "aaaa")
 
 
-def test_decider_sur_une_meta_inconnue_leve(paths):
+def test_deciding_on_an_unknown_meta_raises(paths):
     with pytest.raises(UnknownMetaError):
         set_decision(paths, "zzzz", STATUS_TRACED, CARRE, [{"kind": "country"}])
 
 
-def test_statut_inconnu_refuse(paths):
+def test_an_unknown_status_is_refused(paths):
     with pytest.raises(ValueError):
         set_decision(paths, "aaaa", "corrigé", CARRE, [{"kind": "country"}])
 
 
-def test_pays_sans_fichier_importe(tmp_path):
-    """Un pays peut n'avoir que des metas manuelles."""
+def test_a_country_with_no_imported_file(tmp_path):
+    """A country may have only manual metas."""
     paths = CountryPaths(tmp_path / "data", "XX")
     paths.manual_metas.parent.mkdir(parents=True)
     paths.manual_metas.write_text(json.dumps([_meta("man-abcd", country="XX")]), "utf-8")
@@ -220,5 +220,5 @@ def test_pays_sans_fichier_importe(tmp_path):
     assert [m["id"] for m in load_metas(paths)] == ["man-abcd"]
 
 
-def test_pays_sans_aucune_source(tmp_path):
+def test_a_country_with_no_source_at_all(tmp_path):
     assert load_metas(CountryPaths(tmp_path / "data", "XX")) == []

@@ -1,6 +1,6 @@
 @echo off
-REM Reprend l'implementation du plan Cartometa la ou elle s'est arretee.
-REM Declenche une fois par la tache planifiee Cartometa-Resume.
+REM Resumes the Cartometa plan implementation where it left off.
+REM Triggered once by the Cartometa-Resume scheduled task.
 cd /d "C:\Users\Smaguy\Documents\Scripts\Cartometa"
 if not exist logs mkdir logs
 set LOGFILE=logs\resume-%DATE:~-4%%DATE:~3,2%%DATE:~0,2%.log
