@@ -11,6 +11,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pytest>=9.1.1",
+    "git-filter-repo>=2.47.0",
 ]
 
 [project.scripts]
