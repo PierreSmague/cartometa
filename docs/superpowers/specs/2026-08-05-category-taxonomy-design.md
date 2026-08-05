@@ -78,7 +78,11 @@ five new slugs are English, like the rest of the project.
 Evaluated in this order, first match wins:
 
 0. **Language or writing system mentioned** → `culture`. This is the one
-   exception to object-wins, and it is evaluated before everything else.
+   exception to object-wins, and it is evaluated before everything else, over
+   the title and the description **together**. That last part matters:
+   `infer_category` resolves the title completely before looking at the
+   description, so a title naming the sign would otherwise settle the category
+   before the description could mention the script.
 1. `car` — the vehicle and the capture itself.
 2. `infrastructure`
 3. `architecture`
@@ -100,12 +104,25 @@ ordered tuple of the seven slugs, the language exception, and the ordered rules.
 `infer_category(title, description)` keeps its signature, so `cartometa-extract`
 and the review form's `/api/category` suggestion follow without change.
 
-`data/categories.json` is versioned and holds human corrections as
-`{"<meta id>": "<slug>"}`. It is applied on read in `build_dataset()` — one
-place, authoritative for the published site whatever happens to the regenerable
-files. An id absent from the file keeps its inferred category. An id present but
-unknown to the corpus is reported, not silently ignored: a typo in a hand-edited
-override must not pass unnoticed.
+`data/categories.json` is versioned and holds human corrections, keyed by
+country then by meta id:
+
+```json
+{ "FR": { "Izqw": "landscape" }, "PH": { "man-0b8e": "architecture" } }
+```
+
+**Keyed by country, not by id alone.** Meta ids are not globally unique: `yHR2`
+exists in both AT and ES, `Izqw` in CA and FR, `pf4x` in FR and KE. A flat
+`{id: slug}` file would apply one correction to two unrelated metas.
+
+It is applied on read in `build_dataset()` — one place, authoritative for the
+published site whatever happens to the regenerable files. An id absent from the
+file keeps its inferred category. An id present in the file but unknown to the
+country being built is reported as a build warning, alongside the existing
+orphan and legacy-status warnings: a typo in a hand-edited override must not
+pass unnoticed. Scoping the check by country is what makes it usable — a
+contributor running `cartometa-build FR` must not be warned about every other
+country's overrides.
 
 One-off migration of the stored values, so the reviewer stops showing
 `signalisation` and the manual form's valid values match:
@@ -163,7 +180,8 @@ Reclassifying by anything other than title and description — no image analysis
 3. Every stored meta carries one of the seven slugs; no meta keeps `poteaux`,
    `bollards`, `signalisation` or `vehicule`.
 4. `data/categories.json` is versioned and applied by the build; deleting it
-   changes categories but never breaks the build.
+   changes categories but never breaks the build. An override for an id the
+   built country does not have produces a warning, not silence.
 5. The seven pills appear on the site in the specified order and each filters to
    a non-empty gallery on at least one point of the map.
 6. Full suite green.
