@@ -42,7 +42,7 @@ def paths(tmp_path):
     return p
 
 
-def test_la_decision_resout_les_morceaux_avant_d_ecrire(paths):
+def test_the_decision_resolves_the_pieces_before_writing(paths):
     server.apply_decision("aaaa", STATUS_TRACED, [{"kind": "rect", "bounds": [2, 48, 3, 49]}])
 
     record = load_geo(paths)["aaaa"]
@@ -50,14 +50,14 @@ def test_la_decision_resout_les_morceaux_avant_d_ecrire(paths):
     assert record.status == STATUS_TRACED
 
 
-def test_le_pays_entier_vient_de_natural_earth_pas_du_client(paths):
-    """Le client n'envoie qu'un drapeau : la silhouette est relue côté serveur."""
+def test_the_whole_country_comes_from_natural_earth_not_from_the_client(paths):
+    """The client only sends a flag: the silhouette is re-read server-side."""
     server.apply_decision("aaaa", STATUS_TRACED, [{"kind": "country"}])
 
     assert shape(load_geo(paths)["aaaa"].geometry).bounds == (14.0, 49.0, 24.0, 55.0)
 
 
-def test_les_morceaux_sont_conserves_pour_rouvrir_la_meta(paths):
+def test_the_pieces_are_kept_so_the_meta_can_be_reopened(paths):
     morceaux = [{"kind": "rect", "bounds": [2, 48, 3, 49]}, {"kind": "country"}]
 
     server.apply_decision("aaaa", STATUS_TRACED, morceaux)
@@ -65,7 +65,7 @@ def test_les_morceaux_sont_conserves_pour_rouvrir_la_meta(paths):
     assert load_geo(paths)["aaaa"].pieces == morceaux
 
 
-def test_un_rejet_n_a_pas_besoin_de_morceaux(paths):
+def test_a_rejection_needs_no_pieces(paths):
     server.apply_decision("aaaa", STATUS_REJECTED, [])
 
     record = load_geo(paths)["aaaa"]
@@ -73,28 +73,27 @@ def test_un_rejet_n_a_pas_besoin_de_morceaux(paths):
     assert record.geometry is None
 
 
-def test_valider_sans_morceau_est_refuse(paths):
+def test_validating_without_a_piece_is_refused(paths):
     with pytest.raises(PieceError):
         server.apply_decision("aaaa", STATUS_TRACED, [])
 
 
-def test_statut_inconnu_refuse(paths):
+def test_an_unknown_status_is_refused(paths):
     with pytest.raises(ValueError):
         server.apply_decision("aaaa", "corrigé", [{"kind": "country"}])
 
 
-def test_rien_n_est_ecrit_quand_un_morceau_est_invalide(paths):
+def test_nothing_is_written_when_a_piece_is_invalid(paths):
     with pytest.raises(PieceError):
         server.apply_decision("aaaa", STATUS_TRACED, [{"kind": "rect", "bounds": [2, 48, 3, 999]}])
 
     assert load_geo(paths) == {}
 
 
-# --- Tests HTTP : au-dessus, `apply_decision` est testé en direct ; ici, on
-# vérifie que le `Handler` qui l'appelle route, distingue les statuts, et ne
-# répond jamais deux fois (ou zéro fois) pour une même requête. Le serveur
-# n'écoute que sur la boucle locale (127.0.0.1, port 0 laissé au système) :
-# aucune requête ne sort de la machine.
+# --- HTTP tests: above, `apply_decision` is tested directly; here we check that the
+# `Handler` calling it routes, tells the statuses apart, and never answers twice (or
+# zero times) for one request. The server only listens on the loopback interface
+# (127.0.0.1, port 0 left to the system): no request leaves the machine.
 
 
 @pytest.fixture
@@ -122,7 +121,7 @@ def _post(base_url, route, payload=None, timeout=5):
         return resp.status, resp.read()
 
 
-def test_post_decision_http_pieces_valides_ecrit_sur_le_disque(paths, live_server):
+def test_post_decision_http_with_valid_pieces_writes_to_disk(paths, live_server):
     status, body = _post(live_server, "/api/decision", {
         "id": "aaaa", "status": STATUS_TRACED, "pieces": [{"kind": "rect", "bounds": [2, 48, 3, 49]}],
     })
@@ -133,9 +132,9 @@ def test_post_decision_http_pieces_valides_ecrit_sur_le_disque(paths, live_serve
     assert shape(record.geometry).bounds == (2.0, 48.0, 3.0, 49.0)
 
 
-def test_post_decision_http_meta_inconnue_donne_404(live_server):
-    """Garde-fou contre l'ombrage des `except` : `UnknownMetaError` hérite de
-    `ValueError`, un chaînage désordonné la ferait tomber en 400."""
+def test_post_decision_http_unknown_meta_gives_404(live_server):
+    """A safety rail against `except` shadowing: `UnknownMetaError` inherits from
+    `ValueError`, and a badly ordered chain would make it come out as a 400."""
     with pytest.raises(urllib.error.HTTPError) as excinfo:
         _post(live_server, "/api/decision", {
             "id": "zzzz", "status": STATUS_TRACED, "pieces": [{"kind": "country"}],
@@ -146,7 +145,7 @@ def test_post_decision_http_meta_inconnue_donne_404(live_server):
     assert body["ok"] is False
 
 
-def test_post_decision_http_piece_invalide_donne_400_et_rien_n_est_ecrit(paths, live_server):
+def test_post_decision_http_invalid_piece_gives_400_and_nothing_is_written(paths, live_server):
     with pytest.raises(urllib.error.HTTPError) as excinfo:
         _post(live_server, "/api/decision", {
             "id": "aaaa", "status": STATUS_TRACED,
@@ -157,7 +156,7 @@ def test_post_decision_http_piece_invalide_donne_400_et_rien_n_est_ecrit(paths, 
     assert load_geo(paths) == {}
 
 
-def test_post_decision_http_id_absent_donne_400_avec_le_champ_manquant(live_server):
+def test_post_decision_http_missing_id_gives_400_naming_the_field(live_server):
     with pytest.raises(urllib.error.HTTPError) as excinfo:
         _post(live_server, "/api/decision", {"status": STATUS_TRACED, "pieces": [{"kind": "country"}]})
 
@@ -166,7 +165,7 @@ def test_post_decision_http_id_absent_donne_400_avec_le_champ_manquant(live_serv
     assert "id" in body["error"]
 
 
-def test_post_decision_http_corps_json_invalide_donne_400(live_server):
+def test_post_decision_http_invalid_json_body_gives_400(live_server):
     request = urllib.request.Request(
         live_server + "/api/decision", data=b"pas du json", method="POST"
     )
@@ -176,14 +175,14 @@ def test_post_decision_http_corps_json_invalide_donne_400(live_server):
     assert excinfo.value.code == 400
 
 
-def test_post_route_inconnue_donne_404(live_server):
+def test_post_to_an_unknown_route_gives_404(live_server):
     with pytest.raises(urllib.error.HTTPError) as excinfo:
         _post(live_server, "/api/inexistante", {})
 
     assert excinfo.value.code == 404
 
 
-def test_post_content_length_trop_grand_est_refuse_sans_lire_le_corps(live_server):
+def test_an_oversized_content_length_is_refused_without_reading_the_body(live_server):
     request = urllib.request.Request(
         live_server + "/api/decision", data=b'{"id": "aaaa"}', method="POST"
     )
@@ -193,12 +192,12 @@ def test_post_content_length_trop_grand_est_refuse_sans_lire_le_corps(live_serve
 
     assert excinfo.value.code == 400
     body = json.loads(excinfo.value.read())
-    assert "volumineux" in body["error"]
+    assert "too large" in body["error"]
 
 
-def test_post_resolve_http_rend_la_geometrie_rognee_sans_rien_ecrire(paths, live_server):
-    """L'aperçu du rognage : le navigateur ne sait pas intersecter, il demande
-    ici — et cette route ne doit rien décider ni rien écrire."""
+def test_post_resolve_http_returns_the_clipped_geometry_without_writing_anything(paths, live_server):
+    """The clipping preview: the browser cannot intersect, so it asks here — and this
+    route must decide nothing and write nothing."""
     status, body = _post(live_server, "/api/resolve", {"pieces": [
         {"kind": "rect", "bounds": [10, 45, 20, 52]},
         {"kind": "clip"},
@@ -210,7 +209,7 @@ def test_post_resolve_http_rend_la_geometrie_rognee_sans_rien_ecrire(paths, live
     assert load_geo(paths) == {}
 
 
-def test_post_resolve_http_zone_hors_du_pays_donne_400(live_server):
+def test_post_resolve_http_area_outside_the_country_gives_400(live_server):
     with pytest.raises(urllib.error.HTTPError) as excinfo:
         _post(live_server, "/api/resolve", {"pieces": [
             {"kind": "rect", "bounds": [2, 40, 3, 41]},
@@ -218,12 +217,12 @@ def test_post_resolve_http_zone_hors_du_pays_donne_400(live_server):
         ]})
 
     assert excinfo.value.code == 400
-    assert "rognage" in json.loads(excinfo.value.read())["error"]
+    assert "clipping to the borders" in json.loads(excinfo.value.read())["error"]
 
 
-def test_post_decision_http_rognage_est_applique_a_l_enregistrement(paths, live_server):
-    """Le rognage vu dans l'aperçu doit être celui qui part sur le disque : le
-    descripteur est renvoyé tel quel dans la décision, et résolu pareil."""
+def test_post_decision_http_clipping_is_applied_to_what_is_saved(paths, live_server):
+    """The clipping seen in the preview has to be the one that goes to disk: the
+    descriptor is sent back as-is in the decision, and resolved the same way."""
     status, _ = _post(live_server, "/api/decision", {
         "id": "aaaa", "status": STATUS_TRACED,
         "pieces": [{"kind": "rect", "bounds": [10, 45, 20, 52]}, {"kind": "clip"}],
@@ -232,11 +231,11 @@ def test_post_decision_http_rognage_est_applique_a_l_enregistrement(paths, live_
     assert status == 200
     record = load_geo(paths)["aaaa"]
     assert shape(record.geometry).bounds == (14.0, 49.0, 20.0, 52.0)
-    # Les morceaux conservés gardent le rognage : rouvrir la méta le retrouve.
+    # The kept pieces retain the clip: reopening the meta finds it again.
     assert {"kind": "clip"} in record.pieces
 
 
-def test_get_queue_http_reprend_les_metas_de_la_fixture(live_server):
+def test_get_queue_http_returns_the_fixture_metas(live_server):
     status, body = _get(live_server, "/api/queue")
 
     assert status == 200
@@ -246,14 +245,14 @@ def test_get_queue_http_reprend_les_metas_de_la_fixture(live_server):
     assert payload["items"][0]["title"] == "titre"
 
 
-def test_get_category_http_est_un_passe_plat(live_server):
+def test_get_category_http_is_a_pass_through(live_server):
     status, body = _get(live_server, "/api/category?text=yellow%20bollards")
 
     assert status == 200
     assert json.loads(body) == {"category": "bollards"}
 
 
-def test_get_fichier_sous_input_est_servi(paths, live_server, monkeypatch):
+def test_a_file_under_input_is_served(paths, live_server, monkeypatch):
     racine = paths.data.parent
     (racine / "input").mkdir(parents=True, exist_ok=True)
     (racine / "input" / "photo.jpg").write_bytes(b"contenu-image")
@@ -265,18 +264,18 @@ def test_get_fichier_sous_input_est_servi(paths, live_server, monkeypatch):
     assert body == b"contenu-image"
 
 
-def test_get_pyproject_toml_hors_static_est_refuse(live_server):
-    """Le reviewer avait confirmé que ce fichier était servi tel quel avant
-    la restriction : ce test garde `ALLOWED_ROOT_PREFIXES` en place."""
+def test_getting_pyproject_toml_outside_static_is_refused(live_server):
+    """The reviewer had confirmed this file was served as-is before the restriction:
+    this test keeps `ALLOWED_ROOT_PREFIXES` in place."""
     with pytest.raises(urllib.error.HTTPError) as excinfo:
         _get(live_server, "/pyproject.toml")
 
     assert excinfo.value.code == 404
 
 
-def test_get_input_sans_nom_de_fichier_ne_liste_pas_le_dossier(paths, live_server, monkeypatch):
-    """Le reviewer avait démontré qu'un GET /input/ listait le contenu du
-    dossier : aucun listage de répertoire ne doit être atteignable."""
+def test_getting_input_without_a_file_name_does_not_list_the_folder(paths, live_server, monkeypatch):
+    """The reviewer had demonstrated that a GET /input/ listed the folder's contents:
+    no directory listing must be reachable."""
     racine = paths.data.parent
     (racine / "input").mkdir(parents=True, exist_ok=True)
     (racine / "input" / "photo.jpg").write_bytes(b"contenu-image")
@@ -288,11 +287,10 @@ def test_get_input_sans_nom_de_fichier_ne_liste_pas_le_dossier(paths, live_serve
     assert excinfo.value.code == 404
 
 
-def test_post_decision_origin_de_meme_origine_fonctionne(paths, live_server):
-    """D'après la spec Fetch, un navigateur ajoute TOUJOURS `Origin` sur une
-    requête non-GET/HEAD, y compris same-origin : la seule présence ne doit
-    donc rien refuser. L'en-tête est construit à partir du port réellement
-    lié par le serveur de test, pas d'une chaîne en dur."""
+def test_post_decision_with_a_same_origin_header_works(paths, live_server):
+    """Per the Fetch spec, a browser ALWAYS adds `Origin` on a non-GET/HEAD request,
+    same-origin included: so its mere presence must refuse nothing. The header is built
+    from the port actually bound by the test server, not from a hard-coded string."""
     request = urllib.request.Request(
         live_server + "/api/decision",
         data=json.dumps({
@@ -310,10 +308,10 @@ def test_post_decision_origin_de_meme_origine_fonctionne(paths, live_server):
     assert load_geo(paths)["aaaa"].status == STATUS_REJECTED
 
 
-def test_post_decision_origin_etrangere_est_refusee_et_rien_n_est_ecrit(paths, live_server):
-    """Le reviewer a démontré qu'un POST avec `Origin: https://evil.example`
-    passait la décision comme un POST légitime : refusé désormais avec 403,
-    et rien ne doit changer sur le disque (pas seulement le code renvoyé)."""
+def test_post_decision_with_a_foreign_origin_is_refused_and_nothing_is_written(paths, live_server):
+    """The reviewer demonstrated that a POST with `Origin: https://evil.example` pushed
+    the decision through like a legitimate POST: now refused with a 403, and nothing must
+    change on disk (not just the status code returned)."""
     request = urllib.request.Request(
         live_server + "/api/decision",
         data=json.dumps({
@@ -328,13 +326,13 @@ def test_post_decision_origin_etrangere_est_refusee_et_rien_n_est_ecrit(paths, l
     assert excinfo.value.code == 403
     body = json.loads(excinfo.value.read())
     assert body["ok"] is False
-    # La décision cross-origin n'a rien écrit sur le disque.
+    # The cross-origin decision wrote nothing to disk.
     assert load_geo(paths) == {}
 
 
-def test_post_decision_sans_origin_fonctionne_toujours(paths, live_server):
-    """Un client non-navigateur (ex. `urllib.request`) n'envoie pas d'en-tête
-    Origin sur ses POST : ce cas doit rester fonctionnel, garde-fou ou pas."""
+def test_post_decision_without_an_origin_header_still_works(paths, live_server):
+    """A non-browser client (e.g. `urllib.request`) sends no Origin header on its POSTs:
+    that case has to keep working, safety rail or not."""
     status, body = _post(live_server, "/api/decision", {
         "id": "aaaa", "status": STATUS_REJECTED, "pieces": [],
     })

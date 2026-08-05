@@ -7,7 +7,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap', maxZoom: 18,
 }).addTo(map);
 
-// Les touches pilotent le tracé, pas la carte.
+// The keys drive the drawing, not the map.
 map.keyboard.disable();
 
 const layers = L.layerGroup().addTo(map);
@@ -16,13 +16,13 @@ const sketch = new Sketch(map, layers);
 let queue = [];
 let index = 0;
 let total = 0;
-// Fixé une fois pour la session par loadQueue() : la file ne contient que
-// les métas non décidées, donc c'est index qui porte la progression —
-// ne jamais l'incrémenter/décrémenter dans decide()/undo().
+// Set once for the session by loadQueue(): the queue only holds undecided metas,
+// so it is index that carries the progress — never increment/decrement this in
+// decide()/undo().
 let done = 0;
 let busy = false;
-// Chaque entrée est { type: 'decision', id } ou { type: 'pass' }, dans
-// l'ordre exact des actions — U doit défaire précisément la dernière.
+// Each entry is { type: 'decision', id } or { type: 'pass' }, in the exact order
+// of the actions — U has to undo precisely the last one.
 let history = [];
 
 const current = () => queue[index];
@@ -53,16 +53,15 @@ function render() {
   const item = current();
   layers.clearLayers();
   if (!item) {
-    // Même formule que le compteur courant : done + queue.length === total
-    // par construction, dans les deux modes. `done` (store.build_queue) est
-    // le nombre de métas décidées ABSENTES de la file rendue — par défaut
-    // ça compte toutes les décidées, sous --all ça retombe à 0 puisqu'elles
-    // y sont toutes rouvertes — donc à la file épuisée ce nombre tombe
-    // toujours juste sur total. Imprécision assumée : un passage (Espace)
-    // compte comme « dépassé », pas comme décidé — c'est une progression
-    // dans la file, pas un compte de décisions, et ça reste cohérent avec
-    // le compteur ci-dessous.
-    document.getElementById('progress').textContent = `Terminé — ${done + index} / ${total}`;
+    // Same formula as the running counter: done + queue.length === total by
+    // construction, in both modes. `done` (store.build_queue) is the number of
+    // decided metas ABSENT from the returned queue — by default that counts every
+    // decided one, under --all it falls back to 0 since they are all reopened there
+    // — so once the queue is exhausted this number always lands exactly on total.
+    // An accepted imprecision: a pass (Space) counts as "gone past", not as
+    // decided — this is progress through the queue, not a count of decisions, and
+    // it stays consistent with the counter below.
+    document.getElementById('progress').textContent = `Done - ${done + index} / ${total}`;
     document.getElementById('title').textContent = '';
     document.getElementById('description').textContent = '';
     document.getElementById('image').removeAttribute('src');
@@ -85,43 +84,44 @@ function render() {
 }
 
 async function frame(item) {
-  // Tout arrive vierge : le point Maps est le seul repère quand il existe,
-  // sinon on cadre le pays pour ne pas laisser la carte au milieu de rien.
+  // Everything arrives blank: the Maps point is the only landmark when it exists,
+  // otherwise we frame the country so as not to leave the map in the middle of
+  // nowhere.
   if (item.latlon) {
     map.setView([item.latlon[0], item.latlon[1]], 8);
     return;
   }
   try {
     const geometry = await sketch.ensureCountry();
-    // La file a pu avancer pendant l'attente : une méta périmée ne doit
-    // pas recadrer la carte affichée pour la méta suivante.
+    // The queue may have moved on while we waited: a stale meta must not reframe
+    // the map that is now showing the next one.
     if (current() !== item) return;
     map.fitBounds(L.geoJSON(geometry).getBounds(), { padding: [20, 20] });
-    // La silhouette vient d'arriver : si un morceau `country` était déjà
-    // posé (méta rouverte), il n'a rien pu dessiner au draw() synchrone
-    // fait avant cet await — il faut redessiner maintenant qu'elle existe.
+    // The silhouette has just arrived: if a `country` piece was already laid down
+    // (reopened meta), it could draw nothing during the synchronous draw() made
+    // before this await — it has to be redrawn now that the silhouette exists.
     draw();
   } catch (err) {
-    // Idem : une méta abandonnée ne doit pas lever une alarme sur celle
-    // qui est actuellement affichée.
+    // Same thing: an abandoned meta must not raise an alarm about the one
+    // currently displayed.
     if (current() !== item) return;
-    showError(`Cadrage impossible : ${err.message}`);
+    showError(`Cannot frame the map: ${err.message}`);
   }
 }
 
 async function loadPiecesGeometry(item) {
-  // Indépendant de frame() : une méta avec un point Maps (`item.latlon`)
-  // ne charge jamais la silhouette du pays pour se cadrer, mais peut quand
-  // même porter un morceau `country` ou `admin1` posé avant sa réouverture.
+  // Independent of frame(): a meta with a Maps point (`item.latlon`) never loads
+  // the country silhouette to frame itself, but can still carry a `country` or
+  // `admin1` piece laid down before it was reopened.
   try {
     await sketch.ensurePiecesGeometry();
   } catch (err) {
     if (current() !== item) return;
-    showError(`Chargement des morceaux impossible : ${err.message}`);
+    showError(`Cannot load the pieces: ${err.message}`);
     return;
   }
-  // La file a pu avancer pendant l'attente : ne pas redessiner pour une
-  // méta qui n'est plus celle affichée.
+  // The queue may have moved on while we waited: do not redraw for a meta that is
+  // no longer the one on screen.
   if (current() !== item) return;
   draw();
 }
@@ -132,7 +132,7 @@ function draw() {
   if (!item) return;
   sketch.render();
   if (item.latlon) {
-    // Vérité terrain : elle ne bouge pas, c'est la cible.
+    // Ground truth: it does not move, it is the target.
     L.circleMarker([item.latlon[0], item.latlon[1]], {
       radius: 6, color: '#0057d9', fillOpacity: 0.9,
     }).addTo(layers);
@@ -143,9 +143,9 @@ function draw() {
 }
 
 function refresh() {
-  // À utiliser dès que les morceaux changent. draw() est synchrone et affiche
-  // l'état connu tout de suite ; si la zone est rognée, son aperçu vient du
-  // serveur (seul à savoir intersecter) et un second draw() suit son arrivée.
+  // To be used as soon as the pieces change. draw() is synchronous and shows the
+  // known state right away; if the area is clipped, its preview comes from the
+  // server (the only one able to intersect) and a second draw() follows its arrival.
   draw();
   if (!sketch.needsClip()) return;
   const item = current();
@@ -153,7 +153,7 @@ function refresh() {
     .then(() => { if (current() === item) draw(); })
     .catch((err) => {
       if (current() !== item) return;
-      showError(`Rognage impossible : ${err.message}`);
+      showError(`Cannot clip: ${err.message}`);
       draw();
     });
 }
@@ -162,7 +162,7 @@ async function decide(status) {
   const item = current();
   if (!item || busy) return;
   if (status === 'validé' && sketch.isEmpty) {
-    showError('Aucun morceau posé : rien à enregistrer.');
+    showError('No piece laid down: nothing to save.');
     return;
   }
   busy = true;
@@ -175,8 +175,8 @@ async function decide(status) {
     index += 1;
     render();
   } catch (err) {
-    // Échec : l'index n'avance pas, la méta reste affichée, l'erreur visible.
-    showError(`Décision non enregistrée pour ${item.id} : ${err.message}`);
+    // Failure: the index does not advance, the meta stays on screen, the error visible.
+    showError(`Decision not saved for ${item.id}: ${err.message}`);
   } finally {
     busy = false;
   }
@@ -186,7 +186,7 @@ async function undo() {
   if (!history.length || busy) return;
   const last = history[history.length - 1];
   if (last.type === 'pass') {
-    // Un passage n'a rien persisté : on le défait sans appel réseau.
+    // A pass persisted nothing: we undo it without a network call.
     history.pop();
     index = Math.max(0, index - 1);
     render();
@@ -200,7 +200,7 @@ async function undo() {
     index = Math.max(0, index - 1);
     render();
   } catch (err) {
-    showError(`Annulation impossible pour ${last.id} : ${err.message}`);
+    showError(`Cannot undo ${last.id}: ${err.message}`);
   } finally {
     busy = false;
   }
@@ -211,9 +211,9 @@ function step(offset) {
   if (offset > 0) {
     history.push({ type: 'pass' });
   } else if (history.length && history[history.length - 1].type === 'pass') {
-    // Reculer défait précisément le passage qu'avancer venait de tracer.
-    // Si la dernière entrée est une décision, elle est persistée sur
-    // disque : seul U peut la défaire, on ne touche pas à l'historique ici.
+    // Going back undoes precisely the pass that going forward had just recorded.
+    // If the last entry is a decision, it is persisted on disk: only U can undo it,
+    // we do not touch the history here.
     history.pop();
   }
   index = Math.min(Math.max(0, index + offset), queue.length);
@@ -226,7 +226,7 @@ async function enterMode(mode) {
     await sketch.setMode(mode);
     clearError();
   } catch (err) {
-    showError(`Mode ${mode} indisponible : ${err.message}`);
+    showError(`Mode ${mode} unavailable: ${err.message}`);
   }
   draw();
 }
@@ -237,7 +237,7 @@ async function addCountry() {
     await sketch.addCountry();
     clearError();
   } catch (err) {
-    showError(`Polygone du pays indisponible : ${err.message}`);
+    showError(`Country polygon unavailable: ${err.message}`);
   }
   refresh();
 }
@@ -250,8 +250,8 @@ function toggleClip() {
 }
 
 function onManualCreated(meta) {
-  // La méta créée passe devant : on la trace tout de suite, tant qu'on a
-  // sa source sous les yeux.
+  // The newly created meta goes to the front: we draw it right away, while its
+  // source is still in front of us.
   queue.splice(index, 0, {
     id: meta.id, title: meta.title, description: meta.description,
     category: meta.category, tier: meta.tier, origin: meta.origin,
@@ -314,4 +314,4 @@ map.on('mousemove', (event) => {
   if (sketch.onMapMove(event.latlng)) draw();
 });
 
-loadQueue().catch((err) => showError(`File indisponible : ${err.message}`));
+loadQueue().catch((err) => showError(`Queue unavailable: ${err.message}`));

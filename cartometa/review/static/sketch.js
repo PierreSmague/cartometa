@@ -7,11 +7,11 @@ const POSE = { color: '#0a7d2b', weight: 2, fillOpacity: 0.25 };
 const EN_COURS = { color: '#0a7d2b', weight: 2, dashArray: '5 5', fill: false };
 const SURVOL = { color: '#0057d9', weight: 2, fillOpacity: 0.15 };
 
-// Rayon d'accrochage au premier sommet, en pixels écran : c'est le geste qui
-// ferme un contour libre.
+// Snapping radius to the first vertex, in screen pixels: this is the gesture that
+// closes a freehand outline.
 const FERMETURE_PX = 12;
 
-const NOMS = { rect: 'rectangle', contour: 'contour libre', admin1: 'subdivisions' };
+const NOMS = { rect: 'rectangle', contour: 'freehand outline', admin1: 'subdivisions' };
 
 export class Sketch {
   constructor(map, layerGroup) {
@@ -19,18 +19,18 @@ export class Sketch {
     this.layers = layerGroup;
     this.pieces = [];
     this.mode = null;
-    this.corner = null;     // premier coin d'un rectangle en cours
-    this.vertices = [];     // sommets d'un contour en cours
-    this.preview = null;    // géométrie élastique suivant le curseur
-    this.hovered = null;    // code de la région survolée en mode admin1
-    this.country = null;    // silhouette du pays, chargée une fois
-    this.regions = null;    // index des régions admin-1, chargé une fois
-    this.clipped = null;    // union rognée renvoyée par le serveur
-    this.clippedKey = null; // morceaux qui ont produit `clipped`
+    this.corner = null;     // first corner of a rectangle in progress
+    this.vertices = [];     // vertices of an outline in progress
+    this.preview = null;    // rubber-band geometry following the cursor
+    this.hovered = null;    // code of the region hovered in admin1 mode
+    this.country = null;    // country silhouette, loaded once
+    this.regions = null;    // index of the admin-1 regions, loaded once
+    this.clipped = null;    // clipped union returned by the server
+    this.clippedKey = null; // the pieces that produced `clipped`
   }
 
-  // Le rognage est un modificateur, pas une surface : il n'entre pas dans le
-  // décompte des morceaux, et une zone qui ne contient que lui est vide.
+  // Clipping is a modifier, not a surface: it does not count towards the pieces,
+  // and an area that holds nothing but clipping is empty.
   get operands() {
     return this.pieces.filter((piece) => piece.kind !== 'clip');
   }
@@ -64,8 +64,8 @@ export class Sketch {
   }
 
   async setMode(mode) {
-    // Changer de mode abandonne le morceau en cours mais garde les posés :
-    // c'est le cumul qui est la règle, pas la substitution.
+    // Switching mode abandons the piece in progress but keeps the ones laid down:
+    // accumulation is the rule, not substitution.
     this.leaveMode();
     if (mode === 'admin1') await this.ensureRegions();
     this.mode = mode;
@@ -79,9 +79,9 @@ export class Sketch {
   async ensureRegions() {
     if (this.regions) return this.regions;
     const collection = await getJSON('/api/admin1');
-    // Une région admin-1 au 1:10m peut compter des dizaines de milliers de
-    // sommets. Sans ce filtre par boîte englobante, chaque mouvement de
-    // souris relancerait un lancer de rayon sur toutes les régions du pays.
+    // An admin-1 region at 1:10m can have tens of thousands of vertices. Without
+    // this bounding-box filter, every mouse move would rerun a ray cast over every
+    // region of the country.
     this.regions = collection.features.map((feature) => ({
       code: feature.properties.code,
       name: feature.properties.name,
@@ -92,11 +92,11 @@ export class Sketch {
   }
 
   async ensurePiecesGeometry() {
-    // Une méta rouverte (--all) arrive avec des morceaux qui référencent une
-    // géométrie distante : la silhouette du pays et/ou les régions admin-1
-    // ne sont chargées ici que si un morceau déjà posé en a besoin — sans
-    // attendre que l'utilisateur presse P ou S, sans quoi ces morceaux
-    // resteraient invisibles (et ⌫ retirerait un morceau que rien n'affiche).
+    // A reopened meta (--all) arrives with pieces that reference remote geometry:
+    // the country silhouette and/or the admin-1 regions are only loaded here if a
+    // piece already laid down needs them — without waiting for the user to press P
+    // or S, otherwise those pieces would stay invisible (and ⌫ would remove a piece
+    // nothing displays).
     const tasks = [];
     if (this.pieces.some((piece) => piece.kind === 'country')) tasks.push(this.ensureCountry());
     if (this.pieces.some((piece) => piece.kind === 'admin1')) tasks.push(this.ensureRegions());
@@ -117,8 +117,8 @@ export class Sketch {
     else this.pieces.push({ kind: 'clip' });
   }
 
-  // Signature des morceaux dont dépend l'aperçu rogné, ou null quand il n'y
-  // a rien à rogner.
+  // Signature of the pieces the clipped preview depends on, or null when there is
+  // nothing to clip.
   clipKey() {
     if (!this.clipping || !this.operands.length) return null;
     return JSON.stringify(this.pieces);
@@ -128,9 +128,9 @@ export class Sketch {
     return this.clipKey() !== this.clippedKey;
   }
 
-  // Vrai seulement quand l'aperçu rogné correspond aux morceaux ACTUELS :
-  // un morceau posé pendant l'aller-retour périme l'aperçu, et afficher
-  // l'ancien montrerait une zone sans le morceau qu'on vient de poser.
+  // True only when the clipped preview matches the CURRENT pieces: a piece laid
+  // down during the round trip makes the preview stale, and showing the old one
+  // would display an area without the piece that was just added.
   get clipReady() {
     return this.clipping && this.clipped !== null && !this.needsClip();
   }
@@ -138,15 +138,15 @@ export class Sketch {
   async ensureClip() {
     const key = this.clipKey();
     if (key === this.clippedKey) return;
-    // Marquer la tentative AVANT l'appel : si le serveur refuse (zone
-    // entièrement hors du pays), needsClip() retombe à faux et le rendu
-    // revient aux morceaux bruts au lieu de redemander sans fin.
+    // Mark the attempt BEFORE the call: if the server refuses (area entirely
+    // outside the country), needsClip() falls back to false and the rendering
+    // returns to the raw pieces instead of asking again endlessly.
     this.clippedKey = key;
     this.clipped = null;
     if (!key) return;
     const { geometry } = await postJSON('/api/resolve', { pieces: this.pieces });
-    // Les morceaux ont pu bouger pendant l'attente : un aperçu périmé ne
-    // doit pas s'afficher. Le prochain draw() relancera la résolution.
+    // The pieces may have moved while we waited: a stale preview must not be
+    // displayed. The next draw() will restart the resolution.
     if (this.clipKey() !== key) return;
     this.clipped = geometry;
   }
@@ -226,9 +226,9 @@ export class Sketch {
   }
 
   undoLast() {
-    // Contextuel : tant qu'un contour est ouvert, ⌫ défait le dernier
-    // sommet. C'est le geste attendu, et sinon un contour raté ne se
-    // corrigerait qu'en le recommençant entièrement.
+    // Contextual: while an outline is open, ⌫ undoes the last vertex. That is the
+    // expected gesture, and otherwise a botched outline could only be fixed by
+    // starting it over entirely.
     if (this.mode === 'contour' && this.vertices.length) {
       this.vertices.pop();
       this.preview = null;
@@ -262,10 +262,9 @@ export class Sketch {
 
   render() {
     if (this.clipReady) {
-      // Zone rognée : c'est l'union rognée par le serveur qui est affichée,
-      // pas les morceaux bruts — ce qu'on voit est exactement ce que `A`
-      // enregistrerait. Tant qu'elle n'est pas arrivée (ou si le serveur l'a
-      // refusée), on retombe sur les morceaux bruts ci-dessous.
+      // Clipped area: what is displayed is the union clipped by the server, not the
+      // raw pieces — what you see is exactly what `A` would save. Until it arrives
+      // (or if the server refused it), we fall back to the raw pieces below.
       L.geoJSON(this.clipped, POSE).addTo(this.layers);
     } else {
       this.operands.forEach((piece) => {
@@ -296,32 +295,32 @@ export class Sketch {
     if (this.mode) {
       parts.push(`mode ${NOMS[this.mode]}`);
       if (this.mode === 'rect') {
-        parts.push(this.corner ? 'clique le coin opposé' : 'clique le premier coin');
+        parts.push(this.corner ? 'click the opposite corner' : 'click the first corner');
       }
       if (this.mode === 'contour') {
         parts.push(this.vertices.length >= 3
-          ? 'reclique le premier sommet pour fermer (ou Entrée)'
-          : `${this.vertices.length}/3 sommets`);
+          ? 'click the first vertex again to close (or press Enter)'
+          : `${this.vertices.length}/3 vertices`);
       }
       if (this.mode === 'admin1') {
         const region = this.regions && this.hovered
           ? this.regions.find((r) => r.code === this.hovered)
           : null;
-        parts.push(region ? region.name : 'survole une région');
+        parts.push(region ? region.name : 'hover a region');
       }
     }
     const poses = this.operands.length;
     if (poses) {
-      parts.push(`${poses} morceau${poses > 1 ? 'x' : ''}`);
+      parts.push(`${poses} piece${poses > 1 ? 's' : ''}`);
       if (this.clipping) {
-        if (this.clipReady) parts.push('rogné aux frontières');
-        else if (this.needsClip()) parts.push('rognage en cours…');
-        // Tentative faite et sans résultat : le bandeau d'erreur dit pourquoi.
-        else parts.push('rognage impossible');
+        if (this.clipReady) parts.push('clipped to the borders');
+        else if (this.needsClip()) parts.push('clipping…');
+        // Attempt made and fruitless: the error banner says why.
+        else parts.push('clipping impossible');
       }
-      parts.push('A enregistrer · ⌫ retirer · 0 vider');
+      parts.push('A save · ⌫ remove · 0 empty');
     } else if (this.clipping) {
-      parts.push('rognage armé — pose un morceau (F pour l’annuler)');
+      parts.push('clipping armed - lay down a piece (F to cancel)');
     }
     return parts.join(' — ');
   }

@@ -35,17 +35,17 @@ def test_find_page_matches_single_candidate(tmp_path: Path):
 
 def test_find_page_raises_on_ambiguous_candidates(tmp_path: Path):
     _write_page(tmp_path, "Poland — Plonk It.htm", "Poland — Plonk It_files", "bollard photo_005.webp")
-    # Collision de nom telle qu'un navigateur peut en produire lors d'une seconde sauvegarde.
+    # A name collision of the kind a browser can produce on a second save.
     (tmp_path / "Poland — Plonk It (1).htm").write_text("<h3>Step 1</h3>", "utf-8")
 
-    with pytest.raises(ValueError, match="plusieurs pages"):
+    with pytest.raises(ValueError, match="several saved pages"):
         _find_page(tmp_path, "poland")
 
 
 def test_run_extract_resolves_url_encoded_image_path_with_spaces_and_em_dash(tmp_path: Path):
-    """Le chemin d'image référencé dans le HTML est URL-encodé (espaces -> %20,
-    tiret cadratin -> %E2%80%94) : il doit être décodé et retrouvé tel quel sur
-    le disque, comme pour la vraie page Pologne sauvegardée."""
+    """The image path referenced in the HTML is URL-encoded (spaces -> %20, em dash ->
+    %E2%80%94): it has to be decoded and found as-is on disk, as for the real saved
+    Poland page."""
     input_dir = tmp_path / "input"
     input_dir.mkdir()
     _write_page(input_dir, "Poland — Plonk It.htm", "Poland — Plonk It_files", "bollard photo_005.webp")
@@ -112,9 +112,9 @@ def test_run_extract_retry_failed_links_option_resolves_previously_dead_link(tmp
         request_delay=0,
     )
     metas = json.loads((data_dir / "metas" / "PL.json").read_text("utf-8"))
-    # Pas d'accès réseau réel dans ce test : sans opener injectable dans run_extract,
-    # on vérifie seulement que le paramètre est bien transmis et ne casse rien —
-    # la résolution réelle est couverte par test_maps_links.py.
+    # No real network access in this test: with no injectable opener in run_extract, we
+    # only check that the parameter is passed through and breaks nothing — the real
+    # resolution is covered by test_maps_links.py.
     assert summary["total"] == 1
 
 
@@ -123,7 +123,7 @@ def test_run_extract_sleeps_before_real_network_calls_only(tmp_path: Path):
     data_dir = tmp_path / "data"
     cache_path = data_dir / "cache" / "maps_links.json"
     cache_path.parent.mkdir(parents=True)
-    # Lien déjà résolu : ne doit déclencher ni réseau, ni pause.
+    # Already resolved link: must trigger neither network nor pause.
     cache_path.write_text(json.dumps({"https://goo.gl/maps/dead": [1.0, 2.0]}), "utf-8")
 
     sleeps = []
@@ -134,14 +134,14 @@ def test_run_extract_sleeps_before_real_network_calls_only(tmp_path: Path):
     assert sleeps == []
 
 
-def test_page_trouvee_malgre_les_tirets_du_slug(tmp_path):
-    """Le slug d'URL s'écrit "south-africa", le navigateur enregistre "South Africa"."""
+def test_page_found_despite_the_slug_dashes(tmp_path):
+    """The URL slug is written "south-africa", the browser saves "South Africa"."""
     (tmp_path / "South Africa — Plonk It.htm").write_text("<html></html>", "utf-8")
 
     assert _find_page(tmp_path, "south-africa").name == "South Africa — Plonk It.htm"
 
 
-def test_page_absente_liste_les_pages_disponibles(tmp_path):
+def test_a_missing_page_lists_the_available_pages(tmp_path):
     (tmp_path / "Poland — Plonk It.htm").write_text("<html></html>", "utf-8")
 
     with pytest.raises(FileNotFoundError, match="Poland"):

@@ -15,7 +15,7 @@ def _image(chemin, largeur, hauteur):
     return chemin
 
 
-def test_les_deux_tailles_sont_produites(tmp_path):
+def test_both_sizes_are_produced(tmp_path):
     source = _image(tmp_path / "src" / "a.png", 1920, 950)
 
     noms = render_image_pair(source, tmp_path / "out", "a")
@@ -25,7 +25,7 @@ def test_les_deux_tailles_sont_produites(tmp_path):
         assert (tmp_path / "out" / nom).exists()
 
 
-def test_la_vignette_et_la_pleine_respectent_leur_largeur(tmp_path):
+def test_the_thumbnail_and_the_full_size_respect_their_widths(tmp_path):
     source = _image(tmp_path / "src" / "a.png", 1920, 950)
 
     noms = render_image_pair(source, tmp_path / "out", "a")
@@ -36,7 +36,7 @@ def test_la_vignette_et_la_pleine_respectent_leur_largeur(tmp_path):
         assert pleine.width == FULL_WIDTH
 
 
-def test_une_image_plus_petite_que_la_cible_n_est_jamais_agrandie(tmp_path):
+def test_an_image_smaller_than_the_target_is_never_upscaled(tmp_path):
     source = _image(tmp_path / "src" / "petite.png", 400, 200)
 
     noms = render_image_pair(source, tmp_path / "out", "petite")
@@ -45,7 +45,7 @@ def test_une_image_plus_petite_que_la_cible_n_est_jamais_agrandie(tmp_path):
         assert pleine.width == 400
 
 
-def test_la_sortie_est_du_webp(tmp_path):
+def test_the_output_is_webp(tmp_path):
     source = _image(tmp_path / "src" / "a.png", 1000, 500)
 
     noms = render_image_pair(source, tmp_path / "out", "a")
@@ -55,7 +55,7 @@ def test_la_sortie_est_du_webp(tmp_path):
         assert pleine.format == "WEBP"
 
 
-def test_les_noms_portent_une_empreinte_et_se_distinguent(tmp_path):
+def test_the_names_carry_a_fingerprint_and_differ(tmp_path):
     source = _image(tmp_path / "src" / "a.png", 1000, 500)
 
     noms = render_image_pair(source, tmp_path / "out", "a")
@@ -65,6 +65,6 @@ def test_les_noms_portent_une_empreinte_et_se_distinguent(tmp_path):
     assert noms["full"].startswith("a.f.")
 
 
-def test_une_source_absente_leve_une_erreur_explicite(tmp_path):
-    with pytest.raises(MissingImageError, match="introuvable"):
+def test_a_missing_source_raises_an_explicit_error(tmp_path):
+    with pytest.raises(MissingImageError, match="not found"):
         render_image_pair(tmp_path / "absente.png", tmp_path / "out", "x")

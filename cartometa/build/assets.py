@@ -3,26 +3,26 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
-# Huit caractères hexadécimaux : 4 milliards de valeurs, largement assez pour
-# quelques milliers de fichiers, et un nom qui reste lisible dans une URL.
+# Eight hexadecimal characters: 4 billion values, plenty for a few thousand
+# files, and a name that stays readable inside a URL.
 HASH_LENGTH = 8
 
 
 def content_hash(payload: bytes) -> str:
-    """Empreinte courte du contenu, base du cache immuable."""
+    """Short content fingerprint, the basis of the immutable cache."""
     return hashlib.sha256(payload).hexdigest()[:HASH_LENGTH]
 
 
 def hashed_name(stem: str, suffix: str, payload: bytes) -> str:
-    """`index` + `.json` + contenu → `index.a1b2c3d4.json`."""
+    """`index` + `.json` + content → `index.a1b2c3d4.json`."""
     return f"{stem}.{content_hash(payload)}{suffix}"
 
 
 def write_hashed(directory: Path, stem: str, suffix: str, payload: bytes) -> str:
-    """Écrit le fichier sous son nom empreinté et renvoie ce nom.
+    """Write the file under its fingerprinted name and return that name.
 
-    Renvoie le nom seul et non le chemin : c'est l'appelant qui sait sous
-    quelle URL relative le fichier sera servi.
+    Returns the name alone and not the path: the caller is the one that knows
+    under which relative URL the file will be served.
     """
     directory.mkdir(parents=True, exist_ok=True)
     nom = hashed_name(stem, suffix, payload)

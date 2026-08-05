@@ -10,11 +10,11 @@ VARIANTES = ("t", "f")
 
 
 def cle_de(source: bytes, signature: str) -> str:
-    """Clé d'une image source pour un jeu de paramètres d'encodage donné.
+    """Key of a source image for a given set of encoding parameters.
 
-    La signature entre dans la clé : changer une largeur ou la qualité doit
-    invalider tout le cache, sans quoi le build servirait des images encodées
-    selon des réglages qui n'existent plus.
+    The signature is part of the key: changing a width or the quality has to
+    invalidate the whole cache, otherwise the build would serve images encoded
+    according to settings that no longer exist.
     """
     empreinte = hashlib.sha256()
     empreinte.update(signature.encode("utf-8"))
@@ -24,29 +24,28 @@ def cle_de(source: bytes, signature: str) -> str:
 
 
 class ImageCache:
-    """Cache d'images encodées, persistant hors de `dist/`.
+    """Cache of encoded images, persisted outside `dist/`.
 
-    `dist/` est rasé à chaque build : le cache doit vivre ailleurs, sinon il
-    disparaîtrait avec lui à chaque fois.
+    `dist/` is wiped on every build: the cache has to live elsewhere, otherwise
+    it would vanish along with it every single time.
     """
 
     def __init__(self, directory: Path) -> None:
         self.directory = Path(directory)
 
     def _dossier(self, cle: str) -> Path:
-        # Éclaté sur deux caractères : un seul dossier de plusieurs milliers
-        # d'entrées se parcourt mal sur certains systèmes de fichiers.
+        # Fanned out over two characters: a single folder holding several
+        # thousand entries walks badly on some file systems.
         return self.directory / cle[:2]
 
     def lire(self, cle: str, variante: str) -> bytes | None:
-        """Octets encodés, ou None si absents — ou abîmés.
+        """Encoded bytes, or None if absent — or damaged.
 
-        L'empreinte du contenu est inscrite dans le nom de l'entrée : la
-        relire coûte un sha256 déjà nécessaire par ailleurs, et c'est le
-        seul moyen de distinguer une entrée saine d'une entrée tronquée par
-        une interruption ou un disque défaillant. Une entrée qui ne
-        correspond pas à son empreinte est traitée comme absente : le prix
-        est un réencodage, jamais une image cassée dans le site publié.
+        The content fingerprint is written into the entry's name: re-checking it
+        costs a sha256 that is needed elsewhere anyway, and it is the only way to
+        tell a sound entry from one truncated by an interruption or a failing
+        disk. An entry that does not match its fingerprint is treated as absent:
+        the price is a re-encode, never a broken image in the published site.
         """
         for chemin in self._dossier(cle).glob(f"{cle}.{variante}.*.webp"):
             payload = chemin.read_bytes()
@@ -58,9 +57,8 @@ class ImageCache:
         dossier = self._dossier(cle)
         dossier.mkdir(parents=True, exist_ok=True)
         chemin = dossier / f"{cle}.{variante}.{content_hash(payload)}.webp"
-        # Écriture atomique : une entrée à moitié écrite ne doit jamais
-        # apparaître sous son nom définitif, sinon le build suivant la lirait
-        # comme si elle était complète.
+        # Atomic write: a half-written entry must never appear under its final
+        # name, otherwise the next build would read it as if it were complete.
         temporaire = chemin.with_suffix(chemin.suffix + ".part")
         try:
             temporaire.write_bytes(payload)

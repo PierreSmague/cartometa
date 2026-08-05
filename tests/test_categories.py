@@ -19,7 +19,7 @@ def test_title_takes_precedence_over_description():
 
 
 def test_substring_of_unrelated_word_does_not_match():
-    # "tree" est une sous-chaîne de "street" : ne doit pas déclencher vegetation.
+    # "tree" is a substring of "street": must not trigger vegetation.
     assert infer_category("Street architecture", "Nothing about plants here") == "autre"
 
 

@@ -39,26 +39,26 @@ def test_rectangle(cache_dir):
     assert geom.bounds == (2.0, 48.0, 3.0, 49.0)
 
 
-def test_rectangle_dont_les_coins_sont_donnes_a_l_envers(cache_dir):
-    """Deux clics sur la carte peuvent arriver dans n'importe quel ordre."""
+def test_rectangle_whose_corners_are_given_backwards(cache_dir):
+    """Two clicks on the map can arrive in any order."""
     geom = resolve_pieces([{"kind": "rect", "bounds": [3.0, 49.0, 2.0, 48.0]}], "PL", cache_dir)
 
     assert geom.bounds == (2.0, 48.0, 3.0, 49.0)
 
 
-def test_pays_entier(cache_dir):
+def test_whole_country(cache_dir):
     geom = resolve_pieces([{"kind": "country"}], "PL", cache_dir)
 
     assert geom.bounds == (14.0, 49.0, 24.0, 55.0)
 
 
-def test_region_admin1(cache_dir):
+def test_admin1_region(cache_dir):
     geom = resolve_pieces([{"kind": "admin1", "code": "POL-1"}], "PL", cache_dir)
 
     assert geom.bounds == (20.0, 51.0, 22.0, 53.0)
 
 
-def test_contour_libre_est_ferme_automatiquement(cache_dir):
+def test_a_freehand_outline_is_closed_automatically(cache_dir):
     ring = [[2.0, 48.0], [3.0, 48.0], [3.0, 49.0]]
 
     geom = resolve_pieces([{"kind": "polygon", "ring": ring}], "PL", cache_dir)
@@ -67,7 +67,7 @@ def test_contour_libre_est_ferme_automatiquement(cache_dir):
     assert geom.area == pytest.approx(0.5)
 
 
-def test_deux_regions_adjacentes_fusionnent_en_un_polygone(cache_dir):
+def test_two_adjacent_regions_merge_into_one_polygon(cache_dir):
     geom = resolve_pieces([
         {"kind": "admin1", "code": "POL-1"},
         {"kind": "admin1", "code": "POL-2"},
@@ -76,7 +76,7 @@ def test_deux_regions_adjacentes_fusionnent_en_un_polygone(cache_dir):
     assert geom.bounds == (19.0, 49.0, 22.0, 53.0)
 
 
-def test_morceaux_disjoints_donnent_un_multipolygone(cache_dir):
+def test_disjoint_pieces_give_a_multipolygon(cache_dir):
     geom = resolve_pieces([
         {"kind": "rect", "bounds": [2.0, 48.0, 3.0, 49.0]},
         {"kind": "rect", "bounds": [10.0, 48.0, 11.0, 49.0]},
@@ -86,8 +86,8 @@ def test_morceaux_disjoints_donnent_un_multipolygone(cache_dir):
     assert len(geom.geoms) == 2
 
 
-def test_contour_auto_intersectant_est_repare(cache_dir):
-    """Un noeud papillon trace a la souris ne doit pas etre rejete."""
+def test_a_self_intersecting_outline_is_repaired(cache_dir):
+    """A bow tie drawn with the mouse must not be rejected."""
     ring = [[0.0, 0.0], [2.0, 2.0], [2.0, 0.0], [0.0, 2.0]]
 
     geom = resolve_pieces([{"kind": "polygon", "ring": ring}], "PL", cache_dir)
@@ -96,18 +96,18 @@ def test_contour_auto_intersectant_est_repare(cache_dir):
     assert geom.area > 0.0
 
 
-def test_rognage_coupe_ce_qui_depasse_du_pays(cache_dir):
-    """Le geste visé : un rectangle large qui deborde, rogne aux frontieres."""
+def test_clipping_cuts_what_sticks_out_of_the_country(cache_dir):
+    """The intended gesture: a wide rectangle that spills over, clipped to the borders."""
     geom = resolve_pieces([
         {"kind": "rect", "bounds": [10.0, 45.0, 20.0, 52.0]},
         {"kind": "clip"},
     ], "PL", cache_dir)
 
-    # Le pays va de 14/49 a 24/55 : l'ouest et le sud du rectangle sont coupes.
+    # The country runs from 14/49 to 24/55: the west and south of the rectangle are cut.
     assert geom.bounds == (14.0, 49.0, 20.0, 52.0)
 
 
-def test_rognage_sans_effet_quand_tout_est_dedans(cache_dir):
+def test_clipping_has_no_effect_when_everything_is_inside(cache_dir):
     geom = resolve_pieces([
         {"kind": "rect", "bounds": [15.0, 50.0, 16.0, 51.0]},
         {"kind": "clip"},
@@ -116,8 +116,8 @@ def test_rognage_sans_effet_quand_tout_est_dedans(cache_dir):
     assert geom.bounds == (15.0, 50.0, 16.0, 51.0)
 
 
-def test_le_rang_du_rognage_dans_la_liste_ne_change_rien(cache_dir):
-    """C'est un modificateur applique une fois a la fin, pas un operande."""
+def test_the_position_of_the_clip_in_the_list_changes_nothing(cache_dir):
+    """It is a modifier applied once at the end, not an operand."""
     avant = resolve_pieces([
         {"kind": "clip"},
         {"kind": "rect", "bounds": [10.0, 45.0, 20.0, 52.0]},
@@ -130,7 +130,7 @@ def test_le_rang_du_rognage_dans_la_liste_ne_change_rien(cache_dir):
     assert avant.equals(apres)
 
 
-def test_le_rognage_s_applique_a_l_union_entiere_pas_au_dernier_morceau(cache_dir):
+def test_the_clip_applies_to_the_whole_union_not_to_the_last_piece(cache_dir):
     geom = resolve_pieces([
         {"kind": "rect", "bounds": [10.0, 45.0, 16.0, 52.0]},
         {"kind": "rect", "bounds": [22.0, 50.0, 30.0, 60.0]},
@@ -141,71 +141,71 @@ def test_le_rognage_s_applique_a_l_union_entiere_pas_au_dernier_morceau(cache_di
     assert geom.geom_type == "MultiPolygon"
 
 
-def test_rognage_d_une_zone_entierement_hors_du_pays_refuse(cache_dir):
-    with pytest.raises(PieceError, match="rognage"):
+def test_clipping_an_area_entirely_outside_the_country_is_refused(cache_dir):
+    with pytest.raises(PieceError, match="clipping to the borders"):
         resolve_pieces([
             {"kind": "rect", "bounds": [2.0, 40.0, 3.0, 41.0]},
             {"kind": "clip"},
         ], "PL", cache_dir)
 
 
-def test_rognage_seul_sans_surface_refuse(cache_dir):
-    """`clip` n'apporte aucune surface : il n'est pas une emprise a lui seul."""
-    with pytest.raises(PieceError, match="aucune surface"):
+def test_a_lone_clip_with_no_surface_is_refused(cache_dir):
+    """`clip` brings no surface: it is not a footprint on its own."""
+    with pytest.raises(PieceError, match="no area to clip"):
         resolve_pieces([{"kind": "clip"}], "PL", cache_dir)
 
 
-def test_rognage_qui_ne_fait_qu_effleurer_la_frontiere_refuse(cache_dir):
-    """Un rectangle colle a la frontiere ouest : l'intersection est un segment,
-    pas une surface, et shapely peut la rendre en GeometryCollection."""
-    with pytest.raises(PieceError, match="rognage"):
+def test_a_clip_that_merely_grazes_the_border_is_refused(cache_dir):
+    """A rectangle flush against the western border: the intersection is a segment, not a
+    surface, and shapely can return it as a GeometryCollection."""
+    with pytest.raises(PieceError, match="clipping to the borders"):
         resolve_pieces([
             {"kind": "rect", "bounds": [10.0, 50.0, 14.0, 51.0]},
             {"kind": "clip"},
         ], "PL", cache_dir)
 
 
-def test_liste_vide_refusee(cache_dir):
+def test_an_empty_list_is_refused(cache_dir):
     with pytest.raises(PieceError):
         resolve_pieces([], "PL", cache_dir)
 
 
-def test_contour_de_deux_sommets_refuse(cache_dir):
+def test_a_two_vertex_outline_is_refused(cache_dir):
     with pytest.raises(PieceError):
         resolve_pieces([{"kind": "polygon", "ring": [[2.0, 48.0], [3.0, 48.0]]}], "PL", cache_dir)
 
 
-def test_coordonnee_hors_bornes_refusee(cache_dir):
+def test_an_out_of_bounds_coordinate_is_refused(cache_dir):
     with pytest.raises(PieceError):
         resolve_pieces([{"kind": "rect", "bounds": [2.0, 48.0, 3.0, 95.0]}], "PL", cache_dir)
 
 
-def test_coordonnee_non_numerique_refusee(cache_dir):
+def test_a_non_numeric_coordinate_is_refused(cache_dir):
     with pytest.raises(PieceError):
         resolve_pieces([{"kind": "rect", "bounds": [2.0, 48.0, "est", 49.0]}], "PL", cache_dir)
 
 
-def test_rectangle_degenere_refuse(cache_dir):
+def test_a_degenerate_rectangle_is_refused(cache_dir):
     with pytest.raises(PieceError):
         resolve_pieces([{"kind": "rect", "bounds": [2.0, 48.0, 2.0, 49.0]}], "PL", cache_dir)
 
 
-def test_type_de_morceau_inconnu_refuse(cache_dir):
+def test_an_unknown_piece_type_is_refused(cache_dir):
     with pytest.raises(PieceError):
         resolve_pieces([{"kind": "cercle", "radius_km": 25}], "PL", cache_dir)
 
 
-def test_code_de_region_inconnu_refuse(cache_dir):
+def test_an_unknown_region_code_is_refused(cache_dir):
     with pytest.raises(PieceError):
         resolve_pieces([{"kind": "admin1", "code": "POL-99"}], "PL", cache_dir)
 
 
-def test_pays_absent_de_natural_earth_refuse(cache_dir):
+def test_a_country_absent_from_natural_earth_is_refused(cache_dir):
     with pytest.raises(PieceError):
         resolve_pieces([{"kind": "country"}], "ZZ", cache_dir)
 
 
-def test_contour_trop_long_refuse(cache_dir):
+def test_an_overlong_outline_is_refused(cache_dir):
     ring = [[float(i) / 1000.0, 48.0 + float(i) / 1000.0] for i in range(2001)]
 
     with pytest.raises(PieceError):

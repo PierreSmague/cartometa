@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Cartometa — revue</title>
+  <title>Cartometa - review</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
@@ -16,8 +16,8 @@
     #info { padding: 8px 12px; }
     #sketch-row { color: #0a7d2b; font-weight: bold; }
     #sketch-row[hidden] { display: none; }
-    /* `color` explicite : sans elle, kbd hérite du blanc de l'en-tête et
-       devient illisible sur son propre fond clair. */
+    /* Explicit `color`: without it, kbd inherits the header's white and becomes
+       unreadable on its own light background. */
     kbd { background: #eee; color: #111; border-radius: 3px; padding: 1px 5px;
           border: 1px solid #bbb; }
     #error { background: #b00020; color: #fff; padding: 8px 12px; font-weight: bold; }
@@ -40,11 +40,11 @@
     <b id="progress">…</b>
     <span id="context"></span>
     <span style="margin-left:auto">
-      <kbd>D</kbd> rectangle <kbd>C</kbd> contour <kbd>Entrée</kbd> fermer le contour
-      <kbd>S</kbd> subdivisions <kbd>E</kbd> pays <kbd>F</kbd> rogner
-      <kbd>⌫</kbd> retirer <kbd>0</kbd> vider
-      <kbd>A</kbd> enregistrer <kbd>R</kbd> rejeter <kbd>Espace</kbd> suivante
-      <kbd>U</kbd> annuler <kbd>N</kbd> nouvelle méta
+      <kbd>D</kbd> rectangle <kbd>C</kbd> outline <kbd>Enter</kbd> close the outline
+      <kbd>S</kbd> subdivisions <kbd>E</kbd> country <kbd>F</kbd> clip
+      <kbd>⌫</kbd> remove <kbd>0</kbd> empty
+      <kbd>A</kbd> save <kbd>R</kbd> reject <kbd>Space</kbd> next
+      <kbd>U</kbd> undo <kbd>N</kbd> new meta
     </span>
   </header>
   <div id="error" hidden></div>
@@ -60,12 +60,12 @@
   </div>
 
   <div id="manual" hidden>
-    <h3>Nouvelle méta</h3>
-    <label for="manual-title">Titre</label>
+    <h3>New meta</h3>
+    <label for="manual-title">Title</label>
     <input id="manual-title" type="text">
     <label for="manual-description">Description</label>
     <textarea id="manual-description"></textarea>
-    <label for="manual-category">Catégorie</label>
+    <label for="manual-category">Category</label>
     <select id="manual-category">
       <option value="bollards">bollards</option>
       <option value="poteaux">poteaux</option>
@@ -74,13 +74,13 @@
       <option value="signalisation">signalisation</option>
       <option value="autre" selected>autre</option>
     </select>
-    <label for="manual-source">Source (URL, facultatif)</label>
+    <label for="manual-source">Source (URL, optional)</label>
     <input id="manual-source" type="text">
-    <div id="drop">Dépose une image ici, ou colle-la avec Ctrl+V</div>
+    <div id="drop">Drop an image here, or paste it with Ctrl+V</div>
     <p id="manual-error"></p>
     <p>
-      <button id="manual-save" type="button">Créer</button>
-      <button id="manual-cancel" type="button">Annuler (Échap)</button>
+      <button id="manual-save" type="button">Create</button>
+      <button id="manual-cancel" type="button">Cancel (Escape)</button>
     </p>
   </div>
 

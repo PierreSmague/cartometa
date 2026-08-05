@@ -1,89 +1,86 @@
-# Contribuer à Cartometa
+# Contributing to Cartometa
 
-Les contributions portent sur les métas et le tracé de leurs emprises. Nul
-besoin d'être développeur : le travail se fait à la souris, dans une
-interface locale.
+Contributions are about metas and drawing their footprints. No need to be a
+developer: the work is done with the mouse, in a local interface.
 
-## Licence des contributions
+## Licence of contributions
 
-En proposant une contribution, tu acceptes qu'elle soit publiée sous
-**CC BY-NC-SA 4.0**, comme le reste des données du projet. C'est une
-obligation de la licence de la source, pas un choix : Plonk It publie sous
-partage à l'identique.
+By offering a contribution you agree to it being published under
+**CC BY-NC-SA 4.0**, like the rest of the project's data. This is an
+obligation of the source's licence, not a choice: Plonk It publishes under
+share-alike.
 
-Le code, lui, reste sous licence MIT.
+The code itself stays MIT-licensed.
 
-## Demander l'accès — première étape
+## Requesting access — first step
 
-Ce dépôt n'attend pas de toi que tu saches ce qu'est un *fork*. On te donne
-directement le droit de travailler dessus.
+This repository does not expect you to know what a *fork* is. You are given
+the right to work on it directly.
 
-**[Ouvre une issue](https://github.com/PierreSmague/cartometa/issues/new)**
-en indiquant ton identifiant GitHub et le ou les pays qui t'intéressent.
-Tu recevras une invitation par courriel : accepte-la, et tu pourras créer
-des branches sur le dépôt.
+**[Open an issue](https://github.com/PierreSmague/cartometa/issues/new)**
+stating your GitHub username and the country or countries you are interested
+in. You will get an invitation by email: accept it, and you will be able to
+create branches on the repository.
 
-Ce que cet accès te permet, et ce qu'il ne permet pas :
+What that access lets you do, and what it does not:
 
 | | |
 |---|---|
-| Créer une branche et y pousser | oui |
-| Ouvrir une pull request | oui |
-| Pousser directement sur `master` | **non**, jamais |
-| Fusionner ta propre pull request | **non** — seul le mainteneur approuve |
+| Create a branch and push to it | yes |
+| Open a pull request | yes |
+| Push straight to `master` | **no**, never |
+| Merge your own pull request | **no** — only the maintainer approves |
 
-Rien de ce que tu fais sur ta branche ne peut abîmer le site en ligne ni le
-travail des autres. C'est le but de ce découpage : tu peux te tromper sans
-conséquence.
+Nothing you do on your branch can damage the live site or anyone else's work.
+That is the point of this split: you can make mistakes without consequence.
 
-## Circuit
+## The loop
 
-1. **Installe** — il faut git, Python ≥ 3.14 et [uv](https://docs.astral.sh/uv/) :
+1. **Install** — you need git, Python ≥ 3.14 and [uv](https://docs.astral.sh/uv/):
    ```
    git clone https://github.com/PierreSmague/cartometa.git
    cd cartometa
    uv sync
    ```
 
-2. **Saisis et trace** — `uv run cartometa-review <CC>` (`FR`, `BE`, `JP`…)
-   puis <http://127.0.0.1:8765>. `N` crée une méta, les touches `D` `C` `S`
-   `E` `F` tracent son emprise, `A` l'enregistre. Aucune donnée préalable
-   n'est nécessaire : un pays vide est un point de départ valide.
+2. **Enter and draw** — `uv run cartometa-review <CC>` (`FR`, `BE`, `JP`…)
+   then <http://127.0.0.1:8765>. `N` creates a meta, the keys `D` `C` `S`
+   `E` `F` draw its footprint, `A` saves it. No prior data is needed: an
+   empty country is a valid starting point.
 
-3. **Vérifie** — `uv run cartometa-build <CC>` puis
-   `python -m http.server 8010 --directory dist`. **Le code du pays est
-   obligatoire** : sans lui, la commande s'arrête sur le premier pays dont
-   tu n'as pas les textes, et c'est normal.
+3. **Check** — `uv run cartometa-build <CC>` then
+   `python -m http.server 8010 --directory dist`. **The country code is
+   mandatory**: without it the command stops on the first country whose texts
+   you do not have, and that is expected.
 
-4. **Propose** :
+4. **Offer it**:
    ```
    git switch -c metas-<cc>
    git add data/manual/<CC> data/geo/<CC>.geojson
-   git commit -m "feat: metas manuelles pour <pays>"
+   git commit -m "feat: manual metas for <country>"
    git push -u origin metas-<cc>
    ```
-   `git push` affiche une URL qui ouvre la pull request. Le mainteneur relit
-   et fusionne.
+   `git push` prints a URL that opens the pull request. The maintainer reviews
+   and merges.
 
-Un commit ne doit contenir **que** `data/manual/**` et `data/geo/*.geojson`.
-Si `git status` montre autre chose, quelque chose ne va pas.
+A commit must contain **only** `data/manual/**` and `data/geo/*.geojson`.
+If `git status` shows anything else, something is wrong.
 
-Le guide détaillé, de l'installation à la pull request, avec toutes les
-touches de tracé et les pannes courantes, est dans
-[`docs/ajouter-une-meta-a-la-main.md`](docs/ajouter-une-meta-a-la-main.md).
+The detailed guide, from installation to pull request, with every drawing key
+and the common failures, is in
+[`docs/adding-a-meta-by-hand.md`](docs/adding-a-meta-by-hand.md).
 
-## Deux règles absolues
+## Two absolute rules
 
-**Ne jamais écrire de crawler pour plonkit.net.** Leur `robots.txt` interdit
-tout accès automatisé et Cloudflare répond 403. Les pages sources se
-capturent à la main, une par une, avec `Ctrl+S`.
+**Never write a crawler for plonkit.net.** Their `robots.txt` disallows all
+automated access and Cloudflare answers 403. Source pages are captured by
+hand, one at a time, with `Ctrl+S`.
 
-**Ne verse aucune image dont tu n'as pas le droit de disposer.** Une capture
-Street View que tu as prise toi-même, oui. Une image récupérée ailleurs sans
-licence compatible, non.
+**Never commit an image you do not have the right to use.** A Street View
+screenshot you took yourself, yes. An image picked up elsewhere without a
+compatible licence, no.
 
-## Publication
+## Publishing
 
-La mise en ligne est faite séparément par le mainteneur : lui seul possède
-les images sources de l'ensemble du jeu, donc lui seul peut construire le
-site complet.
+Going live is done separately by the maintainer: only they hold the source
+images for the whole set, so only they can build the complete site.

@@ -15,102 +15,100 @@ from cartometa.build.site import (
     build_site,
 )
 
-# Repli de `--google-key`. Le sélecteur de fond de carte a déjà disparu du site
-# une fois parce qu'un build lancé pour autre chose avait omis l'option : la clé
-# ne vit que dans la ligne de commande, et `dist/` n'est pas versionné, donc
-# rien ne rattrapait l'oubli. La poser une fois dans l'environnement rend
-# n'importe quel build ultérieur complet par défaut.
+# Fallback for `--google-key`. The base map switch already vanished from the
+# site once because a build launched for something else had omitted the option:
+# the key only lives on the command line, and `dist/` is not versioned, so
+# nothing caught the omission. Setting it once in the environment makes any
+# later build complete by default.
 GOOGLE_KEY_ENV = "CARTOMETA_GOOGLE_KEY"
 
-# Forme documentée d'une clé de navigateur Google : « AIza » suivi de 35
-# caractères. On la vérifie parce que rien d'autre ne le fait : le build
-# recopie la valeur dans le manifeste sans la lire, et seul Google tranche —
-# une fois le site en ligne, par un `InvalidKeyMapError` que le visiteur voit
-# et que le build n'a jamais vu.
+# Documented shape of a Google browser key: "AIza" followed by 35 characters.
+# We check it because nothing else does: the build copies the value into the
+# manifest without reading it, and only Google decides — once the site is live,
+# through an `InvalidKeyMapError` the visitor sees and the build never saw.
 #
-# Vécu : une empreinte hexadécimale de 40 caractères, prise pour une clé dans
-# un fichier nommé `api_key.txt`, a été publiée telle quelle. Le build a
-# réussi, annoncé un sélecteur de fond de carte, et le fond Google était mort
-# en production. Un contrôle de forme coûte une ligne et aurait tout arrêté au
-# bon moment.
+# From experience: a 40-character hex fingerprint, mistaken for a key in a file
+# named `api_key.txt`, was published as-is. The build succeeded, announced a
+# base map switch, and the Google base map was dead in production. A shape
+# check costs one line and would have stopped everything at the right moment.
 FORME_CLE_GOOGLE = re.compile(r"^AIza[0-9A-Za-z_-]{35}$")
 
 
 def verifier_cle_google(cle: str) -> None:
-    """Refuse une valeur qui ne peut pas être une clé Google.
+    """Reject a value that cannot possibly be a Google key.
 
-    Ne dit rien de sa validité — seul Google le sait — mais élimine la faute
-    qui coûte le plus cher : publier autre chose qu'une clé.
+    Says nothing about its validity — only Google knows that — but rules out
+    the costliest mistake: publishing something that is not a key at all.
     """
     if cle and not FORME_CLE_GOOGLE.fullmatch(cle):
         raise SystemExit(
-            f"La clé Google fournie ne peut pas en être une : "
-            f"{len(cle)} caractères, « AIza » + 35 attendus.\n"
-            f"Publier cette valeur construirait un site annonçant un fond "
-            f"Google que l'API refuserait (InvalidKeyMapError), sans que rien "
-            f"ne le signale avant la mise en ligne.\n"
-            f"Vérifie --google-key, ou {GOOGLE_KEY_ENV} si l'option est absente."
+            f"The Google key given cannot possibly be one: "
+            f"{len(cle)} characters, \"AIza\" + 35 expected.\n"
+            f"Publishing this value would build a site advertising a Google base "
+            f"map that the API would refuse (InvalidKeyMapError), with nothing to "
+            f"flag it before going live.\n"
+            f"Check --google-key, or {GOOGLE_KEY_ENV} if the option is absent."
         )
 
 
 def main() -> None:
-    analyseur = argparse.ArgumentParser(description="Construit le site public")
+    analyseur = argparse.ArgumentParser(description="Builds the public site")
     analyseur.add_argument(
         "countries", nargs="*",
-        help="Codes ISO à publier. Par défaut, tous ceux présents dans data/geo/.",
+        help="ISO codes to publish. By default, every code found in data/geo/.",
     )
     analyseur.add_argument("--data", type=Path, default=Path("data"))
     analyseur.add_argument("--out", type=Path, default=Path("dist"))
     analyseur.add_argument("--viewer", type=Path, default=Path("viewer"))
     analyseur.add_argument(
         "--simplify-tolerance", type=float, default=DEFAULT_TOLERANCE,
-        help=f"Tolérance en degrés, plafonnée par emprise (défaut {DEFAULT_TOLERANCE}).",
+        help=f"Tolerance in degrees, capped per footprint (default {DEFAULT_TOLERANCE}).",
     )
     analyseur.add_argument(
         "--skip-images", action="store_true",
-        help="Saute l'encodage des images — pour itérer vite sur le code.",
+        help="Skips image encoding - to iterate fast on the code.",
     )
     analyseur.add_argument(
         "--image-base", default=IMAGE_BASE,
         help=(
-            "Préfixe des URL d'images dans le manifeste. Passer une URL absolue "
-            "(bucket R2 sur domaine personnalisé) déplace les images hors du "
-            f"déploiement sans toucher au code. Défaut : {IMAGE_BASE}"
+            "Prefix of the image URLs in the manifest. Passing an absolute URL "
+            "(an R2 bucket on a custom domain) moves the images out of the "
+            f"deployment without touching the code. Default: {IMAGE_BASE}"
         ),
     )
     analyseur.add_argument(
         "--site-url", default=SITE_URL,
         help=(
-            "Origine canonique inscrite dans les balises Open Graph, qui "
-            "exigent des URL absolues sous peine d'aperçu vide au partage. "
-            f"Défaut : {SITE_URL}"
+            "Canonical origin written into the Open Graph tags, which require "
+            "absolute URLs on pain of an empty preview when shared. "
+            f"Default: {SITE_URL}"
         ),
     )
     analyseur.add_argument(
         "--google-key", default=os.environ.get(GOOGLE_KEY_ENV, ""),
         help=(
-            "Clé Google Maps activant le second fond de carte. Sans elle, le "
-            "sélecteur n'apparaît pas et le site n'appelle jamais Google. À "
-            f"défaut, la variable d'environnement {GOOGLE_KEY_ENV} est lue : "
-            "un build qui oublie l'option ne retire pas le sélecteur du site "
-            "en silence. La passer ainsi plutôt que de la versionner : elle "
-            "sera publique dans le manifeste de toute façon, mais n'a pas à "
-            "rester dans l'historique git après une rotation. Restreins-la par "
-            "référent HTTP côté console Google."
+            "Google Maps key enabling the second base map. Without it, the "
+            "switch does not appear and the site never calls Google. Failing "
+            f"the option, the {GOOGLE_KEY_ENV} environment variable is read: "
+            "a build that forgets the option does not silently remove the "
+            "switch from the site. Prefer this over versioning the key: it "
+            "will be public in the manifest anyway, but it does not need to "
+            "stay in git history after a rotation. Restrict it by HTTP "
+            "referrer in the Google console."
         ),
     )
     arguments = analyseur.parse_args()
 
-    # Avant tout travail : douze minutes d'encodage d'images pour finir sur une
-    # clé refusée seraient perdues, et surtout le dist/ produit serait bon à
-    # jeter.
+    # Before any work: twelve minutes of image encoding ending on a rejected
+    # key would be wasted, and above all the resulting dist/ would be fit for
+    # the bin.
     verifier_cle_google(arguments.google_key)
 
     pays = [c.upper() for c in arguments.countries] or discover_countries(arguments.data)
     if not pays:
         raise SystemExit(
-            f"Aucun pays à publier : {arguments.data / 'geo'} ne contient aucun "
-            f".geojson.\nLance d'abord cartometa-extract puis cartometa-review."
+            f"No country to publish: {arguments.data / 'geo'} contains no "
+            f".geojson.\nRun cartometa-extract then cartometa-review first."
         )
 
     resultat = build_site(
@@ -120,41 +118,41 @@ def main() -> None:
     )
 
     detail = ", ".join(f"{p} {n}" for p, n in resultat["countries"].items())
-    print(f"{resultat['metas']} métas publiées vers {resultat['output']} ({detail})")
-    print(f"{resultat['files']} fichiers")
+    print(f"{resultat['metas']} metas published to {resultat['output']} ({detail})")
+    print(f"{resultat['files']} files")
 
     if resultat["files"] >= FILE_COUNT_WARNING:
         print(
-            f"\nAttention : {resultat['files']} fichiers, pour une limite de "
-            f"{FILE_COUNT_LIMIT} par déploiement Cloudflare Pages.\n"
-            f"Au plafond, c'est la publication qui échoue, pas le site en ligne.\n"
-            f"Parade : déplacer img/ vers un bucket R2 et changer `image_base` "
-            f"dans le manifeste."
+            f"\nWarning: {resultat['files']} files, against a limit of "
+            f"{FILE_COUNT_LIMIT} per Cloudflare Pages deployment.\n"
+            f"At the cap it is the publication that fails, not the live site.\n"
+            f"Workaround: move img/ to an R2 bucket and change `image_base` "
+            f"in the manifest."
         )
     if resultat["legacy_statuses"]:
         print(
-            f"\nAttention : {resultat['legacy_statuses']} emprise(s) portent un "
-            f"statut hérité (ni validé ni rejeté) et n'ont pas été publiées."
+            f"\nWarning: {resultat['legacy_statuses']} footprint(s) carry a legacy "
+            f"status (neither validé nor rejeté) and were not published."
         )
     if resultat["orphans"]:
         details = ", ".join(f"{p}:{i}" for p, i in resultat["orphans"])
         print(
-            f"\nAttention : {len(resultat['orphans'])} emprise(s) tracée(s) sans "
-            f"texte de méta, non publiée(s) : {details}\n"
-            f"Relancer cartometa-extract sur ces pays les republiera."
+            f"\nWarning: {len(resultat['orphans'])} drawn footprint(s) with no meta "
+            f"text, not published: {details}\n"
+            f"Re-running cartometa-extract on those countries will publish them."
         )
     if not arguments.google_key:
         print(
-            f"\nAttention : aucune clé Google — ce dist/ n'aura pas de sélecteur "
-            f"de fond de carte, le visiteur restera sur OpenStreetMap.\n"
-            f"Parade : passer --google-key, ou poser {GOOGLE_KEY_ENV} une fois "
-            f"pour toutes dans l'environnement."
+            f"\nWarning: no Google key - this dist/ will have no base map switch, "
+            f"and the visitor will stay on OpenStreetMap.\n"
+            f"Workaround: pass --google-key, or set {GOOGLE_KEY_ENV} once and for "
+            f"all in the environment."
         )
     if arguments.skip_images:
         print(
-            "\nAttention : --skip-images actif — ce dist/ ne contient aucune "
-            "image. Le contrôle d'intégrité passe quand même (rien à vérifier "
-            "sans clés thumb/full) : ne pas déployer ce dist/ tel quel."
+            "\nWarning: --skip-images is on - this dist/ contains no image. The "
+            "integrity check passes all the same (nothing to check without "
+            "thumb/full keys): do not deploy this dist/ as it stands."
         )
 
 

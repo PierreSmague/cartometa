@@ -11,75 +11,75 @@ from cartometa.geo.admin1 import region_geometry
 from cartometa.geo.reference import country_geometry
 
 MIN_RING_POINTS = 3
-# Un contour tracé à la souris compte quelques dizaines de sommets. Ce
-# plafond n'est pas une limite ergonomique mais un garde-fou : il empêche
-# qu'un client incorrect fasse tourner shapely sur une liste sans fin.
+# An outline drawn with the mouse has a few dozen vertices. This cap is not an
+# ergonomic limit but a safety rail: it stops a misbehaving client from running
+# shapely over an endless list.
 MAX_RING_POINTS = 2000
 
-# Seul « morceau » qui ne soit pas une surface à unir mais un modificateur
-# appliqué à l'union : il rogne le résultat aux frontières du pays.
+# The only "piece" that is not a surface to unite but a modifier applied to the
+# union: it clips the result to the country borders.
 CLIP = "clip"
 
 
 class PieceError(ValueError):
-    """Morceau de zone illisible, invalide, ou hors des bornes terrestres."""
+    """Area piece that is unreadable, invalid, or outside earthly bounds."""
 
 
 def _check_lonlat(lon: Any, lat: Any) -> tuple[float, float]:
     try:
         x, y = float(lon), float(lat)
     except (TypeError, ValueError):
-        raise PieceError(f"coordonnée non numérique : ({lon!r}, {lat!r})") from None
+        raise PieceError(f"non-numeric coordinate: ({lon!r}, {lat!r})") from None
     if not (-180.0 <= x <= 180.0 and -90.0 <= y <= 90.0):
-        raise PieceError(f"coordonnée hors des bornes WGS84 : ({x}, {y})")
+        raise PieceError(f"coordinate outside the WGS84 bounds: ({x}, {y})")
     return x, y
 
 
 def _rectangle(piece: dict) -> BaseGeometry:
     bounds = piece.get("bounds")
     if not isinstance(bounds, (list, tuple)) or len(bounds) != 4:
-        raise PieceError("un rectangle demande bounds = [ouest, sud, est, nord]")
+        raise PieceError("a rectangle needs bounds = [west, south, east, north]")
     west, south = _check_lonlat(bounds[0], bounds[1])
     east, north = _check_lonlat(bounds[2], bounds[3])
-    # Les deux clics arrivent dans l'ordre où l'humain les a posés, pas dans
-    # l'ordre géographique : on normalise plutôt que de refuser.
+    # The two clicks arrive in the order the human made them, not in geographic
+    # order: we normalise rather than refuse.
     west, east = min(west, east), max(west, east)
     south, north = min(south, north), max(south, north)
     if west == east or south == north:
-        raise PieceError("rectangle de surface nulle")
+        raise PieceError("rectangle with zero area")
     return box(west, south, east, north)
 
 
 def _contour(piece: dict) -> BaseGeometry:
     ring = piece.get("ring")
     if not isinstance(ring, (list, tuple)):
-        raise PieceError("un contour demande ring = [[lon, lat], …]")
+        raise PieceError("an outline needs ring = [[lon, lat], ...]")
     if not (MIN_RING_POINTS <= len(ring) <= MAX_RING_POINTS):
         raise PieceError(
-            f"un contour demande entre {MIN_RING_POINTS} et {MAX_RING_POINTS} "
-            f"sommets, reçu {len(ring)}"
+            f"an outline needs between {MIN_RING_POINTS} and {MAX_RING_POINTS} "
+            f"vertices, got {len(ring)}"
         )
     points = []
     for vertex in ring:
         if not isinstance(vertex, (list, tuple)) or len(vertex) != 2:
-            raise PieceError(f"sommet illisible : {vertex!r}")
+            raise PieceError(f"unreadable vertex: {vertex!r}")
         points.append(_check_lonlat(vertex[0], vertex[1]))
 
     geom = Polygon(points)
     if not geom.is_valid:
-        # Un contour tracé à la souris s'auto-intersecte facilement.
-        # `buffer(0)` le répare sans trahir l'intention — même traitement
-        # que les contours Natural Earth abîmés (cf. country_geometry).
+        # An outline drawn with the mouse self-intersects easily. `buffer(0)`
+        # repairs it without betraying the intent — the same treatment as damaged
+        # Natural Earth outlines (cf. country_geometry).
         geom = geom.buffer(0)
     if geom.is_empty or geom.area <= 0.0:
-        raise PieceError("contour de surface nulle")
+        raise PieceError("outline with zero area")
     return geom
 
 
 def _region(piece: dict, country: str, cache_dir: Path) -> BaseGeometry:
     code = piece.get("code")
     if not isinstance(code, str) or not code:
-        raise PieceError("un morceau admin1 demande le code de la région")
+        raise PieceError("an admin1 piece needs the region code")
     try:
         return region_geometry(country, code, cache_dir)
     except KeyError as exc:
@@ -96,38 +96,38 @@ def _country(country: str, cache_dir: Path) -> BaseGeometry:
 def _clip_to_country(union: BaseGeometry, country: str, cache_dir: Path) -> BaseGeometry:
     clipped = union.intersection(_country(country, cache_dir))
     if clipped.geom_type == "GeometryCollection":
-        # Une intersection peut rendre des bouts sans surface — un rectangle
-        # qui effleure la frontière donne un segment. Seul le surfacique est
-        # une emprise ; le reste est du bruit géométrique à jeter.
+        # An intersection can yield bits with no area — a rectangle grazing the
+        # border gives a segment. Only what has area is a footprint; the rest is
+        # geometric noise to throw away.
         clipped = unary_union([part for part in clipped.geoms if part.area > 0.0])
     if clipped.is_empty or clipped.area <= 0.0:
         raise PieceError(
-            "le rognage aux frontières ne laisse aucune surface : "
-            "les morceaux posés sont entièrement hors du pays"
+            "clipping to the borders leaves no area: "
+            "the pieces laid down are entirely outside the country"
         )
     return clipped
 
 
 def resolve_pieces(pieces: list[dict], country: str, cache_dir: Path) -> BaseGeometry:
-    """Union des morceaux d'une zone, résolus côté serveur.
+    """Union of an area's pieces, resolved server-side.
 
-    Le client n'envoie que des descripteurs : `{"kind": "country"}` ou
-    `{"kind": "admin1", "code": …}` sont résolus ici depuis Natural Earth,
-    jamais reçus sous forme de coordonnées. Une silhouette publiée est donc
-    toujours celle du référentiel, quoi qu'ait affiché le navigateur.
+    The client only ever sends descriptors: `{"kind": "country"}` or
+    `{"kind": "admin1", "code": …}` are resolved here from Natural Earth, never
+    received as coordinates. So a published silhouette is always the reference
+    data's, whatever the browser happened to display.
 
-    `{"kind": "clip"}` est le seul descripteur qui n'apporte pas de surface :
-    il rogne l'union sur la silhouette du pays. Son rang dans la liste n'a
-    aucune importance — il s'applique une fois, à la fin.
+    `{"kind": "clip"}` is the only descriptor that brings no surface: it clips the
+    union to the country silhouette. Its position in the list is irrelevant — it
+    applies once, at the end.
     """
     if not isinstance(pieces, (list, tuple)) or not pieces:
-        raise PieceError("aucun morceau : il n'y a rien à enregistrer")
+        raise PieceError("no piece: there is nothing to save")
 
     geometries = []
     clip = False
     for piece in pieces:
         if not isinstance(piece, dict):
-            raise PieceError(f"morceau illisible : {piece!r}")
+            raise PieceError(f"unreadable piece: {piece!r}")
         kind = piece.get("kind")
         if kind == CLIP:
             clip = True
@@ -140,12 +140,12 @@ def resolve_pieces(pieces: list[dict], country: str, cache_dir: Path) -> BaseGeo
         elif kind == "polygon":
             geometries.append(_contour(piece))
         else:
-            raise PieceError(f"type de morceau inconnu : {kind!r}")
+            raise PieceError(f"unknown piece type: {kind!r}")
 
     if not geometries:
-        raise PieceError("le rognage n'est pas une emprise : aucune surface à rogner")
+        raise PieceError("clipping is not a footprint: no area to clip")
 
     union = unary_union(geometries)
     if union.is_empty or not union.is_valid or union.area <= 0.0:
-        raise PieceError("l'union des morceaux ne donne aucune surface valide")
+        raise PieceError("the union of the pieces yields no valid area")
     return _clip_to_country(union, country, cache_dir) if clip else union
