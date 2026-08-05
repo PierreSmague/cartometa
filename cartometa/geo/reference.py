@@ -89,8 +89,12 @@ def country_code_for_name(name: str, cache_dir: Path) -> str | None:
     return None
 
 
+@lru_cache(maxsize=64)
 def country_geometry(iso_a2: str, cache_dir: Path) -> BaseGeometry:
-    """Natural Earth 1:10m outline of the country, in WGS84."""
+    """Natural Earth 1:10m outline of the country, in WGS84.
+
+    Memoized: callers must treat the returned geometry as immutable.
+    """
     data = _load(str(ensure_dataset(cache_dir)))
     for feature in data["features"]:
         props = feature["properties"]
