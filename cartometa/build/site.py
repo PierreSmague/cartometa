@@ -386,5 +386,6 @@ def build_site(
         "files": fichiers,
         "legacy_statuses": jeu.legacy_statuses,
         "orphans": jeu.orphans,
+        "unknown_overrides": jeu.unknown_overrides,
         "output": str(out_dir),
     }
