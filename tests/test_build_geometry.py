@@ -7,6 +7,8 @@ from shapely.geometry.base import BaseGeometry
 from cartometa.build.geometry import (
     DEFAULT_TOLERANCE,
     SIZE_DIVISOR,
+    THIN_DIVISOR,
+    THIN_FLOOR_DIVISOR,
     area_ratio,
     effective_tolerance,
     hausdorff,
@@ -143,6 +145,95 @@ def test_the_hausdorff_distance_stays_under_the_effective_tolerance():
     simplifiee = simplify_geometry(dense)
 
     assert hausdorff(dense, simplifiee) <= DEFAULT_TOLERANCE * 2
+
+
+def test_a_thin_ribbon_is_not_over_simplified():
+    """Regression WjWO (KG): a 1.26° x ~0.1° valley ribbon lost 5.7 % of its
+    area because the tolerance was capped by the diagonal only.
+
+    The height below is 0.003, not the 0.05 of the brief's original sketch:
+    at 0.05 the diagonal-only tolerance (~0.00255°) is already small enough
+    relative to this synthetic ribbon that the drift stayed under 5 % (RED
+    never happened). Narrowing the ribbon to 0.003 (measured empirically,
+    see task-5b-report.md) reproduces a stable ~7.9 % drift with the old
+    code, which is what the fix below must bring back under 5 %.
+    """
+    import math as _math
+    haut = [[x, 0.003 + 0.003 * _math.sin(8 * x)] for x in
+            [i * 1.26 / 20 for i in range(21)]]
+    bas = [[x, -0.003 - 0.003 * _math.sin(8 * x)] for x in
+           [i * 1.26 / 20 for i in range(20, -1, -1)]]
+    ruban = {"type": "Polygon", "coordinates": [haut + bas + [haut[0]]]}
+
+    simplifiee = simplify_geometry(ruban, DEFAULT_TOLERANCE)
+
+    assert abs(1.0 - area_ratio(ruban, simplifiee)) <= 0.05
+
+
+def test_a_compact_shape_keeps_the_diagonal_cap():
+    """The new width bound must not bind for squares: same tolerance as before."""
+    carre = {"type": "Polygon",
+             "coordinates": [[[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]]]}
+    diagonale = math.hypot(10, 10)
+    assert effective_tolerance(carre, DEFAULT_TOLERANCE) == min(
+        DEFAULT_TOLERANCE, diagonale / SIZE_DIVISOR
+    )
+
+
+def test_a_moderately_thin_shape_uses_the_width_bound():
+    """THIN_DIVISOR only governs (comes out as the smallest bound) for
+    footprints whose mean width sits strictly between diagonal/40 (where the
+    floor, THIN_FLOOR_DIVISOR, takes over instead) and diagonal/10 (where the
+    diagonal cap, SIZE_DIVISOR, already wins). None of the other synthetic
+    tests exercise that band: the ribbon test and the fractal-perimeter test
+    both pass through the floor, and the compact-square test never reaches
+    the width bound at all — so THIN_DIVISOR itself could drift from 50 to
+    ~12 without a single fast test noticing.
+
+    A simple 1° x 0.05° rectangle has a mean width of ~0.0476°, comfortably
+    inside that band (diagonal/40 ~= 0.025°, diagonal/10 ~= 0.100°): its
+    tolerance must come straight from the width bound.
+    """
+    rectangle = {
+        "type": "Polygon",
+        "coordinates": [[[0, 0], [1, 0], [1, 0.05], [0, 0.05], [0, 0]]],
+    }
+    forme = shape(rectangle)
+    largeur_moyenne = 2.0 * forme.area / forme.length
+    min_lon, min_lat, max_lon, max_lat = forme.bounds
+    diagonale = math.hypot(max_lon - min_lon, max_lat - min_lat)
+    # Sanity check: confirm the rectangle really sits in the width-bound band.
+    assert diagonale / 40 < largeur_moyenne < diagonale / 10
+
+    assert effective_tolerance(rectangle, DEFAULT_TOLERANCE) == pytest.approx(
+        largeur_moyenne / THIN_DIVISOR
+    )
+
+
+def test_a_fractal_perimeter_keeps_the_floor_tolerance():
+    """A fractal coastline (fjords, archipelagos) inflates the perimeter enough
+    to collapse the mean-width bound (2*area/perimeter) far below any tolerance
+    a diagonal-based bound would ever produce: without a floor, simplification
+    of these footprints becomes a near no-op and hausdorff verification grinds
+    for minutes per footprint.
+
+    The brief's original sketch (~200 vertices, amplitude 0.002 on one side of
+    a 1x1 square) does not collapse the width bound far enough below the floor
+    (measured empirically: width bound ~0.0098 vs a floor of ~0.0007 — RED
+    never happened). Reproducing the effect needs many more, taller teeth:
+    1000 vertices, amplitude 0.1, tuned empirically, see task-5b-report.md.
+    """
+    n = 1000
+    amplitude = 0.1
+    bord_dente = [[i / n, amplitude if i % 2 else 0.0] for i in range(n + 1)]
+    carre_fractal = {
+        "type": "Polygon",
+        "coordinates": [bord_dente + [[1, 1], [0, 1], bord_dente[0]]],
+    }
+    min_lon, min_lat, max_lon, max_lat = shape(carre_fractal).bounds
+    diagonale = math.hypot(max_lon - min_lon, max_lat - min_lat)
+
+    assert effective_tolerance(carre_fractal, DEFAULT_TOLERANCE) >= diagonale / THIN_FLOOR_DIVISOR
 
 
 def test_a_multipolygon_is_simplified_part_by_part():
