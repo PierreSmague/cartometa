@@ -32,9 +32,18 @@ LANGUAGE = (
     r"\b(cyrillic|glagolitic|kanji|kana|hangul|hanzi|devanagari|abjad"
     r"|(?:latin|arabic|greek|hebrew|thai|khmer|georgian|armenian)\s"
     r"(?:script|alphabet|letters?|characters?|numerals?)"
-    r"|script|alphabet|lettering|diacritic|umlaut|tilde|cedilla"
-    r"|language|bilingual|transliterat|spelling)"
+    r"|script|alphabet|diacritic|umlaut|tilde|cedilla"
+    r"|language|bilingual|transliterat|spelling"
+    # A quoted word is the single most common language clue in the corpus: "the
+    # Catalan word for street is carrer", "uses the word ALTO on stop signs".
+    # 55 metas turn on one, and they were scattered across three categories
+    # before this. `in other words` is excluded as the filler it is.
+    r"|(?<!in other )\bwords?\b)"
 )
+# `lettering` was removed after measurement: all 11 metas containing it are pole
+# plates, stickers, street-name signs and number plates. It describes the styling
+# of text, not a writing system, and it was dragging every one of them into
+# Culture.
 
 # Object-wins rules, first match wins, evaluated on the title then on the
 # description.
@@ -46,15 +55,24 @@ RULES: list[tuple[str, str]] = [
     # The vehicle and the capture itself. Bare `car` is deliberately excluded:
     # it would swallow "car park". A colour or an article in front of it is what
     # marks the Google car.
-    ("car", r"\b(google car|street ?view car|(?:the|a|white|blue|grey|gray|black|red)\s"
+    # `driver` was removed: "an arrow informs drivers where the shoulder line
+    # is" is road paint, not a car meta.
+    #
+    # Number plates live here: the plate is on the vehicle. Without them,
+    # `lettering` sent one plate meta to Culture while an identical one landed in
+    # Car — the same clue in two categories is worse than either choice.
+    ("car", r"\b(google car|street ?view car|follow car"
+            r"|(?:the|a|white|blue|grey|gray|black|red|yellow|green|silver|dark"
+            r"|light)\s"
             r"cars?\b|vehicle|camera|antenna|blur|rift|snorkel|trekker|coverage"
-            r"|generations? ?\d|gen ?\d|shitcam|dashcam|roof rack|driver|windscreen)"),
+            r"|generations? ?\d|gen ?\d|shitcam|dashcam|roof rack|windscreen"
+            r"|(?:number|licence|license|front|rear) plates?\b|plates? with)"),
     ("infrastructure",
      r"\b(pole|bollard|sign|signage|signal|marking|guard ?rail|kerb|curb|bridge"
      r"|tunnel|bus stop|railway|tram|pylon|power line|wire|cable|street ?light"
      r"|lamp ?post|paving|asphalt|tarmac|junction|roundabout|road|highway|route"
      r"|motorway|shield|chevron|delineator|reflector|barrier|manhole|hydrant"
-     r"|utility|pavement|sidewalk|crossing|parking|car park"
+     r"|utility|pavement|sidewalk|crossing|parking|car park|arrow|shoulder"
      # Electricity boxes and counters: a major family, especially in the
      # Philippines. Without keywords of their own they fell through to whatever
      # incidental word the description held — "the southern half of the island"
@@ -74,7 +92,9 @@ RULES: list[tuple[str, str]] = [
      r"|silo|barn|granary|fence|chimney|door|gate|stadium|bunker)"),
     ("vegetation",
      r"\b(tree|forest|wood(?:land|ed)|vegetat|crop|field|farm|agricultur"
-     r"|plantation|orchard|palm|grass|bush|shrub|pasture|paddy|vineyard|flower"
+     # `rice` as well as `paddy`: the paddy is the field, the rice is the crop,
+     # and "Fully-grown rice" names only the crop.
+     r"|plantation|orchard|palm|grass|bush|shrub|pasture|paddy|rice|vineyard|flower"
      # `cact` and not `cactus`: the plural is `cacti`.
      r"|cact|bamboo|moss|scrub|savanna|jungle|hedge|foliage|harvest"
      # A greenhouse is a building, but the spec files it under agriculture. It
@@ -92,7 +112,10 @@ RULES: list[tuple[str, str]] = [
     #
     # `flags?\b` and not `flag`: `flagstone` is paving, not a flag.
     ("culture",
-     r"\b(flags?\b|flagpole|religio|buddhis|muslim|islam|christian|hindu|shinto"
+     # Named denominations as well as `religio`: metas say "Catholic country",
+     # never "religious country".
+     r"\b(flags?\b|flagpole|religio|buddhis|muslim|islam|christian|catholic"
+     r"|orthodox|protestant|lutheran|hindu|shinto"
      r"|festival|patriot|national colou?r|domain|currency|traditional dress"
      r"|graffiti|mural|cemetery|grave)"),
 ]

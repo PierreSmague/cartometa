@@ -115,6 +115,62 @@ def test_a_cactus_shaped_like_a_tube_stays_vegetation():
     ) == "vegetation"
 
 
+def test_named_denominations_are_culture():
+    """`christian` alone missed the word every meta actually uses."""
+    assert infer_category("Poland is one of the most Catholic countries", "") == "culture"
+    assert infer_category("Orthodox crosses have three bars", "") == "culture"
+
+
+def test_rice_is_vegetation():
+    """`paddy` covers the field, not the crop: "Fully-grown rice" fell through."""
+    assert infer_category("Fully-grown rice", "") == "vegetation"
+
+
+def test_licence_plates_are_car_metas():
+    """The plate is on the vehicle. Before this, `lettering` sent a plate meta to
+    Culture, while an identical Sri Lankan one landed in Car — the same clue in
+    two categories is worse than either choice."""
+    assert infer_category(
+        "Liechtenstein uses black plates with white lettering", ""
+    ) == "car"
+    assert infer_category(
+        "Vehicles have long white front plates and short yellow rear plates", ""
+    ) == "car"
+
+
+def test_the_word_driver_does_not_make_a_road_marker_a_car_meta():
+    """"An arrow informs drivers where the shoulder line is" is road paint."""
+    assert infer_category(
+        "This infrastructural arrow informs drivers of where the shoulder line is", ""
+    ) == "infrastructure"
+
+
+def test_a_word_quoted_from_a_sign_is_a_language_clue():
+    """55 metas in the corpus turn on a written word, and they were split across
+    `autre`, `infrastructure` and `culture` — the same clue in three categories.
+    The agreed rule settles it: language wins even when carried by a sign."""
+    assert infer_category("The Catalan word for street is carrer", "") == "culture"
+    assert infer_category("Mexico uses the word ALTO on stop signs", "") == "culture"
+    assert infer_category(
+        "These one-way traffic signs, with the word Einbahn written on them", ""
+    ) == "culture"
+
+
+def test_in_other_words_is_not_a_language_clue():
+    """The filler phrase must not drag a meta into Culture."""
+    assert infer_category(
+        "Bollards are short, in other words easy to miss", ""
+    ) == "infrastructure"
+
+
+def test_a_follow_car_is_a_car_meta():
+    """The colour list gates bare `car`, so it has to be wide enough: a yellow
+    follow car was landing in Architecture on the word `windows`."""
+    assert infer_category(
+        "A yellow follow car with two front windows trails the Google truck", ""
+    ) == "car"
+
+
 def test_an_incidental_infrastructure_word_outranks_culture():
     """A known and accepted limitation, measured before being accepted.
 
