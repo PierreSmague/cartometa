@@ -1,4 +1,6 @@
 import json
+import socket
+import sys
 import threading
 import urllib.error
 import urllib.request
@@ -340,3 +342,47 @@ def test_post_decision_without_an_origin_header_still_works(paths, live_server):
     assert status == 200
     assert json.loads(body) == {"ok": True}
     assert load_geo(paths)["aaaa"].status == STATUS_REJECTED
+
+
+# --- Startup port: the interface used to default to AnkiConnect's port. On Windows
+# `SO_REUSEADDR` lets a second bind on a listening port succeed, so the server printed
+# its URL as if all was well while Anki kept serving that port — the browser got
+# `{"apiVersion": "AnkiConnect v.6"}` and nothing else, with no error anywhere. Hence a
+# port of our own, and an occupied port detected by probing rather than by trusting bind.
+
+
+def test_the_default_port_is_not_ankiconnects(paths):
+    """Whatever the default becomes, it must never be the port Anki already answers on."""
+    assert server.DEFAULT_PORT != server.ANKICONNECT_PORT
+    assert server.build_parser().parse_args([]).port == server.DEFAULT_PORT
+
+
+def test_an_occupied_port_is_seen_as_occupied():
+    """The case bind alone does not catch on Windows: a live listener on the port."""
+    with HTTPServer(("127.0.0.1", 0), server.Handler) as occupant:
+        assert server.port_is_taken("127.0.0.1", occupant.server_address[1]) is True
+
+
+def test_a_free_port_is_not_reported_as_occupied():
+    """The probe must not cry wolf: a port nobody listens on has to read as free, or the
+    command would refuse to start at all."""
+    with socket.socket() as scout:
+        scout.bind(("127.0.0.1", 0))
+        port = scout.getsockname()[1]
+
+    assert server.port_is_taken("127.0.0.1", port) is False
+
+
+def test_main_refuses_an_occupied_port_instead_of_announcing_a_url(monkeypatch, capsys):
+    """The heart of the bug: no URL may be printed for a port we do not serve."""
+    with HTTPServer(("127.0.0.1", 0), server.Handler) as occupant:
+        port = occupant.server_address[1]
+        monkeypatch.setattr(sys, "argv", ["cartometa-review", "PL", "--port", str(port)])
+
+        with pytest.raises(SystemExit) as excinfo:
+            server.main()
+
+    assert excinfo.value.code == 1
+    sortie = capsys.readouterr()
+    assert str(port) in sortie.err
+    assert "http://127.0.0.1" not in sortie.out

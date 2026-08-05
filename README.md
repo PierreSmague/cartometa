@@ -75,7 +75,7 @@ Add `--retry-failed-links` to retry links marked unresolvable.
 uv run cartometa-review <CC>
 ```
 
-Serves an interface on <http://127.0.0.1:8765> (loopback only). Every meta
+Serves an interface on <http://127.0.0.1:8799> (loopback only). Every meta
 arrives **without geometry**: drawing its footprint is up to you.
 
 | Key | Action |
@@ -198,8 +198,12 @@ Chrome ≥ 142 asks for on the first call. Safari does not allow that dialog.
 
 Two notes for development:
 
-- AnkiConnect listens on port 8765 — the same as `cartometa-review`. With Anki
-  open during a drawing session, one of the two will not start.
+- AnkiConnect listens on port 8765, `cartometa-review` on 8799: Anki can stay
+  open during a drawing session. They shared 8765 until the review server was
+  moved, and the collision was silent — on Windows `SO_REUSEADDR` let the second
+  bind succeed, so the interface announced its URL while Anki went on serving
+  that port. Should any port be busy now, the command refuses to start and says
+  so instead of half-starting.
 - The build publishes the Natural Earth silhouette (`outline`) in each country
   file, as the mini-map's background. Country unknown to the dataset, or
   dataset unreachable: the build carries on and says so, and that country's
