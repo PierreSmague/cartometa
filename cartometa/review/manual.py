@@ -13,29 +13,28 @@ from cartometa.atomic_write import write_json_atomic
 from cartometa.models import ORIGIN_MANUAL, TIER_MANUAL, MetaRecord
 from cartometa.review.store import CountryPaths, load_metas, read_json_list
 
-# Une capture d'écran collée dépasse rarement le mégaoctet. Le plafond
-# n'existe pas pour contraindre l'usage mais pour qu'un client incorrect ne
-# puisse pas remplir le disque.
+# A pasted screenshot rarely goes beyond a megabyte. The cap does not exist to
+# constrain usage but so that a misbehaving client cannot fill the disk.
 MAX_IMAGE_BYTES = 8 * 1024 * 1024
 
 EXTENSION_BY_FORMAT = {"PNG": ".png", "JPEG": ".jpg", "WEBP": ".webp", "GIF": ".gif"}
 
 CATEGORIES = ("bollards", "poteaux", "vehicule", "vegetation", "signalisation", "autre")
 
-# Forme exacte d'un identifiant frappé par `new_meta_id` : un préfixe fixe
-# suivi de quatre caractères hexadécimaux, rien d'autre.
+# Exact shape of an identifier minted by `new_meta_id`: a fixed prefix followed
+# by four hexadecimal characters, nothing else.
 _MINTED_ID = re.compile(r"^man-[0-9a-f]{4}$")
 
 
 class ManualMetaError(ValueError):
-    """Saisie manuelle refusée : champ manquant, ou image inexploitable."""
+    """Manual entry refused: missing field, or unusable image."""
 
 
 def new_meta_id(existing: set[str]) -> str:
-    """Identifiant `man-xxxx` libre.
+    """A free `man-xxxx` identifier.
 
-    Le préfixe rend toute collision impossible avec les identifiants Plonk
-    It, qui font quatre caractères sans préfixe.
+    The prefix makes any collision with Plonk It identifiers impossible, as those
+    are four characters with no prefix.
     """
     while True:
         candidate = f"man-{secrets.token_hex(2)}"
@@ -46,7 +45,7 @@ def new_meta_id(existing: set[str]) -> str:
 def _required(value: str | None, label: str) -> str:
     cleaned = (value or "").strip()
     if not cleaned:
-        raise ManualMetaError(f"{label} est obligatoire")
+        raise ManualMetaError(f"{label} is required")
     return cleaned
 
 
@@ -58,17 +57,17 @@ def create_meta(
     category: str | None,
     source_url: str | None = "",
 ) -> dict:
-    """Crée une méta saisie à la main et l'ajoute au fichier manuel du pays."""
-    title = _required(title, "le titre")
-    description = _required(description, "la description")
+    """Create a hand-entered meta and append it to the country's manual file."""
+    title = _required(title, "the title")
+    description = _required(description, "the description")
     if category not in CATEGORIES:
         raise ManualMetaError(
-            f"catégorie inconnue : {category!r} (attendu {', '.join(CATEGORIES)})"
+            f"unknown category: {category!r} (expected {', '.join(CATEGORIES)})"
         )
 
     meta = MetaRecord(
-        # L'unicité se juge sur les DEUX sources : un identifiant libre côté
-        # manuel mais déjà pris côté import casserait la fusion.
+        # Uniqueness is judged over BOTH sources: an identifier free on the manual
+        # side but already taken on the imported side would break the merge.
         id=new_meta_id({m["id"] for m in load_metas(paths)}),
         country=paths.country,
         tier=TIER_MANUAL,
@@ -88,11 +87,11 @@ def create_meta(
 
 
 def _relative_to_cwd(path: Path) -> str:
-    """Chemin tel que le serveur le sert : relatif à la racine du projet.
+    """Path as the server serves it: relative to the project root.
 
-    Le serveur sert les fichiers depuis son répertoire de travail, et les
-    métas importées y stockent déjà `input/…`. On garde la même convention
-    pour que l'interface n'ait qu'une règle : préfixer par `/`.
+    The server serves files from its working directory, and imported metas already
+    store `input/…` there. We keep the same convention so the interface has only one
+    rule: prefix with `/`.
     """
     root = Path.cwd().resolve()
     absolute = (root / path).resolve()
@@ -102,37 +101,37 @@ def _relative_to_cwd(path: Path) -> str:
 
 
 def save_image(paths: CountryPaths, meta_id: str, raw: bytes) -> str:
-    """Écrit l'image d'une méta manuelle et la rattache à celle-ci."""
-    # Validé avant toute construction de chemin et avant la recherche dans
-    # metas.json : le garde-fou ne doit pas dépendre du contenu du fichier,
-    # seulement de la forme de l'identifiant lui-même.
+    """Write a manual meta's image and attach it to that meta."""
+    # Validated before any path is built and before the lookup in metas.json: the
+    # safety rail must not depend on the file's content, only on the shape of the
+    # identifier itself.
     if Path(meta_id).name != meta_id or not _MINTED_ID.fullmatch(meta_id):
-        raise ManualMetaError(f"identifiant de méta invalide : {meta_id!r}")
+        raise ManualMetaError(f"invalid meta identifier: {meta_id!r}")
     if len(raw) > MAX_IMAGE_BYTES:
         raise ManualMetaError(
-            f"image trop lourde : {len(raw)} octets, maximum {MAX_IMAGE_BYTES}"
+            f"image too large: {len(raw)} bytes, maximum {MAX_IMAGE_BYTES}"
         )
     try:
         image = Image.open(BytesIO(raw))
         image_format = image.format
         image.verify()
     except (UnidentifiedImageError, OSError, ValueError):
-        raise ManualMetaError("les octets reçus ne forment pas une image lisible") from None
+        raise ManualMetaError("the bytes received do not form a readable image") from None
     except DecompressionBombError:
-        raise ManualMetaError("l'image déclare des dimensions trop grandes pour être traitées") from None
+        raise ManualMetaError("the image declares dimensions too large to be processed") from None
     extension = EXTENSION_BY_FORMAT.get(image_format or "")
     if extension is None:
-        raise ManualMetaError(f"format d'image non accepté : {image_format!r}")
+        raise ManualMetaError(f"image format not accepted: {image_format!r}")
 
     metas = read_json_list(paths.manual_metas)
     target = next((m for m in metas if m["id"] == meta_id), None)
     if target is None:
-        raise ManualMetaError(f"méta manuelle inconnue : {meta_id!r}")
+        raise ManualMetaError(f"unknown manual meta: {meta_id!r}")
 
-    # Le nom du fichier vient de l'identifiant reçu, mais celui-ci a déjà été
-    # validé contre la forme mintée (`man-` + 4 hex, sans composant de
-    # chemin) puis retrouvé dans metas.json : aucun composant de chemin
-    # fourni par le client ne peut donc atteindre le système de fichiers.
+    # The file name comes from the identifier received, but that identifier has
+    # already been validated against the minted shape (`man-` + 4 hex, no path
+    # component) then found in metas.json: so no client-supplied path component can
+    # reach the file system.
     paths.manual_images.mkdir(parents=True, exist_ok=True)
     destination = paths.manual_images / f"{meta_id}{extension}"
     destination.write_bytes(raw)

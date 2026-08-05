@@ -6,17 +6,15 @@ from typing import Any
 
 
 def write_json_atomic(path: Path, payload: Any, *, indent: int | None = 2) -> None:
-    """Écrit `payload` en JSON à `path` par fichier temporaire puis remplacement.
+    """Write `payload` as JSON to `path` through a temp file, then replace.
 
-    Une interruption (coupure, Ctrl-C, disque plein) en plein milieu de
-    l'écriture ne doit jamais laisser `path` tronqué ou corrompu : le fichier
-    temporaire, lui, peut rester à moitié écrit, mais `path` n'est remplacé
-    qu'une fois l'écriture terminée avec succès (`os.replace` est atomique
-    sur le même volume).
+    An interruption (power cut, Ctrl-C, disk full) in the middle of the write
+    must never leave `path` truncated or corrupted: the temp file may well be
+    left half-written, but `path` is only replaced once the write has finished
+    successfully (`os.replace` is atomic within one volume).
 
-    Utilisé par le serveur de revue (`cartometa/review/server.py`), qui porte
-    le seul travail humain irremplaçable du dépôt : les géométries tracées à
-    la main.
+    Used by the review server (`cartometa/review/server.py`), which carries the
+    repository's only irreplaceable human work: the hand-drawn geometries.
     """
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")

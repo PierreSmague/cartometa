@@ -37,12 +37,12 @@ export function bboxContains(bbox, x, y) {
   return x >= bbox[0] && x <= bbox[2] && y >= bbox[1] && y <= bbox[3];
 }
 
-// Lancer de rayon. Un point sur une frontière peut tomber d'un côté ou de
-// l'autre selon l'arrondi : sans conséquence ici, l'humain reclique.
+// Ray casting. A point on a border may fall on one side or the other depending on
+// rounding: of no consequence here, the human just clicks again.
 //
-// La mise à jour `j = i, i += 1` fait de `j` le sommet PRÉCÉDENT : c'est la
-// paire (i, j) qui décrit l'arête. L'écrire `j = i += 1` donnerait à `j` la
-// valeur incrémentée et testerait des arêtes de longueur nulle.
+// The `j = i, i += 1` update makes `j` the PREVIOUS vertex: it is the (i, j) pair
+// that describes the edge. Writing it `j = i += 1` would give `j` the incremented
+// value and test zero-length edges.
 function ringContains(ring, x, y) {
   let inside = false;
   for (let i = 0, j = ring.length - 1; i < ring.length; j = i, i += 1) {
@@ -55,7 +55,7 @@ function ringContains(ring, x, y) {
 }
 
 function polygonContains(rings, x, y) {
-  // Hors de l'anneau extérieur, ou dans un trou : dans les deux cas, dehors.
+  // Outside the outer ring, or inside a hole: either way, outside.
   if (!ringContains(rings[0], x, y)) return false;
   return !rings.slice(1).some((hole) => ringContains(hole, x, y));
 }

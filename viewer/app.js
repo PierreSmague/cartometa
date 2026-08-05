@@ -1,16 +1,16 @@
 const etat = {
   manifeste: null,
   index: [],
-  pays: new Map(),   // code pays -> {metas, geometries}
+  pays: new Map(),   // country code -> {metas, geometries}
   resultats: [],
   categorie: '',
   recherche: '',
-  pret: false,   // true seulement une fois manifeste ET index chargés avec succès
-  // Ces deux drapeaux disent à `rendre()` (et à ses appelants autres que le
-  // clic : recherche, pastilles) ce qu'il y a réellement à l'écran en ce
-  // moment, plutôt que de les laisser deviner d'après `resultats` seul.
-  chargement: false,   // une requête pour le clic courant est en vol
-  erreur: false,       // le dernier clic a échoué ; le message reste affiché
+  pret: false,   // true only once BOTH manifest and index have loaded successfully
+  // These two flags tell `rendre()` (and its callers other than the click: search,
+  // category pills) what is actually on screen right now, rather than letting them
+  // guess from `resultats` alone.
+  chargement: false,   // a request for the current click is in flight
+  erreur: false,       // the last click failed; the message stays on screen
 };
 
 const carte = L.map('carte', { worldCopyJump: true }).setView([25, 15], 3);
@@ -18,20 +18,18 @@ const fondOSM = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
   attribution: '© OpenStreetMap', maxZoom: 18,
 }).addTo(carte);
 const surlignage = L.layerGroup().addTo(carte);
-// Marque le point réellement interrogé, qu'il vienne d'un clic ou d'un lien
-// collé : le surlignage montre l'emprise entière d'une méta, jamais le point
-// qui l'a fait apparaître. Indispensable pour un lien collé, que le visiteur
-// n'a pas désigné à l'écran ; utile au clic, où l'emprise seule ne dit pas
-// quel point l'a sélectionnée.
+// Marks the point actually queried, whether it came from a click or a pasted link:
+// the highlight shows a meta's whole footprint, never the point that brought it up.
+// Indispensable for a pasted link, which the visitor did not point at on screen;
+// useful on click, where the footprint alone does not say which point selected it.
 const pointInterroge = L.layerGroup().addTo(carte);
-// Bleu, et non l'accent rouge du site : celui-ci sert déjà à surligner
-// l'emprise d'une méta au survol, et le repère se confondrait avec ce qu'il
-// est censé distinguer. Même bleu que la vérité terrain de l'outil de tracé
-// (`cartometa/review/static/app.js`), pour un sens identique des deux côtés
-// du projet : voici le point exact dont on parle.
-// En dur pour la même raison que le surlignage ci-dessous : Leaflet pose la
-// couleur en attribut de présentation SVG, où les variables CSS ne sont pas
-// substituées de façon fiable.
+// Blue, and not the site's red accent: that one already highlights a meta's
+// footprint on hover, and the marker would blend into what it is supposed to stand
+// out from. The same blue as the drawing tool's ground truth
+// (`cartometa/review/static/app.js`), for an identical meaning on both sides of the
+// project: here is the exact point being talked about.
+// Hard-coded for the same reason as the highlight below: Leaflet sets the colour as
+// an SVG presentation attribute, where CSS variables are not reliably substituted.
 const COULEUR_POINT = '#0057d9';
 
 async function demarrer() {
@@ -45,29 +43,28 @@ async function demarrer() {
     creerSelecteurDeFond();
     restaurerVue();
   } catch (erreur) {
-    // Sans ce filet, un manifeste ou un index indisponible laisse une page
-    // muette, indiscernable d'un simple chargement encore en cours.
+    // Without this net, an unavailable manifest or index leaves a mute page,
+    // indistinguishable from a load that is simply still in progress.
     document.getElementById('accueil').textContent =
       'Could not load the meta index. Please reload the page.';
   }
 }
 
 // ---------------------------------------------------------------------------
-// Sélecteur de fond de carte
+// Base map switch
 //
-// OpenStreetMap est le fond par défaut, et le redevient à chaque chargement de
-// page. Rien de Google n'est demandé — ni script, ni carte instanciée — tant
-// que le visiteur n'a pas cliqué sur « Google ». Ce n'est pas une optimisation
-// mais la condition du dispositif : Google facture à l'initialisation de
-// carte, donc un visiteur de passage qui reste sur OSM ne coûte rien et
-// n'apparaît nulle part côté Google.
+// OpenStreetMap is the default base map, and becomes so again on every page load.
+// Nothing from Google is requested — no script, no map instance — until the visitor
+// has clicked "Google". This is not an optimisation but the condition of the whole
+// arrangement: Google bills on map initialisation, so a passing visitor who stays on
+// OSM costs nothing and appears nowhere on Google's side.
 //
-// Le choix n'est délibérément pas mémorisé : un habitué ne doit pas se
-// retrouver à solliciter Google sans l'avoir redemandé.
+// The choice is deliberately not remembered: a regular must not find themselves
+// calling on Google without having asked for it again.
 // ---------------------------------------------------------------------------
 
-let fondGoogle = null;        // construit au premier basculement, jamais avant
-let chargementGoogle = null;  // promesse mémorisée : jamais deux chargements
+let fondGoogle = null;        // built on the first switch, never before
+let chargementGoogle = null;  // memoised promise: never two loads
 
 function chargerScript(src) {
   return new Promise((resolve, reject) => {
@@ -75,38 +72,36 @@ function chargerScript(src) {
     balise.src = src;
     balise.async = true;
     balise.addEventListener('load', resolve);
-    balise.addEventListener('error', () => reject(new Error(`échec du script ${src}`)));
+    balise.addEventListener('error', () => reject(new Error(`script failed: ${src}`)));
     document.head.append(balise);
   });
 }
 
 async function preparerFondGoogle() {
-  // `loading=async` est la forme réclamée par Google depuis 2023, et elle
-  // impose un `callback`. On ne s'en sert pas : c'est l'événement `load` de la
-  // balise qu'on attend, `Function.prototype` n'est là que pour satisfaire le
-  // paramètre obligatoire.
+  // `loading=async` is the form Google has required since 2023, and it mandates a
+  // `callback`. We do not use it: what we wait for is the tag's `load` event,
+  // `Function.prototype` is only there to satisfy the mandatory parameter.
   await chargerScript(
     'https://maps.googleapis.com/maps/api/js'
     + `?key=${encodeURIComponent(etat.manifeste.google_key)}`
     + '&loading=async&callback=Function.prototype'
   );
-  // Le greffon n'a besoin que de Leaflet pour s'enregistrer, mais le charger
-  // ensuite garde les deux échecs possibles dans l'ordre où on les diagnostique.
+  // The plugin only needs Leaflet to register itself, but loading it afterwards
+  // keeps the two possible failures in the order one diagnoses them.
   await chargerScript(etat.manifeste.google_mutant);
   return L.gridLayer.googleMutant({ type: 'roadmap' });
 }
 
 function creerSelecteurDeFond() {
-  // Sans clé, pas de sélecteur du tout : un contributeur qui construit le site
-  // en local obtient un aperçu entier, simplement dépourvu du second fond.
+  // Without a key, no switch at all: a contributor who builds the site locally gets
+  // a whole preview, simply missing the second base map.
   if (!etat.manifeste.google_key || !etat.manifeste.google_mutant) return;
 
   const controle = L.control({ position: 'topright' });
   controle.onAdd = () => {
     const boite = L.DomUtil.create('div', 'choix-fond');
-    // Sans cela, cliquer sur le sélecteur déclencherait aussi
-    // `carte.on('click')` : le visiteur changerait de fond ET interrogerait le
-    // point situé sous le bouton.
+    // Without this, clicking the switch would also fire `carte.on('click')`: the
+    // visitor would change base map AND query the point under the button.
     L.DomEvent.disableClickPropagation(boite);
 
     const boutons = {};
@@ -117,12 +112,11 @@ function creerSelecteurDeFond() {
       }
     };
 
-    // Repli commun aux deux façons dont Google peut faire défaut. La seconde a
-    // été observée en production : une clé refusée ne fait pas échouer la
-    // promesse du script — celui-ci se charge très bien, puis l'API appelle
-    // `window.gm_authFailure` et se contente de ne rien dessiner. Sans ce
-    // branchement, le visiteur reste devant un rectangle gris, OSM ayant déjà
-    // été retiré, et le bouton continue de s'afficher allumé.
+    // Fallback shared by the two ways Google can let us down. The second was
+    // observed in production: a refused key does not make the script's promise
+    // fail — it loads perfectly well, then the API calls `window.gm_authFailure` and
+    // simply draws nothing. Without this hook-up, the visitor is left facing a grey
+    // rectangle, OSM having already been removed, and the button keeps showing lit.
     function abandonnerGoogle() {
       chargementGoogle = null;
       boutons.google.textContent = 'Google';
@@ -130,8 +124,8 @@ function creerSelecteurDeFond() {
       boutons.google.title = 'Google basemap unavailable';
       basculer('osm');
     }
-    // Nom imposé par l'API Google, qui l'appelle sur l'objet global : clé
-    // invalide, facturation absente, quota épuisé.
+    // Name imposed by the Google API, which calls it on the global object: invalid
+    // key, no billing, exhausted quota.
     window.gm_authFailure = abandonnerGoogle;
 
     async function basculer(vers) {
@@ -145,13 +139,14 @@ function creerSelecteurDeFond() {
       if (!fondGoogle) {
         boutons.google.textContent = '…';
         try {
-          // Mémorisée : deux clics impatients ne chargent pas deux fois.
+          // Memoised: two impatient clicks do not load twice.
           chargementGoogle = chargementGoogle || preparerFondGoogle();
           fondGoogle = await chargementGoogle;
         } catch (erreur) {
-          // Script injoignable ou bloqué (réseau, bloqueur de contenu) : sans ce
-          // repli, la carte resterait blanche sans que rien ne l'explique. Une
-          // clé refusée, elle, ne passe pas par ici — voir `abandonnerGoogle`.
+          // Script unreachable or blocked (network, content blocker): without this
+          // fallback, the map would stay blank with nothing to explain it. A refused
+          // key, on the other hand, does not come through here — see
+          // `abandonnerGoogle`.
           abandonnerGoogle();
           return;
         }
@@ -174,8 +169,8 @@ function creerSelecteurDeFond() {
   controle.addTo(carte);
 }
 
-// Un pays n'est téléchargé qu'une fois, et la promesse est mémorisée : deux
-// clics rapides dans le même pays ne déclenchent pas deux requêtes.
+// A country is downloaded only once, and the promise is memoised: two quick clicks
+// in the same country do not trigger two requests.
 const enCours = new Map();
 function chargerPays(code) {
   if (etat.pays.has(code)) return Promise.resolve(etat.pays.get(code));
@@ -187,9 +182,9 @@ function chargerPays(code) {
       etat.pays.set(code, contenu);
       return contenu;
     })
-    // Si le fetch échoue, retirer l'entrée dans tous les cas : sinon une simple
-    // coupure réseau bloquerait ce pays derrière une promesse rejetée pour
-    // toujours, et aucun clic ultérieur ne pourrait retenter le chargement.
+    // If the fetch fails, remove the entry in every case: otherwise a mere network
+    // outage would lock that country behind a rejected promise forever, and no later
+    // click could retry the load.
     .finally(() => enCours.delete(code));
   enCours.set(code, promesse);
   return promesse;
@@ -210,7 +205,7 @@ function dansAnneau(lon, lat, anneau) {
 function dansPolygone(lon, lat, anneaux) {
   if (!dansAnneau(lon, lat, anneaux[0])) return false;
   for (let i = 1; i < anneaux.length; i += 1) {
-    if (dansAnneau(lon, lat, anneaux[i])) return false; // trou
+    if (dansAnneau(lon, lat, anneaux[i])) return false; // hole
   }
   return true;
 }
@@ -221,11 +216,11 @@ function contient(geometrie, lon, lat) {
 }
 
 async function interroger(lon, lat, surPartiel) {
-  // L'index est déjà trié par surface croissante : l'ordre du résultat est
-  // celui du plus spécifique au plus général, sans retrier. Une emprise aux
-  // parties éloignées (Russie sur ±180°) occupe plusieurs lignes — même id,
-  // bbox distincte — d'où la déduplication : la première ligne dont la bbox
-  // contient le point suffit, le test précis se fait sur la géométrie entière.
+  // The index is already sorted by increasing area: the result order is from most
+  // specific to most general, with no re-sorting. A footprint with far-apart parts
+  // (Russia across ±180°) takes up several rows — same id, distinct bbox — hence the
+  // deduplication: the first row whose bbox contains the point is enough, the precise
+  // test is done on the whole geometry.
   const vus = new Set();
   const candidats = [];
   for (const ligne of etat.index) {
@@ -237,9 +232,9 @@ async function interroger(lon, lat, surPartiel) {
   }
   const codes = [...new Set(candidats.map(([, code]) => code))];
 
-  // Le test point-dans-polygone est mémorisé par géométrie : depuis la
-  // déduplication des géométries côté build, les 19 métas nationales russes
-  // partagent le même contour — le tester une fois suffit.
+  // The point-in-polygon test is memoised per geometry: since geometries are
+  // deduplicated on the build side, the 19 Russian national metas share the same
+  // outline — testing it once is enough.
   const cacheContient = new Map();
   const charges = new Set();
   const resultatsCharges = () => candidats
@@ -255,10 +250,9 @@ async function interroger(lon, lat, surPartiel) {
     })
     .map(([id, code]) => ({ id, code, ...etat.pays.get(code).metas[id] }));
 
-  // Rendu incrémental : chaque pays s'affiche dès qu'il arrive, au lieu
-  // d'attendre le plus lent. `resultatsCharges` recalcule la liste complète
-  // dans l'ordre de l'index, donc l'ordre par surface reste correct quel que
-  // soit l'ordre d'arrivée des fichiers.
+  // Incremental rendering: each country shows up as soon as it arrives, instead of
+  // waiting for the slowest. `resultatsCharges` recomputes the full list in index
+  // order, so the ordering by area stays correct whatever order the files arrive in.
   await Promise.all(codes.map((code) => chargerPays(code).then(() => {
     charges.add(code);
     if (surPartiel && charges.size < codes.length) surPartiel(resultatsCharges());
@@ -266,14 +260,13 @@ async function interroger(lon, lat, surPartiel) {
   return resultatsCharges();
 }
 
-// Compteur de génération : incrémenté à chaque clic, pour qu'un clic plus
-// lent ne vienne pas écraser l'affichage d'un clic plus récent déjà résolu.
+// Generation counter: incremented on every click, so that a slower click does not
+// overwrite the display of a more recent click that has already resolved.
 let generation = 0;
 
-// Chemin unique de toute interrogation, qu'elle vienne d'un clic sur la carte
-// ou d'un lien collé : un seul endroit porte le compteur de génération, les
-// drapeaux d'état et le traitement d'erreur. Deux copies de cette logique
-// finiraient par divertir l'une de l'autre.
+// The single path of every query, whether it comes from a click on the map or from a
+// pasted link: one place carries the generation counter, the state flags and the error
+// handling. Two copies of this logic would end up drifting apart.
 async function allerAuPoint(lon, lat) {
   const generationDuClic = ++generation;
   document.getElementById('accueil').hidden = true;
@@ -283,12 +276,12 @@ async function allerAuPoint(lon, lat) {
   afficherSquelettes();
   surlignage.clearLayers();
   pointInterroge.clearLayers();
-  // Posé avant l'appel réseau : le repère apparaît au clic, sans attendre la
-  // galerie. Il survit aussi à un échec de chargement, où il reste la seule
-  // trace de ce qui a été demandé.
+  // Placed before the network call: the marker appears on click, without waiting for
+  // the gallery. It also survives a load failure, where it remains the only trace of
+  // what was asked for.
   L.circleMarker([lat, lon], {
-    // interactive: false pour la même raison que le surlignage — un calque
-    // interactif capte le clic et rend la carte muette sous le marqueur.
+    // interactive: false for the same reason as the highlight — an interactive layer
+    // captures the click and makes the map mute under the marker.
     interactive: false,
     radius: 6, color: COULEUR_POINT, weight: 2,
     fillColor: COULEUR_POINT, fillOpacity: 0.35,
@@ -296,31 +289,30 @@ async function allerAuPoint(lon, lat) {
   let resultats;
   try {
     resultats = await interroger(lon, lat, (partiels) => {
-      // Un clic plus récent a repris la main : ses squelettes et ses propres
-      // résultats ne doivent pas être écrasés par ce reliquat.
+      // A more recent click has taken over: its skeletons and its own results must
+      // not be overwritten by this leftover.
       if (generationDuClic !== generation) return;
-      // Tant que rien n'est trouvé, on garde les squelettes : afficher
-      // « aucune méta » alors que des pays chargent encore serait mentir.
+      // As long as nothing is found, we keep the skeletons: showing "no meta" while
+      // countries are still loading would be lying.
       if (!partiels.length) return;
       etat.resultats = partiels;
       rendre();
     });
   } catch (erreur) {
-    // Sans ce filet, un pays qui échoue à charger laisse la galerie bloquée
-    // sur les squelettes, sans que le visiteur sache que quelque chose a échoué.
-    if (generationDuClic !== generation) return; // un clic plus récent a pris le relais
-    // Vider `resultats` est essentiel, pas cosmétique : sans ça, un filtre
-    // tapé juste après cet échec s'appliquerait aux résultats du clic
-    // précédent (ou au tableau initial) et afficherait soit « aucun meta »
-    // pour un simple problème réseau, soit pire, de vraies cartes d'un autre
-    // point comme si elles appartenaient à celui-ci.
+    // Without this net, a country that fails to load leaves the gallery stuck on the
+    // skeletons, with no way for the visitor to know something failed.
+    if (generationDuClic !== generation) return; // a more recent click took over
+    // Emptying `resultats` is essential, not cosmetic: without it, a filter typed
+    // right after this failure would apply to the previous click's results (or to the
+    // initial array) and would show either "no meta" for a mere network problem or,
+    // worse, real cards from another point as if they belonged to this one.
     etat.resultats = [];
     etat.chargement = false;
     etat.erreur = true;
     montrer({ message: 'Could not load metas for this area.' });
     return;
   }
-  // Ce clic n'est plus le plus récent : son résultat est périmé, on l'ignore.
+  // This click is no longer the most recent: its result is stale, we ignore it.
   if (generationDuClic !== generation) return;
   etat.resultats = resultats;
   etat.chargement = false;
@@ -330,14 +322,14 @@ async function allerAuPoint(lon, lat) {
 }
 
 carte.on('click', (evenement) => {
-  // Sans ce garde-fou, un premier clic après un échec au démarrage efface
-  // aussitôt le message d'erreur dans #accueil et rend une galerie vide sans
-  // exception : le visiteur perd la seule explication qu'il aura jamais eue.
+  // Without this safety rail, a first click after a startup failure immediately wipes
+  // the error message in #accueil and renders an empty gallery without an exception:
+  // the visitor loses the only explanation they will ever have had.
   if (!etat.pret) return;
-  // `.wrap()` : avec `worldCopyJump`, un clic sur une copie répétée du monde
-  // (zoom ≤ 2) porte une longitude hors ±180°, que rien dans `etat.index`
-  // (des bbox en ±180°) ne peut jamais recouvrir — un clic pourtant valide
-  // ressortirait « aucune méta » sans raison visible.
+  // `.wrap()`: with `worldCopyJump`, a click on a repeated copy of the world
+  // (zoom ≤ 2) carries a longitude outside ±180°, which nothing in `etat.index`
+  // (bboxes within ±180°) can ever cover — a perfectly valid click would come back
+  // as "no meta" for no visible reason.
   const { lng: lon, lat } = evenement.latlng.wrap();
   allerAuPoint(lon, lat);
 });
@@ -358,12 +350,11 @@ demarrer();
 
 const loupe = document.getElementById('loupe');
 
-// Les sections de portée viennent du gabarit : le script ne fait que remplir
-// leur grille et les masquer, jamais les recréer. C'est ce qui laisse l'état
-// déplié/replié choisi par le visiteur survivre à chaque rendu — un <details>
-// reconstruit à chaque frappe dans la recherche se rouvrirait sous les doigts.
-// L'ordre du DOM (régional puis national) porte l'ordre d'affichage : rien
-// dans le script n'a à le redire.
+// The scope sections come from the template: the script only fills their grid and
+// hides them, never recreates them. That is what lets the expanded/collapsed state
+// chosen by the visitor survive every render — a <details> rebuilt on every keystroke
+// in the search box would reopen under their fingers. The DOM order (regional then
+// national) carries the display order: nothing in the script has to restate it.
 const groupes = [...document.querySelectorAll('.groupe')].map((element) => ({
   element,
   portee: element.dataset.portee,
@@ -377,10 +368,10 @@ function urlImage(nom) {
   return etat.manifeste.image_base + nom;
 }
 
-// Les trois états de la galerie sont exclusifs — squelettes en attente, message
-// seul, ou sections remplies — et chacun doit éteindre les deux autres. Passer
-// par un point unique évite qu'un chemin oublie d'en éteindre un et laisse par
-// exemple un message d'erreur au-dessus des cartes du clic précédent.
+// The gallery's three states are exclusive — waiting skeletons, a lone message, or
+// filled sections — and each has to switch the other two off. Going through a single
+// point stops a path from forgetting to switch one off and leaving, for instance, an
+// error message above the previous click's cards.
 function montrer({ chargement = false, message = '' } = {}) {
   squelettes.hidden = !chargement;
   messageVide.hidden = !message;
@@ -407,12 +398,11 @@ function visibles() {
 function creerCarte(meta) {
   const bloc = document.createElement('article');
   bloc.className = 'carte-meta';
-  // textContent plutôt qu'innerHTML : les titres viennent d'un HTML tiers
-  // et peuvent contenir n'importe quoi.
-  // Une meta sans image (le build omet `thumb`/`full` ensemble quand il
-  // n'y a pas de source) garde sa place dans la galerie : seule la
-  // vignette est omise, pas la carte, pour que le compte affiché
-  // corresponde toujours au nombre de metas trouvées.
+  // textContent rather than innerHTML: the titles come from third-party HTML and can
+  // contain anything.
+  // A meta with no image (the build omits `thumb`/`full` together when there is no
+  // source) keeps its place in the gallery: only the thumbnail is omitted, not the
+  // card, so that the count shown always matches the number of metas found.
   if (meta.thumb) {
     const image = document.createElement('img');
     image.loading = 'lazy';
@@ -428,15 +418,14 @@ function creerCarte(meta) {
   bloc.appendChild(legende);
   bloc.addEventListener('mouseenter', () => {
     surlignage.clearLayers();
-    // Couleur en dur et non `var(--accent)` : Leaflet la pose comme attribut
-    // de présentation SVG, où la substitution des variables CSS n'est pas
-    // fiable selon les navigateurs. Garder les deux valeurs synchronisées
-    // avec `--accent` dans style.css.
+    // Hard-coded colour and not `var(--accent)`: Leaflet sets it as an SVG
+    // presentation attribute, where CSS variable substitution is not reliable across
+    // browsers. Keep both values in sync with `--accent` in style.css.
     L.geoJSON(etat.pays.get(meta.code).geometries[meta.geom], {
-      // interactive: false — sinon le calque du surlignage capte le clic
-      // à sa place (Leaflet appelle `DomEvent.fakeStop`, qui empêche
-      // `carte.on('click')` de se déclencher) : la zone entière resterait
-      // muette au premier clic tant que la souris ne l'a pas quittée.
+      // interactive: false — otherwise the highlight layer captures the click in its
+      // place (Leaflet calls `DomEvent.fakeStop`, which stops `carte.on('click')` from
+      // firing): the whole area would stay mute on the first click until the mouse has
+      // left it.
       interactive: false,
       color: '#c1283a', weight: 2, fillOpacity: 0.18,
     }).addTo(surlignage);
@@ -458,25 +447,25 @@ function rendre() {
     const siennes = metas.filter((meta) => meta.scope === groupe.portee);
     groupe.grille.replaceChildren(...siennes.map(creerCarte));
     groupe.compte.textContent = siennes.length;
-    // Une section sans résultat est retirée plutôt qu'affichée à zéro : le
-    // point cliqué n'est simplement couvert que par une seule portée, ce n'est
-    // pas un manque à signaler. Le compte de celle qui reste dit déjà tout.
+    // A section with no result is removed rather than shown at zero: the clicked
+    // point is simply covered by one scope only, that is not a gap worth reporting.
+    // The count of the one that remains already says everything.
     groupe.element.hidden = !siennes.length;
   }
 }
 
 function ouvrirLoupe(meta) {
   const image = document.getElementById('loupe-image');
-  // Même défaut que pour la vignette : sans `full`, ne pas demander
-  // « img/undefined » ni ouvrir un agrandissement vide. L'image est
-  // masquée, mais le titre et le lien source restent affichés.
+  // Same shortcoming as for the thumbnail: without `full`, do not request
+  // "img/undefined" nor open an empty blow-up. The image is hidden, but the title and
+  // the source link stay on screen.
   image.hidden = !meta.full;
   image.src = meta.full ? urlImage(meta.full) : '';
   const texte = document.getElementById('loupe-texte');
-  // Une méta saisie à la main n'a pas forcément de source : le champ est
-  // facultatif à la saisie, parce que ces métas sont souvent trouvées en
-  // explorant une carte et n'ont aucune page d'origine à citer. Sans garde,
-  // on afficherait un lien « source » qui ne mène nulle part.
+  // A hand-entered meta does not necessarily have a source: the field is optional on
+  // entry, because such metas are often found while exploring a map and have no
+  // original page to cite. Without a guard, we would show a "source" link that leads
+  // nowhere.
   if (meta.source_url) {
     texte.textContent = `${meta.title} `;
     const lien = document.createElement('a');
@@ -488,10 +477,10 @@ function ouvrirLoupe(meta) {
   } else {
     texte.textContent = meta.title;
   }
-  // Tout ce que le module Anki doit savoir passe par cet événement : app.js
-  // ne connaît pas Anki, anki.js ne connaît ni la carte ni la galerie. L'URL
-  // d'image est absolue parce qu'elle quitte la page — c'est Anki (le
-  // logiciel) qui la téléchargera, pas ce navigateur.
+  // Everything the Anki module needs to know goes through this event: app.js does not
+  // know about Anki, anki.js knows neither the map nor the gallery. The image URL is
+  // absolute because it leaves the page — it is Anki (the software) that will download
+  // it, not this browser.
   document.dispatchEvent(new CustomEvent('cartometa:loupe', {
     detail: {
       meta,
@@ -513,23 +502,23 @@ loupe.addEventListener('click', (e) => { if (e.target === loupe) fermerLoupe(); 
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fermerLoupe(); });
 
 document.getElementById('recherche').addEventListener('input', (e) => {
-  // Pendant un chargement ou après une erreur, `resultats` ne correspond à
-  // rien d'affichable pour le clic courant (vide, ou périmé d'un clic
-  // précédent) : filtrer dessus remplacerait le squelette ou le message
-  // d'erreur par un rendu trompeur. On ignore l'interaction ; le clic en
-  // cours (ou le prochain) rendra lui-même l'état à jour.
+  // During a load or after an error, `resultats` corresponds to nothing displayable
+  // for the current click (empty, or stale from a previous click): filtering on it
+  // would replace the skeleton or the error message with a misleading render. We
+  // ignore the interaction; the click in progress (or the next one) will render the
+  // up-to-date state itself.
   if (etat.chargement || etat.erreur) return;
   etat.recherche = e.target.value;
   rendre();
 });
 
-// Filtre par catégorie : un seul choix actif, cumulé avec la recherche dans
-// `visibles`. La portée n'est plus un filtre — elle répartit les résultats
-// entre les deux sections repliables, qui se lisent donc ensemble.
+// Category filter: a single active choice, combined with the search in `visibles`.
+// Scope is no longer a filter — it splits the results between the two collapsible
+// sections, which are therefore read together.
 const pastilles = [...document.querySelectorAll('.pastille')];
 for (const bouton of pastilles) {
   bouton.addEventListener('click', () => {
-    // Même garde-fou que pour la recherche : voir le commentaire ci-dessus.
+    // Same safety rail as for the search: see the comment above.
     if (etat.chargement || etat.erreur) return;
     for (const autre of pastilles) autre.classList.toggle('active', autre === bouton);
     etat.categorie = bouton.dataset.categorie;
@@ -537,25 +526,25 @@ for (const bouton of pastilles) {
   });
 }
 
-// --- Barre de lien Street View ---------------------------------------------
+// --- Street View link bar --------------------------------------------------
 
-// Assez près pour reconnaître l'endroit, assez large pour situer la ville
-// autour : un lien Street View désigne un point, pas une emprise.
+// Close enough to recognise the place, wide enough to place the city around it: a
+// Street View link designates a point, not a footprint.
 const ZOOM_LIEN = 14;
 
-// Hôtes des liens raccourcis, alignés sur `MAPS_RE` de
+// Hosts of the shortened links, aligned with `MAPS_RE` in
 // cartometa/extract/maps_links.py.
 const LIEN_COURT = /^https?:\/\/(?:maps\.app\.goo\.gl|goo\.gl)\//i;
 
-// Formes porteuses de coordonnées, de la plus fiable à la plus incidente. Les
-// deux premières sont celles réellement observées sur les 2007 liens Plonk It
-// résolus par le build (cf. `LATLON_RE` et `VIEWPOINT_RE`) ; les suivantes
-// couvrent les autres façons dont Google Maps inscrit un point dans une URL.
+// Forms that carry coordinates, from the most reliable to the most incidental. The
+// first two are the ones actually observed across the 2007 Plonk It links resolved by
+// the build (cf. `LATLON_RE` and `VIEWPOINT_RE`); the rest cover the other ways Google
+// Maps writes a point into a URL.
 const MOTIFS_LATLON = [
-  /\/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/,             // /@LAT,LON — caméra Street View
-  /[?&]viewpoint=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/,  // viewer panorama api=1
-  /!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/,           // fiche de lieu
-  /[?&]cbll=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/,       // ancien Street View
+  /\/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/,             // /@LAT,LON — Street View camera
+  /[?&]viewpoint=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/,  // api=1 panorama viewer
+  /!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/,           // place card
+  /[?&]cbll=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/,       // legacy Street View
   /[?&](?:q|query|ll|center)=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/,
 ];
 
@@ -563,9 +552,8 @@ function validerLatLon(lat, lon) {
   const a = Number(lat);
   const b = Number(lon);
   if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
-  // Un motif peut coïncider avec autre chose qu'un point — `!3d` sert à
-  // plusieurs usages dans un blob `data=`. Hors bornes, on refuse plutôt que
-  // d'envoyer la carte nulle part.
+  // A pattern can match something other than a point — `!3d` serves several purposes
+  // inside a `data=` blob. Out of bounds, we refuse rather than send the map nowhere.
   if (a < -90 || a > 90 || b < -180 || b > 180) return null;
   return [a, b];
 }
@@ -590,21 +578,19 @@ function direLien(message, echec = false) {
 }
 
 async function resoudreLienCourt(url) {
-  // Un lien court est illisible depuis le navigateur : goo.gl n'envoie aucun
-  // en-tête CORS (vérifié), donc la redirection ne peut pas être suivie ici.
-  // `/api/resolve` la suit côté serveur et ne renvoie que le point.
-  // `v=2` fait partie de la clé de cache du navigateur, et c'est tout son
-  // objet. La première version renvoyait ses échecs avec `max-age=86400` :
-  // un visiteur ayant essuyé une résolution manquée garde cette réponse
-  // négative en cache pendant 24 h, et corriger le serveur n'y change rien
-  // puisque son navigateur ne le rappelle jamais. Changer l'adresse crée une
-  // nouvelle entrée et le tire d'affaire sans rien lui demander. À
-  // incrémenter si un tel épisode se reproduit.
+  // A short link is unreadable from the browser: goo.gl sends no CORS header
+  // (verified), so the redirect cannot be followed here. `/api/resolve` follows it
+  // server-side and returns nothing but the point.
+  // `v=2` is part of the browser's cache key, and that is its entire purpose. The
+  // first version returned its failures with `max-age=86400`: a visitor who hit a
+  // missed resolution keeps that negative answer cached for 24 h, and fixing the
+  // server changes nothing since their browser never calls it again. Changing the
+  // address creates a new entry and gets them out of it without asking anything of
+  // them. To be incremented if such an episode happens again.
   const reponse = await fetch(`/api/resolve?v=2&url=${encodeURIComponent(url)}`);
-  // Lever plutôt que rendre `null` : un relais injoignable et un lien sans
-  // coordonnées appellent deux messages différents. Les confondre a
-  // réellement coûté un diagnostic — « aucune coordonnée » accusait le lien
-  // alors que la panne était ailleurs.
+  // Throwing rather than returning `null`: an unreachable relay and a link without
+  // coordinates call for two different messages. Conflating them really did cost a
+  // diagnosis — "no coordinates" blamed the link while the fault was elsewhere.
   if (!reponse.ok) throw new Error(`resolve ${reponse.status}`);
   const charge = await reponse.json();
   return Array.isArray(charge.latlon)
@@ -612,14 +598,14 @@ async function resoudreLienCourt(url) {
     : null;
 }
 
-// Même raison que `generation` pour les clics : la résolution d'un lien court
-// passe par le réseau, donc un premier collage peut aboutir après un second.
-// Sans ce compteur, le lien le plus lent déplacerait la carte en dernier.
+// Same reason as `generation` for clicks: resolving a short link goes over the
+// network, so a first paste can complete after a second one. Without this counter, the
+// slowest link would move the map last.
 let generationLien = 0;
 
-// Un lien copié depuis une barre d'adresse arrive parfois sans son schéma.
-// Le rejeter pour ça serait gratuit : on le complète quand la suite ressemble
-// à un hôte, et on laisse `LIEN_COURT` et `new URL` juger ensuite.
+// A link copied from an address bar sometimes arrives without its scheme. Rejecting it
+// for that would be gratuitous: we complete it when what follows looks like a host, and
+// let `LIEN_COURT` and `new URL` judge afterwards.
 function normaliser(saisie) {
   return /^[a-z]+:\/\//i.test(saisie) ? saisie : `https://${saisie}`;
 }
@@ -643,7 +629,7 @@ async function suivreLien(saisie) {
       direLien("Couldn't resolve that short link. Try again.", true);
       return;
     }
-    if (monTour !== generationLien) return; // un lien plus récent a pris le relais
+    if (monTour !== generationLien) return; // a more recent link took over
   }
   if (!point) {
     direLien('No coordinates found in that link.', true);
@@ -660,10 +646,10 @@ document.getElementById('barre-lien').addEventListener('submit', (evenement) => 
   suivreLien(champLien.value);
 });
 
-// Coller suffit à partir : c'est le geste attendu, et le bouton comme la
-// touche Entrée restent disponibles. On écrit la valeur soi-même après
-// `preventDefault` pour ne pas dépendre de l'ordre entre l'événement de
-// collage et la mise à jour du champ par le navigateur.
+// Pasting is enough to set off: that is the expected gesture, and both the button and
+// the Enter key stay available. We write the value ourselves after `preventDefault` so
+// as not to depend on the ordering between the paste event and the browser's update of
+// the field.
 champLien.addEventListener('paste', (evenement) => {
   const colle = evenement.clipboardData?.getData('text') ?? '';
   if (!colle.trim()) return;

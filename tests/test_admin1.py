@@ -31,50 +31,50 @@ def cache_dir(tmp_path):
     return tmp_path
 
 
-def test_seules_les_regions_du_pays_sont_extraites(cache_dir):
+def test_only_the_countrys_regions_are_extracted(cache_dir):
     regions = country_regions("PL", cache_dir)
 
     codes = {f["properties"]["code"] for f in regions["features"]}
     assert codes == {"POL-1", "POL-2"}
 
 
-def test_le_code_pays_est_compare_sans_tenir_compte_de_la_casse(cache_dir):
-    """Natural Earth n'est pas homogene sur la casse de iso_a2."""
+def test_the_country_code_is_compared_case_insensitively(cache_dir):
+    """Natural Earth is not consistent about the case of iso_a2."""
     regions = country_regions("pl", cache_dir)
 
     assert len(regions["features"]) == 2
 
 
-def test_le_nom_retombe_sur_name_en_quand_name_est_vide(cache_dir):
+def test_the_name_falls_back_to_name_en_when_name_is_empty(cache_dir):
     regions = country_regions("PL", cache_dir)
 
     noms = {f["properties"]["code"]: f["properties"]["name"] for f in regions["features"]}
     assert noms["POL-2"] == "Malopolskie"
 
 
-def test_l_extraction_est_mise_en_cache_par_pays(cache_dir):
+def test_the_extraction_is_cached_per_country(cache_dir):
     country_regions("PL", cache_dir)
 
     assert (cache_dir / "admin1" / "PL.geojson").exists()
 
 
-def test_le_gros_fichier_n_est_plus_relu_apres_extraction(cache_dir):
+def test_the_big_file_is_no_longer_read_after_extraction(cache_dir):
     country_regions("PL", cache_dir)
     (cache_dir / ADMIN1_NAME).unlink()
 
-    # Le cache par pays doit suffire : c'est tout l'interet de l'extraction.
+    # The per-country cache must be enough: that is the whole point of extracting.
     assert len(country_regions("PL", cache_dir)["features"]) == 2
 
 
-def test_pays_sans_region_leve_keyerror_sans_ecrire_de_cache(cache_dir):
+def test_country_without_region_raises_keyerror_without_writing_a_cache(cache_dir):
     with pytest.raises(KeyError):
         country_regions("ZZ", cache_dir)
 
-    # Un cache vide empecherait pour toujours une nouvelle tentative.
+    # An empty cache would prevent any further attempt forever.
     assert not (cache_dir / "admin1" / "ZZ.geojson").exists()
 
 
-def test_le_telechargement_est_injectable(tmp_path):
+def test_the_download_is_injectable(tmp_path):
     appels = []
 
     def downloader(url: str, dest: Path) -> None:
@@ -86,12 +86,12 @@ def test_le_telechargement_est_injectable(tmp_path):
     assert len(appels) == 1
 
 
-def test_region_geometry_par_code(cache_dir):
+def test_region_geometry_by_code(cache_dir):
     geom = region_geometry("PL", "POL-1", cache_dir)
 
     assert geom.bounds == (20.0, 51.0, 22.0, 53.0)
 
 
-def test_region_geometry_code_inconnu(cache_dir):
+def test_region_geometry_unknown_code(cache_dir):
     with pytest.raises(KeyError):
         region_geometry("PL", "POL-99", cache_dir)

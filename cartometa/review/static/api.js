@@ -1,21 +1,21 @@
-// Un seul chemin pour toutes les requêtes : une erreur réseau, un code HTTP
-// d'échec et un `{ok: false}` applicatif doivent tous remonter de la même
-// façon, sinon l'interface avale des échecs en silence.
+// A single path for every request: a network error, a failing HTTP status and an
+// application-level `{ok: false}` must all surface the same way, otherwise the
+// interface swallows failures silently.
 async function request(path, options) {
   let response;
   try {
     response = await fetch(path, options);
   } catch (err) {
-    throw new Error(`connexion au serveur perdue : ${err.message}`);
+    throw new Error(`lost connection to the server: ${err.message}`);
   }
   let data = {};
   try {
     data = await response.json();
   } catch (_err) {
-    // pas de corps JSON exploitable : on retombe sur le code HTTP
+    // no usable JSON body: we fall back to the HTTP status
   }
   if (!response.ok || data.ok === false) {
-    throw new Error(data.error || `erreur HTTP ${response.status}`);
+    throw new Error(data.error || `HTTP error ${response.status}`);
   }
   return data;
 }
