@@ -2,7 +2,8 @@ import json
 
 import pytest
 
-from cartometa.models import STATUS_REJECTED, STATUS_TRACED
+from cartometa.geo.reference import DATASET_NAME
+from cartometa.models import STATUS_REJECTED, STATUS_TRACED, GeoRecord
 from cartometa.review.store import (
     CountryPaths,
     UnknownMetaError,
@@ -10,6 +11,7 @@ from cartometa.review.store import (
     clear_decision,
     load_geo,
     load_metas,
+    save_geo,
     set_decision,
 )
 
@@ -169,7 +171,9 @@ def test_a_geometry_that_rounding_would_invalidate_keeps_its_precision(paths):
     ]}
     assert not shape(arrondie).is_valid
 
-    set_decision(paths, "aaaa", STATUS_TRACED, fragile, [{"kind": "country"}])
+    # Not a reference-only piece list: "country" alone would make save_geo strip
+    # the geometry to null (task 3), which is not what this test is about.
+    set_decision(paths, "aaaa", STATUS_TRACED, fragile, [{"kind": "rect", "bounds": [0.0, 0.0, 0.8, 0.8]}])
 
     record = load_geo(paths)["aaaa"]
     assert shape(record.geometry).is_valid
@@ -222,3 +226,91 @@ def test_a_country_with_no_imported_file(tmp_path):
 
 def test_a_country_with_no_source_at_all(tmp_path):
     assert load_metas(CountryPaths(tmp_path / "data", "XX")) == []
+
+
+CARRE_PL = {"type": "Polygon",
+            "coordinates": [[[14.0, 49.0], [24.0, 49.0], [24.0, 55.0],
+                             [14.0, 55.0], [14.0, 49.0]]]}
+
+
+def _paths_avec_reference(tmp_path):
+    """CountryPaths dont data/cache contient un faux Natural Earth pour PL."""
+    paths = CountryPaths(tmp_path, "PL")
+    cache = paths.cache
+    cache.mkdir(parents=True)
+    (cache / DATASET_NAME).write_text(json.dumps({
+        "type": "FeatureCollection", "features": [{
+            "type": "Feature",
+            "properties": {"ISO_A2": "PL", "ISO_A2_EH": "PL", "NAME": "Poland"},
+            "geometry": CARRE_PL,
+        }],
+    }), "utf-8")
+    return paths
+
+
+def test_save_strips_the_geometry_when_every_piece_is_a_reference(tmp_path):
+    paths = _paths_avec_reference(tmp_path)
+    records = {"m1": GeoRecord(id="m1", geometry=dict(CARRE_PL),
+                               pieces=[{"kind": "country"}])}
+
+    save_geo(paths, records)
+
+    feature = json.loads(paths.geo.read_text("utf-8"))["features"][0]
+    assert feature["geometry"] is None
+    assert feature["properties"]["pieces"] == [{"kind": "country"}]
+
+
+def test_save_keeps_the_geometry_when_a_piece_is_hand_drawn(tmp_path):
+    paths = _paths_avec_reference(tmp_path)
+    triangle = {"type": "Polygon",
+                "coordinates": [[[15.0, 50.0], [16.0, 50.0], [15.0, 51.0],
+                                 [15.0, 50.0]]]}
+    records = {"m1": GeoRecord(
+        id="m1", geometry=triangle,
+        pieces=[{"kind": "polygon",
+                 "ring": [[15.0, 50.0], [16.0, 50.0], [15.0, 51.0]]},
+                {"kind": "clip"}])}
+
+    save_geo(paths, records)
+
+    feature = json.loads(paths.geo.read_text("utf-8"))["features"][0]
+    assert feature["geometry"] is not None
+
+
+def test_load_without_resolve_leaves_stripped_geometry_none(tmp_path):
+    paths = _paths_avec_reference(tmp_path)
+    save_geo(paths, {"m1": GeoRecord(id="m1", geometry=dict(CARRE_PL),
+                                     pieces=[{"kind": "country"}])})
+
+    assert load_geo(paths)["m1"].geometry is None
+
+
+def test_load_with_resolve_rebuilds_the_reference_geometry(tmp_path):
+    paths = _paths_avec_reference(tmp_path)
+    save_geo(paths, {"m1": GeoRecord(id="m1", geometry=dict(CARRE_PL),
+                                     pieces=[{"kind": "country"}])})
+
+    record = load_geo(paths, resolve=True)["m1"]
+
+    assert record.geometry is not None
+    from shapely.geometry import shape
+    assert shape(record.geometry).equals(shape(CARRE_PL))
+
+
+def test_load_with_resolve_ignores_rejected_metas(tmp_path):
+    paths = _paths_avec_reference(tmp_path)
+    save_geo(paths, {"m1": GeoRecord(id="m1", geometry=None, pieces=[],
+                                     status="rejeté")})
+
+    assert load_geo(paths, resolve=True)["m1"].geometry is None
+
+
+def test_save_load_save_round_trip_is_byte_stable(tmp_path):
+    paths = _paths_avec_reference(tmp_path)
+    save_geo(paths, {"m1": GeoRecord(id="m1", geometry=dict(CARRE_PL),
+                                     pieces=[{"kind": "country"}])})
+    premier = paths.geo.read_bytes()
+
+    save_geo(paths, load_geo(paths))
+
+    assert paths.geo.read_bytes() == premier
