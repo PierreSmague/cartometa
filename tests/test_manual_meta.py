@@ -59,7 +59,7 @@ def paths(tmp_path):
 
 def _create(paths, **extra):
     champs = {"title": "Bornes jaunes", "description": "Les bornes sont jaunes.",
-              "category": "bollards"}
+              "category": "infrastructure"}
     champs.update(extra)
     return create_meta(paths, **champs)
 
