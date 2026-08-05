@@ -136,8 +136,12 @@ def parse_page(html: str, country: str, base_url: str) -> tuple[list[MetaRecord]
         if node.tag not in ("h3", "div"):
             continue
         if node.tag == "h3":
+            # Only a "Step N" heading changes section: the USA page subdivides
+            # its steps with thematic h3s ("Road Features", "Bollards"...) and
+            # even a decorative empty h3 mid-block — none of which end the step.
             match = STEP_RE.search(node.text(strip=True))
-            current_tier = TIER_BY_STEP.get(match.group(1)) if match else None
+            if match:
+                current_tier = TIER_BY_STEP.get(match.group(1))
             continue
 
         classes = node.attributes.get("class") or ""
