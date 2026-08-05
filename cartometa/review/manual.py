@@ -10,6 +10,9 @@ from PIL import Image, UnidentifiedImageError
 from PIL.Image import DecompressionBombError
 
 from cartometa.atomic_write import write_json_atomic
+# Imported rather than duplicated: the form's valid values and the inference
+# cannot drift apart if there is only one owner of the list.
+from cartometa.extract.categories import CATEGORIES
 from cartometa.models import ORIGIN_MANUAL, TIER_MANUAL, MetaRecord
 from cartometa.review.store import CountryPaths, load_metas, read_json_list
 
@@ -18,8 +21,6 @@ from cartometa.review.store import CountryPaths, load_metas, read_json_list
 MAX_IMAGE_BYTES = 8 * 1024 * 1024
 
 EXTENSION_BY_FORMAT = {"PNG": ".png", "JPEG": ".jpg", "WEBP": ".webp", "GIF": ".gif"}
-
-CATEGORIES = ("bollards", "poteaux", "vehicule", "vegetation", "signalisation", "autre")
 
 # Exact shape of an identifier minted by `new_meta_id`: a fixed prefix followed
 # by four hexadecimal characters, nothing else.

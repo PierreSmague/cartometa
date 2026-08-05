@@ -24,6 +24,12 @@ area. Hovering a thumbnail highlights its footprint on the map; clicking it
 opens the full-size image. Filters stack: category, scope (regional /
 national) and free-text search.
 
+The seven categories are Infrastructures, Vegetation & Agriculture, Landscape,
+Architecture, Car meta, Culture and Other. A meta's category is inferred from
+its text by `cartometa/extract/categories.py`; `data/categories.json` overrides
+that inference where it gets a meta wrong, and is applied when the site is
+built.
+
 Pasting a Google Street View or Maps link into the header bar recenters the
 map on that point and shows its metas. A static server does not serve
 `/api/resolve`, so **shortened links** (`maps.app.goo.gl`) fail with the
@@ -226,6 +232,7 @@ viewer/              map templates (Leaflet), assembled by cartometa-build
 functions/           the only server-side code: /api/resolve follows short Maps links
 data/geo/            drawn footprints + status + pieces (versioned)
 data/manual/         hand-entered metas, texts and images (versioned)
+data/categories.json category corrections, applied at build time (versioned)
 data/metas/          Plonk It texts (never versioned, regenerable)
 input/               saved pages (never versioned)
 docs/                specs, plans, contribution guides

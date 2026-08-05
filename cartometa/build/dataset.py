@@ -9,6 +9,7 @@ from typing import Callable
 from shapely.geometry import shape
 
 from cartometa.build.geometry import DEFAULT_TOLERANCE, part_bboxes, simplify_geometry
+from cartometa.extract.categories import CATEGORIES
 from cartometa.models import STATUS_TRACED, STATUSES
 from cartometa.review.store import CountryPaths, load_metas
 
@@ -60,6 +61,9 @@ class Dataset:
     # the CLI can name them — data evaporating silently is worse than a build
     # that complains.
     orphans: list[tuple[str, str]] = field(default_factory=list)
+    # Overrides naming an id the built country does not have: (country, id).
+    # A typo in a hand-edited file must not leave a meta silently unfixed.
+    unknown_overrides: list[tuple[str, str]] = field(default_factory=list)
 
 
 def empreinte_geometrie(geometrie: dict) -> str:
@@ -81,6 +85,42 @@ def discover_countries(data_dir: Path) -> list[str]:
     return sorted({p.stem.upper() for p in (data_dir / "geo").glob("*.geojson")})
 
 
+def load_category_overrides(data_dir: Path) -> dict[str, dict[str, str]]:
+    """Human corrections to the inferred categories, by country then meta id.
+
+    Versioned, unlike `data/metas/`: a judgement stored only in a regenerable
+    file is lost on the next `cartometa-extract`, which re-infers every category
+    from the saved HTML.
+
+    Keyed by country because meta ids are not globally unique — `yHR2` exists in
+    both AT and ES, `Izqw` in CA and FR. A flat `{id: slug}` file would apply one
+    correction to two unrelated metas.
+
+    A category outside the taxonomy is fatal rather than a warning: it has no
+    pill on the site, so the meta would show under "All" and be unreachable
+    through every category filter. Half-invisible is worse than a failed build.
+    """
+    chemin = data_dir / "categories.json"
+    if not chemin.exists():
+        return {}
+    overrides = json.loads(chemin.read_text("utf-8"))
+    inconnues = sorted(
+        f"{pays}/{identifiant} -> {categorie!r}"
+        for pays, entrees in overrides.items()
+        for identifiant, categorie in entrees.items()
+        if categorie not in CATEGORIES
+    )
+    if inconnues:
+        details = "\n".join(f"  - {i}" for i in inconnues)
+        raise SystemExit(
+            f"{chemin}: unknown category(ies):\n{details}\n"
+            f"Expected one of {', '.join(CATEGORIES)}.\n"
+            f"A category outside the list has no pill on the site: the meta "
+            f"would be unreachable through every filter."
+        )
+    return overrides
+
+
 def build_dataset(
     data_dir: Path,
     countries: list[str],
@@ -94,6 +134,7 @@ def build_dataset(
     `outline` key.
     """
     jeu = Dataset()
+    overrides = load_category_overrides(data_dir)
     for pays in countries:
         chemins = CountryPaths(data_dir, pays)
         if not chemins.geo.exists():
@@ -131,6 +172,13 @@ def build_dataset(
                 f"Hand-entered metas are expected in "
                 f"{chemins.manual_metas}."
             )
+        # Scoped to this country: an id the file names for another country is not
+        # a typo, it simply is not being built now.
+        corrections = overrides.get(pays, {})
+        jeu.unknown_overrides.extend(
+            (pays, identifiant) for identifiant in sorted(corrections)
+            if identifiant not in metas
+        )
         entree_pays = {"metas": {}, "geometries": {}}
         for feature in publiables:
             identifiant = feature["properties"]["id"]
@@ -159,7 +207,7 @@ def build_dataset(
                 "geom": empreinte,
                 "title": meta["title"],
                 "description": meta["description"],
-                "category": meta["category"],
+                "category": corrections.get(identifiant, meta["category"]),
                 "scope": scope_de(feature["properties"].get("pieces", [])),
                 "source_url": meta["source_url"],
                 "image_source": meta.get("image"),
