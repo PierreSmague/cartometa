@@ -171,6 +171,95 @@ def test_a_follow_car_is_a_car_meta():
     ) == "car"
 
 
+# --- Families recovered from the `autre` bucket -------------------------------
+# Sampling `autre` showed it was not full of unclassifiable metas but of whole
+# families with no keyword at all. Each test below stands for one of them.
+
+@pytest.mark.parametrize("text,expected", [
+    # Roadside markers and posts: waystones, kilometre markers, capped posts.
+    ("Waystones painted white with a colourful top", "infrastructure"),
+    ("Mexican kilometre markers are white with black font", "infrastructure"),
+    ("These white posts with a red cap are found in the east", "infrastructure"),
+    # Street lighting. `lamp post` was covered, a bare lamp was not.
+    ("These black lamps with a solar panel at the top", "infrastructure"),
+    # Street furniture.
+    ("Black bins with a black sticker on the front", "infrastructure"),
+    ("Costa Rica uses long silver insulators", "infrastructure"),
+    ("Speed bumps are often painted yellow and white", "infrastructure"),
+    ("Wind turbines can be seen south of Penonome", "infrastructure"),
+    # Driving side: a property of the road, per the owner's decision.
+    ("Rwanda drives on the right", "infrastructure"),
+    ("Unlike the UK, Gibraltar drives on the right", "infrastructure"),
+    # Public transport is infrastructure; other local vehicles are culture.
+    ("Buses in Jyvaskyla are almost completely green", "infrastructure"),
+    # Immaterial conventions, alongside the internet domains the spec already
+    # files under Culture.
+    ("Greek area codes will always begin with a 2", "culture"),
+    ("Croatian landlines typically start with a zero", "culture"),
+    ("Many Galician town names start with A, O, As or Os", "culture"),
+    ("Obituaries in Veles are vertical and blue", "culture"),
+    ("Advertisements for the beer brands Angkor and Anchor", "culture"),
+    # Named species: the generic words were there, the species were not.
+    ("Aleppo pines", "vegetation"),
+    ("Eucalyptus", "vegetation"),
+    ("Sunflowers", "vegetation"),
+    ("Tea production", "vegetation"),
+    ("Corn is most common on northern Luzon", "vegetation"),
+    # `mountain` was covered, `Mount X` was not.
+    ("Mount Tavor can be recognised by its soft, round shape", "landscape"),
+    # Ruins are built, however ruined.
+    ("In Baalbek you can find a large complex of Roman ruins", "architecture"),
+])
+def test_families_recovered_from_the_autre_bucket(text, expected):
+    assert infer_category(text, "") == expected
+
+
+@pytest.mark.parametrize("text,expected", [
+    # Road paint. `line` is only accepted with a qualifier: bare, it would file
+    # tree lines and snow lines under Infrastructures.
+    ("Jersey uses yellow give-way lines at intersections", "infrastructure"),
+    ("White dashes between the yellow centre lines", "infrastructure"),
+    ("Slightly faded, solid white double middle lines", "infrastructure"),
+    ("Blue outer lines", "infrastructure"),
+    ("Ontario uses distinct orange and black striped traffic cones", "infrastructure"),
+    ("Square water tanks", "infrastructure"),
+    ("Larger irrigation canals exist south of Bagaces", "infrastructure"),
+    ("Telephone booths in Jersey are yellow", "infrastructure"),
+    # The Google vehicle's own kit, and the vehicles Google drove.
+    ("The tent with a knot on both straps covers southwestern Mongolia", "car"),
+    ("Serbia has 4 different truck colours used in different areas", "car"),
+    # Local vehicles that are not public transport: culture, per the owner.
+    ("The Philippines have several different tuk-tuk and tricycle designs", "culture"),
+    # Buildings.
+    ("The skyline of Dubai is dominated by numerous skyscrapers", "architecture"),
+    ("The Mseilha fortress can be found southwest of Tripoli", "architecture"),
+    # Crops and species still missing a keyword.
+    ("Around 95% of all wine produced in Czechia comes from Moravia", "vegetation"),
+    ("Teak", "vegetation"),
+    ("These haystacks are extremely common in Kaduna state", "vegetation"),
+    ("Blue-pod lupines appear very commonly in northern Vladimir Oblast", "vegetation"),
+    # Toponymy: `town names` was covered, `city names` was not.
+    ("City and state names", "culture"),
+])
+def test_the_last_small_families_from_the_autre_bucket(text, expected):
+    assert infer_category(text, "") == expected
+
+
+def test_a_tree_line_is_not_road_paint():
+    """Why `line` needs a qualifier rather than standing alone."""
+    assert infer_category("The tree line sits low on the slopes", "") == "vegetation"
+
+
+def test_a_bush_is_not_a_bus():
+    """`bus` had to be anchored on both sides or every shrub became transport."""
+    assert infer_category("Small shrubs and bushes cover the steppe", "") == "vegetation"
+
+
+def test_a_postal_code_is_not_a_post():
+    """`\\bposts?\\b` must not fire on `postal`."""
+    assert infer_category("Postal codes are shown on this map", "") != "infrastructure"
+
+
 def test_an_incidental_infrastructure_word_outranks_culture():
     """A known and accepted limitation, measured before being accepted.
 

@@ -66,13 +66,32 @@ RULES: list[tuple[str, str]] = [
             r"|light)\s"
             r"cars?\b|vehicle|camera|antenna|blur|rift|snorkel|trekker|coverage"
             r"|generations? ?\d|gen ?\d|shitcam|dashcam|roof rack|windscreen"
-            r"|(?:number|licence|license|front|rear) plates?\b|plates? with)"),
+            r"|(?:number|licence|license|front|rear) plates?\b|plates? with"
+            # The vehicle's own kit and the vehicles Google drove: the Mongolian
+            # tent on the roof, the trucks used in place of a car.
+            r"|\btents?\b|\btrucks?\b|tripod)"),
     ("infrastructure",
      r"\b(pole|bollard|sign|signage|signal|marking|guard ?rail|kerb|curb|bridge"
      r"|tunnel|bus stop|railway|tram|pylon|power line|wire|cable|street ?light"
      r"|lamp ?post|paving|asphalt|tarmac|junction|roundabout|road|highway|route"
      r"|motorway|shield|chevron|delineator|reflector|barrier|manhole|hydrant"
      r"|utility|pavement|sidewalk|crossing|parking|car park|arrow|shoulder"
+     # Roadside markers and posts, street lighting, street furniture: whole
+     # families that had no keyword and fell through to `autre`.
+     #
+     # `\bposts?\b` and not `post`: `postal` is not a post. `\bbus(?:es)?\b`
+     # anchored both sides: `bush` is not a bus.
+     r"|waystone|marker|\bposts?\b|lamp|\bbins?\b|insulator|speed bump|turbine"
+     # Driving side is a property of the road, by the owner's decision.
+     r"|drives on the"
+     # Public transport is infrastructure; other local vehicles are culture.
+     r"|\bbus(?:es)?\b|\btrams?\b|\btaxis?\b"
+     # Road paint. `line` only with a qualifier: bare, it would file tree lines
+     # and snow lines here, since infrastructure is checked before vegetation.
+     r"|(?:centre|center|middle|outer|edge|side|give-?way|dashed|solid|double"
+     r"|white|yellow|blue|red) lines?\b"
+     r"|traffic cone|\bcones?\b|water tank|\bcanals?\b|telephone booth|\bbooths?\b"
+     r"|power plant"
      # Electricity boxes and counters: a major family, especially in the
      # Philippines. Without keywords of their own they fell through to whatever
      # incidental word the description held — "the southern half of the island"
@@ -89,7 +108,8 @@ RULES: list[tuple[str, str]] = [
      r"|chapel|tower|castle|monument|museum|apartment|villa|hut|shack|garage"
      # `greenhouse` belongs to vegetation, not here: the spec files greenhouses
      # under Vegetation & Agriculture. Silos and barns do stay architecture.
-     r"|silo|barn|granary|fence|chimney|door|gate|stadium|bunker)"),
+     r"|silo|barn|granary|fence|chimney|door|gate|stadium|bunker|ruin"
+     r"|skyscraper|skyline|fortress|\bforts?\b)"),
     ("vegetation",
      r"\b(tree|forest|wood(?:land|ed)|vegetat|crop|field|farm|agricultur"
      # `rice` as well as `paddy`: the paddy is the field, the rice is the crop,
@@ -97,11 +117,19 @@ RULES: list[tuple[str, str]] = [
      r"|plantation|orchard|palm|grass|bush|shrub|pasture|paddy|rice|vineyard|flower"
      # `cact` and not `cactus`: the plural is `cacti`.
      r"|cact|bamboo|moss|scrub|savanna|jungle|hedge|foliage|harvest"
+     # Named species: the generic words were present, the species were not, so
+     # "Aleppo pines" and "Eucalyptus" fell through to `autre`.
+     r"|pine|eucalyptus|sunflower|\bcorn\b|maize|wheat|\btea\b|coffee|banana"
+     r"|coconut|olive|birch|spruce|\boaks?\b|poplar|willow|acacia|baobab"
+     r"|cotton|sugarcane|succulent|fern|reed|lavender|teak|haystack|\bhay\b"
+     r"|lupine|\bwine\b|vine\b"
      # A greenhouse is a building, but the spec files it under agriculture. It
      # must appear here and nowhere else, since architecture is checked first.
      r"|greenhouse)"),
     ("landscape",
-     r"\b(mountain|peak|hill|ridge|valley|landscape|terrain|desert|dune|lake|river"
+     # `mount\b` as well as `mountain`: metas say "Mount Tavor".
+     r"\b(mountain|mount\b|peak|hill|ridge|valley|landscape|terrain|desert|dune"
+     r"|lake|river"
      r"|stream|coast|cliff|volcano|island|plateau|plain|snow|glacier|beach"
      r"|canyon|rocky|arid|barren|elevation|altitude|climate|fog|sand|soil"
      r"|erosion|horizon|scenery|lagoon|delta|fjord)"),
@@ -117,7 +145,16 @@ RULES: list[tuple[str, str]] = [
      r"\b(flags?\b|flagpole|religio|buddhis|muslim|islam|christian|catholic"
      r"|orthodox|protestant|lutheran|hindu|shinto"
      r"|festival|patriot|national colou?r|domain|currency|traditional dress"
-     r"|graffiti|mural|cemetery|grave)"),
+     r"|graffiti|mural|cemetery|grave|obituar"
+     # Immaterial conventions, alongside the `domain` and `currency` the spec
+     # already files here: dialling plans, toponymy, advertising and brands.
+     # Local vehicles other than public transport land here too, by the owner's
+     # decision.
+     r"|area code|landline|dialling code|phone number|town names|place names"
+     r"|city (?:and state )?names|state names"
+     r"|advertis|billboard|\bbrands?\b|restaurant chain"
+     # Local vehicles that are not public transport, per the owner's decision.
+     r"|tuk-?tuk|tricycle|rickshaw|\bcarts?\b|traditional clothing)"),
 ]
 
 _LANGUAGE_RE = re.compile(LANGUAGE)
