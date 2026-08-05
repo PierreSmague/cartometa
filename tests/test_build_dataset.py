@@ -387,3 +387,41 @@ def test_une_meta_manuelle_sans_source_traverse_le_build_avec_une_chaine_vide(tm
     jeu = build_dataset(data_dir, ["ZZ"])
 
     assert jeu.countries["ZZ"]["metas"]["man-nosrc"]["source_url"] == ""
+
+
+def _contour_carre(pays: str) -> dict:
+    return {"type": "Polygon", "coordinates": [[
+        [0.0, 0.0], [6.0, 0.0], [6.0, 6.0], [0.0, 6.0], [0.0, 0.0],
+    ]]}
+
+
+def test_le_contour_du_pays_est_publie_quand_il_est_fourni(tmp_path):
+    """La mini-carte des cartes Anki dessine l'emprise sur la silhouette du
+    pays : sans `outline` dans le fichier pays, le front n'a aucun fond à
+    tracer."""
+    _ecrire_pays(tmp_path / "data", "PL", [("pl1", "validé", 1.0)])
+
+    jeu = build_dataset(tmp_path / "data", ["PL"], outline_de=_contour_carre)
+
+    contour = jeu.countries["PL"]["outline"]
+    assert contour["type"] == "Polygon"
+
+
+def test_sans_fournisseur_de_contour_la_cle_est_absente(tmp_path):
+    """L'absence de clé (et non une valeur nulle) est le contrat avec le
+    front, qui teste `pays.outline` en vérité booléenne."""
+    _ecrire_pays(tmp_path / "data", "PL", [("pl1", "validé", 1.0)])
+
+    jeu = build_dataset(tmp_path / "data", ["PL"])
+
+    assert "outline" not in jeu.countries["PL"]
+
+
+def test_un_fournisseur_qui_renvoie_none_n_ecrit_pas_de_contour(tmp_path):
+    """`None` est la valeur de repli du fournisseur (pays absent de Natural
+    Earth, dataset injoignable) : le pays se publie quand même, sans fond."""
+    _ecrire_pays(tmp_path / "data", "PL", [("pl1", "validé", 1.0)])
+
+    jeu = build_dataset(tmp_path / "data", ["PL"], outline_de=lambda pays: None)
+
+    assert "outline" not in jeu.countries["PL"]

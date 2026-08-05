@@ -5,13 +5,16 @@ import re
 import shutil
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import NamedTuple
+from typing import Callable, NamedTuple
+
+from shapely.geometry import mapping
 
 from cartometa.build.assets import write_hashed
 from cartometa.build.dataset import build_dataset
 from cartometa.build.geometry import DEFAULT_TOLERANCE
 from cartometa.build.image_cache import ImageCache
 from cartometa.build.images import MissingImageError, render_image_pair
+from cartometa.geo.reference import country_geometry
 
 # Cloudflare Pages refuse un déploiement au-delà de 20 000 fichiers. On
 # prévient bien avant pour que le mur soit vu venir des mois à l'avance : la
@@ -28,6 +31,7 @@ IMAGE_BASE = "img/"
 ACTIFS_STATIQUES = (
     ("style.css", "__CSS__"),
     ("app.js", "__JS__"),
+    ("anki.js", "__ANKI_JS__"),
     ("favicon.svg", "__ICON_SVG__"),
     ("favicon.png", "__ICON_PNG__"),
     ("og.png", "__OG_IMAGE__"),
@@ -218,6 +222,35 @@ def verifier_integrite(out_dir: Path, manifeste: dict) -> ResultatVerification:
     return ResultatVerification(manquants, images_ignorees)
 
 
+def _fabrique_contours(data_dir: Path) -> Callable[[str], dict | None]:
+    """Fournisseur de silhouettes pays pour `build_dataset`.
+
+    Trois issues, jamais d'échec de build : la silhouette (cas normal), None
+    pour un pays hors Natural Earth (KeyError), None pour tous les pays dès
+    la première panne d'accès au dataset (OSError : hors ligne sans cache,
+    disque). La panne est mémorisée pour ne pas retenter — et râler — une
+    fois par pays.
+    """
+    panne = False
+
+    def contour_de(pays: str) -> dict | None:
+        nonlocal panne
+        if panne:
+            return None
+        try:
+            return mapping(country_geometry(pays, data_dir / "cache"))
+        except KeyError:
+            print(f"  ! {pays} absent de Natural Earth : mini-carte sans fond")
+            return None
+        except OSError as erreur:
+            panne = True
+            print(f"  ! Natural Earth indisponible ({erreur}) : "
+                  f"mini-cartes sans fond de pays")
+            return None
+
+    return contour_de
+
+
 def build_site(
     data_dir: Path,
     out_dir: Path,
@@ -234,7 +267,9 @@ def build_site(
     Table rase à chaque appel : un pays retiré des sources doit disparaître
     du site, pas survivre en fichier orphelin que le déploiement republierait.
     """
-    jeu = build_dataset(data_dir, countries, tolerance)
+    jeu = build_dataset(
+        data_dir, countries, tolerance, outline_de=_fabrique_contours(data_dir)
+    )
 
     # Garde-fou : `--out` pointant par erreur vers `viewer/` (ancien défaut du
     # binaire supprimé par cette même migration) ou vers `data/` (une simple
