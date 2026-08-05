@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 
+from cartometa.extract.categories import CATEGORIES
 from cartometa.build.dataset import (
     SCOPE_NATIONAL,
     SCOPE_REGIONAL,
@@ -500,3 +501,20 @@ def test_an_override_to_an_unknown_category_is_refused(tmp_path):
 
     with pytest.raises(SystemExit, match="landscpae"):
         build_dataset(data_dir, ["PL"])
+
+
+def test_the_front_end_category_values_match_the_build_ones():
+    """A contract between two languages, invisible to the compiler.
+
+    The build writes `category` into the payload, the template declares one pill
+    per category in `data-categorie`, and `app.js` filters by comparing the two
+    for equality. Renaming one side without the other breaks nothing loudly: the
+    pill simply matches no meta and the gallery reads empty.
+
+    The leading empty value is the "All" pill, which filters nothing.
+    """
+    html = (Path(__file__).resolve().parents[1] / "viewer" / "index.html").read_text("utf-8")
+
+    valeurs = re.findall(r'data-categorie="([^"]*)"', html)
+
+    assert valeurs == ["", *CATEGORIES]
