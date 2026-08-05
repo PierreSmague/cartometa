@@ -1,9 +1,8 @@
-"""Cache d'encodage des images.
+"""Image encoding cache.
 
-Le build fait table rase de `dist/` à chaque appel et réencode tout. À 1922
-emprises, une publication qui n'ajoute que quelques métas repayait ~10 min
-de travail identique au build précédent. Ces tests fixent le contrat du
-cache qui l'évite.
+The build wipes `dist/` on every call and re-encodes everything. At 1922 footprints, a
+publication that only adds a few metas paid ~10 min of work identical to the previous
+build all over again. These tests fix the contract of the cache that avoids it.
 """
 
 import pytest
@@ -22,20 +21,19 @@ def _image(chemin, largeur, hauteur, couleur=(120, 90, 60)):
 
 
 def _interdire_encodage(monkeypatch):
-    """Fait échouer tout encodage : ce qui passe vient forcément du cache."""
+    """Makes any encoding fail: whatever passes necessarily comes from the cache."""
 
     def interdit(*args, **kwargs):
-        raise AssertionError("image réencodée alors que le cache la contenait")
+        raise AssertionError("image re-encoded although the cache held it")
 
     monkeypatch.setattr(images, "_encode", interdit)
 
 
-def test_une_entree_corrompue_est_ignoree_et_reencodee(tmp_path):
-    """Le pire défaut possible ici : servir une image tronquée sans le dire.
+def test_a_corrupted_entry_is_ignored_and_re_encoded(tmp_path):
+    """The worst possible defect here: serving a truncated image without saying so.
 
-    Une entrée abîmée doit coûter un réencodage, jamais produire un `dist/`
-    dont la vérification d'intégrité ne verrait rien — le fichier existe, il
-    est simplement illisible.
+    A damaged entry must cost a re-encode, never produce a `dist/` whose integrity
+    check would see nothing — the file exists, it is simply unreadable.
     """
     source = _image(tmp_path / "src" / "a.png", 1000, 500)
     cache = ImageCache(tmp_path / "cache")
@@ -52,7 +50,7 @@ def test_une_entree_corrompue_est_ignoree_et_reencodee(tmp_path):
         assert (tmp_path / "out2" / seconds[variante]).read_bytes() == attendu
 
 
-def test_une_seconde_construction_ne_reencode_pas(tmp_path, monkeypatch):
+def test_a_second_build_does_not_re_encode(tmp_path, monkeypatch):
     source = _image(tmp_path / "src" / "a.png", 1000, 500)
     cache = ImageCache(tmp_path / "cache")
 
@@ -66,8 +64,8 @@ def test_une_seconde_construction_ne_reencode_pas(tmp_path, monkeypatch):
         assert (tmp_path / "out2" / seconds[variante]).read_bytes() == attendu
 
 
-def test_le_cache_suit_le_contenu_et_non_le_chemin(tmp_path, monkeypatch):
-    """Deux copies d'une même capture ne doivent être encodées qu'une fois."""
+def test_the_cache_follows_the_content_not_the_path(tmp_path, monkeypatch):
+    """Two copies of the same screenshot must only be encoded once."""
     source = _image(tmp_path / "src" / "a.png", 1000, 500)
     cache = ImageCache(tmp_path / "cache")
     premiers = render_image_pair(source, tmp_path / "out1", "a", cache)
@@ -79,13 +77,13 @@ def test_le_cache_suit_le_contenu_et_non_le_chemin(tmp_path, monkeypatch):
 
     seconds = render_image_pair(ailleurs, tmp_path / "out2", "b", cache)
 
-    assert seconds["thumb"].startswith("b.t."), "le nom publié suit bien la méta"
+    assert seconds["thumb"].startswith("b.t."), "the published name does follow the meta"
     attendu = (tmp_path / "out1" / premiers["thumb"]).read_bytes()
     assert (tmp_path / "out2" / seconds["thumb"]).read_bytes() == attendu
 
 
-def test_un_changement_de_reglages_invalide_le_cache(tmp_path, monkeypatch):
-    """Sinon le site servirait des images encodées selon des réglages morts."""
+def test_a_settings_change_invalidates_the_cache(tmp_path, monkeypatch):
+    """Otherwise the site would serve images encoded according to dead settings."""
     source = _image(tmp_path / "src" / "a.png", 1000, 500)
     cache = ImageCache(tmp_path / "cache")
     render_image_pair(source, tmp_path / "out1", "a", cache)
@@ -93,12 +91,12 @@ def test_un_changement_de_reglages_invalide_le_cache(tmp_path, monkeypatch):
     monkeypatch.setattr(images, "SIGNATURE", "v2-autres-reglages")
     _interdire_encodage(monkeypatch)
 
-    with pytest.raises(AssertionError, match="réencodée"):
+    with pytest.raises(AssertionError, match="re-encoded"):
         render_image_pair(source, tmp_path / "out2", "a", cache)
 
 
-def test_sans_cache_le_comportement_est_inchange(tmp_path):
-    """Le cache est facultatif : `render_image_pair` reste utilisable seul."""
+def test_without_a_cache_the_behaviour_is_unchanged(tmp_path):
+    """The cache is optional: `render_image_pair` stays usable on its own."""
     source = _image(tmp_path / "src" / "a.png", 1000, 500)
 
     avec = render_image_pair(source, tmp_path / "out1", "a", ImageCache(tmp_path / "c"))

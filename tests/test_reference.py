@@ -15,7 +15,7 @@ FAKE = {"type": "FeatureCollection", "features": [
      "properties": {"ISO_A2": "PL", "ISO_A2_EH": "PL", "NAME": "Poland"},
      "geometry": {"type": "Polygon", "coordinates": [[[14.0, 49.0], [24.0, 49.0], [24.0, 55.0], [14.0, 55.0], [14.0, 49.0]]]}}]}
 
-# Nœud papillon auto-intersectant : géométrie invalide au sens de shapely/OGC.
+# Self-intersecting bow tie: a geometry invalid in the shapely/OGC sense.
 INVALID = {"type": "FeatureCollection", "features": [
     {"type": "Feature",
      "properties": {"ISO_A2": "IV", "ISO_A2_EH": "IV", "NAME": "Invalidia"},
@@ -46,9 +46,9 @@ def test_unknown_country_raises(cache_dir):
 
 
 def test_invalid_source_geometry_is_repaired(invalid_cache_dir):
-    # Le polygone source est un nœud papillon auto-intersectant : invalide au sens OGC.
+    # The source polygon is a self-intersecting bow tie: invalid in the OGC sense.
     raw = shape(INVALID["features"][0]["geometry"])
-    assert not raw.is_valid, "précondition du test : la géométrie source doit être invalide"
+    assert not raw.is_valid, "test precondition: the source geometry must be invalid"
 
     geom = country_geometry("IV", invalid_cache_dir)
     assert geom.is_valid
@@ -56,16 +56,16 @@ def test_invalid_source_geometry_is_repaired(invalid_cache_dir):
 
 def test_failed_download_leaves_no_file_at_final_path(tmp_path):
     def failing_downloader(url: str, dest: Path) -> None:
-        # Simule une coupure réseau en cours de téléchargement : le fichier
-        # temporaire est partiellement écrit puis l'opération échoue.
-        dest.write_text("contenu tronqué, pas du JSON valide", "utf-8")
-        raise ConnectionError("coupure réseau simulée")
+        # Simulates a network outage during the download: the temp file is partially
+        # written, then the operation fails.
+        dest.write_text("truncated content, not valid JSON", "utf-8")
+        raise ConnectionError("simulated network outage")
 
     with pytest.raises(ConnectionError):
         ensure_dataset(tmp_path, downloader=failing_downloader)
 
     assert not (tmp_path / DATASET_NAME).exists()
-    # Aucun fichier temporaire ne doit traîner non plus.
+    # No temporary file must be left lying around either.
     leftovers = list(tmp_path.glob("*"))
     assert leftovers == []
 
@@ -86,21 +86,21 @@ def named_cache_dir(tmp_path):
     return tmp_path
 
 
-def test_code_depuis_un_slug_minuscule(named_cache_dir):
+def test_code_from_a_lowercase_slug(named_cache_dir):
     assert country_code_for_name("botswana", named_cache_dir) == "BW"
 
 
-def test_code_depuis_un_slug_a_tirets(named_cache_dir):
-    """Les slugs Plonk It multi-mots utilisent des tirets."""
+def test_code_from_a_dashed_slug(named_cache_dir):
+    """Multi-word Plonk It slugs use dashes."""
     assert country_code_for_name("republic-of-botswana", named_cache_dir) == "BW"
 
 
-def test_nom_inconnu_renvoie_none(named_cache_dir):
+def test_an_unknown_name_returns_none(named_cache_dir):
     assert country_code_for_name("atlantide", named_cache_dir) is None
 
 
-def test_code_absent_dans_natural_earth_renvoie_none(named_cache_dir):
-    """Natural Earth encode l'absence de code ISO par "-99", pas par un vide."""
+def test_a_code_absent_from_natural_earth_returns_none(named_cache_dir):
+    """Natural Earth encodes a missing ISO code as "-99", not as an empty value."""
     assert country_code_for_name("sans-code", named_cache_dir) is None
 
 

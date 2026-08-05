@@ -14,32 +14,32 @@ from cartometa.review.store import CountryPaths, load_metas
 
 EXPORTABLE = (STATUS_TRACED,)
 
-# Portée d'une emprise, telle que le site la donne à filtrer.
+# Scope of a footprint, as the site offers it for filtering.
 SCOPE_NATIONAL = "national"
 SCOPE_REGIONAL = "regional"
 
 
 def scope_de(pieces: list[dict]) -> str:
-    """`national` si l'emprise EST le pays entier, `regional` sinon.
+    """`national` if the footprint IS the whole country, `regional` otherwise.
 
-    Déduit du tracé, pas du `tier` Plonk It. Les deux existent et s'accordent
-    à 96,8 % (mesuré sur les 1710 emprises publiées) mais ne disent pas la
-    même chose : `tier` dit ce que Plonk It a classé, le tracé dit ce que
-    l'emprise couvre réellement sur la carte. C'est cette seconde question que
-    le filtre pose — et surtout, le tracé est *total* : toute emprise publiée
-    en a un par construction, alors que `tier` vaut aussi `manual` pour une
-    méta saisie à la main, valeur qui n'appartient ni au national ni au
-    régional et laisserait ces métas hors des deux filtres.
+    Derived from the drawing, not from the Plonk It `tier`. Both exist and agree
+    96.8 % of the time (measured over the 1710 published footprints) but they do
+    not say the same thing: `tier` says what Plonk It classified, the drawing
+    says what the footprint actually covers on the map. It is that second
+    question the filter asks — and above all, the drawing is *total*: every
+    published footprint has one by construction, whereas `tier` is also
+    `manual` for a hand-entered meta, a value that belongs to neither national
+    nor regional and would leave those metas out of both filters.
 
-    L'égalité stricte, et non `"country" in kinds` : une emprise mêlant
-    `country` à un autre morceau est un pays rogné ou complété, donc
-    précisément plus le pays entier. Aucune emprise publiée n'est dans ce cas
-    aujourd'hui (les deux règles y sont équivalentes), mais seule l'égalité
-    reste juste si cela change.
+    Strict equality, and not `"country" in kinds`: a footprint mixing `country`
+    with another piece is a clipped or completed country, hence precisely no
+    longer the whole country. No published footprint is in that case today (the
+    two rules are equivalent there), but only equality stays correct if that
+    changes.
 
-    Une liste vide retombe sur `regional` : aucune emprise publiée n'est dans
-    ce cas non plus, et ce choix garantit qu'aucune méta ne peut disparaître
-    de « All » — un défaut invisible serait pire qu'un classement discutable.
+    An empty list falls back to `regional`: no published footprint is in that
+    case either, and this choice guarantees no meta can disappear from "All" —
+    an invisible defect would be worse than a debatable classification.
     """
     kinds = {piece.get("kind") for piece in pieces}
     return SCOPE_NATIONAL if kinds == {"country"} else SCOPE_REGIONAL
@@ -47,38 +47,37 @@ def scope_de(pieces: list[dict]) -> str:
 
 @dataclass
 class Dataset:
-    """Le jeu publiable, découpé.
+    """The publishable set, split up.
 
-    `index` est global et léger : il suffit à savoir, au clic, quels pays
-    valent la peine d'être téléchargés. `countries` porte le détail, un
-    fichier par pays.
+    `index` is global and light: it is enough to know, on click, which countries
+    are worth downloading. `countries` carries the detail, one file per country.
     """
 
     index: list[list] = field(default_factory=list)
     countries: dict[str, dict] = field(default_factory=dict)
     legacy_statuses: int = 0
-    # Emprises tracées dont le texte de méta a disparu : (pays, id). Comptées
-    # pour être nommées par le CLI — une donnée qui s'évapore en silence est
-    # pire qu'un build qui râle.
+    # Drawn footprints whose meta text has vanished: (country, id). Counted so
+    # the CLI can name them — data evaporating silently is worse than a build
+    # that complains.
     orphans: list[tuple[str, str]] = field(default_factory=list)
 
 
 def empreinte_geometrie(geometrie: dict) -> str:
-    """Empreinte de contenu d'une géométrie, clé de sa publication.
+    """Content fingerprint of a geometry, the key it is published under.
 
-    Beaucoup de métas partagent la même emprise — 19 fois le contour national
-    dans le seul fichier russe, 25,9 Mo de doublons byte-identiques sur les
-    34,2 Mo publiés (mesuré). Publier chaque géométrie une seule fois, sous
-    une clé qui ne dépend que de son contenu, supprime le doublon sans que le
-    front ait rien à recalculer. Douze hexdigits suffisent largement : le
-    risque de collision reste négligeable bien au-delà du million d'emprises.
+    Many metas share the same footprint — the national outline 19 times over in
+    the Russian file alone, 25.9 MB of byte-identical duplicates out of the
+    34.2 MB published (measured). Publishing each geometry once, under a key that
+    depends only on its content, removes the duplication with nothing for the
+    front end to recompute. Twelve hexdigits are plenty: the collision risk stays
+    negligible far beyond a million footprints.
     """
     octets = json.dumps(geometrie, sort_keys=True, separators=(",", ":")).encode("utf-8")
     return hashlib.sha1(octets).hexdigest()[:12]
 
 
 def discover_countries(data_dir: Path) -> list[str]:
-    """Tous les pays ayant un fichier de géométries, par ordre alphabétique."""
+    """Every country having a geometry file, in alphabetical order."""
     return sorted({p.stem.upper() for p in (data_dir / "geo").glob("*.geojson")})
 
 
@@ -88,11 +87,11 @@ def build_dataset(
     tolerance: float = DEFAULT_TOLERANCE,
     outline_de: Callable[[str], dict | None] | None = None,
 ) -> Dataset:
-    """Lit les sources, simplifie, découpe par pays et construit l'index.
+    """Read the sources, simplify, split per country and build the index.
 
-    `outline_de` fournit, pour un code pays, la silhouette du pays en GeoJSON
-    — ou `None` quand elle est indisponible. Absent, aucun fichier pays ne
-    porte de clé `outline`.
+    `outline_de` provides, for a country code, the country silhouette as GeoJSON
+    — or `None` when it is unavailable. Absent, no country file carries an
+    `outline` key.
     """
     jeu = Dataset()
     for pays in countries:
@@ -108,28 +107,28 @@ def build_dataset(
             if f["properties"]["status"] in EXPORTABLE and f["geometry"]
         ]
         if not publiables:
-            # Géojson vide ou tout en `rejeté` : rien à publier, ce n'est pas
-            # une erreur.
+            # Empty geojson, or everything `rejeté`: nothing to publish, and
+            # that is not an error.
             continue
         metas = {m["id"]: m for m in load_metas(chemins)}
         if not metas:
-            # Cas normal sur un clone frais, et non une anomalie : les 1710
-            # emprises de `data/geo/` sont versionnées, leurs textes ne le
-            # sont pas. Un contributeur tombe donc ici au premier
-            # `cartometa-build` sans argument, dès le premier pays. Le
-            # message doit lui donner sa sortie — publier son seul pays — et
-            # pas seulement l'ordre de régénérer 45 pays qu'il ne possède pas.
+            # The normal case on a fresh clone, not an anomaly: the 1710
+            # footprints in `data/geo/` are versioned, their texts are not. So a
+            # contributor lands here on their first argument-less
+            # `cartometa-build`, right on the first country. The message has to
+            # give them a way out — publish their single country — and not just
+            # an order to regenerate 45 countries they do not have.
             raise SystemExit(
-                f"{pays} : {len(publiables)} emprise(s) versionnée(s), mais aucun "
-                f"texte de méta.\n"
-                f"Les textes Plonk It ne sont pas versionnés (data/metas/ est "
-                f"gitignoré) : sur un clone frais c'est le cas de TOUS les pays, "
-                f"et ce n'est pas une anomalie.\n"
-                f"  - Pour prévisualiser le seul pays sur lequel tu travailles :\n"
-                f"      uv run cartometa-build <CODE_PAYS>\n"
-                f"  - Pour republier {pays} : cartometa-extract le régénère depuis "
-                f"une page Plonk It sauvegardée à la main.\n"
-                f"Les métas saisies à la main sont attendues dans "
+                f"{pays}: {len(publiables)} versioned footprint(s), but no meta "
+                f"text.\n"
+                f"The Plonk It texts are not versioned (data/metas/ is gitignored): "
+                f"on a fresh clone that is the case for EVERY country, and it is not "
+                f"an anomaly.\n"
+                f"  - To preview only the country you are working on:\n"
+                f"      uv run cartometa-build <COUNTRY_CODE>\n"
+                f"  - To publish {pays} again: cartometa-extract regenerates it from "
+                f"a Plonk It page saved by hand.\n"
+                f"Hand-entered metas are expected in "
                 f"{chemins.manual_metas}."
             )
         entree_pays = {"metas": {}, "geometries": {}}
@@ -141,11 +140,11 @@ def build_dataset(
                 continue
             geometrie = simplify_geometry(feature["geometry"], tolerance)
             forme = shape(geometrie)
-            # Une ligne d'index par groupe de parties, pas par emprise : la
-            # bbox globale d'un multipolygone éclaté (Russie sur ±180°,
-            # Norvège jusqu'à Bouvet) couvre la planète et ne préfiltre plus
-            # rien. Même id et même surface sur chaque ligne — le viewer
-            # déduplique les ids, le tri par surface reste stable.
+            # One index row per group of parts, not per footprint: the overall
+            # bbox of a scattered multipolygon (Russia across ±180°, Norway all
+            # the way to Bouvet) covers the planet and prefilters nothing any
+            # more. Same id and same area on every row — the viewer dedupes the
+            # ids, and sorting by area stays stable.
             surface = round(forme.area, 6)
             for min_lon, min_lat, max_lon, max_lat in part_bboxes(geometrie):
                 jeu.index.append([
@@ -166,30 +165,30 @@ def build_dataset(
                 "image_source": meta.get("image"),
             }
         if entree_pays["geometries"] and outline_de is not None:
-            # Silhouette du pays, fond de la mini-carte des cartes Anki.
-            # Injectée plutôt qu'importée : le dataset Natural Earth vient du
-            # réseau, et ni cette fonction ni ses tests ne doivent y toucher.
+            # Country silhouette, background of the Anki cards' mini-map.
+            # Injected rather than imported: the Natural Earth dataset comes over
+            # the network, and neither this function nor its tests may touch it.
             contour = outline_de(pays)
             if contour is not None:
                 entree_pays["outline"] = simplify_geometry(contour, tolerance)
         if entree_pays["geometries"]:
             jeu.countries[pays] = entree_pays
-    # Une orpheline Plonk It est un décalage de régénération, rattrapable en
-    # relançant cartometa-extract : on la compte et le CLI la nomme. Une
-    # orpheline `man-*` est autre chose : data/manual/ est versionné justement
-    # parce que ces saisies sont irremplaçables, donc son texte n'existe plus
-    # nulle part. Publier sans elle serait entériner la perte en silence.
+    # A Plonk It orphan is a regeneration lag, recoverable by re-running
+    # cartometa-extract: we count it and the CLI names it. A `man-*` orphan is
+    # something else: data/manual/ is versioned precisely because those entries
+    # are irreplaceable, so its text exists nowhere any more. Publishing without
+    # it would silently endorse the loss.
     perdues = [(pays, i) for pays, i in jeu.orphans if i.startswith("man-")]
     if perdues:
         details = "\n".join(f"  - {pays} : {i}" for pays, i in perdues)
         raise SystemExit(
-            f"{len(perdues)} emprise(s) manuelle(s) sans texte de méta :\n{details}\n"
-            f"Le texte d'une méta manuelle vit dans data/manual/<CC>/metas.json "
-            f"et est versionné : s'il manque, il a été supprimé ou renommé. "
-            f"Restaure-le depuis git, ou retire l'emprise du geojson si la "
-            f"suppression était voulue."
+            f"{len(perdues)} manual footprint(s) with no meta text:\n{details}\n"
+            f"The text of a manual meta lives in data/manual/<CC>/metas.json and is "
+            f"versioned: if it is missing, it was deleted or renamed. Restore it "
+            f"from git, or remove the footprint from the geojson if the deletion "
+            f"was intended."
         )
-    # Trié par surface croissante : le viewer affiche du plus spécifique au
-    # plus général sans avoir à trier lui-même.
+    # Sorted by increasing area: the viewer shows from most specific to most
+    # general without having to sort anything itself.
     jeu.index.sort(key=lambda entree: entree[6])
     return jeu

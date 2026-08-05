@@ -1,8 +1,8 @@
-// Pont entre la loupe et Anki, via AnkiConnect (module Anki qui expose une
-// API HTTP locale). Fichier délibérément autonome : app.js ne publie que
-// l'événement `cartometa:loupe`, et rien ici ne touche à la carte ni à la
-// galerie. Les deux fichiers sont empreintés séparément par le build — un
-// import de l'un vers l'autre casserait au renommage, l'événement non.
+// Bridge between the lightbox and Anki, through AnkiConnect (an Anki add-on that
+// exposes a local HTTP API). A deliberately self-contained file: app.js only publishes
+// the `cartometa:loupe` event, and nothing here touches the map or the gallery. The two
+// files are fingerprinted separately by the build — an import from one to the other
+// would break on renaming, the event will not.
 
 const ANKI_URL = 'http://127.0.0.1:8765';
 const MODELE = 'Cartometa';
@@ -15,14 +15,14 @@ const selecteur = document.getElementById('anki-paquets');
 const confirmer = document.getElementById('anki-confirmer');
 const guide = document.getElementById('anki-guide');
 
-// Détail du dernier `cartometa:loupe`. Chaque gestionnaire asynchrone en
-// garde sa propre référence et vérifie au retour qu'elle est toujours la
-// courante : le visiteur peut changer de méta pendant qu'une requête vole.
+// Detail of the last `cartometa:loupe`. Every async handler keeps its own reference and
+// checks on return that it is still the current one: the visitor can change meta while
+// a request is in flight.
 let courant = null;
 
 async function anki(action, params = {}) {
-  // Pas d'en-tête Content-Type : la requête reste « simple » au sens CORS et
-  // s'épargne le préversement. AnkiConnect lit le corps quoi qu'il en soit.
+  // No Content-Type header: the request stays "simple" in the CORS sense and spares
+  // itself the preflight. AnkiConnect reads the body regardless.
   const reponse = await fetch(ANKI_URL, {
     method: 'POST',
     body: JSON.stringify({ action, version: 6, params }),
@@ -33,14 +33,14 @@ async function anki(action, params = {}) {
 }
 
 function cleMeta(detail) {
-  // L'id d'une méta n'est unique que dans son pays : la clé publiée dans le
-  // champ MetaId — et cherchée pour la détection de doublon — porte les deux.
+  // A meta's id is only unique within its country: the key published in the MetaId
+  // field — and searched for duplicate detection — carries both.
   return `${detail.meta.code}-${detail.meta.id}`;
 }
 
 function reinitialiser() {
-  // La méta sans image n'a pas de recto possible : pas de bouton du tout,
-  // plutôt qu'un bouton qui fabriquerait une carte invalide.
+  // A meta with no image has no possible front side: no button at all, rather than a
+  // button that would build an invalid card.
   bouton.hidden = !courant?.imageUrl;
   bouton.disabled = false;
   bouton.textContent = 'Add to Anki';
@@ -71,15 +71,15 @@ bouton.addEventListener('click', async () => {
       anki('modelNames'),
     ]);
     paquets = noms;
-    // Chercher dans un type de note qui n'existe pas encore est une erreur
-    // de recherche Anki, pas un résultat vide : ne poser la question qu'une
-    // fois le modèle créé par un premier ajout.
+    // Searching in a note type that does not exist yet is an Anki search error, not an
+    // empty result: only ask the question once the model has been created by a first
+    // add.
     doublons = modeles.includes(MODELE)
       ? await anki('findNotes', { query: `"note:${MODELE}" "MetaId:${cleMeta(detail)}"` })
       : [];
   } catch (erreur) {
-    // Anki fermé, module absent, origine non autorisée, permission réseau
-    // refusée : indistinguables d'ici, et la réponse est la même — le guide.
+    // Anki closed, add-on missing, origin not allowed, network permission refused:
+    // indistinguishable from here, and the answer is the same — the guide.
     if (courant !== detail) return;
     etatAnki.textContent = "Anki isn't responding.";
     guide.hidden = false;
@@ -90,7 +90,7 @@ bouton.addEventListener('click', async () => {
   etatAnki.textContent = '';
   if (doublons.length) {
     bouton.textContent = 'Already in Anki';
-    return; // bouton laissé désactivé : il n'y a rien de plus à faire
+    return; // button left disabled: there is nothing more to do
   }
   const options = [...paquets].sort().map((nom) => new Option(nom, nom));
   selecteur.replaceChildren(...options);
@@ -110,9 +110,9 @@ confirmer.addEventListener('click', async () => {
   } catch (erreur) {
     if (courant !== detail) return;
     confirmer.disabled = false;
-    // Distinct du guide : ici AnkiConnect répond, c'est l'ajout lui-même qui
-    // a échoué (paquet supprimé entre-temps, image introuvable…). Le message
-    // d'Anki est plus utile qu'une paraphrase.
+    // Distinct from the guide: here AnkiConnect answers, it is the add itself that
+    // failed (deck deleted meanwhile, image not found…). Anki's message is more useful
+    // than a paraphrase.
     etatAnki.textContent = `Could not add the card: ${erreur.message}`;
     return;
   }
@@ -124,8 +124,8 @@ confirmer.addEventListener('click', async () => {
   bouton.textContent = '✓ Added';
 });
 
-// localStorage peut être indisponible (navigation privée, réglages) : le
-// souvenir du dernier paquet est un confort, jamais une condition.
+// localStorage can be unavailable (private browsing, settings): remembering the last
+// deck is a convenience, never a requirement.
 function lirePaquetMemorise() {
   try {
     return localStorage.getItem(CLE_PAQUET);
@@ -138,18 +138,18 @@ function memoriserPaquet(paquet) {
   try {
     localStorage.setItem(CLE_PAQUET, paquet);
   } catch {
-    // tant pis pour le souvenir
+    // never mind remembering it
   }
 }
 
-// --- Modèle et note ---------------------------------------------------------
+// --- Model and note ---------------------------------------------------------
 
 async function assurerModele() {
   const modeles = await anki('modelNames');
   if (modeles.includes(MODELE)) return;
-  // MetaId en premier champ, à dessein : Anki exige un premier champ non
-  // vide et fonde dessus son contrôle de doublon. L'image, elle, n'est
-  // remplie par AnkiConnect qu'au moment de l'ajout.
+  // MetaId as the first field, by design: Anki requires a non-empty first field and
+  // bases its duplicate check on it. The image, meanwhile, is only filled in by
+  // AnkiConnect at the moment of the add.
   await anki('createModel', {
     modelName: MODELE,
     inOrderFields: ['MetaId', 'Image', 'RegionMap', 'Explanation', 'Source'],
@@ -167,9 +167,9 @@ async function assurerModele() {
   });
 }
 
-// Les champs d'une note Anki sont du HTML : tout texte du dataset passe par
-// ici avant d'y entrer. Même raison que textContent côté galerie — les
-// textes viennent d'un HTML tiers.
+// The fields of an Anki note are HTML: every text from the dataset goes through here
+// before entering them. Same reason as textContent on the gallery side — the texts come
+// from third-party HTML.
 function echapper(texte) {
   const boite = document.createElement('div');
   boite.textContent = texte ?? '';
@@ -187,17 +187,16 @@ function construireNote(detail, paquet) {
       Image: '',
       RegionMap: '',
       Explanation: echapper(meta.description),
-      // Facultative : une méta saisie à la main n'a pas toujours de page
-      // d'origine à citer.
+      // Optional: a hand-entered meta does not always have an original page to cite.
       Source: meta.source_url
         ? `<a href="${echapper(meta.source_url)}">Plonk It</a>`
         : '',
     },
     options: { allowDuplicate: false },
     tags: ['cartometa', meta.code],
-    // `url` et non un blob : c'est Anki (le logiciel de bureau) qui
-    // télécharge l'image depuis le site et la range dans ses médias — elle
-    // se synchronise ensuite vers AnkiWeb et AnkiDroid comme tout média.
+    // `url` and not a blob: it is Anki (the desktop app) that downloads the image from
+    // the site and files it in its media — it then syncs to AnkiWeb and AnkiDroid like
+    // any other media.
     picture: [{
       url: detail.imageUrl,
       filename: `cartometa-${meta.code}-${detail.imageUrl.split('/').pop()}`,
@@ -215,14 +214,14 @@ function construireNote(detail, paquet) {
   return note;
 }
 
-// --- Mini-carte --------------------------------------------------------------
+// --- Mini-map ----------------------------------------------------------------
 
 const CARTE_LARGEUR = 480;
 const CARTE_HAUTEUR = 360;
 const CARTE_MARGE = 20;
-// Seuils d'admission d'une partie du pays dans le cadrage : distance à
-// l'ancre, en multiple de l'étendue de celle-ci, ou surface relative à la
-// sienne. Voir `partiesCadrantes`.
+// Thresholds for admitting a part of the country into the framing: distance to the
+// anchor, as a multiple of the anchor's extent, or area relative to the anchor's. See
+// `partiesCadrantes`.
 const CADRE_DISTANCE = 1.5;
 const CADRE_SURFACE = 0.25;
 
@@ -233,8 +232,8 @@ function anneauxDe(geometrie) {
   return [];
 }
 
-// Boîte englobante d'un jeu de polygones. L'anneau extérieur suffit : un trou
-// est toujours dedans.
+// Bounding box of a set of polygons. The outer ring is enough: a hole is always inside
+// it.
 function bboxDe(polygones) {
   let minLon = Infinity;
   let minLat = Infinity;
@@ -251,7 +250,7 @@ function bboxDe(polygones) {
   return [minLon, minLat, maxLon, maxLat];
 }
 
-// Écart entre deux boîtes, nul si elles se recouvrent.
+// Gap between two boxes, zero if they overlap.
 function ecart(a, b) {
   return Math.hypot(
     Math.max(0, a[0] - b[2], b[0] - a[2]),
@@ -259,10 +258,9 @@ function ecart(a, b) {
   );
 }
 
-// Surface de l'anneau extérieur (formule du lacet) en degrés carrés : de quoi
-// comparer deux parties entre elles, rien de plus. La bbox ne ferait pas
-// l'affaire — les neuf îlots des Açores s'étalent sur 6° de longitude et leur
-// boîte commune rivalise avec le Portugal continental.
+// Area of the outer ring (shoelace formula) in square degrees: enough to compare two
+// parts with each other, nothing more. The bbox would not do — the nine islets of the
+// Azores spread over 6° of longitude and their common box rivals mainland Portugal.
 function surface(polygone) {
   const anneau = polygone[0];
   let somme = 0;
@@ -272,11 +270,11 @@ function surface(polygone) {
   return Math.abs(somme) / 2;
 }
 
-// Natural Earth donne la Russie de -180° à 180° : cadrer sur cette étendue de
-// 360° rejette la Tchoukotka à l'autre bout du canevas, le pays occupant
-// l'autre moitié. Réexprimer les longitudes négatives au-delà de 180° rend
-// l'ensemble contigu. Appliqué à l'emprise en même temps qu'à la silhouette,
-// sinon les deux ne seraient plus dans le même repère.
+// Natural Earth gives Russia from -180° to 180°: framing on that 360° extent throws
+// Chukotka to the other end of the canvas, with the country taking the other half.
+// Re-expressing negative longitudes beyond 180° makes the whole thing contiguous.
+// Applied to the footprint at the same time as to the silhouette, otherwise the two
+// would no longer share a frame of reference.
 function franchitAntimeridien(polygones) {
   const [minLon, , maxLon] = bboxDe(polygones);
   return maxLon - minLon > 180;
@@ -287,20 +285,19 @@ function decaler(polygones) {
     (anneau) => anneau.map(([lon, lat]) => [lon < 0 ? lon + 360 : lon, lat])));
 }
 
-// Les parties du pays sur lesquelles cadrer. Une silhouette Natural Earth
-// porte tous les territoires : cadrer sur leur ensemble réduit la France
-// métropolitaine à 1,2 % du canevas (mesuré sur les 88 pays publiés ; Norvège
-// 1,3 % à cause de l'île Bouvet, Pays-Bas 0,3 % à cause des Antilles) et rend
-// l'emprise rouge invisible. On part donc de la partie qui porte l'emprise —
-// l'ancre, celle qu'il s'agit de montrer — et on ne lui adjoint que ses
-// voisines proches ou de surface comparable : la Guyane, Bouvet et les Açores
-// sortent du cadre, la Papouasie et Mindanao y restent. Les parties écartées
-// sont tracées quand même, simplement rognées par le bord du canevas.
+// The parts of the country to frame on. A Natural Earth silhouette carries every
+// territory: framing on the whole set shrinks mainland France to 1.2 % of the canvas
+// (measured over the 88 published countries; Norway 1.3 % because of Bouvet Island, the
+// Netherlands 0.3 % because of the Caribbean) and makes the red footprint invisible. So
+// we start from the part that carries the footprint — the anchor, the one to be shown —
+// and only add its close neighbours or those of comparable area: French Guiana, Bouvet
+// and the Azores fall out of frame, New Guinea and Mindanao stay in. The parts left out
+// are drawn all the same, simply clipped by the canvas edge.
 function partiesCadrantes(parties, zone) {
   if (parties.length < 2) return parties;
   const boiteZone = zone.length ? bboxDe(zone) : null;
-  // Sans emprise, ou à égalité de distance (cas d'une emprise nationale, qui
-  // touche tout), c'est la plus grande partie qui sert d'ancre.
+  // With no footprint, or on a distance tie (the case of a national footprint, which
+  // touches everything), the largest part serves as the anchor.
   const ancre = parties.reduce((meilleure, partie) => {
     if (boiteZone) {
       const distanceMeilleure = ecart(bboxDe([meilleure]), boiteZone);
@@ -321,12 +318,12 @@ function partiesCadrantes(parties, zone) {
     || surface(partie) >= CADRE_SURFACE * surfaceAncre);
 }
 
-// L'emprise de la méta sur la silhouette du pays, en PNG base64 (le format
-// de la clé `data` d'AnkiConnect). Projection équirectangulaire corrigée en
-// longitude par cos(latitude moyenne) : il s'agit de situer une région d'un
-// coup d'œil, pas de naviguer. Sans silhouette (pays hors Natural Earth,
-// build hors ligne), l'emprise se cadre toute seule ; sans rien, null — la
-// carte Anki se fait alors sans mini-carte plutôt que pas du tout.
+// The meta's footprint over the country silhouette, as base64 PNG (the format of
+// AnkiConnect's `data` key). Equirectangular projection with longitude corrected by
+// cos(mean latitude): the point is to place a region at a glance, not to navigate.
+// Without a silhouette (country outside Natural Earth, offline build), the footprint
+// frames itself; with nothing at all, null — the Anki card is then made without a
+// mini-map rather than not at all.
 function rendreMiniCarte(emprise, contour) {
   let pays = anneauxDe(contour);
   let zone = anneauxDe(emprise);
@@ -339,7 +336,7 @@ function rendreMiniCarte(emprise, contour) {
   const [minLon, minLat, maxLon, maxLat] = bboxDe(cadre);
 
   const latMoyenne = (minLat + maxLat) / 2;
-  // Plancher : aux latitudes polaires, cos tend vers 0 et écraserait tout.
+  // A floor: at polar latitudes, cos tends to 0 and would crush everything.
   const kx = Math.max(Math.cos((latMoyenne * Math.PI) / 180), 0.05);
   const echelle = Math.min(
     (CARTE_LARGEUR - 2 * CARTE_MARGE) / (((maxLon - minLon) * kx) || 1),
@@ -375,7 +372,7 @@ function rendreMiniCarte(emprise, contour) {
   if (pays.length) {
     const cheminPays = tracer(pays);
     contexte.fillStyle = '#e4e4dc';
-    // evenodd : les trous (enclaves) restent des trous.
+    // evenodd: the holes (enclaves) stay holes.
     contexte.fill(cheminPays, 'evenodd');
     contexte.strokeStyle = '#9a9a94';
     contexte.lineWidth = 1;
@@ -383,8 +380,8 @@ function rendreMiniCarte(emprise, contour) {
   }
   if (zone.length) {
     const cheminZone = tracer(zone);
-    // Même rouge que le surlignage d'emprise sur la carte (voir app.js et
-    // --accent dans style.css), pour un sens identique des deux côtés.
+    // Same red as the footprint highlight on the map (see app.js and --accent in
+    // style.css), for an identical meaning on both sides.
     contexte.fillStyle = 'rgba(193, 40, 58, 0.35)';
     contexte.fill(cheminZone, 'evenodd');
     contexte.strokeStyle = '#c1283a';

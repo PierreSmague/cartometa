@@ -23,10 +23,10 @@ def _png(size=(40, 30), color=(200, 30, 30)) -> bytes:
 
 
 def _decompression_bomb_png() -> bytes:
-    """Crée un PNG qui declare des dimensions 60000x60000 avec donnees comprimees minimales.
+    """Build a PNG declaring 60000x60000 dimensions with minimal compressed data.
 
-    PIL refuse de traiter cette image car elle declare trop de pixels (decompression bomb).
-    Cela leve PIL.Image.DecompressionBombError, pas UnidentifiedImageError.
+    PIL refuses to process this image because it declares too many pixels (a decompression
+    bomb). That raises PIL.Image.DecompressionBombError, not UnidentifiedImageError.
     """
     png_data = b'\x89PNG\r\n\x1a\n'
 
@@ -64,21 +64,21 @@ def _create(paths, **extra):
     return create_meta(paths, **champs)
 
 
-def test_l_identifiant_est_prefixe(paths):
+def test_the_identifier_is_prefixed(paths):
     meta = _create(paths)
 
     assert meta["id"].startswith("man-")
     assert len(meta["id"]) == len("man-") + 4
 
 
-def test_la_meta_est_ecrite_dans_le_fichier_manuel(paths):
+def test_the_meta_is_written_into_the_manual_file(paths):
     meta = _create(paths)
 
     enregistrees = read_json_list(paths.manual_metas)
     assert [m["id"] for m in enregistrees] == [meta["id"]]
 
 
-def test_la_meta_porte_l_origine_manuelle(paths):
+def test_the_meta_carries_the_manual_origin(paths):
     meta = _create(paths)
 
     assert meta["origin"] == "manual"
@@ -86,14 +86,14 @@ def test_la_meta_porte_l_origine_manuelle(paths):
     assert meta["country"] == "PL"
 
 
-def test_les_metas_s_accumulent(paths):
+def test_the_metas_accumulate(paths):
     _create(paths, title="Une")
     _create(paths, title="Deux")
 
     assert len(read_json_list(paths.manual_metas)) == 2
 
 
-def test_identifiant_unique_meme_en_cas_de_collision(monkeypatch):
+def test_unique_identifier_even_on_collision(monkeypatch):
     tirages = iter(["abcd", "abcd", "ef01"])
     monkeypatch.setattr(
         "cartometa.review.manual.secrets.token_hex", lambda _n: next(tirages)
@@ -102,22 +102,22 @@ def test_identifiant_unique_meme_en_cas_de_collision(monkeypatch):
     assert new_meta_id({"man-abcd"}) == "man-ef01"
 
 
-def test_titre_vide_refuse(paths):
+def test_an_empty_title_is_refused(paths):
     with pytest.raises(ManualMetaError):
         _create(paths, title="   ")
 
 
-def test_description_vide_refusee(paths):
+def test_an_empty_description_is_refused(paths):
     with pytest.raises(ManualMetaError):
         _create(paths, description="")
 
 
-def test_categorie_inconnue_refusee(paths):
+def test_an_unknown_category_is_refused(paths):
     with pytest.raises(ManualMetaError):
         _create(paths, category="licornes")
 
 
-def test_l_image_est_ecrite_sous_un_nom_genere(paths):
+def test_the_image_is_written_under_a_generated_name(paths):
     meta = _create(paths)
 
     save_image(paths, meta["id"], _png())
@@ -125,7 +125,7 @@ def test_l_image_est_ecrite_sous_un_nom_genere(paths):
     assert (paths.manual_images / f"{meta['id']}.png").exists()
 
 
-def test_l_image_est_rattachee_a_la_meta(paths):
+def test_the_image_is_attached_to_the_meta(paths):
     meta = _create(paths)
 
     save_image(paths, meta["id"], _png())
@@ -134,7 +134,7 @@ def test_l_image_est_rattachee_a_la_meta(paths):
     assert relu["image"].endswith(f"{meta['id']}.png")
 
 
-def test_le_format_jpeg_est_accepte(paths):
+def test_the_jpeg_format_is_accepted(paths):
     meta = _create(paths)
     buffer = BytesIO()
     Image.new("RGB", (10, 10), (0, 0, 0)).save(buffer, format="JPEG")
@@ -144,25 +144,26 @@ def test_le_format_jpeg_est_accepte(paths):
     assert (paths.manual_images / f"{meta['id']}.jpg").exists()
 
 
-def test_octets_qui_ne_sont_pas_une_image_refuses(paths):
+def test_bytes_that_are_not_an_image_are_refused(paths):
     meta = _create(paths)
 
     with pytest.raises(ManualMetaError):
         save_image(paths, meta["id"], b"<?php system($_GET['c']); ?>")
 
 
-def test_image_trop_lourde_refusee(paths):
+def test_an_oversized_image_is_refused(paths):
     meta = _create(paths)
 
     with pytest.raises(ManualMetaError):
         save_image(paths, meta["id"], b"\x89PNG" + b"\x00" * MAX_IMAGE_BYTES)
 
 
-def test_bombe_decompression_refusee(paths):
-    """Regression: une bombe de decompression (PNG avec dimensions declarees enormes) leve DecompressionBombError.
+def test_a_decompression_bomb_is_refused(paths):
+    """Regression: a decompression bomb (a PNG with huge declared dimensions) raises
+    DecompressionBombError.
 
-    Ce n'est pas UnidentifiedImageError ni OSError ni ValueError, donc sans gestion specifique,
-    l'exception s'echapperait non-convertie en ManualMetaError.
+    That is neither UnidentifiedImageError nor OSError nor ValueError, so without specific
+    handling the exception would escape unconverted into a ManualMetaError.
     """
     meta = _create(paths)
 
@@ -170,15 +171,15 @@ def test_bombe_decompression_refusee(paths):
         save_image(paths, meta["id"], _decompression_bomb_png())
 
 
-def test_image_pour_une_meta_inconnue_refusee(paths):
+def test_an_image_for_an_unknown_meta_is_refused(paths):
     _create(paths)
 
     with pytest.raises(ManualMetaError):
         save_image(paths, "man-ffff", _png())
 
 
-def test_aucun_fichier_n_est_ecrit_hors_du_dossier_images(paths):
-    """Le nom du fichier vient de l'identifiant serveur, jamais du client."""
+def test_no_file_is_written_outside_the_images_folder(paths):
+    """The file name comes from the server-side identifier, never from the client."""
     meta = _create(paths)
 
     save_image(paths, meta["id"], _png())
@@ -188,7 +189,7 @@ def test_aucun_fichier_n_est_ecrit_hors_du_dossier_images(paths):
 
 
 def _rien_hors_de_images(paths, data_dir) -> None:
-    """Aucun fichier ne doit exister hors de `paths.manual_images`."""
+    """No file must exist outside `paths.manual_images`."""
     for chemin in data_dir.rglob("*"):
         if chemin.is_file() and chemin.suffix != ".json":
             assert paths.manual_images in chemin.parents, chemin
@@ -202,9 +203,9 @@ def _rien_hors_de_images(paths, data_dir) -> None:
     "evil",
     "man-zzzz",
 ])
-def test_identifiant_de_forme_ou_de_chemin_invalide_refuse(paths, identifiant_malveillant):
-    """Attaques directes : la validation de forme doit tout rejeter avant
-    toute écriture, sans dépendre de ce que contient metas.json.
+def test_an_identifier_of_invalid_shape_or_path_is_refused(paths, identifiant_malveillant):
+    """Direct attacks: the shape validation has to reject everything before any write,
+    without depending on what metas.json contains.
     """
     data_dir = paths.data
     with pytest.raises(ManualMetaError):
@@ -213,11 +214,10 @@ def test_identifiant_de_forme_ou_de_chemin_invalide_refuse(paths, identifiant_ma
     _rien_hors_de_images(paths, data_dir)
 
 
-def test_identifiant_present_dans_metas_json_mais_avec_composant_de_chemin_refuse(paths):
-    """L'échappement démontré par le relecteur : un id de forme invalide qui
-    EST présent dans `metas.json` (ex. injecté par une future source
-    d'import) ne doit pas suffire à passer la garde — la validation de
-    forme doit précéder la recherche dans le fichier, pas en dépendre.
+def test_an_identifier_present_in_metas_json_but_with_a_path_component_is_refused(paths):
+    """The escape the reviewer demonstrated: an id of invalid shape that IS present in
+    `metas.json` (e.g. injected by a future import source) must not be enough to get past
+    the guard — the shape validation has to precede the file lookup, not depend on it.
     """
     identifiant_malveillant = "../../../evil"
     paths.manual_dir.mkdir(parents=True, exist_ok=True)
@@ -229,7 +229,7 @@ def test_identifiant_present_dans_metas_json_mais_avec_composant_de_chemin_refus
         save_image(paths, identifiant_malveillant, _png())
 
     _rien_hors_de_images(paths, paths.data)
-    # Le fichier vise par l'echappement (data/evil.png) ne doit pas exister.
+    # The file targeted by the escape (data/evil.png) must not exist.
     assert not (paths.data / "evil.png").exists()
 
 

@@ -6,11 +6,11 @@ from pathlib import Path
 from typing import Any, Callable
 
 LATLON_RE = re.compile(r"/@(-?\d+\.\d+),(-?\d+\.\d+)")
-# Deuxième forme observée sur des liens `goo.gl/maps` anciens (relecture
-# finale, correction) : la redirection Google mène à un viewer panorama
-# Street View de la forme `.../maps/@?api=1&map_action=pano&pano=...
-# &viewpoint=LAT,LON&...`, sans coordonnées dans le chemin `/@LAT,LON`. Ce
-# n'est pas un lien mort — juste un second format à reconnaître.
+# Second form seen on older `goo.gl/maps` links (found during a final review,
+# then fixed): the Google redirect leads to a Street View panorama viewer of the
+# form `.../maps/@?api=1&map_action=pano&pano=...&viewpoint=LAT,LON&...`, with no
+# coordinates in the `/@LAT,LON` path. That is not a dead link — just a second
+# format to recognise.
 VIEWPOINT_RE = re.compile(r"[?&]viewpoint=(-?\d+\.\d+),(-?\d+\.\d+)")
 USER_AGENT = "cartometa/0.1 (usage personnel)"
 
@@ -21,7 +21,7 @@ def extract_latlon(url: str) -> tuple[float, float] | None:
 
 
 def _default_opener(url: str) -> str:
-    """Retourne l'URL finale après redirections, sans lire le corps."""
+    """Return the final URL after redirects, without reading the body."""
     request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     with urllib.request.urlopen(request, timeout=15) as response:
         return response.geturl()
@@ -33,12 +33,12 @@ def resolve_maps_url(
     opener: Callable[[str], str] | None = None,
     retry_failed: bool = False,
 ) -> tuple[float, float] | None:
-    """Résout un lien Maps court en (lat, lon), en s'appuyant sur un cache disque.
+    """Resolve a short Maps link into (lat, lon), backed by an on-disk cache.
 
-    Par défaut, un échec déjà mémorisé (``null`` en cache) n'est jamais retenté :
-    c'est le comportement historique, silencieux vis-à-vis du réseau. Passer
-    ``retry_failed=True`` lève cette règle pour les seules entrées en échec —
-    un lien déjà résolu n'est, lui, jamais retapé sur le réseau.
+    By default, an already-recorded failure (``null`` in the cache) is never
+    retried: that is the historical behaviour, silent as far as the network is
+    concerned. Passing ``retry_failed=True`` lifts that rule for failed entries
+    only — an already resolved link is never hit over the network again.
     """
     if url in cache:
         value = cache[url]
@@ -46,7 +46,7 @@ def resolve_maps_url(
             return tuple(value)
         if not retry_failed:
             return None
-        # value est None ici : échec mémorisé, mais on nous demande de rejouer.
+        # value is None here: a recorded failure, but we are asked to replay it.
     try:
         final_url = (opener or _default_opener)(url)
         latlon = extract_latlon(final_url)

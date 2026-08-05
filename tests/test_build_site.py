@@ -23,12 +23,11 @@ def _carre(x: float, y: float, cote: float) -> dict:
 
 @pytest.fixture
 def projet(tmp_path, monkeypatch):
-    """Un projet minimal mais complet : données, images sources, gabarits.
+    """A minimal but complete project: data, source images, templates.
 
-    Les métas stockent le chemin de leur image relatif à la racine du projet
-    (convention déjà en place dans `cartometa.extract` et `cartometa.review`),
-    donc on se place dans `tmp_path` pour que cette racine soit celle du
-    projet jetable et non celle du dépôt réel.
+    Metas store their image path relative to the project root (a convention already in
+    place in `cartometa.extract` and `cartometa.review`), so we chdir into `tmp_path` so
+    that this root is the throwaway project's and not the real repository's.
     """
     monkeypatch.chdir(tmp_path)
     data = tmp_path / "data"
@@ -65,8 +64,8 @@ def projet(tmp_path, monkeypatch):
     (viewer / "style.css").write_text("body{margin:0}", "utf-8")
     (viewer / "app.js").write_text("console.log('x')", "utf-8")
     (viewer / "anki.js").write_text("/* anki */", "utf-8")
-    # Greffon Leaflet vendorisé, chargé à la demande par le front : il n'est
-    # référencé par aucun gabarit, seulement par le manifeste.
+    # Vendored Leaflet plugin, loaded on demand by the front end: it is referenced by
+    # no template, only by the manifest.
     (viewer / "googleMutant.js").write_text("/* greffon */", "utf-8")
     (viewer / "favicon.svg").write_text("<svg xmlns='http://www.w3.org/2000/svg'/>", "utf-8")
     Image.new("RGBA", (32, 32), (193, 40, 58, 255)).save(viewer / "favicon.png")
@@ -76,16 +75,16 @@ def projet(tmp_path, monkeypatch):
 
 @pytest.fixture(autouse=True)
 def sans_natural_earth(monkeypatch):
-    """Défaut du fichier : Natural Earth injoignable, donc jamais de réseau.
+    """This file's default: Natural Earth unreachable, hence never any network.
 
-    `build_site` branche `country_geometry` sur `build_dataset` pour publier la
-    silhouette des pays, et ce dataset se télécharge (25 Mo) dès que le cache
-    manque — c'est le cas de tous les `tmp_path` de ce fichier. Le défaut est
-    donc la panne d'accès, précisément ce que `_fabrique_contours` doit
-    absorber : les tests qui veulent une silhouette la fournissent eux-mêmes.
+    `build_site` wires `country_geometry` into `build_dataset` to publish the country
+    silhouettes, and that dataset downloads (25 MB) as soon as the cache is missing —
+    which is the case for every `tmp_path` in this file. So the default is the access
+    failure, precisely what `_fabrique_contours` has to absorb: the tests that want a
+    silhouette provide one themselves.
     """
     def _hors_ligne(code, cache_dir):
-        raise OSError("dataset non téléchargé (fixture de test)")
+        raise OSError("dataset not downloaded (test fixture)")
 
     monkeypatch.setattr("cartometa.build.site.country_geometry", _hors_ligne)
 
@@ -100,10 +99,10 @@ def _fichier_pays(dist: Path, code: str) -> dict:
 
 
 def _regles(headers: str) -> list[tuple[str, dict[str, str]]]:
-    """Découpe un fichier `_headers` en (motif, en-têtes), dans l'ordre.
+    """Split a `_headers` file into (pattern, headers), in order.
 
-    Une ligne non indentée ouvre un nouveau motif ; les lignes indentées qui
-    suivent sont ses en-têtes.
+    An unindented line opens a new pattern; the indented lines that follow are its
+    headers.
     """
     regles: list[tuple[str, dict[str, str]]] = []
     for ligne in headers.splitlines():
@@ -117,10 +116,10 @@ def _regles(headers: str) -> list[tuple[str, dict[str, str]]]:
     return regles
 
 
-def test_le_resultat_expose_les_orphelines_pour_que_le_cli_les_nomme(projet):
-    """`build_dataset` compte les emprises dont le texte a disparu ; si le
-    résultat de `build_site` ne les fait pas suivre, le CLI n'a rien à
-    afficher et l'orpheline reste invisible."""
+def test_the_result_exposes_orphans_so_the_cli_can_name_them(projet):
+    """`build_dataset` counts the footprints whose text has vanished; if `build_site`'s
+    result does not pass them on, the CLI has nothing to show and the orphan stays
+    invisible."""
     geo_path = projet / "data" / "geo" / "PL.geojson"
     geo = json.loads(geo_path.read_text("utf-8"))
     geo["features"].append({
@@ -135,10 +134,9 @@ def test_le_resultat_expose_les_orphelines_pour_que_le_cli_les_nomme(projet):
     assert resultat["orphans"] == [("PL", "pl-sans-texte")]
 
 
-def test_le_compte_de_metas_ne_compte_pas_les_lignes_d_index_en_double(projet):
-    """Depuis les bbox par partie, une emprise éclatée occupe plusieurs lignes
-    d'index : le compte affiché (manifeste et CLI) doit rester celui des
-    métas, pas celui des lignes."""
+def test_the_meta_count_does_not_count_duplicate_index_rows(projet):
+    """Since per-part bboxes, a scattered footprint takes up several index rows: the
+    count shown (manifest and CLI) has to stay the count of metas, not of rows."""
     geo_path = projet / "data" / "geo" / "PL.geojson"
     geo = json.loads(geo_path.read_text("utf-8"))
     geo["features"][0]["geometry"] = {"type": "MultiPolygon", "coordinates": [
@@ -154,7 +152,7 @@ def test_le_compte_de_metas_ne_compte_pas_les_lignes_d_index_en_double(projet):
     assert _manifeste(dist)["meta_count"] == 1
 
 
-def test_la_page_de_licence_est_publiee(projet):
+def test_the_licence_page_is_published(projet):
     dist = projet / "dist"
 
     build_site(projet / "data", dist, projet / "viewer", ["PL"])
@@ -162,9 +160,9 @@ def test_la_page_de_licence_est_publiee(projet):
     assert (dist / "licence.html").exists()
 
 
-def test_la_page_404_est_publiee_avec_ses_marqueurs_substitues(projet):
-    """Sans elle dans la boucle des gabarits, Cloudflare retombe sur son repli
-    et toute adresse inconnue renvoie l'accueil en 200."""
+def test_the_404_page_is_published_with_its_placeholders_substituted(projet):
+    """Without it in the template loop, Cloudflare falls back to its default and any
+    unknown address returns the home page with a 200."""
     dist = projet / "dist"
 
     build_site(projet / "data", dist, projet / "viewer", ["PL"])
@@ -176,32 +174,32 @@ def test_la_page_404_est_publiee_avec_ses_marqueurs_substitues(projet):
     assert re.search(r'href=./style\.[0-9a-f]{8}\.css.', texte)
 
 
-def test_la_page_404_reelle_reference_ses_actifs_en_absolu():
-    """Le défaut que ce test empêche de revenir.
+def test_the_real_404_page_references_its_assets_absolutely():
+    """The defect this test stops from coming back.
 
-    Cloudflare sert la page 404 sous l'adresse inconnue demandée, pas sous
-    `/404.html`. Les marqueurs devenant des noms de fichiers nus, un
-    `href="__CSS__"` se résoudrait, sur `/a/b/c`, en `/a/b/style.<hash>.css` :
-    la page d'erreur arriverait sans style ni icône, et son lien de retour
-    pointerait vers `/a/b/`. Seule la barre oblique de tête l'évite — et
-    seules les deux autres pages, servies à la racine, peuvent s'en passer.
+    Cloudflare serves the 404 page under the unknown address that was requested, not
+    under `/404.html`. Since the placeholders become bare file names, an
+    `href="__CSS__"` would resolve, on `/a/b/c`, to `/a/b/style.<hash>.css`: the error
+    page would arrive without styling or icon, and its back link would point at `/a/b/`.
+    Only the leading slash avoids it — and only the other two pages, served at the root,
+    can do without it.
 
-    Le contrôle porte sur le gabarit réellement livré, pas sur le fixture :
-    c'est dans `viewer/404.html` que la régression se produirait.
+    The check is on the template actually shipped, not on the fixture: it is in
+    `viewer/404.html` that the regression would happen.
     """
     texte = (Path(__file__).resolve().parents[1] / "viewer" / "404.html").read_text("utf-8")
 
     marqueurs = [m for m in ("__CSS__", "__ICON_SVG__", "__ICON_PNG__") if m in texte]
-    assert marqueurs, "la page 404 ne référence aucun actif : marqueurs renommés ?"
+    assert marqueurs, "the 404 page references no asset: placeholders renamed?"
     for marqueur in marqueurs:
         for occurrence in re.finditer(re.escape(marqueur), texte):
             assert texte[occurrence.start() - 1] == "/", (
-                f"{marqueur} doit être précédé d'une barre oblique dans 404.html"
+                f"{marqueur} must be preceded by a slash in 404.html"
             )
-    assert 'href="/"' in texte, "le lien de retour doit être absolu"
+    assert 'href="/"' in texte, "the back link must be absolute"
 
 
-def test_le_manifeste_reference_des_fichiers_qui_existent(projet):
+def test_the_manifest_references_files_that_exist(projet):
     dist = projet / "dist"
 
     build_site(projet / "data", dist, projet / "viewer", ["PL"])
@@ -212,7 +210,7 @@ def test_le_manifeste_reference_des_fichiers_qui_existent(projet):
         assert (dist / "data" / entree["file"]).exists()
 
 
-def test_toute_image_referencee_existe(projet):
+def test_every_referenced_image_exists(projet):
     dist = projet / "dist"
 
     build_site(projet / "data", dist, projet / "viewer", ["PL"])
@@ -226,7 +224,7 @@ def test_toute_image_referencee_existe(projet):
             assert (dist / base / meta["full"]).exists()
 
 
-def test_la_meta_ne_porte_plus_le_chemin_source_apres_le_build(projet):
+def test_the_meta_no_longer_carries_the_source_path_after_the_build(projet):
     dist = projet / "dist"
 
     build_site(projet / "data", dist, projet / "viewer", ["PL"])
@@ -238,8 +236,8 @@ def test_la_meta_ne_porte_plus_le_chemin_source_apres_le_build(projet):
     assert "image_source" not in pays["metas"]["pl1"]
 
 
-def test_image_base_est_dans_le_manifeste(projet):
-    """La parade au plafond de fichiers : déplacer les images ne touche que ça."""
+def test_image_base_is_in_the_manifest(projet):
+    """The workaround for the file cap: moving the images touches only this."""
     dist = projet / "dist"
 
     build_site(projet / "data", dist, projet / "viewer", ["PL"])
@@ -247,11 +245,10 @@ def test_image_base_est_dans_le_manifeste(projet):
     assert _manifeste(dist)["image_base"] == "img/"
 
 
-def test_image_base_personnalise_ne_deplace_pas_les_images_sur_le_disque(projet):
-    """L'échappatoire au plafond de fichiers : changer `image_base` ne doit
-    changer que le préfixe inscrit au manifeste. Les images restent
-    toujours écrites sous `out_dir / IMAGE_BASE`, prêtes à être synchronisées
-    vers un bucket sans que le code n'ait besoin de changer."""
+def test_a_custom_image_base_does_not_move_the_images_on_disk(projet):
+    """The escape hatch for the file cap: changing `image_base` must only change the
+    prefix written into the manifest. The images are still always written under
+    `out_dir / IMAGE_BASE`, ready to be synced to a bucket with no code change."""
     dist = projet / "dist"
 
     build_site(
@@ -263,7 +260,7 @@ def test_image_base_personnalise_ne_deplace_pas_les_images_sur_le_disque(projet)
     assert (dist / "img" / "PL").exists()
 
 
-def test_les_gabarits_recoivent_les_noms_empreintes(projet):
+def test_the_templates_receive_the_fingerprinted_names(projet):
     dist = projet / "dist"
 
     build_site(projet / "data", dist, projet / "viewer", ["PL"])
@@ -273,12 +270,12 @@ def test_les_gabarits_recoivent_les_noms_empreintes(projet):
     assert "style." in page and ".css" in page
 
 
-def test_les_favicons_sont_publies_empreintes_et_references(projet):
-    """L'onglet du navigateur doit porter l'épingle, sur les deux pages.
+def test_the_favicons_are_published_fingerprinted_and_referenced(projet):
+    """The browser tab must carry the pin, on both pages.
 
-    Les deux formats sont déclarés : le SVG pour les navigateurs récents, le
-    PNG en repli. Un favicon non empreinté serait servi immuable un an sans
-    pouvoir être remplacé, d'où le passage par le même mécanisme que le reste.
+    Both formats are declared: SVG for recent browsers, PNG as a fallback. A
+    non-fingerprinted favicon would be served immutable for a year with no way to
+    replace it, hence going through the same mechanism as everything else.
     """
     dist = projet / "dist"
 
@@ -286,29 +283,29 @@ def test_les_favicons_sont_publies_empreintes_et_references(projet):
 
     svg = [p.name for p in dist.glob("favicon.*.svg")]
     png = [p.name for p in dist.glob("favicon.*.png")]
-    assert len(svg) == 1 and len(png) == 1, f"attendu un de chaque : {svg} {png}"
+    assert len(svg) == 1 and len(png) == 1, f"expected one of each: {svg} {png}"
 
     for page in ("index.html", "licence.html"):
         texte = (dist / page).read_text("utf-8")
-        assert "__ICON_SVG__" not in texte, f"marqueur non substitué dans {page}"
-        assert svg[0] in texte, f"{page} ne référence pas {svg[0]}"
+        assert "__ICON_SVG__" not in texte, f"placeholder not substituted in {page}"
+        assert svg[0] in texte, f"{page} does not reference {svg[0]}"
 
-    # Et ils doivent tomber sous une règle de cache immuable, comme les autres
-    # actifs empreintés.
+    # And they must fall under an immutable cache rule, like the other fingerprinted
+    # assets.
     regles = _regles((dist / "_headers").read_text("utf-8"))
     for nom in (svg[0], png[0]):
         couvrant = [
             entetes for motif, entetes in regles
             if fnmatch.fnmatchcase("/" + nom, motif)
         ]
-        assert couvrant, f"aucune règle ne couvre /{nom}"
+        assert couvrant, f"no rule covers /{nom}"
         assert all("immutable" in e["Cache-Control"] for e in couvrant)
 
 
-def test_les_balises_open_graph_portent_des_url_absolues(projet):
-    """Un `og:image` relatif est ignoré par la plupart des robots d'aperçu :
-    le lien partagé s'affiche alors sans vignette. La substitution doit donc
-    produire une URL absolue, image empreintée comprise."""
+def test_the_open_graph_tags_carry_absolute_urls(projet):
+    """A relative `og:image` is ignored by most preview crawlers: the shared link then
+    shows up without a thumbnail. So the substitution has to produce an absolute URL,
+    fingerprinted image included."""
     dist = projet / "dist"
 
     build_site(
@@ -321,11 +318,11 @@ def test_les_balises_open_graph_portent_des_url_absolues(projet):
     og = [p.name for p in dist.glob("og.*.png")]
     assert len(og) == 1
 
-    # L'URL de l'image d'aperçu doit être absolue ET porter le nom empreinté :
-    # les deux substitutions se composent dans le bon ordre.
+    # The preview image URL must be absolute AND carry the fingerprinted name: the two
+    # substitutions compose in the right order.
     assert f"https://exemple.test/{og[0]}" in page
-    # La barre finale du réglage ne doit pas produire un double slash, qui
-    # casserait l'URL pour une partie des robots d'aperçu.
+    # The setting's trailing slash must not produce a double slash, which would break
+    # the URL for some preview crawlers.
     assert "https://exemple.test//" not in page
     assert "Find all relevant metas" in page
 
@@ -333,13 +330,13 @@ def test_les_balises_open_graph_portent_des_url_absolues(projet):
     assert "__SITE_URL__" not in licence
 
 
-def test_le_fichier_headers_est_produit_avec_les_deux_regimes(projet):
-    """Le manifeste doit être revalidé à chaque visite, et lui seul.
+def test_the_headers_file_is_produced_with_both_regimes(projet):
+    """The manifest must be revalidated on every visit, and it alone.
 
-    Un motif qui matcherait aussi `/data/manifest.json` en plus de la règle
-    dédiée rendrait le régime appliqué dépendant d'une priorité Cloudflare
-    non documentée dans ce dépôt — potentiellement `immutable`, ce qui
-    gèlerait le site sur un manifeste périmé pour toujours.
+    A pattern that also matched `/data/manifest.json` on top of the dedicated rule would
+    make the applied regime depend on a Cloudflare priority undocumented in this
+    repository — potentially `immutable`, which would freeze the site on a stale manifest
+    forever.
     """
     dist = projet / "dist"
 
@@ -352,13 +349,13 @@ def test_le_fichier_headers_est_produit_avec_les_deux_regimes(projet):
         if fnmatch.fnmatchcase("/data/manifest.json", motif)
     ]
     assert len(correspondances) == 1, (
-        f"un seul motif doit matcher le manifeste : {correspondances}"
+        f"exactly one pattern must match the manifest: {correspondances}"
     )
     motif, entetes = correspondances[0]
     assert motif == "/data/manifest.json"
     assert entetes["Cache-Control"] == "no-cache"
 
-    # Les fichiers empreintés, eux, doivent rester en cache immuable un an.
+    # The fingerprinted files, meanwhile, must stay in an immutable cache for a year.
     empreinte = [
         (motif, entetes) for motif, entetes in regles
         if fnmatch.fnmatchcase("/data/h/index.a1b2c3d4.json", motif)
@@ -366,44 +363,43 @@ def test_le_fichier_headers_est_produit_avec_les_deux_regimes(projet):
     assert len(empreinte) == 1
     assert "immutable" in empreinte[0][1]["Cache-Control"]
 
-    # Les pages HTML doivent être couvertes sous LEURS DEUX FORMES. Cloudflare
-    # Pages sert des URL propres et redirige `/licence.html` vers `/licence` :
-    # une règle écrite sur le seul nom de fichier ne couvre donc que l'adresse
-    # que personne ne visite. Vérifié en production avant d'être corrigé ici.
+    # The HTML pages must be covered under BOTH THEIR FORMS. Cloudflare Pages serves
+    # clean URLs and redirects `/licence.html` to `/licence`: so a rule written on the
+    # file name alone only covers the address nobody visits. Verified in production
+    # before being fixed here.
     for chemin in ("/", "/index.html", "/licence", "/licence.html", "/404", "/404.html"):
         couvrant = [
             (motif, entetes) for motif, entetes in regles
             if fnmatch.fnmatchcase(chemin, motif)
         ]
-        assert couvrant, f"aucune règle ne couvre {chemin}"
+        assert couvrant, f"no rule covers {chemin}"
         assert all(e["Cache-Control"] == "no-cache" for _, e in couvrant), (
-            f"{chemin} doit être revalidé : {couvrant}"
+            f"{chemin} must be revalidated: {couvrant}"
         )
 
 
-def test_dumps_est_independant_de_l_ordre_des_cles():
-    """Le tri des clés rend l'empreinte reproductible.
+def test_dumps_is_independent_of_key_order():
+    """Sorting the keys makes the fingerprint reproducible.
 
-    Sans lui, l'ordre d'insertion suffirait à changer le nom du fichier —
-    et donc à vider le cache de tous les visiteurs — sans qu'aucun contenu
-    n'ait changé.
+    Without it, insertion order alone would be enough to change the file name — and thus
+    to flush every visitor's cache — without any content having changed.
     """
     assert _dumps({"b": 1, "a": 2}) == _dumps({"a": 2, "b": 1})
 
 
-def test_deux_builds_identiques_donnent_les_memes_noms(projet):
+def test_two_identical_builds_give_the_same_names(projet):
     build_site(projet / "data", projet / "d1", projet / "viewer", ["PL"])
     build_site(projet / "data", projet / "d2", projet / "viewer", ["PL"])
 
     m1, m2 = _manifeste(projet / "d1"), _manifeste(projet / "d2")
     assert m1["index"] == m2["index"]
-    # `countries` est le seul payload empreinté qui porte des dictionnaires
-    # (`metas`, `geometries`) plutôt que de simples listes — le seul endroit
-    # où un tri de clés manquant pourrait se voir.
+    # `countries` is the only fingerprinted payload that carries dictionaries (`metas`,
+    # `geometries`) rather than plain lists — the only place a missing key sort could
+    # show.
     assert m1["countries"] == m2["countries"]
 
 
-def test_skip_images_ne_produit_aucune_image(projet):
+def test_skip_images_produces_no_image(projet):
     dist = projet / "dist"
 
     build_site(projet / "data", dist, projet / "viewer", ["PL"], skip_images=True)
@@ -411,7 +407,7 @@ def test_skip_images_ne_produit_aucune_image(projet):
     assert not (dist / "img").exists()
 
 
-def test_le_resultat_compte_les_fichiers_produits(projet):
+def test_the_result_counts_the_files_produced(projet):
     resultat = build_site(projet / "data", projet / "dist", projet / "viewer", ["PL"])
 
     assert resultat["metas"] == 1
@@ -419,14 +415,14 @@ def test_le_resultat_compte_les_fichiers_produits(projet):
     assert FILE_COUNT_WARNING < FILE_COUNT_LIMIT
 
 
-def test_une_image_source_absente_leve_avec_le_nom_de_la_meta(projet):
+def test_a_missing_source_image_raises_with_the_meta_name(projet):
     (projet / "input" / "pl1.png").unlink()
 
     with pytest.raises(SystemExit, match="pl1"):
         build_site(projet / "data", projet / "dist", projet / "viewer", ["PL"])
 
 
-def test_un_build_relance_ecrase_sans_laisser_de_residu(projet):
+def test_a_rerun_build_overwrites_without_leaving_leftovers(projet):
     dist = projet / "dist"
     build_site(projet / "data", dist, projet / "viewer", ["PL"])
     (dist / "data" / "vieux.json").write_text("{}", "utf-8")
@@ -434,18 +430,18 @@ def test_un_build_relance_ecrase_sans_laisser_de_residu(projet):
     build_site(projet / "data", dist, projet / "viewer", ["PL"])
 
     assert not (dist / "data" / "vieux.json").exists()
-    # Une vraie sortie de build précédente est toujours remplacée sans que
-    # le garde-fou d'écrasement (voir plus bas) ne s'y oppose.
+    # A genuine previous build output is still replaced without the overwrite safety
+    # rail (see below) standing in the way.
     assert (dist / "_headers").exists()
 
 
-def test_le_build_refuse_d_ecraser_un_dossier_qui_ne_ressemble_pas_a_une_sortie(projet):
-    """`--out` pointant par erreur vers `viewer/` ou vers `data/` (une
-    transposition avec `--data`) ne doit jamais être rasé : seul un dossier
-    qui porte déjà la marque d'un build précédent (`_headers`) l'est."""
+def test_the_build_refuses_to_wipe_a_folder_that_does_not_look_like_an_output(projet):
+    """`--out` pointing by mistake at `viewer/` or at `data/` (a swap with `--data`)
+    must never be wiped: only a folder that already bears the mark of a previous build
+    (`_headers`) is."""
     cible = projet / "cible"
     cible.mkdir()
-    (cible / "important.txt").write_text("travail irremplaçable", "utf-8")
+    (cible / "important.txt").write_text("irreplaceable work", "utf-8")
 
     with pytest.raises(SystemExit, match="_headers"):
         build_site(projet / "data", cible, projet / "viewer", ["PL"])
@@ -453,13 +449,13 @@ def test_le_build_refuse_d_ecraser_un_dossier_qui_ne_ressemble_pas_a_une_sortie(
     assert (cible / "important.txt").exists()
 
 
-# --- Vérification d'intégrité du dist/ (contrôle de non-régression sur la
-# panne réelle : un `dist/` tronqué qui se déclare pourtant complet) --------
+# --- Integrity check of the dist/ (a non-regression check on the real failure: a
+# truncated `dist/` that nonetheless declares itself complete) --------------
 
 def _arbre_complet(out_dir: Path) -> dict:
-    """Construit à la main un `dist/` minimal mais complet, avec son
-    manifeste, sans passer par `build_site` : la fonction pure doit pouvoir
-    être testée sur n'importe quel arbre, pas seulement sur sa propre sortie.
+    """Build by hand a minimal but complete `dist/`, with its manifest, without going
+    through `build_site`: the pure function has to be testable on any tree, not only on
+    its own output.
     """
     (out_dir / "data" / "h" / "c").mkdir(parents=True)
     (out_dir / "data" / "h" / "index.json").write_text("{}", "utf-8")
@@ -487,7 +483,7 @@ def _arbre_complet(out_dir: Path) -> dict:
     }
 
 
-def test_un_arbre_complet_ne_rapporte_rien_de_manquant(tmp_path):
+def test_a_complete_tree_reports_nothing_missing(tmp_path):
     manifeste = _arbre_complet(tmp_path)
 
     resultat = verifier_integrite(tmp_path, manifeste)
@@ -496,7 +492,7 @@ def test_un_arbre_complet_ne_rapporte_rien_de_manquant(tmp_path):
     assert resultat.images_ignorees is False
 
 
-def test_un_fichier_pays_manquant_est_signale(tmp_path):
+def test_a_missing_country_file_is_reported(tmp_path):
     manifeste = _arbre_complet(tmp_path)
     (tmp_path / "data" / "h" / "c" / "PL.json").unlink()
 
@@ -505,7 +501,7 @@ def test_un_fichier_pays_manquant_est_signale(tmp_path):
     assert any("PL.json" in chemin for chemin in resultat.manquants)
 
 
-def test_une_image_manquante_est_signalee(tmp_path):
+def test_a_missing_image_is_reported(tmp_path):
     manifeste = _arbre_complet(tmp_path)
     (tmp_path / "img" / "PL" / "m1.thumb.avif").unlink()
 
@@ -514,7 +510,7 @@ def test_une_image_manquante_est_signalee(tmp_path):
     assert any("m1.thumb.avif" in chemin for chemin in resultat.manquants)
 
 
-def test_le_fichier_index_manquant_est_signale(tmp_path):
+def test_a_missing_index_file_is_reported(tmp_path):
     manifeste = _arbre_complet(tmp_path)
     (tmp_path / "data" / "h" / "index.json").unlink()
 
@@ -523,12 +519,11 @@ def test_le_fichier_index_manquant_est_signale(tmp_path):
     assert any("index.json" in chemin for chemin in resultat.manquants)
 
 
-def test_un_fichier_pays_corrompu_est_signale_sans_lever(tmp_path):
-    """Le cas motivant le contrôle : un disque plein tronque un fichier qui
-    continue d'exister (il passe le test `.exists()`) mais dont le JSON est
-    invalide. Ça doit rester un diagnostic dans `manquants`, jamais une
-    exception qui remonte — sinon le contrôle échoue précisément sur le cas
-    qu'il a été construit pour couvrir."""
+def test_a_corrupted_country_file_is_reported_without_raising(tmp_path):
+    """The case that motivates the check: a full disk truncates a file that keeps
+    existing (it passes the `.exists()` test) but whose JSON is invalid. That has to stay
+    a diagnosis inside `manquants`, never an exception that surfaces — otherwise the check
+    fails precisely on the case it was built to cover."""
     manifeste = _arbre_complet(tmp_path)
     (tmp_path / "data" / "h" / "c" / "PL.json").write_text("{tronqu", "utf-8")
 
@@ -537,10 +532,9 @@ def test_un_fichier_pays_corrompu_est_signale_sans_lever(tmp_path):
     assert any("PL.json" in chemin for chemin in resultat.manquants)
 
 
-def test_un_manifeste_sans_cle_index_est_signale_sans_lever(tmp_path):
-    """Rejouable après-coup signifie aussi robuste à un manifeste qu'on n'a
-    pas soi-même produit : une clé requise absente doit être diagnostiquée,
-    pas lever un `KeyError`."""
+def test_a_manifest_without_an_index_key_is_reported_without_raising(tmp_path):
+    """Replayable after the fact also means robust to a manifest one did not produce
+    oneself: a missing required key has to be diagnosed, not raise a `KeyError`."""
     manifeste = _arbre_complet(tmp_path)
     del manifeste["index"]
 
@@ -549,10 +543,10 @@ def test_un_manifeste_sans_cle_index_est_signale_sans_lever(tmp_path):
     assert any("index" in chemin for chemin in resultat.manquants)
 
 
-def test_un_pays_sans_cle_file_est_signale_sans_lever(tmp_path):
-    """Même garde-fou que pour la clé 'index' manquante, mais sur une entrée
-    de pays : un `entree["file"]` non protégé lèverait un `KeyError` au lieu
-    de rapporter l'absence, contredisant la docstring de la fonction."""
+def test_a_country_without_a_file_key_is_reported_without_raising(tmp_path):
+    """Same safety rail as for the missing 'index' key, but on a country entry: an
+    unguarded `entree["file"]` would raise a `KeyError` instead of reporting the absence,
+    contradicting the function's docstring."""
     manifeste = _arbre_complet(tmp_path)
     del manifeste["countries"]["PL"]["file"]
 
@@ -561,11 +555,11 @@ def test_un_pays_sans_cle_file_est_signale_sans_lever(tmp_path):
     assert any("PL" in chemin and "file" in chemin for chemin in resultat.manquants)
 
 
-def test_un_image_base_absolu_ignore_les_images(tmp_path):
-    """L'échappatoire objet-storage : quand `image_base` est une URL absolue,
-    les images ne vivent plus sous `out_dir` — les vérifier y produirait
-    des milliers de faux positifs. Le pays et l'index restent, eux, toujours
-    vérifiés : ils sont toujours locaux, quel que soit `image_base`."""
+def test_an_absolute_image_base_skips_the_images(tmp_path):
+    """The object-storage escape hatch: when `image_base` is an absolute URL, the images
+    no longer live under `out_dir` — checking them there would produce thousands of false
+    positives. The country file and the index, meanwhile, are still always checked: they
+    are always local, whatever `image_base` is."""
     (tmp_path / "data" / "h" / "c").mkdir(parents=True)
     (tmp_path / "data" / "h" / "index.json").write_text("{}", "utf-8")
     pays = {
@@ -594,11 +588,11 @@ def test_un_image_base_absolu_ignore_les_images(tmp_path):
     assert resultat.images_ignorees is True
 
 
-# --- Le volet « page » du contrôle (item 4 de la revue finale) : l'index.html,
-# les _headers et les deux actifs statiques empreintés sont désormais couverts,
-# pas seulement les chemins référencés par le manifeste. -------------------
+# --- The "page" part of the check (item 4 of the final review): index.html, the
+# _headers and the two fingerprinted static assets are now covered, not only the paths
+# referenced by the manifest. ----------------------------------------------
 
-def test_index_html_manquant_est_signale(tmp_path):
+def test_a_missing_index_html_is_reported(tmp_path):
     manifeste = _arbre_complet(tmp_path)
     (tmp_path / "index.html").unlink()
 
@@ -607,7 +601,7 @@ def test_index_html_manquant_est_signale(tmp_path):
     assert any("index.html" in chemin for chemin in resultat.manquants)
 
 
-def test_headers_manquant_est_signale(tmp_path):
+def test_a_missing_headers_file_is_reported(tmp_path):
     manifeste = _arbre_complet(tmp_path)
     (tmp_path / "_headers").unlink()
 
@@ -616,7 +610,7 @@ def test_headers_manquant_est_signale(tmp_path):
     assert any("_headers" in chemin for chemin in resultat.manquants)
 
 
-def test_actif_js_empreinte_manquant_est_signale(tmp_path):
+def test_a_missing_fingerprinted_js_asset_is_reported(tmp_path):
     manifeste = _arbre_complet(tmp_path)
     (tmp_path / "app.a1b2c3d4.js").unlink()
 
@@ -625,7 +619,7 @@ def test_actif_js_empreinte_manquant_est_signale(tmp_path):
     assert any("app" in chemin for chemin in resultat.manquants)
 
 
-def test_actif_css_empreinte_manquant_est_signale(tmp_path):
+def test_a_missing_fingerprinted_css_asset_is_reported(tmp_path):
     manifeste = _arbre_complet(tmp_path)
     (tmp_path / "style.a1b2c3d4.css").unlink()
 
@@ -634,19 +628,19 @@ def test_actif_css_empreinte_manquant_est_signale(tmp_path):
     assert any("style" in chemin for chemin in resultat.manquants)
 
 
-def test_build_site_reussit_toujours_avec_la_verification_integree(projet):
-    """La vérification tourne à chaque build ; sur un projet sain elle ne
-    doit jamais faire échouer un build par ailleurs correct."""
+def test_build_site_still_succeeds_with_the_integrated_check(projet):
+    """The check runs on every build; on a sound project it must never fail an
+    otherwise correct build."""
     resultat = build_site(projet / "data", projet / "dist", projet / "viewer", ["PL"])
 
     assert resultat["metas"] == 1
 
 
-def test_build_site_leve_systemexit_quand_la_verification_echoue(monkeypatch, projet):
-    """Prouve que `build_site` appelle bien la vérification (et pas
-    seulement que la fonction fonctionne isolément) : on la remplace par un
-    faux qui rapporte un chemin manquant, et on vérifie que `build_site`
-    relaie l'échec en `SystemExit` plutôt que de rendre un succès muet."""
+def test_build_site_raises_systemexit_when_the_check_fails(monkeypatch, projet):
+    """Proves that `build_site` really does call the check (and not only that the
+    function works in isolation): we replace it with a fake that reports a missing path,
+    and verify that `build_site` relays the failure as a `SystemExit` rather than
+    returning a mute success."""
     import cartometa.build.site as site
 
     appels = []
@@ -660,28 +654,27 @@ def test_build_site_leve_systemexit_quand_la_verification_echoue(monkeypatch, pr
     with pytest.raises(SystemExit, match="fantome"):
         build_site(projet / "data", projet / "dist", projet / "viewer", ["PL"])
 
-    assert appels, "build_site n'a pas appelé verifier_integrite"
+    assert appels, "build_site did not call verifier_integrite"
 
 
 def _images_produites(dist: Path) -> dict[str, bytes]:
     return {p.name: p.read_bytes() for p in (dist / "img").rglob("*.webp")}
 
 
-def test_une_seconde_construction_ne_reencode_aucune_image(projet, monkeypatch):
-    """Le build est incrémental sur l'encodage, pas seulement sur le transfert.
+def test_a_second_build_re_encodes_no_image(projet, monkeypatch):
+    """The build is incremental on encoding, not only on transfer.
 
-    Sans cache, publier trois métas de plus repayait l'encodage des ~3844
-    images déjà produites au build précédent — l'essentiel des dix minutes
-    d'une publication.
+    Without a cache, publishing three more metas paid again for encoding the ~3844 images
+    already produced by the previous build — most of the ten minutes of a publication.
     """
     build_site(projet / "data", projet / "dist", projet / "viewer", ["PL"])
     avant = _images_produites(projet / "dist")
-    assert avant, "le premier build n'a produit aucune image"
+    assert avant, "the first build produced no image"
 
     import cartometa.build.images as images
 
     def interdit(*args, **kwargs):
-        raise AssertionError("image réencodée alors que le cache la contenait")
+        raise AssertionError("image re-encoded although the cache held it")
 
     monkeypatch.setattr(images, "_encode", interdit)
 
@@ -690,40 +683,40 @@ def test_une_seconde_construction_ne_reencode_aucune_image(projet, monkeypatch):
     assert _images_produites(projet / "dist") == avant
 
 
-def test_le_cache_d_images_vit_hors_de_dist(projet):
-    """`dist/` est rasé à chaque build : un cache qui y vivrait ne servirait
-    jamais deux fois."""
+def test_the_image_cache_lives_outside_dist(projet):
+    """`dist/` is wiped on every build: a cache living there would never be used
+    twice."""
     build_site(projet / "data", projet / "dist", projet / "viewer", ["PL"])
 
     entrees = list((projet / "data" / "cache" / "images").rglob("*.webp"))
 
-    assert entrees, "aucune entrée de cache écrite"
+    assert entrees, "no cache entry written"
     assert not list((projet / "dist").rglob("*.part"))
 
 
-def test_sans_cle_google_le_manifeste_n_en_porte_aucune(projet):
-    """Le bouton « Google » du front n'apparaît que si une clé existe.
+def test_without_a_google_key_the_manifest_carries_none(projet):
+    """The front end's "Google" button only appears if a key exists.
 
-    Un contributeur construit le site sans clé : son aperçu doit rester
-    entier, simplement dépourvu du second fond de carte.
+    A contributor builds the site without a key: their preview must stay whole, simply
+    missing the second base map.
     """
     build_site(projet / "data", projet / "dist", projet / "viewer", ["PL"])
 
     assert "google_key" not in _manifeste(projet / "dist")
 
 
-def test_la_cle_google_arrive_dans_le_manifeste(projet):
-    """La clé transite par le build, jamais par le dépôt : elle finira dans le
-    JavaScript livré de toute façon, mais pas dans l'historique git."""
+def test_the_google_key_reaches_the_manifest(projet):
+    """The key travels through the build, never through the repository: it will end up
+    in the shipped JavaScript anyway, but not in git history."""
     build_site(projet / "data", projet / "dist", projet / "viewer", ["PL"],
                google_key="AIzaSyFausseCle")
 
     assert _manifeste(projet / "dist")["google_key"] == "AIzaSyFausseCle"
 
 
-def test_le_greffon_google_est_publie_et_reference(projet):
-    """Chargé à la demande par le front, donc désigné par le manifeste et non
-    par une balise script : sans cela tous les visiteurs le téléchargeraient."""
+def test_the_google_plugin_is_published_and_referenced(projet):
+    """Loaded on demand by the front end, hence named by the manifest and not by a
+    script tag: without that, every visitor would download it."""
     build_site(projet / "data", projet / "dist", projet / "viewer", ["PL"])
 
     nom = _manifeste(projet / "dist")["google_mutant"]
@@ -732,9 +725,9 @@ def test_le_greffon_google_est_publie_et_reference(projet):
     assert nom.startswith("googleMutant.") and nom.endswith(".js")
 
 
-def test_le_contour_natural_earth_est_publie(projet, monkeypatch):
-    """Le build branche `country_geometry` sur `build_dataset` : c'est le seul
-    endroit où les deux se rencontrent, donc le seul test qui le prouve."""
+def test_the_natural_earth_outline_is_published(projet, monkeypatch):
+    """The build wires `country_geometry` into `build_dataset`: that is the only place
+    the two meet, hence the only test that proves it."""
     from shapely.geometry import box
 
     monkeypatch.setattr(
@@ -748,9 +741,9 @@ def test_le_contour_natural_earth_est_publie(projet, monkeypatch):
     assert _fichier_pays(dist, "PL")["outline"]["type"] == "Polygon"
 
 
-def test_un_pays_inconnu_de_natural_earth_se_publie_sans_contour(projet, monkeypatch):
-    """`country_geometry` lève KeyError pour un code hors dataset : la
-    mini-carte perd son fond, jamais le pays sa publication."""
+def test_a_country_unknown_to_natural_earth_publishes_without_an_outline(projet, monkeypatch):
+    """`country_geometry` raises KeyError for a code outside the dataset: the mini-map
+    loses its background, never the country its publication."""
     def _introuvable(code, cache_dir):
         raise KeyError(code)
 
@@ -762,11 +755,11 @@ def test_un_pays_inconnu_de_natural_earth_se_publie_sans_contour(projet, monkeyp
     assert "outline" not in _fichier_pays(dist, "PL")
 
 
-def test_natural_earth_injoignable_ne_casse_pas_le_build(projet, monkeypatch):
-    """Un clone frais construit hors ligne n'a pas le dataset en cache : le
-    telechargement echoue en OSError et le site doit sortir quand meme."""
+def test_an_unreachable_natural_earth_does_not_break_the_build(projet, monkeypatch):
+    """A fresh clone built offline does not have the dataset cached: the download fails
+    with an OSError and the site must come out anyway."""
     def _hors_ligne(code, cache_dir):
-        raise OSError("réseau coupé")
+        raise OSError("network down")
 
     monkeypatch.setattr("cartometa.build.site.country_geometry", _hors_ligne)
     dist = projet / "dist"

@@ -5,15 +5,15 @@ from typing import Any
 TIER_COUNTRY = "country"
 TIER_REGIONAL = "regional"
 TIER_SPOT = "spot"
-# Une méta saisie à la main ne vient d'aucune section Plonk It : son tier
-# n'est qu'un libellé d'affichage, aucune logique n'en dépend.
+# A hand-entered meta comes from no Plonk It section: its tier is only a
+# display label, no logic depends on it.
 TIER_MANUAL = "manual"
 
 ORIGIN_PLONKIT = "plonkit"
 ORIGIN_MANUAL = "manual"
 
-# Deux statuts, pas quatre : une géométrie présente est par construction
-# tracée à la main, il n'y a plus rien d'automatique à distinguer.
+# Two statuses, not four: a geometry that exists was drawn by hand by
+# construction, there is no longer anything automatic to distinguish.
 STATUS_TRACED = "validé"
 STATUS_REJECTED = "rejeté"
 STATUSES = (STATUS_TRACED, STATUS_REJECTED)
@@ -41,11 +41,12 @@ class MetaRecord:
 
 @dataclass
 class GeoRecord:
-    """Décision humaine sur une méta : son emprise, et de quoi la rouvrir.
+    """The human decision on a meta: its footprint, and what it takes to reopen it.
 
-    `pieces` porte les descripteurs tels que l'humain les a posés. C'est ce
-    qui permet de rouvrir une méta déjà tracée et d'en retirer un morceau
-    sans tout redessiner — la géométrie seule ne se décompose pas.
+    `pieces` holds the descriptors exactly as the human laid them down. That is
+    what makes it possible to reopen an already drawn meta and remove one piece
+    from it without redrawing everything — the geometry alone cannot be
+    decomposed.
     """
 
     id: str

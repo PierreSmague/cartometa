@@ -11,16 +11,16 @@ from cartometa.models import ORIGIN_PLONKIT, STATUSES, GeoRecord
 
 
 class UnknownMetaError(ValueError):
-    """Levée quand un `id` ne correspond à aucune méta connue du pays."""
+    """Raised when an `id` matches no meta known for the country."""
 
 
 @dataclass(frozen=True)
 class CountryPaths:
-    """Les six chemins d'un pays, en un seul endroit.
+    """A country's six paths, in one single place.
 
-    Deux sources de métas cohabitent : l'import Plonk It, gitignoré parce que
-    régénérable, et la saisie manuelle, versionnée parce qu'irremplaçable.
-    Les réunir ici évite que chaque appelant réinvente la convention.
+    Two sources of metas coexist: the Plonk It import, gitignored because it is
+    regenerable, and manual entry, versioned because it is irreplaceable. Gathering
+    them here saves every caller from reinventing the convention.
     """
 
     data: Path
@@ -52,10 +52,10 @@ class CountryPaths:
 
 
 def read_json_list(path: Path) -> list[dict]:
-    """Liste JSON, ou liste vide si le fichier n'existe pas.
+    """A JSON list, or an empty list if the file does not exist.
 
-    Une source absente n'est pas une erreur : un pays peut n'avoir que des
-    métas importées, ou que des métas manuelles.
+    A missing source is not an error: a country may have only imported metas, or
+    only manual ones.
     """
     if not path.exists():
         return []
@@ -63,7 +63,7 @@ def read_json_list(path: Path) -> list[dict]:
 
 
 def load_metas(paths: CountryPaths) -> list[dict]:
-    """Métas importées puis manuelles, dans cet ordre."""
+    """Imported metas then manual ones, in that order."""
     return read_json_list(paths.imported_metas) + read_json_list(paths.manual_metas)
 
 
@@ -76,11 +76,11 @@ def load_geo(paths: CountryPaths) -> dict[str, GeoRecord]:
 
 
 def _arrondi_coords(valeur):
-    """Arrondit récursivement tout flottant à 5 décimales (~1 m au sol).
+    """Recursively round every float to 5 decimals (~1 m on the ground).
 
-    Appliqué à la géométrie et aux `pieces`, qui ne portent que des
-    coordonnées : les quinze décimales d'un float64 sérialisé sont du bruit
-    de calcul, pas de l'information — et du poids versionné à chaque trace.
+    Applied to the geometry and to the `pieces`, which carry nothing but
+    coordinates: the fifteen decimals of a serialised float64 are computation noise,
+    not information — and versioned weight on every drawing.
     """
     if isinstance(valeur, float):
         return round(valeur, 5)
@@ -92,12 +92,12 @@ def _arrondi_coords(valeur):
 
 
 def _geometrie_arrondie(geometry: dict | None) -> dict | None:
-    """La géométrie arrondie, ou telle quelle si l'arrondi la dégénère.
+    """The rounded geometry, or the geometry as-is if rounding degenerates it.
 
-    Recoller deux sommets distants de moins de 1e-5° peut faire passer un
-    anneau deux fois par le même point : 8 emprises sur 3617 ont dégénéré
-    ainsi à la première migration. Même philosophie que `simplify_geometry` :
-    stocker plus lourd mais exact vaut toujours mieux que stocker invalide.
+    Gluing together two vertices less than 1e-5° apart can make a ring pass twice
+    through the same point: 8 footprints out of 3617 degenerated that way during the
+    first migration. Same philosophy as `simplify_geometry`: storing heavier but
+    exact is always better than storing invalid.
     """
     if geometry is None:
         return None
@@ -112,12 +112,12 @@ def _geometrie_arrondie(geometry: dict | None) -> dict | None:
 
 
 def _piece_arrondie(piece: dict) -> dict:
-    """Comme la géométrie : un anneau n'est arrondi que sans régression.
+    """Like the geometry: a ring is only rounded when that causes no regression.
 
-    Les anneaux servent à rouvrir une méta (`resolve_pieces` les reconstruit
-    en polygones) : un anneau valide ne doit pas devenir invalide au passage.
-    Un anneau déjà invalide — quatre tracés main le sont — est arrondi tel
-    quel : il n'y a rien à préserver.
+    Rings are what makes reopening a meta possible (`resolve_pieces` rebuilds them
+    into polygons): a valid ring must not become invalid along the way. A ring that
+    is already invalid — four hand drawings are — is rounded as-is: there is nothing
+    to preserve.
     """
     arrondie = _arrondi_coords(piece)
     anneau = piece.get("ring")
@@ -139,9 +139,9 @@ def _feature_arrondie(feature: dict) -> dict:
 
 
 def save_geo(paths: CountryPaths, records: dict[str, GeoRecord]) -> None:
-    # Compact, pas indenté : l'indentation coûtait un facteur 4 mesuré
-    # (RU.geojson : 90 Mo indenté, 25 Mo compact), sur des fichiers versionnés
-    # réécrits en entier à chaque décision.
+    # Compact, not indented: indentation cost a measured factor of 4 (RU.geojson:
+    # 90 MB indented, 25 MB compact), on versioned files rewritten in full on every
+    # decision.
     write_json_atomic(paths.geo, {
         "type": "FeatureCollection",
         "features": [
@@ -151,17 +151,17 @@ def save_geo(paths: CountryPaths, records: dict[str, GeoRecord]) -> None:
 
 
 def _image_url(meta: dict) -> str | None:
-    # Les deux sources stockent un chemin relatif à la racine du projet, que
-    # le serveur sert tel quel.
+    # Both sources store a path relative to the project root, which the server
+    # serves as-is.
     return "/" + meta["image"] if meta.get("image") else None
 
 
 def build_queue(paths: CountryPaths, include_all: bool = False) -> dict:
-    """File de revue du pays.
+    """The country's review queue.
 
-    Par défaut, les métas déjà tracées ou rejetées en sont exclues.
-    `include_all` les rouvre avec leurs morceaux, pour repasser sur un pays
-    quand une nouvelle source donne mieux.
+    By default, metas already drawn or rejected are excluded from it. `include_all`
+    reopens them with their pieces, to go over a country again when a new source does
+    better.
     """
     metas = load_metas(paths)
     geo = load_geo(paths)
@@ -185,12 +185,12 @@ def build_queue(paths: CountryPaths, include_all: bool = False) -> dict:
             "status": record.status if record is not None else None,
             "pieces": record.pieces if record is not None else [],
         })
-    # `done` compte les métas déjà décidées mais ABSENTES de la file rendue,
-    # pas simplement `len(geo)` : par défaut les deux coïncident (une méta
-    # décidée est toujours exclue de la file), mais sous `include_all` tout
-    # est rouvert et remis dans la file, donc `done` retombe à 0. C'est ce
-    # qui permet à l'appelant JS de garder la même formule
-    # `done + index courant` dans les deux modes, sans code spécifique.
+    # `done` counts the metas already decided but ABSENT from the returned queue,
+    # not simply `len(geo)`: by default the two coincide (a decided meta is always
+    # excluded from the queue), but under `include_all` everything is reopened and put
+    # back in the queue, so `done` falls back to 0. That is what lets the JS caller
+    # keep the same `done + current index` formula in both modes, with no special
+    # case.
     done = sum(1 for meta_id in geo if meta_id not in queued_ids)
     return {
         "country": paths.country,
@@ -208,9 +208,9 @@ def set_decision(
     pieces: list[dict],
 ) -> None:
     if status not in STATUSES:
-        raise ValueError(f"statut inconnu : {status!r} (attendu {' ou '.join(STATUSES)})")
+        raise ValueError(f"unknown status: {status!r} (expected {' or '.join(STATUSES)})")
     if meta_id not in {meta["id"] for meta in load_metas(paths)}:
-        raise UnknownMetaError(f"méta inconnue : {meta_id!r}")
+        raise UnknownMetaError(f"unknown meta: {meta_id!r}")
     records = load_geo(paths)
     records[meta_id] = GeoRecord(
         id=meta_id, geometry=geometry, pieces=list(pieces), status=status
@@ -219,9 +219,9 @@ def set_decision(
 
 
 def clear_decision(paths: CountryPaths, meta_id: str) -> None:
-    """Remet une méta à l'état « à faire » en retirant sa décision."""
+    """Put a meta back in the "to do" state by removing its decision."""
     records = load_geo(paths)
     if meta_id not in records:
-        raise UnknownMetaError(f"aucune décision à annuler pour {meta_id!r}")
+        raise UnknownMetaError(f"no decision to undo for {meta_id!r}")
     del records[meta_id]
     save_geo(paths, records)

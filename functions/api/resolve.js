@@ -1,22 +1,21 @@
-// Relais minimal : suit la redirection d'un lien Google Maps raccourci et
-// renvoie ses coordonnées.
+// Minimal relay: follows a shortened Google Maps link's redirect and returns its
+// coordinates.
 //
-// Pourquoi un point d'appel serveur alors que tout le reste du site est
-// statique : `goo.gl` n'envoie aucun en-tête CORS (vérifié), donc le
-// navigateur refuse d'exposer la redirection à la page. C'est une règle du
-// navigateur, pas un détail contournable côté client.
+// Why a server endpoint when the whole rest of the site is static: `goo.gl` sends
+// no CORS header (verified), so the browser refuses to expose the redirect to the
+// page. That is a browser rule, not a detail that can be worked around client-side.
 //
-// Pendant serveur de `cartometa/extract/maps_links.py` : mêmes motifs, même
-// méthode (suivre les redirections puis lire l'URL finale). Ce résolveur-là a
-// résolu 2007 liens réels sans un seul échec — on reproduit ce qui marche
-// plutôt que d'inventer une variante.
+// Server-side counterpart of `cartometa/extract/maps_links.py`: same patterns, same
+// method (follow the redirects then read the final URL). That resolver resolved
+// 2007 real links without a single failure — we reproduce what works rather than
+// invent a variant.
 
-// Liste blanche stricte. Sans elle, ce point d'appel serait un relais capable
-// de sonder n'importe quel serveur depuis notre origine, adresses internes
-// comprises. Les deux seuls hôtes que Google Maps produit au partage.
+// Strict allowlist. Without it, this endpoint would be a relay able to probe any
+// server from our origin, internal addresses included. The only two hosts Google
+// Maps produces when sharing.
 const HOTES_AUTORISES = new Set(['maps.app.goo.gl', 'goo.gl']);
 
-// Repris de `LATLON_RE` et `VIEWPOINT_RE` côté build, plus la fiche de lieu.
+// Taken from `LATLON_RE` and `VIEWPOINT_RE` on the build side, plus the place card.
 const MOTIFS = [
   /\/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/,
   /[?&]viewpoint=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/,
@@ -26,12 +25,12 @@ const MOTIFS = [
 const USER_AGENT = 'cartometa/1.0 (+https://cartometa.com)';
 
 function json(charge, statut = 200) {
-  // Un SUCCÈS seul est mis en cache : la cible d'un lien court ne change pas.
-  // Un échec, jamais — et c'est un défaut vécu, pas une précaution théorique.
-  // La chaîne de redirections de Google passe par une page de consentement et
-  // n'aboutit pas toujours ; mettre ce résultat en cache 24 h gravait un échec
-  // passager dans le navigateur du visiteur, qui voyait ensuite le même lien
-  // échouer indéfiniment alors qu'il se résolvait très bien par ailleurs.
+  // Only a SUCCESS is cached: a short link's target does not change. A failure,
+  // never — and that is a defect lived through, not a theoretical precaution.
+  // Google's redirect chain goes through a consent page and does not always get to
+  // the end; caching that result for 24 h engraved a transient failure into the
+  // visitor's browser, who then saw the same link fail indefinitely while it
+  // resolved perfectly well elsewhere.
   const reussite = Array.isArray(charge.latlon);
   return new Response(JSON.stringify(charge), {
     status: statut,
@@ -48,8 +47,8 @@ function extraire(url) {
     if (!trouve) continue;
     const lat = Number(trouve[1]);
     const lon = Number(trouve[2]);
-    // Un motif peut coïncider avec autre chose qu'un point : hors bornes, on
-    // refuse plutôt que de renvoyer une position absurde.
+    // A pattern can match something other than a point: out of bounds, we refuse
+    // rather than return an absurd position.
     if (
       Number.isFinite(lat) && Number.isFinite(lon)
       && lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180
@@ -60,18 +59,17 @@ function extraire(url) {
   return null;
 }
 
-// Nombre de sauts suivis à la main. La chaîne observée en fait trois
-// (lien court → Maps → consentement → Maps) ; cinq laisse de la marge sans
-// permettre une boucle infinie.
+// Number of hops followed by hand. The observed chain has three (short link → Maps
+// → consent → Maps); five leaves margin without allowing an infinite loop.
 const SAUTS_MAX = 5;
 
-// Suit la chaîne de redirections en inspectant CHAQUE en-tête `Location`,
-// plutôt que la seule URL finale.
+// Follows the redirect chain by inspecting EVERY `Location` header, rather than only
+// the final URL.
 //
-// C'est ce qui rend la résolution fiable : les coordonnées sont présentes dès
-// la PREMIÈRE redirection, alors que la fin de la chaîne passe par
-// `consent.google.com` et n'aboutit pas toujours. Ne lire que l'URL finale
-// faisait donc échouer par intermittence des liens parfaitement valides.
+// That is what makes the resolution reliable: the coordinates are present from the
+// FIRST redirect onwards, whereas the end of the chain goes through
+// `consent.google.com` and does not always get there. Reading only the final URL
+// therefore made perfectly valid links fail intermittently.
 async function suivreEtExtraire(depart) {
   let courante = depart;
   for (let saut = 0; saut < SAUTS_MAX; saut += 1) {
@@ -84,19 +82,19 @@ async function suivreEtExtraire(depart) {
     } catch {
       break;
     }
-    // Le corps ne sert jamais : seules les adresses portent le point.
+    // The body is never of any use: only the addresses carry the point.
     reponse.body?.cancel();
     const suite = reponse.headers.get('location');
     if (!suite) break;
-    // `new URL(suite, courante)` : un `Location` peut être relatif.
+    // `new URL(suite, courante)`: a `Location` can be relative.
     courante = new URL(suite, courante).toString();
     const point = extraire(courante);
     if (point) return point;
   }
 
-  // Repli : si aucune redirection n'a livré le point, on laisse le runtime
-  // suivre la chaîne entière et on lit l'URL d'arrivée. C'est la méthode du
-  // résolveur Python, éprouvée sur 2007 liens.
+  // Fallback: if no redirect delivered the point, we let the runtime follow the
+  // whole chain and read the arrival URL. That is the Python resolver's method,
+  // proven over 2007 links.
   try {
     const reponse = await fetch(depart, {
       redirect: 'follow',
@@ -126,8 +124,8 @@ export async function onRequestGet({ request }) {
 
   const point = await suivreEtExtraire(cible.toString());
 
-  // `latlon: null` avec un 200 : le lien a bien été suivi, il ne portait
-  // simplement pas de coordonnées. Ce n'est pas une panne — et le front
-  // distingue ce cas d'un échec de transport, qui a son propre message.
+  // `latlon: null` with a 200: the link was indeed followed, it simply carried no
+  // coordinates. That is not a failure — and the front end tells this case apart
+  // from a transport failure, which has its own message.
   return json({ latlon: point });
 }
