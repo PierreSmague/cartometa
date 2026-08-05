@@ -7,8 +7,11 @@ from shapely.geometry import shape
 
 from cartometa.atomic_write import write_json_atomic
 from cartometa.build.geometry import (
+    COORD_PRECISION,
     DEFAULT_TOLERANCE,
     SIZE_DIVISOR,
+    THIN_DIVISOR,
+    THIN_FLOOR_DIVISOR,
     area_ratio,
     effective_tolerance,
     hausdorff,
@@ -23,7 +26,10 @@ GEO_DIR = DATA_DIR / "geo"
 STATUTS = {"validé", "rejeté"}
 # Les verdicts memorises ne valent que pour ces parametres : les changer
 # invalide tout le cache d'un coup, sans etat ambigu.
-CACHE_VERSION = f"tolerance={DEFAULT_TOLERANCE}:divisor={SIZE_DIVISOR}"
+CACHE_VERSION = (
+    f"tolerance={DEFAULT_TOLERANCE}:divisor={SIZE_DIVISOR}"
+    f":thin={THIN_DIVISOR}:floor={THIN_FLOOR_DIVISOR}:coord={COORD_PRECISION}"
+)
 CACHE_PATH = DATA_DIR / "cache" / "simplification_checks.json"
 
 

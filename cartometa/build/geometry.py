@@ -38,6 +38,40 @@ COORD_PRECISION = 5
 # by eye: the trade-off is not monotonic beyond a certain point.
 SIZE_DIVISOR = 500
 
+# A ribbon's diagonal says nothing about its width. The mean width
+# 2*area/perimeter is the honest scale for thin shapes; dividing it by 50
+# keeps the measured drift well under the 5 % promise. But this bound only
+# *governs* (comes out as the smallest of the three candidates in
+# `effective_tolerance`) for footprints whose mean width sits strictly between
+# diagonal/40 and diagonal/10 (see THIN_FLOOR_DIVISOR below for the lower
+# edge) — about 716 of the real footprints in `data/geo/`. Above that band
+# (squares and blobs, mean width ~diagonal/3) the diagonal cap (SIZE_DIVISOR)
+# already wins and this constant has no effect; below it (extreme ribbons,
+# e.g. KG "WjWO") the width bound alone would be even finer, but the floor
+# takes over instead — see THIN_FLOOR_DIVISOR for why that regression is
+# actually fixed by the floor, not by this constant.
+THIN_DIVISOR = 50
+
+# Floor for the width bound: never finer than the footprint's diagonal / 2000.
+# 2*area/perimeter collapses on fractal coastlines (fjords, archipelagos) whose
+# perimeter is enormous — without this floor their simplification becomes a
+# no-op, the hausdorff check grinds for minutes per footprint and the published
+# weight of already-heavy countries (ID at 855 KB, spec cap 1 MB) balloons.
+#
+# This floor is also what actually saves the regression that started this
+# work: KG "WjWO" (a 1.26° x 0.15° valley ribbon) has a mean width of only
+# 0.0129° — well under diagonal/40 (~0.032°) — so the width bound alone
+# (0.000259°) falls under the floor (0.000636°) and the floor wins the
+# max(), giving a tolerance ~4x finer than the old diagonal/500 (0.00254°)
+# and keeping WjWO's area drift under 5 %. THIN_DIVISOR above only matters
+# for the intermediate band of footprints whose width bound lands between
+# this floor and the diagonal cap.
+#
+# 2000 comes from the measured table above: worst drift 0.9 %, heaviest
+# country still under the cap even if EVERY footprint used it — and here
+# only the rough-perimeter ones fall back to it.
+THIN_FLOOR_DIVISOR = 2000
+
 
 def _en_listes(valeur: Any) -> Any:
     """Recursively convert the tuples from `mapping()` into lists.
@@ -64,10 +98,16 @@ def round_coordinates(geometry: dict, precision: int = COORD_PRECISION) -> dict:
 def effective_tolerance(
     geometry: dict, tolerance: float, divisor: int = SIZE_DIVISOR
 ) -> float:
-    """Tolerance capped by the footprint's own size."""
-    min_lon, min_lat, max_lon, max_lat = shape(geometry).bounds
+    """Tolerance capped by the footprint's own size — and by its mean width,
+    so that thin ribbons are not over-simplified."""
+    forme = shape(geometry)
+    min_lon, min_lat, max_lon, max_lat = forme.bounds
     diagonale = math.hypot(max_lon - min_lon, max_lat - min_lat)
-    return min(tolerance, diagonale / divisor)
+    bornes = [tolerance, diagonale / divisor]
+    if forme.length > 0:
+        largeur_moyenne = 2.0 * forme.area / forme.length
+        bornes.append(max(largeur_moyenne / THIN_DIVISOR, diagonale / THIN_FLOOR_DIVISOR))
+    return min(bornes)
 
 
 def _degeneree(geometrie) -> bool:
