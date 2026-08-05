@@ -141,6 +141,13 @@ def main() -> None:
             f"text, not published: {details}\n"
             f"Re-running cartometa-extract on those countries will publish them."
         )
+    if resultat["unknown_overrides"]:
+        details = ", ".join(f"{p}/{i}" for p, i in resultat["unknown_overrides"])
+        print(
+            f"\nWarning: {len(resultat['unknown_overrides'])} category override(s) "
+            f"name an id that does not exist: {details}\n"
+            f"Those metas keep their inferred category. Check data/categories.json."
+        )
     if not arguments.google_key:
         print(
             f"\nWarning: no Google key - this dist/ will have no base map switch, "

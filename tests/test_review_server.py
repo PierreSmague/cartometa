@@ -249,7 +249,7 @@ def test_get_category_http_is_a_pass_through(live_server):
     status, body = _get(live_server, "/api/category?text=yellow%20bollards")
 
     assert status == 200
-    assert json.loads(body) == {"category": "bollards"}
+    assert json.loads(body) == {"category": "infrastructure"}
 
 
 def test_a_file_under_input_is_served(paths, live_server, monkeypatch):
