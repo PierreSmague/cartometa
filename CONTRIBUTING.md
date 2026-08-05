@@ -44,7 +44,7 @@ That is the point of this split: you can make mistakes without consequence.
    ```
 
 2. **Enter and draw** — `uv run cartometa-review <CC>` (`FR`, `BE`, `JP`…)
-   then <http://127.0.0.1:8765>. `N` creates a meta, the keys `D` `C` `S`
+   then <http://127.0.0.1:8799>. `N` creates a meta, the keys `D` `C` `S`
    `E` `F` draw its footprint, `A` saves it. No prior data is needed: an
    empty country is a valid starting point.
 

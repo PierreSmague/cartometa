@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import socket
+import sys
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
@@ -33,6 +35,12 @@ ALLOWED_ROOT_PREFIXES = ("/input/", "/data/manual/")
 # Same cap as `manual.MAX_IMAGE_BYTES`, applied before reading the body: we refuse
 # on the header rather than after having swallowed the bytes.
 MAX_BODY_BYTES = 8 * 1024 * 1024
+
+# The AnkiConnect add-on answers on 8765, and the interface used to default there too:
+# a review session with Anki open reached Anki, not this server. We keep a port of our
+# own, and `ANKICONNECT_PORT` stays here so the collision can be named in the error.
+ANKICONNECT_PORT = 8765
+DEFAULT_PORT = 8799
 
 
 def paths() -> CountryPaths:
@@ -210,17 +218,46 @@ TOUCHES = """Keys - D rectangle, C freehand outline, Enter close the outline, S 
        N new manual meta"""
 
 
-def main() -> None:
+def port_is_taken(host: str, port: int) -> bool:
+    """Is something already listening there?
+
+    Binding is not a reliable answer: `HTTPServer` sets `SO_REUSEADDR`, and on Windows
+    that lets a second bind on a *listening* port succeed — the first listener keeps
+    serving the traffic while we announce a URL we do not answer. Opening a connection
+    asks the only question that matters. A port merely left in TIME_WAIT by a previous
+    run accepts no connection, so stopping and relaunching still reads as free.
+    """
+    with socket.socket() as probe:
+        probe.settimeout(0.2)
+        return probe.connect_ex((host, port)) == 0
+
+
+def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Geometry review interface")
     parser.add_argument("country", nargs="?", default="PL")
     parser.add_argument("--data", type=Path, default=Path("data"))
-    parser.add_argument("--port", type=int, default=8765)
+    parser.add_argument("--port", type=int, default=DEFAULT_PORT)
     parser.add_argument(
         "--all",
         action="store_true",
         help="Reopen every meta, including those already drawn or rejected.",
     )
-    args = parser.parse_args()
+    return parser
+
+
+def main() -> None:
+    args = build_parser().parse_args()
+    if port_is_taken("127.0.0.1", args.port):
+        # ASCII only: the Windows console renders this in cp1252, where an em dash
+        # comes out as mojibake.
+        held_by = " (AnkiConnect's port)" if args.port == ANKICONNECT_PORT else ""
+        print(
+            f"Port {args.port} is already in use{held_by}: nothing was started.\n"
+            f"Close the other program, or pick a free port with --port.",
+            file=sys.stderr,
+        )
+        raise SystemExit(1)
+
     STATE["paths"] = CountryPaths(args.data, args.country.upper())
     STATE["include_all"] = args.all
 

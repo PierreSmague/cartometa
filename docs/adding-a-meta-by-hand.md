@@ -53,7 +53,7 @@ uv run cartometa-review FR
 `FR` is the country's **ISO 3166-1 alpha-2** code as Natural Earth knows it
 (`FR`, `BW`, `KR`…). Case does not matter, it is upper-cased.
 
-Then <http://127.0.0.1:8765> in the browser. The server only listens on the
+Then <http://127.0.0.1:8799> in the browser. The server only listens on the
 loopback interface.
 
 The country needs **nothing** beforehand: no imported text, no existing file.
