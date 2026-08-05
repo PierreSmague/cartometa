@@ -54,7 +54,17 @@ RULES: list[tuple[str, str]] = [
      r"|tunnel|bus stop|railway|tram|pylon|power line|wire|cable|street ?light"
      r"|lamp ?post|paving|asphalt|tarmac|junction|roundabout|road|highway|route"
      r"|motorway|shield|chevron|delineator|reflector|barrier|manhole|hydrant"
-     r"|utility|pavement|sidewalk|crossing|parking|car park)"),
+     r"|utility|pavement|sidewalk|crossing|parking|car park"
+     # Electricity boxes and counters: a major family, especially in the
+     # Philippines. Without keywords of their own they fell through to whatever
+     # incidental word the description held — "the southern half of the island"
+     # filed a metal box under landscape.
+     #
+     # `meter` only in a box context: bare, it would catch every summit given in
+     # metres. `tube` is deliberately absent — one meta describes saguaro cacti
+     # as "tall, straight tubes".
+     r"|metal box|junction box|cable box|fuse box|electric(?:ity)? box|meter box"
+     r"|meters? (?:board|setup|cover|cabinet)|counters?\b)"),
     ("architecture",
      r"\b(architect|building|house|housing|roof|facade|brick|balcon|window|wall"
      r"|church|mosque|temple|shrine|stupa|pagoda|synagogue|monaster|cathedral"
@@ -65,12 +75,13 @@ RULES: list[tuple[str, str]] = [
     ("vegetation",
      r"\b(tree|forest|wood(?:land|ed)|vegetat|crop|field|farm|agricultur"
      r"|plantation|orchard|palm|grass|bush|shrub|pasture|paddy|vineyard|flower"
-     r"|cactus|bamboo|moss|scrub|savanna|jungle|hedge|foliage|harvest"
+     # `cact` and not `cactus`: the plural is `cacti`.
+     r"|cact|bamboo|moss|scrub|savanna|jungle|hedge|foliage|harvest"
      # A greenhouse is a building, but the spec files it under agriculture. It
      # must appear here and nowhere else, since architecture is checked first.
      r"|greenhouse)"),
     ("landscape",
-     r"\b(mountain|hill|ridge|valley|landscape|terrain|desert|dune|lake|river"
+     r"\b(mountain|peak|hill|ridge|valley|landscape|terrain|desert|dune|lake|river"
      r"|stream|coast|cliff|volcano|island|plateau|plain|snow|glacier|beach"
      r"|canyon|rocky|arid|barren|elevation|altitude|climate|fog|sand|soil"
      r"|erosion|horizon|scenery|lagoon|delta|fjord)"),

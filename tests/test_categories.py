@@ -86,6 +86,35 @@ def test_a_greenhouse_is_vegetation_not_architecture():
     assert infer_category("Greenhouses cover the hillsides", "") == "vegetation"
 
 
+def test_a_utility_meter_box_is_infrastructure():
+    """Electricity boxes are a major meta family, especially in the Philippines.
+
+    Without a keyword of their own they fell through to whatever incidental word
+    the description happened to contain — "the southern half of the island" made
+    a metal box a landscape meta.
+    """
+    assert infer_category(
+        "Cebu metal box",
+        "These metal box are more common in the southern half of the island",
+    ) == "infrastructure"
+    assert infer_category("Aklan meters board", "") == "infrastructure"
+    assert infer_category("Guimaras counters", "yellow covers") == "infrastructure"
+
+
+def test_a_measurement_in_metres_does_not_make_a_meta_infrastructure():
+    """`meter` is only accepted in a box context: bare, it would file every
+    mountain given in metres under Infrastructures."""
+    assert infer_category("Peaks rise over 3000 meters", "") == "landscape"
+
+
+def test_a_cactus_shaped_like_a_tube_stays_vegetation():
+    """`tube` was rejected from the infrastructure rule for exactly this meta.
+    If someone adds it, this test says why they should not."""
+    assert infer_category(
+        "Saguaro cacti are most commonly shaped like tall, straight tubes", ""
+    ) == "vegetation"
+
+
 def test_an_incidental_infrastructure_word_outranks_culture():
     """A known and accepted limitation, measured before being accepted.
 
