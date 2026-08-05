@@ -277,6 +277,21 @@ def test_save_keeps_the_geometry_when_a_piece_is_hand_drawn(tmp_path):
     assert feature["geometry"] is not None
 
 
+def test_a_clip_only_record_keeps_its_geometry(tmp_path):
+    """[{"kind": "clip"}] passes the reference-kinds filter but resolve_pieces
+    cannot rebuild a footprint from it (clipping is not a surface): stripping
+    would lose the geometry irreversibly. Unreachable via the server, which
+    resolves before saving - but set_decision does not."""
+    paths = _paths_avec_reference(tmp_path)
+    records = {"m1": GeoRecord(id="m1", geometry=dict(CARRE_PL),
+                               pieces=[{"kind": "clip"}])}
+
+    save_geo(paths, records)
+
+    feature = json.loads(paths.geo.read_text("utf-8"))["features"][0]
+    assert feature["geometry"] is not None
+
+
 def test_load_without_resolve_leaves_stripped_geometry_none(tmp_path):
     paths = _paths_avec_reference(tmp_path)
     save_geo(paths, {"m1": GeoRecord(id="m1", geometry=dict(CARRE_PL),

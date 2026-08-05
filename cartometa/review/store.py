@@ -163,11 +163,14 @@ def _geometry_is_derivable(record: GeoRecord) -> bool:
     The pieces are the human decision (cf. GeoRecord docstring); when every
     piece is a reference descriptor, the geometry was itself produced by
     resolve_pieces at decision time and weighs megabytes for nothing: the US
-    file stored 37 copies of the 772 KB national silhouette.
+    file stored 37 copies of the 772 KB national silhouette. All-reference-kinds
+    is not quite enough though: a clip-only list is all reference kinds but
+    brings no surface at all (clip only intersects), so resolve_pieces has
+    nothing to rebuild from it - it must not be treated as derivable.
     """
     return bool(record.pieces) and all(
         piece.get("kind") in REFERENCE_KINDS for piece in record.pieces
-    )
+    ) and any(piece.get("kind") != "clip" for piece in record.pieces)
 
 
 def _resolved_geometry(record: GeoRecord, paths: CountryPaths) -> dict:
