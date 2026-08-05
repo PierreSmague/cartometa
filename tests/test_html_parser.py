@@ -56,6 +56,46 @@ def test_captures_maps_url_and_builds_anchored_source_url():
     assert next(m for m in metas if m.id == "AAAA").maps_url is None
 
 
+def test_thematic_h3_without_step_keeps_current_tier():
+    """The USA page subdivides Step 2 with thematic h3s ("Road Features",
+    "Poles", "Bollards"...): those blocks are still Step 2 material."""
+    html = (
+        '<h3>Step 2 - Regional and state-specific clues</h3>'
+        '<div id="REG1" class="relative group/bk"><p><strong>A</strong> clue.</p></div>'
+        '<h3>Road Features</h3>'
+        '<div id="REG2" class="relative group/bk"><p><strong>B</strong> clue.</p></div>'
+    )
+    metas, anomalies = parse_page(html, "US", "https://x/usa")
+    assert {m.id: m.tier for m in metas} == {"REG1": "regional", "REG2": "regional"}
+    assert anomalies == []
+
+
+def test_empty_h3_inside_a_block_does_not_end_the_section():
+    """The USA Spotlight contains a block with a decorative empty <h3>: the
+    blocks that follow are still Step 3 material."""
+    html = (
+        '<h3>Step 3 - Spotlight</h3>'
+        '<div id="SPOT1" class="relative group/bk">'
+        '<h3 class="font-medium text-center pb-0"></h3>'
+        '<p><strong>A</strong> spot.</p>'
+        '</div>'
+        '<div id="SPOT2" class="relative group/bk"><p><strong>B</strong> spot.</p></div>'
+    )
+    metas, _ = parse_page(html, "US", "https://x/usa")
+    assert {m.id: m.tier for m in metas} == {"SPOT1": "spot", "SPOT2": "spot"}
+
+
+def test_blocks_before_step_1_are_still_ignored():
+    html = (
+        '<h3>About this guide</h3>'
+        '<div id="INTRO" class="relative group/bk"><p><strong>Not</strong> a meta.</p></div>'
+        '<h3>Step 1 - Identifying the country</h3>'
+        '<div id="REAL" class="relative group/bk"><p><strong>A</strong> clue.</p></div>'
+    )
+    metas, _ = parse_page(html, "US", "https://x/usa")
+    assert [m.id for m in metas] == ["REAL"]
+
+
 def test_block_without_paragraph_is_reported_as_anomaly_not_crash():
     html = '<h3>Step 2 - Regional</h3><div id="BAD" class="relative group/bk"><strong>x</strong></div>'
     metas, anomalies = parse_page(html, "PL", "https://x/poland")
