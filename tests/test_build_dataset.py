@@ -12,6 +12,7 @@ from cartometa.build.dataset import (
     discover_countries,
     scope_de,
 )
+from cartometa.geo.reference import DATASET_NAME
 
 
 def _carre(x: float, y: float, cote: float) -> dict:
@@ -213,6 +214,43 @@ def test_legacy_statuses_are_counted_and_not_published(tmp_path):
 
     assert jeu.legacy_statuses == 1
     assert set(jeu.countries["LG"]["metas"]) == {"lg1"}
+
+
+def test_a_stripped_reference_geometry_is_resolved_at_build_time(tmp_path):
+    """`save_geo` (task 3) strips a footprint whose pieces are entirely reference
+    kinds down to `geometry: None`, precisely so the versioned geojson does not carry
+    a byte-for-byte copy of the Natural Earth silhouette. The build must not take that
+    `None` literally — it has to resolve the pieces through `load_geo(resolve=True)`,
+    exactly like the review server does when it reopens the meta, and publish the
+    rebuilt geometry rather than drop the footprint."""
+    data_dir = tmp_path / "data"
+    (data_dir / "metas").mkdir(parents=True)
+    (data_dir / "geo").mkdir(parents=True)
+    (data_dir / "cache").mkdir(parents=True)
+    (data_dir / "metas" / "PL.json").write_text(json.dumps([_meta("pl1")]), "utf-8")
+    (data_dir / "geo" / "PL.geojson").write_text(json.dumps({
+        "type": "FeatureCollection",
+        "features": [{
+            "type": "Feature",
+            "geometry": None,
+            "properties": {"id": "pl1", "status": "validé",
+                           "pieces": [{"kind": "country"}]},
+        }],
+    }), "utf-8")
+    (data_dir / "cache" / DATASET_NAME).write_text(json.dumps({
+        "type": "FeatureCollection",
+        "features": [{
+            "type": "Feature",
+            "properties": {"ISO_A2": "PL", "ISO_A2_EH": "PL", "NAME": "Poland"},
+            "geometry": _carre(14.0, 49.0, 6.0),
+        }],
+    }), "utf-8")
+
+    jeu = build_dataset(data_dir, ["PL"])
+
+    empreinte = jeu.countries["PL"]["metas"]["pl1"]["geom"]
+    geometrie = jeu.countries["PL"]["geometries"][empreinte]
+    assert geometrie is not None and geometrie["coordinates"]
 
 
 def test_geometries_present_but_no_meta_raises(tmp_path):
