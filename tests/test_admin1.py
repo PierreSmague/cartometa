@@ -95,3 +95,10 @@ def test_region_geometry_by_code(cache_dir):
 def test_region_geometry_unknown_code(cache_dir):
     with pytest.raises(KeyError):
         region_geometry("PL", "POL-99", cache_dir)
+
+
+def test_region_geometry_is_memoized(cache_dir):
+    assert (
+        region_geometry("PL", "POL-1", cache_dir)
+        is region_geometry("PL", "POL-1", cache_dir)
+    )

@@ -39,7 +39,10 @@ def _decompression_bomb_png() -> bytes:
     png_data += b'IHDR' + ihdr_data + struct.pack('>I', ihdr_crc)
 
     # Minimal IDAT chunk
-    compressed = zlib.compress(b'\x00' * (width * height * 3))[:100]
+    # PIL rejette la bombe des l'en-tete IHDR (60000x60000 pixels declares),
+    # sans jamais decoder l'IDAT : inutile de compresser 10,8 Go de zeros
+    # reels, 1 Ko donne le meme DecompressionBombError en 30 ms au lieu de 29 s.
+    compressed = zlib.compress(b'\x00' * 1024)[:100]
     idat_crc = zlib.crc32(b'IDAT' + compressed) & 0xffffffff
     png_data += struct.pack('>I', len(compressed))
     png_data += b'IDAT' + compressed + struct.pack('>I', idat_crc)

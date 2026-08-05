@@ -53,10 +53,14 @@ def test_the_decision_resolves_the_pieces_before_writing(paths):
 
 
 def test_the_whole_country_comes_from_natural_earth_not_from_the_client(paths):
-    """The client only sends a flag: the silhouette is re-read server-side."""
+    """The client only sends a flag: the silhouette is re-read server-side.
+
+    A lone `country` piece is a pure reference (task 3): its geometry is stripped
+    on save and must be rebuilt with `resolve=True` to be checked here.
+    """
     server.apply_decision("aaaa", STATUS_TRACED, [{"kind": "country"}])
 
-    assert shape(load_geo(paths)["aaaa"].geometry).bounds == (14.0, 49.0, 24.0, 55.0)
+    assert shape(load_geo(paths, resolve=True)["aaaa"].geometry).bounds == (14.0, 49.0, 24.0, 55.0)
 
 
 def test_the_pieces_are_kept_so_the_meta_can_be_reopened(paths):

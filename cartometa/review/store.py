@@ -4,10 +4,17 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
-from shapely.geometry import Polygon, shape
+from shapely.geometry import Polygon, mapping, shape
 
 from cartometa.atomic_write import write_json_atomic
-from cartometa.models import ORIGIN_PLONKIT, STATUSES, GeoRecord
+from cartometa.models import ORIGIN_PLONKIT, STATUS_TRACED, STATUSES, GeoRecord
+from cartometa.review.pieces import resolve_pieces
+
+# Piece kinds whose surface comes entirely from the Natural Earth reference:
+# the resulting geometry is a pure cache, reconstructible at read time.
+# "clip" brings no surface of its own (it intersects with the country outline,
+# also reference data), so it does not anchor anything hand-drawn.
+REFERENCE_KINDS = frozenset({"country", "admin1", "clip"})
 
 
 class UnknownMetaError(ValueError):
@@ -67,11 +74,23 @@ def load_metas(paths: CountryPaths) -> list[dict]:
     return read_json_list(paths.imported_metas) + read_json_list(paths.manual_metas)
 
 
-def load_geo(paths: CountryPaths) -> dict[str, GeoRecord]:
+def load_geo(paths: CountryPaths, resolve: bool = False) -> dict[str, GeoRecord]:
+    """The country's decisions, keyed by meta id.
+
+    `resolve=False` (default): stripped reference geometries stay None — enough
+    for the review queue and for re-saving, which strips them again anyway.
+    `resolve=True`: rebuild them from the pieces via Natural Earth; needed by
+    the site build and the real-data tests. May download the reference dataset
+    into `paths.cache` on a fresh clone, exactly like the review server does.
+    """
     if not paths.geo.exists():
         return {}
     data = json.loads(paths.geo.read_text("utf-8"))
     records = [GeoRecord.from_feature(f) for f in data.get("features", [])]
+    if resolve:
+        for record in records:
+            if record.geometry is None and record.status == STATUS_TRACED and record.pieces:
+                record.geometry = _resolved_geometry(record, paths)
     return {record.id: record for record in records}
 
 
@@ -138,6 +157,38 @@ def _feature_arrondie(feature: dict) -> dict:
     return feature
 
 
+def _geometry_is_derivable(record: GeoRecord) -> bool:
+    """True when the stored geometry is a pure cache of the reference data.
+
+    The pieces are the human decision (cf. GeoRecord docstring); when every
+    piece is a reference descriptor, the geometry was itself produced by
+    resolve_pieces at decision time and weighs megabytes for nothing: the US
+    file stored 37 copies of the 772 KB national silhouette. All-reference-kinds
+    is not quite enough though: a clip-only list is all reference kinds but
+    brings no surface at all (clip only intersects), so resolve_pieces has
+    nothing to rebuild from it - it must not be treated as derivable.
+    """
+    return bool(record.pieces) and all(
+        piece.get("kind") in REFERENCE_KINDS for piece in record.pieces
+    ) and any(piece.get("kind") != "clip" for piece in record.pieces)
+
+
+def _resolved_geometry(record: GeoRecord, paths: CountryPaths) -> dict:
+    resolved = resolve_pieces(record.pieces, paths.country, paths.cache)
+    # json round-trip: mapping() yields tuples, consumers and the byte-stable
+    # round-trip expect plain lists.
+    return json.loads(json.dumps(mapping(resolved)))
+
+
+def _feature_allegee(record: GeoRecord) -> dict:
+    """The feature to store: rounded, and without its geometry when the pieces
+    alone can rebuild it."""
+    feature = _feature_arrondie(record.to_feature())
+    if _geometry_is_derivable(record):
+        feature["geometry"] = None
+    return feature
+
+
 def save_geo(paths: CountryPaths, records: dict[str, GeoRecord]) -> None:
     # Compact, not indented: indentation cost a measured factor of 4 (RU.geojson:
     # 90 MB indented, 25 MB compact), on versioned files rewritten in full on every
@@ -145,7 +196,7 @@ def save_geo(paths: CountryPaths, records: dict[str, GeoRecord]) -> None:
     write_json_atomic(paths.geo, {
         "type": "FeatureCollection",
         "features": [
-            _feature_arrondie(records[key].to_feature()) for key in sorted(records)
+            _feature_allegee(records[key]) for key in sorted(records)
         ],
     }, indent=None)
 

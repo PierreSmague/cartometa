@@ -45,6 +45,13 @@ def test_unknown_country_raises(cache_dir):
         country_geometry("ZZ", cache_dir)
 
 
+def test_country_geometry_is_memoized(cache_dir):
+    """Two calls for the same country must not rebuild the shapely geometry:
+    resolve_pieces will ask for the national silhouette once per country-tier
+    meta (37 times for the US)."""
+    assert country_geometry("PL", cache_dir) is country_geometry("PL", cache_dir)
+
+
 def test_invalid_source_geometry_is_repaired(invalid_cache_dir):
     # The source polygon is a self-intersecting bow tie: invalid in the OGC sense.
     raw = shape(INVALID["features"][0]["geometry"])

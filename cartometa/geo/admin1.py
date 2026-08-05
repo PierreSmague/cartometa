@@ -70,8 +70,12 @@ def country_regions(
     return _load(str(path))
 
 
+@lru_cache(maxsize=512)
 def region_geometry(iso_a2: str, code: str, cache_dir: Path) -> BaseGeometry:
-    """Outline of a region designated by its Natural Earth `adm1_code`."""
+    """Outline of a region designated by its Natural Earth `adm1_code`.
+
+    Memoized: callers must treat the returned geometry as immutable.
+    """
     for feature in country_regions(iso_a2, cache_dir)["features"]:
         if feature["properties"]["code"] == code:
             geom = shape(feature["geometry"])
