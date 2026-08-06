@@ -27,6 +27,7 @@ SECTION_CATEGORIES = {
     "infrastructure": "infrastructure",
     "culture": "culture",
     "culture & language": "culture",
+    "culture & linguistics": "culture",
 }
 
 _TRAILING_DIGITS_RE = re.compile(r"\d+$")
@@ -147,8 +148,11 @@ def parse_rmrg_page(html: str, country: str, base_url: str) -> tuple[list[MetaRe
                 extracted_at=now,
                 origin=ORIGIN_RMRG,
                 # Overlay-less metas put their img straight under the link
-                # (seen on landscape/dhaka-planned-towns), hence the fallback.
-                image=_src(item, ".base-image img") or _src(item, "a.image-link > img"),
+                # (Bangladesh dhaka-planned-towns); link-less metas straight
+                # under the wrapper (Czech toponymy). Hence the fallbacks.
+                image=_src(item, ".base-image img")
+                or _src(item, "a.image-link > img")
+                or _src(item, ".meta-image-wrapper > img"),
                 maps_url=_maps_link(item),
                 # svg-only blocks (Indonesia religion/toponymy maps) have no
                 # photo: their full-size SVG map takes the overlay slot.

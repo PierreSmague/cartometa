@@ -163,6 +163,30 @@ def test_image_directly_under_the_image_link_is_found():
     assert metas[0].overlay is None
 
 
+def test_unlinked_image_directly_under_the_wrapper_is_found():
+    """Seen on the Czech guide (toponymy, railway ids): no Maps link at all,
+    the photo sits straight under .meta-image-wrapper."""
+    page = PAGE.replace(
+        """<a href="https://maps.app.goo.gl/dkf3fRftJGQCvMet9" target="_blank" class="image-link">
+          <div class="image-with-overlay">
+            <div class="base-image"><img src="Files/water-plots1_8PNy.webp" alt=""></div>
+            <div class="svg-overlay-container"><img src="Files/water-plots1_8PNy.svg" class="svg-overlay"></div>
+          </div>
+        </a>""",
+        '<img src="Files/water-plots1_8PNy.webp" class="meta-image" alt="">',
+    )
+    metas, _ = parse_rmrg_page(page, "CZ", BASE_URL)
+    assert metas[0].image == "Files/water-plots1_8PNy.webp"
+    assert metas[0].maps_url is None
+
+
+def test_culture_and_linguistics_maps_to_culture():
+    page = PAGE.replace(">Landscape<", ">Culture &amp; Linguistics<")
+    metas, anomalies = parse_rmrg_page(page, "CZ", BASE_URL)
+    assert anomalies == []
+    assert metas[0].category == "culture"
+
+
 def test_svg_only_blocks_put_their_map_in_the_overlay():
     """Seen on the Indonesia guides (religion and toponymy maps): no photo at
     all, one full-size SVG map in a .svg-only-canvas. That map is the meta's
@@ -200,6 +224,7 @@ def test_section_mapping_covers_the_known_sections():
         "infrastructure": "infrastructure",
         "culture": "culture",
         "culture & language": "culture",
+        "culture & linguistics": "culture",
     }
 
 
