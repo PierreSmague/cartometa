@@ -294,8 +294,13 @@ def build_site(
             if skip_images or not source:
                 continue
             try:
+                # RMRG ids are paths ("agriculture/dung-piles"): used raw as a
+                # stem they would nest directories under img/<CC>/. write_hashed
+                # expects a NAME, so the stem is flattened — the id itself keeps
+                # its slashes everywhere else.
                 noms = render_image_pair(
-                    Path(source), out_dir / IMAGE_BASE / pays, identifiant, cache_images
+                    Path(source), out_dir / IMAGE_BASE / pays,
+                    identifiant.replace("/", "-"), cache_images
                 )
             except MissingImageError as erreur:
                 raise SystemExit(

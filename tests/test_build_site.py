@@ -767,3 +767,36 @@ def test_an_unreachable_natural_earth_does_not_break_the_build(projet, monkeypat
     build_site(projet / "data", dist, projet / "viewer", ["PL"])
 
     assert "outline" not in _fichier_pays(dist, "PL")
+
+
+def test_a_slashed_rmrg_id_yields_a_flat_image_name(projet):
+    """RMRG meta ids are paths ("agriculture/dung-piles"): used raw as an image
+    stem they would create subdirectories under dist/img/<CC>/ — the first build
+    with RMRG data died on exactly that. The stem must be flattened; the viewer
+    consumes whatever string lands in `thumb`/`full`, so nothing else moves."""
+    data = projet / "data"
+    Image.new("RGB", (1000, 500), (40, 50, 60)).save(projet / "input" / "bd1.png")
+    (data / "metas" / "BD-rmrg.json").write_text(json.dumps([{
+        "id": "agriculture/dung-piles", "tier": "regional", "title": "Dung piles",
+        "description": "desc", "category": "vegetation", "origin": "rmrg",
+        "image": "input/bd1.png",
+        "source_url": "https://rmrg.me/bangladesh/#agriculture/dung-piles",
+    }]), "utf-8")
+    (data / "geo" / "BD.geojson").write_text(json.dumps({
+        "type": "FeatureCollection",
+        "features": [{"type": "Feature",
+                      "properties": {"id": "agriculture/dung-piles",
+                                     "status": "validé", "pieces": []},
+                      "geometry": _carre(89.0, 23.0, 2.0)}],
+    }), "utf-8")
+    dist = projet / "dist"
+
+    build_site(projet / "data", dist, projet / "viewer", ["BD", "PL"])
+
+    pays = _fichier_pays(dist, "BD")
+    meta = pays["metas"]["agriculture/dung-piles"]
+    # The id keeps its slash (it is the key, the anchor, the geo link) - only
+    # the image file name is flattened.
+    assert "/" not in meta["thumb"].removeprefix("BD/")
+    assert (dist / "img" / meta["thumb"]).exists()
+    assert (dist / "img" / meta["full"]).exists()
