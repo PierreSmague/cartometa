@@ -17,7 +17,7 @@ def run_extract_rmrg(
     input_dir: Path,
     data_dir: Path,
     country: str,
-    slug: str,
+    slugs: list[str],
     resolve: bool = True,
     retry_failed: bool = False,
     request_delay: float = 0.0,
@@ -27,27 +27,44 @@ def run_extract_rmrg(
 
     A separate file, not a merge into `<CC>.json`: each extractor owns its
     output, so re-running either source can never erase the other's metas.
-    """
-    base_url = f"{BASE_URL}/{slug}/"
-    html_path = find_page(input_dir, slug, rmrg=True)
-    metas, anomalies = parse_rmrg_page(
-        html_path.read_text("utf-8", errors="replace"), country, base_url
-    )
 
-    for meta in metas:
-        if meta.image:
-            resolved = project_relative_path(html_path, input_dir, meta.image)
-            if resolved is None:
-                anomalies.append(f"block {meta.id}: image not found ({meta.image})")
-            meta.image = resolved
-        if meta.overlay:
-            candidate = html_path.parent / meta.overlay
-            readable = prepare_overlay(candidate) if candidate.exists() else None
-            if readable is None:
-                anomalies.append(f"block {meta.id}: unreadable overlay ({meta.overlay})")
-                meta.overlay = None
-            else:
-                meta.overlay = str(readable.relative_to(input_dir.parent)).replace("\\", "/")
+    Several slugs merge into the one country file — RMRG splits Indonesia into
+    a general guide plus one guide per island. Each meta keeps the source_url
+    of its own page; a block id published by two pages is refused loudly, it
+    would silently collapse into one queue entry and one footprint.
+    """
+    metas = []
+    anomalies: list[str] = []
+    seen: dict[str, str] = {}
+    for slug in slugs:
+        base_url = f"{BASE_URL}/{slug}/"
+        html_path = find_page(input_dir, slug, rmrg=True)
+        page_metas, page_anomalies = parse_rmrg_page(
+            html_path.read_text("utf-8", errors="replace"), country, base_url
+        )
+        anomalies.extend(page_anomalies)
+
+        for meta in page_metas:
+            if meta.id in seen:
+                raise SystemExit(
+                    f"id '{meta.id}' published by both '{seen[meta.id]}' and "
+                    f"'{slug}': the pages of a group must not share block ids."
+                )
+            seen[meta.id] = slug
+            if meta.image:
+                resolved = project_relative_path(html_path, input_dir, meta.image)
+                if resolved is None:
+                    anomalies.append(f"block {meta.id}: image not found ({meta.image})")
+                meta.image = resolved
+            if meta.overlay:
+                candidate = html_path.parent / meta.overlay
+                readable = prepare_overlay(candidate) if candidate.exists() else None
+                if readable is None:
+                    anomalies.append(f"block {meta.id}: unreadable overlay ({meta.overlay})")
+                    meta.overlay = None
+                else:
+                    meta.overlay = str(readable.relative_to(input_dir.parent)).replace("\\", "/")
+        metas.extend(page_metas)
 
     resolve_meta_links(
         metas, data_dir / "cache" / "maps_links.json",
@@ -68,6 +85,7 @@ def run_extract_rmrg(
     return {
         "country": country,
         "total": len(metas),
+        "pages": len(slugs),
         "by_category": by_category,
         "without_image": sum(1 for m in metas if not m.image),
         "without_latlon": sum(1 for m in metas if m.maps_latlon is None),
@@ -78,8 +96,14 @@ def run_extract_rmrg(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Extracts the metas from a saved RMRG guide")
-    parser.add_argument("slug", help="country, e.g. bangladesh")
+    parser = argparse.ArgumentParser(description="Extracts the metas from saved RMRG guides")
+    parser.add_argument(
+        "slugs", nargs="+",
+        help=(
+            "one or more page slugs merged under one country, e.g. 'bangladesh', "
+            "or 'indonesia java kalimantan nusa-islands sulawesi-maluku sumatra'"
+        ),
+    )
     parser.add_argument("--input", type=Path, default=Path("input"))
     parser.add_argument("--data", type=Path, default=Path("data"))
     parser.add_argument(
@@ -104,15 +128,20 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    country = args.country.upper() if args.country else resolve_country(args.slug, args.data / "cache")
+    # The country comes from the FIRST slug: for a multi-page group, lead with
+    # the general guide ("indonesia java ..."), or pass --country explicitly.
+    country = args.country.upper() if args.country else resolve_country(args.slugs[0], args.data / "cache")
     summary = run_extract_rmrg(
-        args.input, args.data, country, args.slug,
+        args.input, args.data, country, args.slugs,
         resolve=not args.no_resolve,
         retry_failed=args.retry_failed_links,
         request_delay=args.link_delay,
     )
 
-    print(f"{summary['country']}: {summary['total']} metas {summary['by_category']}")
+    print(
+        f"{summary['country']}: {summary['total']} metas "
+        f"({summary['pages']} page(s)) {summary['by_category']}"
+    )
     print(
         f"  without image: {summary['without_image']}   "
         f"without coordinates: {summary['without_latlon']}   "

@@ -21,9 +21,13 @@ SECTION_CATEGORIES = {
     "landscape": "landscape",
     "agriculture": "vegetation",
     "vegetation": "vegetation",
+    # Compound headings, seen on the Indonesia island guides.
+    "agriculture & vegetation": "vegetation",
     "architecture": "architecture",
     "infrastructure": "infrastructure",
     "culture": "culture",
+    "culture & language": "culture",
+    "culture & linguistics": "culture",
 }
 
 _TRAILING_DIGITS_RE = re.compile(r"\d+$")
@@ -103,6 +107,11 @@ def parse_rmrg_page(html: str, country: str, base_url: str) -> tuple[list[MetaRe
     anomalies: list[str] = []
 
     for section in tree.css("div.category-section"):
+        items = section.css("div.meta-item")
+        if not items:
+            # The interactive-map widget of the Indonesia guides is a
+            # category-section without metas: nothing to extract, no anomaly.
+            continue
         heading = section.css_first("h3.category-title")
         name = _clean_text(heading).lower() if heading is not None else ""
         category = SECTION_CATEGORIES.get(name)
@@ -112,7 +121,7 @@ def parse_rmrg_page(html: str, country: str, base_url: str) -> tuple[list[MetaRe
             )
             category = FALLBACK
 
-        for item in section.css("div.meta-item"):
+        for item in items:
             block_id = item.attributes.get("id")
             if not block_id:
                 anomalies.append(f"section '{name}': meta-item without id, skipped")
@@ -139,9 +148,15 @@ def parse_rmrg_page(html: str, country: str, base_url: str) -> tuple[list[MetaRe
                 extracted_at=now,
                 origin=ORIGIN_RMRG,
                 # Overlay-less metas put their img straight under the link
-                # (seen on landscape/dhaka-planned-towns), hence the fallback.
-                image=_src(item, ".base-image img") or _src(item, "a.image-link > img"),
+                # (Bangladesh dhaka-planned-towns); link-less metas straight
+                # under the wrapper (Czech toponymy). Hence the fallbacks.
+                image=_src(item, ".base-image img")
+                or _src(item, "a.image-link > img")
+                or _src(item, ".meta-image-wrapper > img"),
                 maps_url=_maps_link(item),
-                overlay=_src(item, ".svg-overlay-container img"),
+                # svg-only blocks (Indonesia religion/toponymy maps) have no
+                # photo: their full-size SVG map takes the overlay slot.
+                overlay=_src(item, ".svg-overlay-container img")
+                or _src(item, ".svg-only-canvas img"),
             ))
     return metas, anomalies
