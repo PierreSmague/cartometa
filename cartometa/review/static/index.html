@@ -11,7 +11,13 @@
              background: #1c1f24; color: #fff; }
     header b { font-size: 16px; }
     #panes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 8px; }
-    #source img { width: 100%; border: 1px solid #ccc; }
+    /* Heights are capped so that the RMRG mini-map (800x1158, very tall at
+       full column width) and the photo stay visible together without
+       scrolling away from the tracing map. The mini-map comes first: it is
+       what the reviewer traces from. */
+    #source img { display: block; width: auto; max-width: 100%; max-height: 30vh;
+                  border: 1px solid #ccc; margin-bottom: 8px; }
+    #source #overlay { max-height: 48vh; }
     #map { height: 62vh; border: 1px solid #ccc; }
     #info { padding: 8px 12px; }
     #sketch-row { color: #0a7d2b; font-weight: bold; }
@@ -49,7 +55,7 @@
   </header>
   <div id="error" hidden></div>
   <div id="panes">
-    <div id="source"><img id="image" alt=""><img id="overlay" alt="" hidden></div>
+    <div id="source"><img id="overlay" alt="" hidden><img id="image" alt=""></div>
     <div id="map"></div>
   </div>
   <div id="info">
