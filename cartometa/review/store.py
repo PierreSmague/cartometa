@@ -23,11 +23,12 @@ class UnknownMetaError(ValueError):
 
 @dataclass(frozen=True)
 class CountryPaths:
-    """A country's six paths, in one single place.
+    """A country's paths, in one single place.
 
-    Two sources of metas coexist: the Plonk It import, gitignored because it is
-    regenerable, and manual entry, versioned because it is irreplaceable. Gathering
-    them here saves every caller from reinventing the convention.
+    Three sources of metas coexist: the Plonk It and RMRG imports, gitignored
+    because they are regenerable, and manual entry, versioned because it is
+    irreplaceable. Gathering them here saves every caller from reinventing the
+    convention.
     """
 
     data: Path
@@ -36,6 +37,10 @@ class CountryPaths:
     @property
     def imported_metas(self) -> Path:
         return self.data / "metas" / f"{self.country}.json"
+
+    @property
+    def rmrg_metas(self) -> Path:
+        return self.data / "metas" / f"{self.country}-rmrg.json"
 
     @property
     def manual_dir(self) -> Path:
@@ -70,8 +75,12 @@ def read_json_list(path: Path) -> list[dict]:
 
 
 def load_metas(paths: CountryPaths) -> list[dict]:
-    """Imported metas then manual ones, in that order."""
-    return read_json_list(paths.imported_metas) + read_json_list(paths.manual_metas)
+    """Imported metas (Plonk It then RMRG) then manual ones, in that order."""
+    return (
+        read_json_list(paths.imported_metas)
+        + read_json_list(paths.rmrg_metas)
+        + read_json_list(paths.manual_metas)
+    )
 
 
 def load_geo(paths: CountryPaths, resolve: bool = False) -> dict[str, GeoRecord]:
@@ -201,10 +210,10 @@ def save_geo(paths: CountryPaths, records: dict[str, GeoRecord]) -> None:
     }, indent=None)
 
 
-def _image_url(meta: dict) -> str | None:
-    # Both sources store a path relative to the project root, which the server
+def _relative_url(path: str | None) -> str | None:
+    # Every source stores a path relative to the project root, which the server
     # serves as-is.
-    return "/" + meta["image"] if meta.get("image") else None
+    return "/" + path if path else None
 
 
 def build_queue(paths: CountryPaths, include_all: bool = False) -> dict:
@@ -230,7 +239,8 @@ def build_queue(paths: CountryPaths, include_all: bool = False) -> dict:
             "category": meta["category"],
             "tier": meta["tier"],
             "origin": meta.get("origin", ORIGIN_PLONKIT),
-            "image": _image_url(meta),
+            "image": _relative_url(meta.get("image")),
+            "overlay": _relative_url(meta.get("overlay")),
             "latlon": meta.get("maps_latlon"),
             "source_url": meta.get("source_url", ""),
             "status": record.status if record is not None else None,

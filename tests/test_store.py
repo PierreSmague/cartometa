@@ -329,3 +329,32 @@ def test_save_load_save_round_trip_is_byte_stable(tmp_path):
     save_geo(paths, load_geo(paths))
 
     assert paths.geo.read_bytes() == premier
+
+
+def test_load_metas_reads_imported_then_rmrg_then_manual(paths):
+    paths.rmrg_metas.write_text(json.dumps([
+        _meta("landscape/water-plots1", origin="rmrg"),
+    ]), "utf-8")
+
+    assert [m["id"] for m in load_metas(paths)] == [
+        "aaaa", "bbbb", "landscape/water-plots1", "man-1a2b",
+    ]
+
+
+def test_load_metas_without_rmrg_file_behaves_as_before(paths):
+    assert [m["id"] for m in load_metas(paths)] == ["aaaa", "bbbb", "man-1a2b"]
+
+
+def test_build_queue_exposes_the_overlay_like_the_image(paths):
+    paths.rmrg_metas.write_text(json.dumps([
+        _meta("landscape/water-plots1", origin="rmrg",
+              image="input/save_files/water-plots1.webp",
+              overlay="input/save_files/water-plots1.extracted.svg"),
+    ]), "utf-8")
+
+    queue = build_queue(paths)
+
+    items = {item["id"]: item for item in queue["items"]}
+    assert items["landscape/water-plots1"]["overlay"] == "/input/save_files/water-plots1.extracted.svg"
+    # A meta without the key (every Plonk It and manual meta) exposes None.
+    assert items["aaaa"]["overlay"] is None
