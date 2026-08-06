@@ -11,6 +11,7 @@ TIER_MANUAL = "manual"
 
 ORIGIN_PLONKIT = "plonkit"
 ORIGIN_MANUAL = "manual"
+ORIGIN_RMRG = "rmrg"
 
 # Two statuses, not four: a geometry that exists was drawn by hand by
 # construction, there is no longer anything automatic to distinguish.
@@ -34,6 +35,9 @@ class MetaRecord:
     image: str | None = None
     maps_url: str | None = None
     maps_latlon: tuple[float, float] | None = None
+    # RMRG only: the guide's region mini-map (SVG), shown next to the photo in
+    # the review UI. Never published by the site build.
+    overlay: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

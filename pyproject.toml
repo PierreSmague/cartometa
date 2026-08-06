@@ -16,6 +16,7 @@ dev = [
 
 [project.scripts]
 cartometa-extract = "cartometa.extract.cli:main"
+cartometa-extract-rmrg = "cartometa.extract.rmrg_cli:main"
 cartometa-review = "cartometa.review.server:main"
 cartometa-build = "cartometa.build.cli:main"
 

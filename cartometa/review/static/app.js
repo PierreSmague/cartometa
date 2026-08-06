@@ -65,6 +65,8 @@ function render() {
     document.getElementById('title').textContent = '';
     document.getElementById('description').textContent = '';
     document.getElementById('image').removeAttribute('src');
+    document.getElementById('overlay').removeAttribute('src');
+    document.getElementById('overlay').hidden = true;
     document.getElementById('sketch-row').hidden = true;
     return;
   }
@@ -73,6 +75,10 @@ function render() {
     `${item.category} — ${item.tier}${item.status ? ` — ${item.status}` : ''}`;
   if (item.image) document.getElementById('image').src = item.image;
   else document.getElementById('image').removeAttribute('src');
+  const overlay = document.getElementById('overlay');
+  // RMRG only: the guide's own region mini-map, i.e. the answer being traced.
+  if (item.overlay) { overlay.src = item.overlay; overlay.hidden = false; }
+  else { overlay.removeAttribute('src'); overlay.hidden = true; }
   document.getElementById('title').textContent = item.title;
   document.getElementById('description').textContent = item.description;
   document.getElementById('source-link').href = item.source_url || '#';
