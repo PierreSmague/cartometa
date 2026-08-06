@@ -132,6 +132,37 @@ def test_block_without_description_is_skipped_with_an_anomaly():
     assert any("wood-frame-houses" in a for a in anomalies)
 
 
+def test_text_only_blocks_are_skipped_with_an_anomaly():
+    """Seen on the real Bangladesh page: `meta-item text-only` blocks are
+    subsection intros ("Various styles..., explained below") — no slug, no
+    image, no Maps link. Not traceable, so not metas."""
+    page = PAGE.replace(
+        '<div class="meta-item" id="agriculture/betel-farms" data-item-slug="betel-farms">',
+        '<div class="meta-item text-only" id="agriculture/betel-farms" data-item-slug="">',
+    )
+    metas, anomalies = parse_rmrg_page(page, "BD", BASE_URL)
+    assert [m.id for m in metas] == [
+        "landscape/water-plots1",
+        "architecture/wood-frames/wood-frame-houses",
+    ]
+    assert any("agriculture/betel-farms" in a and "text-only" in a for a in anomalies)
+
+
+def test_image_directly_under_the_image_link_is_found():
+    """Seen on the real Bangladesh page (landscape/dhaka-planned-towns): a meta
+    without overlay puts its img straight under a.image-link, no .base-image."""
+    page = PAGE.replace(
+        """<div class="image-with-overlay">
+            <div class="base-image"><img src="Files/water-plots1_8PNy.webp" alt=""></div>
+            <div class="svg-overlay-container"><img src="Files/water-plots1_8PNy.svg" class="svg-overlay"></div>
+          </div>""",
+        '<img src="Files/water-plots1_8PNy.webp" class="meta-image" alt="">',
+    )
+    metas, _ = parse_rmrg_page(page, "BD", BASE_URL)
+    assert metas[0].image == "Files/water-plots1_8PNy.webp"
+    assert metas[0].overlay is None
+
+
 def test_section_mapping_covers_the_six_known_sections():
     assert SECTION_CATEGORIES == {
         "landscape": "landscape",

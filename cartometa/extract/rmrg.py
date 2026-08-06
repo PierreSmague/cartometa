@@ -117,6 +117,11 @@ def parse_rmrg_page(html: str, country: str, base_url: str) -> tuple[list[MetaRe
             if not block_id:
                 anomalies.append(f"section '{name}': meta-item without id, skipped")
                 continue
+            if "text-only" in (item.attributes.get("class") or "").split():
+                # Subsection intros ("Various styles..., explained below"):
+                # no slug, no image, no Maps link — not traceable, not metas.
+                anomalies.append(f"block {block_id}: text-only intro, skipped")
+                continue
             description_node = item.css_first("div.meta-description")
             if description_node is None:
                 anomalies.append(f"block {block_id}: description missing, skipped")
@@ -133,7 +138,9 @@ def parse_rmrg_page(html: str, country: str, base_url: str) -> tuple[list[MetaRe
                 source_url=f"{base_url}#{block_id}",
                 extracted_at=now,
                 origin=ORIGIN_RMRG,
-                image=_src(item, ".base-image img"),
+                # Overlay-less metas put their img straight under the link
+                # (seen on landscape/dhaka-planned-towns), hence the fallback.
+                image=_src(item, ".base-image img") or _src(item, "a.image-link > img"),
                 maps_url=_maps_link(item),
                 overlay=_src(item, ".svg-overlay-container img"),
             ))
