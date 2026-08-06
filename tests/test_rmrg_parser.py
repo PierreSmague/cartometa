@@ -163,6 +163,31 @@ def test_image_directly_under_the_image_link_is_found():
     assert metas[0].overlay is None
 
 
+def test_svg_only_blocks_put_their_map_in_the_overlay():
+    """Seen on the Indonesia guides (religion and toponymy maps): no photo at
+    all, one full-size SVG map in a .svg-only-canvas. That map is the meta's
+    whole content — it lands in `overlay`, the photo stays None."""
+    page = PAGE.replace(
+        """<div class="image-with-overlay">
+            <div class="base-image"><img src="Files/water-plots1_8PNy.webp" alt=""></div>
+            <div class="svg-overlay-container"><img src="Files/water-plots1_8PNy.svg" class="svg-overlay"></div>
+          </div>""",
+        '<div class="svg-only-canvas"><img src="Files/islam-2_TsUh.svg" class="svg-only-image"></div>',
+    )
+    metas, _ = parse_rmrg_page(page, "ID", BASE_URL)
+    assert metas[0].image is None
+    assert metas[0].overlay == "Files/islam-2_TsUh.svg"
+
+
+def test_a_titleless_section_without_metas_is_silently_skipped():
+    """Every Indonesia guide carries an interactive-map-section: a widget, not
+    a category — no h3.category-title, no meta-item. It must not pollute the
+    anomalies; an unknown section only matters when it holds metas."""
+    page = PAGE + '<div class="category-section" id="interactive-map-section"><div class="widget"></div></div>'
+    _, anomalies = parse_rmrg_page(page, "BD", BASE_URL)
+    assert anomalies == []
+
+
 def test_section_mapping_covers_the_known_sections():
     """Pinned: the plain sections come from Bangladesh, the compound ones from
     the Indonesia island guides ("Culture & Language", "Agriculture & Vegetation")."""
