@@ -1,6 +1,14 @@
 from __future__ import annotations
 
-from cartometa.extract.rmrg import SECTION_CATEGORIES, parse_rmrg_page, title_from_slug
+import gzip
+from pathlib import Path
+
+from cartometa.extract.rmrg import (
+    SECTION_CATEGORIES,
+    parse_rmrg_page,
+    prepare_overlay,
+    title_from_slug,
+)
 from cartometa.models import ORIGIN_RMRG, TIER_REGIONAL
 
 BASE_URL = "https://rmrg.me/bangladesh/"
@@ -133,3 +141,48 @@ def test_section_mapping_covers_the_six_known_sections():
         "infrastructure": "infrastructure",
         "culture": "culture",
     }
+
+
+SVG = b'<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg"></svg>'
+
+
+def test_prepare_overlay_decompresses_gzipped_svg_to_a_sidecar(tmp_path: Path):
+    """The browser saves the .svgz response body as-is under a .svg name: served
+    locally it would not render. The readable copy is a sibling, the original
+    save is never touched (it cannot be regenerated from the repo)."""
+    original = tmp_path / "water-plots1_8PNy.svg"
+    original.write_bytes(gzip.compress(SVG))
+    before = original.read_bytes()
+
+    readable = prepare_overlay(original)
+
+    assert readable == tmp_path / "water-plots1_8PNy.extracted.svg"
+    assert readable.read_bytes() == SVG
+    assert original.read_bytes() == before
+
+
+def test_prepare_overlay_returns_plain_svg_untouched(tmp_path: Path):
+    original = tmp_path / "plain.svg"
+    original.write_bytes(b"  \n" + SVG)
+    assert prepare_overlay(original) == original
+    assert list(tmp_path.iterdir()) == [original]
+
+
+def test_prepare_overlay_rejects_unreadable_content(tmp_path: Path):
+    # Neither gzip nor SVG (e.g. an HTML error page saved in place of the file).
+    junk = tmp_path / "junk.svg"
+    junk.write_bytes(b"\x00\x01\x02 not an svg")
+    assert prepare_overlay(junk) is None
+
+    truncated = tmp_path / "truncated.svg"
+    truncated.write_bytes(b"\x1f\x8b\x08\x00 truncated gzip stream")
+    assert prepare_overlay(truncated) is None
+
+
+def test_prepare_overlay_is_idempotent(tmp_path: Path):
+    original = tmp_path / "water-plots1_8PNy.svg"
+    original.write_bytes(gzip.compress(SVG))
+    first = prepare_overlay(original)
+    second = prepare_overlay(original)
+    assert first == second
+    assert second.read_bytes() == SVG

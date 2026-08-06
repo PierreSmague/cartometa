@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import gzip
 import re
+import zlib
 from datetime import datetime, timezone
+from pathlib import Path
 from urllib.parse import unquote
 
 from selectolax.parser import HTMLParser
@@ -24,6 +27,37 @@ SECTION_CATEGORIES = {
 }
 
 _TRAILING_DIGITS_RE = re.compile(r"\d+$")
+
+GZIP_MAGIC = b"\x1f\x8b"
+
+
+def prepare_overlay(svg_path: Path) -> Path | None:
+    """A browser-readable path for a saved RMRG overlay.
+
+    The site serves .svgz bodies that the browser stores as-is under a .svg
+    name: gzip bytes, unusable when re-served locally without the
+    Content-Encoding header. Those are decompressed into an `.extracted.svg`
+    sibling — the original is part of the browser save, not regenerable from
+    the repository, and is never modified. A plain-text SVG is referenced
+    as-is. Returns None when the content is neither (caller records the
+    anomaly)."""
+    try:
+        data = svg_path.read_bytes()
+    except OSError:
+        return None
+    if data[:2] == GZIP_MAGIC:
+        try:
+            payload = gzip.decompress(data)
+        # BadGzipFile is an OSError; a truncated stream raises EOFError and a
+        # corrupted one zlib.error — all three mean the same thing here.
+        except (OSError, EOFError, zlib.error):
+            return None
+        sidecar = svg_path.with_name(svg_path.stem + ".extracted.svg")
+        sidecar.write_bytes(payload)
+        return sidecar
+    if data.lstrip()[:1] == b"<":
+        return svg_path
+    return None
 
 
 def title_from_slug(slug: str) -> str:
