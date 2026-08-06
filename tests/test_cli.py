@@ -2,9 +2,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
-
-from cartometa.extract.cli import _find_page, run_extract
+from cartometa.extract.cli import run_extract
 
 PAGE_TEMPLATE = """
 <h3>Step 1 - Identifying Poland</h3>
@@ -25,21 +23,6 @@ def _write_page(tmp_path: Path, htm_name: str, files_dirname: str, image_name: s
         "utf-8",
     )
     return html_path
-
-
-def test_find_page_matches_single_candidate(tmp_path: Path):
-    _write_page(tmp_path, "Poland — Plonk It.htm", "Poland — Plonk It_files", "bollard photo_005.webp")
-    html_path = _find_page(tmp_path, "poland")
-    assert html_path.name == "Poland — Plonk It.htm"
-
-
-def test_find_page_raises_on_ambiguous_candidates(tmp_path: Path):
-    _write_page(tmp_path, "Poland — Plonk It.htm", "Poland — Plonk It_files", "bollard photo_005.webp")
-    # A name collision of the kind a browser can produce on a second save.
-    (tmp_path / "Poland — Plonk It (1).htm").write_text("<h3>Step 1</h3>", "utf-8")
-
-    with pytest.raises(ValueError, match="several saved pages"):
-        _find_page(tmp_path, "poland")
 
 
 def test_run_extract_resolves_url_encoded_image_path_with_spaces_and_em_dash(tmp_path: Path):
@@ -92,7 +75,7 @@ def test_run_extract_does_not_retry_cached_failure_by_default(tmp_path: Path, mo
 
     calls = []
     monkeypatch.setattr(
-        "cartometa.extract.cli.resolve_maps_url",
+        "cartometa.extract.common.resolve_maps_url",
         lambda url, cache, retry_failed=False: calls.append((url, retry_failed)) or None,
     )
     run_extract(input_dir, data_dir, "PL", "https://www.plonkit.net/poland")
@@ -132,17 +115,3 @@ def test_run_extract_sleeps_before_real_network_calls_only(tmp_path: Path):
         request_delay=5.0, sleep=sleeps.append,
     )
     assert sleeps == []
-
-
-def test_page_found_despite_the_slug_dashes(tmp_path):
-    """The URL slug is written "south-africa", the browser saves "South Africa"."""
-    (tmp_path / "South Africa — Plonk It.htm").write_text("<html></html>", "utf-8")
-
-    assert _find_page(tmp_path, "south-africa").name == "South Africa — Plonk It.htm"
-
-
-def test_a_missing_page_lists_the_available_pages(tmp_path):
-    (tmp_path / "Poland — Plonk It.htm").write_text("<html></html>", "utf-8")
-
-    with pytest.raises(FileNotFoundError, match="Poland"):
-        _find_page(tmp_path, "south-africa")

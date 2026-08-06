@@ -6,8 +6,8 @@ from pathlib import Path
 from typing import Callable
 
 from cartometa.extract.categories import infer_category
+from cartometa.extract.common import find_page, project_relative_path, resolve_meta_links
 from cartometa.extract.html_parser import parse_page
-from cartometa.extract.maps_links import load_cache, resolve_maps_url, save_cache
 from cartometa.geo.reference import country_code_for_name
 
 BASE_URL = "https://www.plonkit.net"
@@ -37,46 +37,6 @@ def resolve_country(slug: str, cache_dir: Path) -> str:
     return code
 
 
-def _find_page(input_dir: Path, slug: str) -> Path:
-    """Find the saved .htm for a country.
-
-    The comparison ignores case and separators: the Plonk It URL slug is written
-    "south-africa" while the browser saves "South Africa — Plonk It.htm". Without
-    that normalisation, every country whose name is several words long would be
-    unfindable.
-
-    Raises an explicit error if there is no candidate, or if several files match
-    (e.g. a name collision from a second browser save, of the "Poland — Plonk It
-    (1).htm" kind): better to fail loudly than to pick one silently.
-    """
-    def normalize(value: str) -> str:
-        return " ".join(value.lower().replace("-", " ").replace("_", " ").split())
-
-    target = normalize(slug)
-    pages = sorted(input_dir.glob("*.htm*"))
-    candidates = [p for p in pages if target in normalize(p.stem)]
-    if not candidates:
-        available = ", ".join(p.name for p in pages) or "none"
-        raise FileNotFoundError(
-            f"no saved page for '{slug}' in {input_dir}. "
-            f"Pages present: {available}"
-        )
-    if len(candidates) > 1:
-        names = ", ".join(p.name for p in candidates)
-        raise ValueError(
-            f"several saved pages match '{slug}' in {input_dir}: "
-            f"{names} - delete the duplicates or rename to remove the ambiguity"
-        )
-    return candidates[0]
-
-
-def _would_hit_network(url: str, cache: dict, retry_failed: bool) -> bool:
-    """True if resolving `url` with these settings would really hit the network."""
-    if url not in cache:
-        return True
-    return retry_failed and cache[url] is None
-
-
 def run_extract(
     input_dir: Path,
     data_dir: Path,
@@ -98,27 +58,22 @@ def run_extract(
     the cache (neither successes nor failures that are not retried).
     """
     slug = base_url.rstrip("/").rsplit("/", 1)[-1]
-    html_path = _find_page(input_dir, slug)
+    html_path = find_page(input_dir, slug)
     metas, anomalies = parse_page(html_path.read_text("utf-8", errors="replace"), country, base_url)
-
-    cache_path = data_dir / "cache" / "maps_links.json"
-    cache = load_cache(cache_path)
 
     for meta in metas:
         meta.category = infer_category(meta.title, meta.description)
         if meta.image:
-            candidate = html_path.parent / meta.image
-            if candidate.exists():
-                meta.image = str(candidate.relative_to(input_dir.parent)).replace("\\", "/")
-            else:
+            resolved = project_relative_path(html_path, input_dir, meta.image)
+            if resolved is None:
                 anomalies.append(f"block {meta.id}: image not found ({meta.image})")
-                meta.image = None
-        if resolve and meta.maps_url:
-            if request_delay > 0 and _would_hit_network(meta.maps_url, cache, retry_failed):
-                sleep(request_delay)
-            meta.maps_latlon = resolve_maps_url(meta.maps_url, cache, retry_failed=retry_failed)
+            meta.image = resolved
 
-    save_cache(cache_path, cache)
+    resolve_meta_links(
+        metas, data_dir / "cache" / "maps_links.json",
+        resolve=resolve, retry_failed=retry_failed,
+        request_delay=request_delay, sleep=sleep,
+    )
     metas.sort(key=lambda m: m.id)
 
     out_path = data_dir / "metas" / f"{country}.json"
