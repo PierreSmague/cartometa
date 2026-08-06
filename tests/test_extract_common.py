@@ -56,6 +56,15 @@ def test_find_page_rmrg_selects_the_rmrg_save(tmp_path: Path):
     assert page.name == "Bangladesh GeoGuessr Guide - RMRG.htm"
 
 
+def test_find_page_treats_ampersand_as_a_separator(tmp_path: Path):
+    """The rmrg.me slug is "sulawesi-maluku" but the browser saves
+    "Sulawesi & Maluku GeoGuessr Guide - RMRG.htm": without normalising the
+    ampersand away, the multi-page Indonesia group is unfindable."""
+    (tmp_path / "Sulawesi & Maluku GeoGuessr Guide - RMRG.htm").write_text("<html></html>", "utf-8")
+    page = find_page(tmp_path, "sulawesi-maluku", rmrg=True)
+    assert page.name == "Sulawesi & Maluku GeoGuessr Guide - RMRG.htm"
+
+
 def test_find_page_rmrg_missing_even_if_plonkit_exists(tmp_path: Path):
     (tmp_path / "Bangladesh — Plonk It.htm").write_text("<html></html>", "utf-8")
     with pytest.raises(FileNotFoundError):

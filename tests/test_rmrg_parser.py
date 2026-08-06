@@ -163,15 +163,30 @@ def test_image_directly_under_the_image_link_is_found():
     assert metas[0].overlay is None
 
 
-def test_section_mapping_covers_the_six_known_sections():
+def test_section_mapping_covers_the_known_sections():
+    """Pinned: the plain sections come from Bangladesh, the compound ones from
+    the Indonesia island guides ("Culture & Language", "Agriculture & Vegetation")."""
     assert SECTION_CATEGORIES == {
         "landscape": "landscape",
         "agriculture": "vegetation",
         "vegetation": "vegetation",
+        "agriculture & vegetation": "vegetation",
         "architecture": "architecture",
         "infrastructure": "infrastructure",
         "culture": "culture",
+        "culture & language": "culture",
     }
+
+
+def test_compound_section_headings_map_to_the_taxonomy():
+    page = PAGE.replace(">Agriculture<", ">Agriculture &amp; Vegetation<").replace(
+        ">Landscape<", ">Culture &amp; Language<"
+    )
+    metas, anomalies = parse_rmrg_page(page, "ID", "https://rmrg.me/java/")
+    assert anomalies == []
+    by_id = {m.id: m for m in metas}
+    assert by_id["agriculture/betel-farms"].category == "vegetation"
+    assert by_id["landscape/water-plots1"].category == "culture"
 
 
 SVG = b'<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg"></svg>'

@@ -21,9 +21,12 @@ SECTION_CATEGORIES = {
     "landscape": "landscape",
     "agriculture": "vegetation",
     "vegetation": "vegetation",
+    # Compound headings, seen on the Indonesia island guides.
+    "agriculture & vegetation": "vegetation",
     "architecture": "architecture",
     "infrastructure": "infrastructure",
     "culture": "culture",
+    "culture & language": "culture",
 }
 
 _TRAILING_DIGITS_RE = re.compile(r"\d+$")

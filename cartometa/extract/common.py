@@ -14,7 +14,11 @@ RMRG_MARKER = "rmrg"
 
 
 def _normalize(value: str) -> str:
-    return " ".join(value.lower().replace("-", " ").replace("_", " ").split())
+    # `&` is a separator like `-` and `_`: the slug says "sulawesi-maluku",
+    # the browser saves "Sulawesi & Maluku ...".
+    return " ".join(
+        value.lower().replace("-", " ").replace("_", " ").replace("&", " ").split()
+    )
 
 
 def find_page(input_dir: Path, slug: str, rmrg: bool = False) -> Path:
