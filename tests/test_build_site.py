@@ -234,6 +234,48 @@ def test_the_meta_no_longer_carries_the_source_path_after_the_build(projet):
         (dist / "data" / manifeste["countries"]["PL"]["file"]).read_text("utf-8")
     )
     assert "image_source" not in pays["metas"]["pl1"]
+    assert "overlay_source" not in pays["metas"]["pl1"]
+
+
+def _donner_un_trace(projet: Path) -> None:
+    """Attach an RMRG-style trace (a solid red square SVG) to the pl1 meta."""
+    (projet / "input" / "pl1-trace.svg").write_text(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" '
+        'viewBox="0 0 100 100"><rect width="100" height="100" fill="#e00000"/></svg>',
+        "utf-8",
+    )
+    chemin = projet / "data" / "metas" / "PL.json"
+    metas = json.loads(chemin.read_text("utf-8"))
+    metas[0]["overlay"] = "input/pl1-trace.svg"
+    chemin.write_text(json.dumps(metas), "utf-8")
+
+
+def test_the_rmrg_trace_is_baked_into_the_published_images(projet):
+    """A meta holding a trace gets it composited bottom-right, in the
+    thumbnail as well as in the full image."""
+    dist = projet / "dist"
+    _donner_un_trace(projet)
+
+    build_site(projet / "data", dist, projet / "viewer", ["PL"])
+
+    meta = _fichier_pays(dist, "PL")["metas"]["pl1"]
+    base = _manifeste(dist)["image_base"]
+    for cle in ("thumb", "full"):
+        with Image.open(dist / base / meta[cle]) as image:
+            image = image.convert("RGB")
+            assert image.getpixel((image.width - 1, image.height - 1))[0] > 180
+            assert image.getpixel((0, 0)) == pytest.approx((10, 20, 30), abs=12)
+
+
+def test_a_trace_pointing_nowhere_stops_the_build(projet):
+    """input/ is not versioned: a missing trace has to stop the build with the
+    same explicit message as a missing photo, not publish a half-done image."""
+    dist = projet / "dist"
+    _donner_un_trace(projet)
+    (projet / "input" / "pl1-trace.svg").unlink()
+
+    with pytest.raises(SystemExit, match="not found"):
+        build_site(projet / "data", dist, projet / "viewer", ["PL"])
 
 
 def test_image_base_is_in_the_manifest(projet):

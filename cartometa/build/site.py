@@ -291,6 +291,9 @@ def build_site(
     for pays, contenu in sorted(jeu.countries.items()):
         for identifiant, meta in contenu["metas"].items():
             source = meta.pop("image_source", None)
+            # Popped BEFORE the skip: neither working path may ever reach the
+            # published JSON, images or not.
+            trace = meta.pop("overlay_source", None)
             if skip_images or not source:
                 continue
             try:
@@ -300,7 +303,8 @@ def build_site(
                 # its slashes everywhere else.
                 noms = render_image_pair(
                     Path(source), out_dir / IMAGE_BASE / pays,
-                    identifiant.replace("/", "-"), cache_images
+                    identifiant.replace("/", "-"), cache_images,
+                    overlay=Path(trace) if trace else None,
                 )
             except MissingImageError as erreur:
                 raise SystemExit(

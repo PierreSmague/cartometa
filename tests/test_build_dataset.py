@@ -183,6 +183,26 @@ def test_the_meta_carries_the_path_of_its_source_image(data_dir):
     assert jeu.countries["BW"]["metas"]["bw1"]["image_source"] == "input/bw1.webp"
 
 
+def test_the_meta_carries_the_path_of_its_rmrg_trace(tmp_path):
+    """RMRG metas hold an `overlay` (the guide's region mini-map): the build
+    needs its path to bake the trace into the published images."""
+    data_dir = tmp_path / "data"
+    _ecrire_pays(data_dir, "BW", [("bw1", "validé", 2.0)])
+    metas = json.loads((data_dir / "metas" / "BW.json").read_text("utf-8"))
+    metas[0]["overlay"] = "input/bw1-trace.svg"
+    (data_dir / "metas" / "BW.json").write_text(json.dumps(metas), "utf-8")
+
+    jeu = build_dataset(data_dir, ["BW"])
+
+    assert jeu.countries["BW"]["metas"]["bw1"]["overlay_source"] == "input/bw1-trace.svg"
+
+
+def test_a_meta_without_a_trace_carries_none(data_dir):
+    jeu = build_dataset(data_dir, ["BW"])
+
+    assert jeu.countries["BW"]["metas"]["bw1"]["overlay_source"] is None
+
+
 def test_a_country_with_no_validated_meta_is_absent_from_the_result(tmp_path):
     data_dir = tmp_path / "data"
     _ecrire_pays(data_dir, "PL", [("pl1", "validé", 3.0)])

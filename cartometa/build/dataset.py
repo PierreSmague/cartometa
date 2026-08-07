@@ -212,6 +212,9 @@ def build_dataset(
                 "scope": scope_de(feature["properties"].get("pieces", [])),
                 "source_url": meta["source_url"],
                 "image_source": meta.get("image"),
+                # RMRG only: the guide's region mini-map (SVG), baked into the
+                # published images by the site build. None everywhere else.
+                "overlay_source": meta.get("overlay"),
             }
         if entree_pays["geometries"] and outline_de is not None:
             # Country silhouette, background of the Anki cards' mini-map.
