@@ -34,6 +34,22 @@ body {
 .nom { font-size: 16px; font-weight: 600; letter-spacing: -0.02em; }
 .baseline, .compteurs { font-size: 11.5px; color: var(--texte-doux); }
 
+/* Discord invite, at the end of the header. Muted grey like the counters at rest
+   and blurple on hover only: the brand colour is by far the loudest thing on this
+   deliberately quiet header, and permanently lit it would pull the eye away from
+   the paste bar. `flex: none` so it never gets squeezed by #barre-lien, which is
+   the one item allowed to grow. */
+#discord {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  padding: 3px;
+  border-radius: var(--rayon);
+  color: var(--texte-doux);
+}
+#discord svg { display: block; width: 17px; height: 17px; fill: currentColor; }
+#discord:hover { color: #5865f2; }
+
 /* Bar for pasting a Street View link. `min-width: 0` on the field: without it, an
    input's intrinsic width (~180px) stops the flex item from shrinking and pushes
    the counters out of the header on a narrow window. */
@@ -122,6 +138,7 @@ body {
 .groupe > summary:focus-visible,
 #lien:focus-visible,
 #lien-go:focus-visible,
+#discord:focus-visible,
 #loupe-fermer:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
