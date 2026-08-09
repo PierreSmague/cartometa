@@ -16,22 +16,6 @@
     "overlay": null
   },
   {
-    "id": "man-253f",
-    "country": "BR",
-    "tier": "manual",
-    "title": "Spanish Tiles",
-    "description": "While seemingly similar to mission tiles, a spanish tile roofing consists of single tiles with a flat part and an arch, rather than two separate arched tiles. The flat part is bent on the edge opposite to the arch, which helps connect neighbouring tiles together",
-    "category": "architecture",
-    "source_url": "https://docs.google.com/document/d/1AEkayCl12Scs3fTgWXBb7hD2kiuyPW2ebksDPDtAUy8/edit?tab=t.0",
-    "extracted_at": "2026-08-07T17:22:43.569271+00:00",
-    "description_origin": "manual",
-    "origin": "manual",
-    "image": "data/manual/BR/images/man-253f.png",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
     "id": "man-5961",
     "country": "BR",
     "tier": "manual",
@@ -91,22 +75,6 @@
     "description_origin": "manual",
     "origin": "manual",
     "image": "data/manual/BR/images/man-ae9c.png",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
-    "id": "man-175c",
-    "country": "BR",
-    "tier": "manual",
-    "title": "n",
-    "description": "Marseille tile roofing consists of short segments of corrugated ceramic or concrete tiles with multiple irregular protrusions per tile.",
-    "category": "architecture",
-    "source_url": "https://docs.google.com/document/d/1AEkayCl12Scs3fTgWXBb7hD2kiuyPW2ebksDPDtAUy8/edit?tab=t.0",
-    "extracted_at": "2026-08-07T17:31:50.373567+00:00",
-    "description_origin": "manual",
-    "origin": "manual",
-    "image": "data/manual/BR/images/man-175c.png",
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
