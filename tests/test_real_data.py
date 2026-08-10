@@ -23,7 +23,7 @@ pytestmark = pytest.mark.real_data
 
 DATA_DIR = Path("data")
 GEO_DIR = DATA_DIR / "geo"
-STATUTS = {"validé", "rejeté"}
+STATUTS = {"validé", "rejeté", "proposé"}
 # Les verdicts memorises ne valent que pour ces parametres : les changer
 # invalide tout le cache d'un coup, sans etat ambigu.
 CACHE_VERSION = (
@@ -80,7 +80,7 @@ def test_every_saved_geometry_is_valid(geometries_distinctes):
         assert not geom.is_empty, identifiant
 
 
-def test_only_the_two_expected_statuses_exist(features):
+def test_only_the_expected_statuses_exist(features):
     for nom, feature in features:
         statut = feature["properties"]["status"]
         assert statut in STATUTS, f"{nom}: unexpected status {statut!r}"
