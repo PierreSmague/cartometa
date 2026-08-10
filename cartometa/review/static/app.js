@@ -90,8 +90,8 @@ function render() {
 }
 
 function piecesBounds(pieces) {
-  // Seules les pièces à coordonnées cadrent ; `country`, `admin1` et `clip`
-  // n'en portent pas et retombent sur le cadrage existant.
+  // Only coordinate-bearing pieces frame; `country`, `admin1`, and `clip`
+  // carry none and fall back to the existing framing.
   const latlngs = [];
   for (const piece of pieces || []) {
     if (piece.kind === 'rect') {
@@ -105,8 +105,8 @@ function piecesBounds(pieces) {
 }
 
 async function frame(item) {
-  // Une empreinte préchargée (meta importée, ou --all) est le vrai sujet :
-  // on la cadre elle, pas le pays entier où un corridor de 500 m disparaît.
+  // A preloaded footprint (imported meta, or --all) is the actual subject:
+  // frame it, not the entire country where a 500m corridor vanishes.
   const bounds = piecesBounds(item.pieces);
   if (bounds) {
     map.fitBounds(bounds, { padding: [20, 20] });
