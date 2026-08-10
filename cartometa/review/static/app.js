@@ -1,4 +1,4 @@
-import { getJSON, postJSON } from './api.js';
+import { getJSON, postJSON, postBytes } from './api.js';
 import { Sketch } from './sketch.js';
 import { closeManualForm, isManualFormOpen, openManualForm } from './manual.js';
 
@@ -241,6 +241,24 @@ async function undo() {
   }
 }
 
+async function attachImage(blob) {
+  const item = current();
+  if (!item || busy) return;
+  busy = true;
+  try {
+    const stored = await postBytes(`/api/meta/image?id=${item.id}`, blob);
+    clearError();
+    item.image = stored.image;
+    // No full render(): it would reset an outline in progress. The image
+    // pane is the only thing that changed.
+    document.getElementById('image').src = stored.image;
+  } catch (err) {
+    showError(`Image refused for ${item.id}: ${err.message}`);
+  } finally {
+    busy = false;
+  }
+}
+
 function step(offset) {
   if (busy || !current()) return;
   if (offset > 0) {
@@ -347,6 +365,25 @@ map.on('click', (event) => {
 map.on('mousemove', (event) => {
   if (!sketch.mode) return;
   if (sketch.onMapMove(event.latlng)) draw();
+});
+
+document.addEventListener('paste', (event) => {
+  // The manual form's own paste handler takes over when it is open.
+  if (isManualFormOpen()) return;
+  const found = [...(event.clipboardData?.items || [])]
+    .find((candidate) => candidate.type.startsWith('image/'));
+  if (!found) return;
+  event.preventDefault();
+  attachImage(found.getAsFile());
+});
+
+const sourcePane = document.getElementById('source');
+sourcePane.addEventListener('dragover', (event) => event.preventDefault());
+sourcePane.addEventListener('drop', (event) => {
+  event.preventDefault();
+  if (isManualFormOpen()) return;
+  const file = event.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) attachImage(file);
 });
 
 loadQueue().catch((err) => showError(`Queue unavailable: ${err.message}`));
