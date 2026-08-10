@@ -20,6 +20,7 @@ cartometa-extract = "cartometa.extract.cli:main"
 cartometa-extract-rmrg = "cartometa.extract.rmrg_cli:main"
 cartometa-review = "cartometa.review.server:main"
 cartometa-build = "cartometa.build.cli:main"
+cartometa-import-tagged = "cartometa.tagged.cli:main"
 
 [tool.pytest.ini_options]
 markers = ["real_data: requires data/geo/, skipped if absent"]
