@@ -1,0 +1,1760 @@
+[
+  {
+    "id": "man-e3ec",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Coconut palms",
+    "description": "Coconut palms are extremely common all along the coastal strip. Two notable inland exceptions exist: near Wundanyi (Taita Hills) and near Taveta.",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-e3ec.webp",
+    "maps_url": "https://maps.app.goo.gl/uxkgnz3jTooM6QwN6",
+    "maps_latlon": [
+      -4.280816,
+      39.5939923
+    ]
+  },
+  {
+    "id": "man-8439",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Sabal palmetto palms",
+    "description": "Sabal palmetto palms vary in size; leaf shape and colour are the best way to identify them. Mostly on the southern coast (Mombasa to Vanga, reaching inland) — clicking south is recommended when several are present.",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-8439.webp",
+    "maps_url": "https://maps.app.goo.gl/pUCGmnVYu4UkjJt49",
+    "maps_latlon": [
+      -4.4008752,
+      39.5296207
+    ]
+  },
+  {
+    "id": "man-4cf0",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Makalani palms",
+    "description": "Natural Makalani palms are unique to the village of Kalokol on the western shore of Lake Turkana. Only holds for natural specimens, not ones grown in urban areas (a rule that applies to most plants in this guide).",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-4cf0.webp",
+    "maps_url": "https://maps.app.goo.gl/W14q7dRaWZ2qMeFK9",
+    "maps_latlon": [
+      3.545911,
+      35.882927
+    ]
+  },
+  {
+    "id": "man-0a32",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Phoenix palms",
+    "description": "Phoenix palms are uncommon overall but clearly more frequent in the strip along the Uganda border, from Mount Elgon down through Malaba and Busia to Port Bunyala.",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-0a32.webp",
+    "maps_url": "https://maps.app.goo.gl/UWi5ed5wU5MUKQFo6",
+    "maps_latlon": [
+      0.094,
+      34.033
+    ]
+  },
+  {
+    "id": "man-9c00",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ African baobab",
+    "description": "The highest concentration of African baobab is northeast of Chyulu Hills NP (the Kitui–Mutomo–Kibwezi–Mtito Andei band). Also present along the coast.",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-9c00.webp",
+    "maps_url": "https://maps.app.goo.gl/GEGKAHNRpAFHCeVL9",
+    "maps_latlon": [
+      -2.499,
+      38.072
+    ]
+  },
+  {
+    "id": "man-bb89",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Casuarina",
+    "description": "Natural casuarina in rural rounds point to the coastal strip.",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-bb89.webp",
+    "maps_url": "https://maps.app.goo.gl/yW9CXQN1hmaYN8K36",
+    "maps_latlon": [
+      -4.338,
+      39.515
+    ]
+  },
+  {
+    "id": "man-15ea",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Silver dollar eucalyptus (early stage)",
+    "description": "Identified by silver leaves and a tree-like shape — it looks as if it is glowing in gen 3. Rift corridor from Nyahururu through Nakuru and Gilgil to Naivasha, plus a spot near Timau (NE of Mount Kenya).",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-15ea.webp",
+    "maps_url": "https://maps.app.goo.gl/QH17qD62hFY3d3aHA",
+    "maps_latlon": [
+      -0.092,
+      36.346
+    ]
+  },
+  {
+    "id": "man-5d73",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Silverberry",
+    "description": "Slightly silver leaves; more bush-like than silver dollar eucalyptus and the leaves are less cyan. Pockets around Narok, a road strip near Mosiro east of Narok, and near Eburru north of Lake Naivasha. The author advises ignoring Hell's Gate, where similar vegetation hides them.",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-5d73.webp",
+    "maps_url": "https://maps.app.goo.gl/RkJMfFkP4BqBpdf37",
+    "maps_latlon": [
+      -1.273,
+      36.114
+    ]
+  },
+  {
+    "id": "man-466e",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Dodders",
+    "description": "Dodders are easy to identify and especially common on the peninsulas reaching into Lake Victoria and along its shores.",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-466e.webp",
+    "maps_url": "https://maps.app.goo.gl/N62BNVX6VPFotNNY6",
+    "maps_latlon": [
+      -0.365,
+      34.466
+    ]
+  },
+  {
+    "id": "man-2458",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Mexican sunflower",
+    "description": "Wide distribution (west, central highlands, coast) so not decisive on its own — but a spam of them should lead to the darkest areas, especially the Busia/Siaya county border.",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-2458.webp",
+    "maps_url": "https://maps.app.goo.gl/s7As9cRCgEoPE8Xu6",
+    "maps_latlon": [
+      -1.26,
+      34.528
+    ]
+  },
+  {
+    "id": "man-4df9",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Agave rows",
+    "description": "Agave lines next to the road are rarely found in most of the country but are by far most common east of Nairobi (Thika–Machakos–Mwala direction).",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-4df9.webp",
+    "maps_url": "https://maps.app.goo.gl/HGKXHjTpNXqRd24XA",
+    "maps_latlon": [
+      -1.292,
+      37.687
+    ]
+  },
+  {
+    "id": "man-dc11",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Fever tree",
+    "description": "Size and bark colour differentiate fever trees from similar species. Found in the rift corridor (Nakuru–Naivasha–Maai Mahiu, toward Narok), around Nanyuki (rarely), and east of Nairobi near Athi River — but never outside these areas.",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-dc11.webp",
+    "maps_url": "https://maps.app.goo.gl/crR2kmZPCoqDUqJw6",
+    "maps_latlon": [
+      -0.829,
+      36.338
+    ]
+  },
+  {
+    "id": "man-7776",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Whistling thorn",
+    "description": "Most common near Nanyuki and southeast of Nairobi; also northeast of the Maasai Mara and in a pocket near Naivasha. A whistling-thorn-only forest sits on the C76 west of Nanyuki.",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-7776.webp",
+    "maps_url": "https://maps.app.goo.gl/G2hXvjkLK7HbeYgg9",
+    "maps_latlon": [
+      -0.006,
+      36.989
+    ]
+  },
+  {
+    "id": "man-e65f",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Euphorbia ingens forest",
+    "description": "Euphorbia ingens forests in two spots: near Rumuruti, and northeast of Aberdare NP.",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-e65f.webp",
+    "maps_url": "https://maps.app.goo.gl/ZWsFZvjTWPt8nC5aA",
+    "maps_latlon": [
+      0.284,
+      36.546
+    ]
+  },
+  {
+    "id": "man-e215",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Bow hemp (Sansevieria ehrenbergii)",
+    "description": "Underrated plant: it can only — and commonly — be found in the highlighted Samburu area (Wamba/Lodungokwe roads, C78/C79 northeast of Isiolo). A single exception was found by the author.",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-e215.webp",
+    "maps_url": "https://maps.app.goo.gl/hMooM4fsTqdQvRNj6",
+    "maps_latlon": [
+      1.032,
+      37.176
+    ]
+  },
+  {
+    "id": "man-45e9",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Morning glory (white flowers)",
+    "description": "Morning glory with white flowers: eastern Kitui county, a spur toward Wote, and the corridor from Kibwezi through Mtito Andei toward the A23 — that road (connecting A23 at the Tsavo West label and A109 at the Mayani label) shows lots of morning glory and endless roads with grass in the middle.",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-45e9.webp",
+    "maps_url": "https://maps.app.goo.gl/NpgXV23tkMNERx4g6",
+    "maps_latlon": [
+      -2.551,
+      38.098
+    ]
+  },
+  {
+    "id": "man-08fd",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Petunia axillaris (white flowers lookalike)",
+    "description": "Found in large quantities on the road network south and east of Kajiado (toward Namanga, Mashuru and Selengai). Easily recognized by the leaf shape; sometimes white flowers are present — do not confuse with morning glory.",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-08fd.webp",
+    "maps_url": "https://maps.app.goo.gl/wcpFwNANRUvQ3zFx9",
+    "maps_latlon": [
+      -2.214,
+      37.328
+    ]
+  },
+  {
+    "id": "man-d4b5",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Sweet grass rows (Panicoideae)",
+    "description": "Sweet grass rows next to the road are a main clue for the area around Mount Kenya and the Aberdares. Beware of lookalikes found elsewhere: vetiver grass, napier grass and young sugarcane.",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": null,
+    "maps_url": "https://maps.app.goo.gl/NJUTUbYMTnGe7k6eA",
+    "maps_latlon": [
+      -0.279,
+      36.785
+    ]
+  },
+  {
+    "id": "man-4f81",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Prickly pear (rows)",
+    "description": "Prickly pear, especially in rows next to the road, is pretty much exclusive to the B4 corridor in Baringo (Marigat toward Chemolingot and Tot/Kolowa, plus the Kabarnet side).",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-4f81.webp",
+    "maps_url": "https://maps.app.goo.gl/fEeNcFeysF2PKRjt7",
+    "maps_latlon": [
+      0.414,
+      36.051
+    ]
+  },
+  {
+    "id": "man-c265",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Long feather grass (hilly, lush landscape)",
+    "description": "Long feather grasses also grow near Nanyuki or the Maasai Mara, but this corridor between the Aberdares and Nyeri/Lamuria is the only hilly, lush area with these long grass rows.",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-c265.webp",
+    "maps_url": "https://maps.app.goo.gl/BAA6xRJMxJMMzmLb7",
+    "maps_latlon": [
+      -0.279,
+      36.785
+    ]
+  },
+  {
+    "id": "man-5207",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Tea",
+    "description": "Tea fields concentrate in three belts: the western highlands (Kericho, Nandi, Kisii, Kakamega, up to Kitale), the eastern slope of Mount Kenya (Meru to Embu), and the southeastern Aberdare slope (Nyeri toward Thika and Limuru).",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-5207.webp",
+    "maps_url": "https://maps.app.goo.gl/ZnU6C7Y9hvw73zoaA",
+    "maps_latlon": [
+      -0.436,
+      35.191
+    ]
+  },
+  {
+    "id": "man-9641",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Huge tea fields",
+    "description": "Industrial-scale tea estates: Nandi Hills, the Kericho–Sotik belt, Olenguruone, and Limuru northwest of Nairobi.",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-9641.webp",
+    "maps_url": "https://maps.app.goo.gl/5pKXUMf9VZNTUhj5A",
+    "maps_latlon": [
+      -0.351,
+      35.311
+    ]
+  },
+  {
+    "id": "man-e645",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Sugarcane (huge open fields)",
+    "description": "Only huge, open sugarcane fields count. Five areas, each with its own car: Bungoma County (gray car blurred), Kakamega County (white car blurred), Kisumu County (gray blurred or fully blurred, huge ridge north), Migori County (fully blurred car), Kwale County near Ramisi (gray car blurred, coconut palms in the distance).",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-e645.webp",
+    "maps_url": "https://maps.app.goo.gl/UU31pavJHfuVNJDy8",
+    "maps_latlon": [
+      -0.08,
+      34.954
+    ]
+  },
+  {
+    "id": "man-44be",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Cornfields",
+    "description": "Large corn fields are by far most common (though not unique) near Kitale (Trans-Nzoia) and west of Nakuru (Rongai/Njoro). They would also show near Eldoret, but that area was covered in the dry season. Meru rarely has larger cornfields than usual.",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-44be.webp",
+    "maps_url": "https://maps.app.goo.gl/VQfqncAissnus5d3A",
+    "maps_latlon": [
+      1.18,
+      34.908
+    ]
+  },
+  {
+    "id": "man-31ae",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Rice",
+    "description": "Rice paddies in three areas: around Wanguru (Mwea scheme — nearly every location is an unblurred white car), near Kisumu (Ahero), and the single road near Port Bunyala.",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-31ae.webp",
+    "maps_url": "https://maps.app.goo.gl/gzMGG5tGwysbXAVGA",
+    "maps_latlon": [
+      -0.685,
+      37.319
+    ]
+  },
+  {
+    "id": "man-4c91",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Pineapple",
+    "description": "Pineapple plantations are unique to Thika, without an exception.",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-4c91.webp",
+    "maps_url": "https://maps.app.goo.gl/DTqdXvxLvSNo9z1H7",
+    "maps_latlon": [
+      -1.014,
+      37.221
+    ]
+  },
+  {
+    "id": "man-fa15",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Succulents",
+    "description": "Two distinct succulent areas: south of Kilifi (less green, coastal vibe and coastal vegetation) and near Kibwezi (really green, with African baobab and lots of morning glory).",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-fa15.webp",
+    "maps_url": "https://maps.app.goo.gl/ayWScuQ7mnQaj3Vu5",
+    "maps_latlon": [
+      -3.818,
+      39.781
+    ]
+  },
+  {
+    "id": "man-13ab",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Large planted pine forests",
+    "description": "Planted pine forests exist elsewhere (especially near large open tea areas), but pine forests plus red fields and a somewhat dry environment identify this central plateau between Eldoret and Kericho/Nakuru (Burnt Forest–Eldama Ravine–Londiani).",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-13ab.webp",
+    "maps_url": "https://maps.app.goo.gl/GA7F8LRsrmm2dhEK7",
+    "maps_latlon": [
+      -0.203,
+      35.723
+    ]
+  },
+  {
+    "id": "man-0c49",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Maniok (cassava)",
+    "description": "Cassava fields, mostly along the Uganda border (Busia–Bungoma–Mumias–Siaya) and in the Migori/Kuria area in the far southwest.",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-0c49.webp",
+    "maps_url": null,
+    "maps_latlon": null
+  },
+  {
+    "id": "man-9a28",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Terraced farming",
+    "description": "Terraced hillsides concentrate in the Ukambani hills (Machakos–Makueni: Kangundo, Mwala, Kasikeu…) and around Wundanyi in the Taita Hills.",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-9a28.webp",
+    "maps_url": "https://maps.app.goo.gl/gJaUuPKpvWsgc3kE9",
+    "maps_latlon": [
+      -3.39,
+      38.375
+    ]
+  },
+  {
+    "id": "man-bcf9",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Dark red fields",
+    "description": "Empty fields with a marked red tone are found on the plateau band from Kitale through Eldoret down to Eldama Ravine and Londiani.",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-bcf9.webp",
+    "maps_url": "https://maps.app.goo.gl/NgaZxXKbLAeG1qUc6",
+    "maps_latlon": [
+      0.586,
+      35.352
+    ]
+  },
+  {
+    "id": "man-6568",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Black soil",
+    "description": "Black soil spots along the Yatta/Athi band. To differentiate further: the two northern locations (Masinga area) are blurred with snorkel, the central ones (Matuu) are white car 2024, and the southern ones (Konza) are gray car 2024.",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-6568.webp",
+    "maps_url": "https://maps.app.goo.gl/qPZmFfL2e1t8h56C7",
+    "maps_latlon": [
+      -1.138,
+      37.538
+    ]
+  },
+  {
+    "id": "man-8594",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Gray soil",
+    "description": "Gray soil in two areas: around Nanyuki, and around Nairobi (eastern outskirts).",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-8594.webp",
+    "maps_url": "https://maps.app.goo.gl/avRvtNtX9CVYahc69",
+    "maps_latlon": [
+      0.102,
+      36.806
+    ]
+  },
+  {
+    "id": "man-e856",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Nakuru dark brown/gray soil",
+    "description": "Nakuru has brownish-gray soil — the only area that consistently shows this combination. Similar soil can appear all over the country, so take it with a grain of salt.",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-e856.webp",
+    "maps_url": "https://maps.app.goo.gl/7o3Gh32Lwdvx2GGK8",
+    "maps_latlon": [
+      -0.346,
+      36.05
+    ]
+  },
+  {
+    "id": "man-4d47",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Wajir soil combination",
+    "description": "The distinctive soil combination around Wajir.",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-4d47.webp",
+    "maps_url": "https://maps.app.goo.gl/3QVUGP3pQDKRn7j7A",
+    "maps_latlon": [
+      1.78,
+      40.061
+    ]
+  },
+  {
+    "id": "man-3bab",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Termite hills",
+    "description": "Skinny and tall termite hills, found along the A1 corridor in Turkana (Lodwar down to Kainuk/Kapenguria).",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-3bab.webp",
+    "maps_url": "https://maps.app.goo.gl/JfBigFcxi7Bp424W9",
+    "maps_latlon": [
+      1.711,
+      35.689
+    ]
+  },
+  {
+    "id": "man-3dd3",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Exposed cliffs (Elgeyo escarpment)",
+    "description": "Exposed rock combined with roads gaining elevation, on the roads climbing to the plateau on which Eldoret sits: the Marich Pass–Iten–Chepkorio escarpment band, plus the Kabarnet–Marigat side.",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-3dd3.webp",
+    "maps_url": "https://maps.app.goo.gl/bgpET43yKGoi6kYR9",
+    "maps_latlon": [
+      1.234,
+      35.589
+    ]
+  },
+  {
+    "id": "man-fd02",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Exposed reddish rocks",
+    "description": "Exposed reddish rocks, often on small and large ridges, throughout the Kitui band (Mwingi–Kitui–Mutomo down to Kibwezi/Mtito Andei).",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-fd02.webp",
+    "maps_url": "https://maps.app.goo.gl/F3GSwjXLDNcdix5J9",
+    "maps_latlon": [
+      -1.745,
+      38.409
+    ]
+  },
+  {
+    "id": "man-3688",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Muhuru rocks",
+    "description": "The distinctive rocks of the Muhuru Bay peninsula on Lake Victoria.",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-3688.webp",
+    "maps_url": "https://maps.app.goo.gl/a7zGapVJvwoH6VYd6",
+    "maps_latlon": [
+      -1.009,
+      34.057
+    ]
+  },
+  {
+    "id": "man-1f03",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Rocky desert (A2 Marsabit–Turbi)",
+    "description": "Rocky desert stretch on the A2 north of Marsabit. The far southern part starts to have vegetation; a ridge at the most northern point (Turbi village) can be used to pinpoint along the road.",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-1f03.webp",
+    "maps_url": "https://maps.app.goo.gl/ftTfUseqioJqKoK37",
+    "maps_latlon": [
+      3.026,
+      38.22
+    ]
+  },
+  {
+    "id": "man-5865",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Marsabit Hills",
+    "description": "The Marsabit National Reserve is surprisingly green, with rounded hills.",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-5865.webp",
+    "maps_url": "https://maps.app.goo.gl/Gj725iY9kkSrDmKs8",
+    "maps_latlon": [
+      2.205,
+      37.883
+    ]
+  },
+  {
+    "id": "man-2ced",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Halugunder — the Quranic Hill",
+    "description": "A uniquely shaped hill that identifies both the offroad next to it and pinpoints on the A2 south of Marsabit.",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-2ced.webp",
+    "maps_url": "https://maps.app.goo.gl/RC82tAa2tZxADa3f6",
+    "maps_latlon": [
+      1.66,
+      37.746
+    ]
+  },
+  {
+    "id": "man-2093",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Maua hills (tricky)",
+    "description": "Volcanic, somewhat rounded hills commonly found near Maua (Nyambene range). Hard to identify at times, but the rest of Mount Kenya and the Aberdares have no such hills at all.",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-2093.webp",
+    "maps_url": "https://maps.app.goo.gl/Xdo84hWUncQv1Mzu7",
+    "maps_latlon": [
+      0.187,
+      37.848
+    ]
+  },
+  {
+    "id": "man-029f",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Homa Bay County hills",
+    "description": "Smooth ridges with shrubby vegetation around the Gwassi/Ruma area (Mbita–Sindo–Nyandiwa–Luanda), plus Homa mountain near Kendu Bay.",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-029f.webp",
+    "maps_url": "https://maps.app.goo.gl/CEWnPedRPd1PaXsf6",
+    "maps_latlon": [
+      -0.515,
+      34.196
+    ]
+  },
+  {
+    "id": "man-ec86",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Kisumu rocky ridges",
+    "description": "Kisumu has tall rocky ridges, often only barely visible.",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-ec86.webp",
+    "maps_url": "https://maps.app.goo.gl/8CNt7eux7Peqch5x9",
+    "maps_latlon": [
+      -0.016,
+      34.673
+    ]
+  },
+  {
+    "id": "man-5de7",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Bomet County rocky roads and landscape (expert)",
+    "description": "Compared to the rest of the west, Bomet County is mostly flat and lush with rockier roads. Cacti used as fences are somewhat common here, though not entirely unique.",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-5de7.webp",
+    "maps_url": null,
+    "maps_latlon": null
+  },
+  {
+    "id": "man-546b",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Dryish white car cluster (east of Embu)",
+    "description": "A white-car cluster with distant mountains, bright orange soil, and a mix of dead and green plants (Ishiara toward Kamuwongo). Giant milkweed is a common sight here and extremely rare elsewhere in Kenya.",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-546b.webp",
+    "maps_url": "https://maps.app.goo.gl/fZS84o3Sq1WcGHnM9",
+    "maps_latlon": [
+      -0.481,
+      37.956
+    ]
+  },
+  {
+    "id": "man-8334",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Wote mountains erosion",
+    "description": "The roads on the mountains west of Wote commonly show erosion — that, plus terraced farming, is how the author identifies them.",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-8334.webp",
+    "maps_url": "https://maps.app.goo.gl/T8WYsGcqcyx3NBiq5",
+    "maps_latlon": [
+      -1.914,
+      37.481
+    ]
+  },
+  {
+    "id": "man-77c7",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Nakuru ridge",
+    "description": "The ridge visible around Nakuru.",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-77c7.webp",
+    "maps_url": "https://maps.app.goo.gl/5YEb9ADAxvqUcAc66",
+    "maps_latlon": [
+      -0.221,
+      36.11
+    ]
+  },
+  {
+    "id": "man-b2a1",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Narok mountains",
+    "description": "The Mau slopes northeast of Narok (C57 Olokurto–Rotian corridor and its branches). The author recommends clicking through these marked roads for ten seconds — you will never miss the region again.",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-b2a1.webp",
+    "maps_url": "https://maps.app.goo.gl/dNqCDB6PX4QS69LWA",
+    "maps_latlon": [
+      -0.867,
+      36.11
+    ]
+  },
+  {
+    "id": "man-e58f",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Mount Kilimanjaro bait area",
+    "description": "Kilimanjaro's base (in Tanzania, the summit always behind clouds) is visible from the Loitokitok area. Quite baity: it uses metas uncommon in the surrounding areas — vertical wooden planks, bengali roofs, cornfields…",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-e58f.webp",
+    "maps_url": "https://maps.app.goo.gl/C6mPKVgGToc52u6A7",
+    "maps_latlon": [
+      -3.234,
+      37.721
+    ]
+  },
+  {
+    "id": "man-53ff",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Voi landscape",
+    "description": "Around Voi: a mostly flat landscape with slight dark-green ridges in the distance and lots of red soil (dry-season coverage). A specific ridge can pinpoint on the A23.",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-53ff.webp",
+    "maps_url": "https://maps.app.goo.gl/KHpmgc6LiDgqWWVu5",
+    "maps_latlon": [
+      -3.469,
+      38.66
+    ]
+  },
+  {
+    "id": "man-3845",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Tsavo East NP (gen 4)",
+    "description": "Gen 4 coverage inside Tsavo East National Park.",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-3845.webp",
+    "maps_url": "https://maps.app.goo.gl/H7eodMyHT6h5zWn38",
+    "maps_latlon": [
+      -3.084,
+      38.598
+    ]
+  },
+  {
+    "id": "man-e058",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Maasai Mara (gen 4)",
+    "description": "Gen 4 coverage inside the Maasai Mara reserve.",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-e058.webp",
+    "maps_url": "https://maps.app.goo.gl/eHAARnWLqPTm8SUv6",
+    "maps_latlon": [
+      -1.272,
+      35.026
+    ]
+  },
+  {
+    "id": "man-c433",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Poles — extra attachment",
+    "description": "Poles carrying this extra attachment concentrate in the west (Lake Victoria basin: Busia, Siaya, Kisumu, Homa Bay, Kisii, Migori) and around Kitale, with Eldoret lighter.",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-c433.webp",
+    "maps_url": "https://maps.app.goo.gl/QQb9Ck87y25KGZw29",
+    "maps_latlon": [
+      0.481,
+      34.222
+    ]
+  },
+  {
+    "id": "man-688a",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Poles — metal extension",
+    "description": "Almost every pole with the extra attachment also has a metal extension; this maps the poles that have the extension but no attachment: the west, the Nakuru–Nyahururu area, the Mount Kenya ring (Timau–Meru–Embu–Karatina) and greater Nairobi.",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-688a.webp",
+    "maps_url": "https://maps.app.goo.gl/aTpz5W88Fx4MwyVi7",
+    "maps_latlon": [
+      -0.386,
+      34.477
+    ]
+  },
+  {
+    "id": "man-c3e5",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Poles — low bar",
+    "description": "Poles with a low bar cover the whole west (from Busia and Kitale down through Kericho to Migori) plus the Nyahururu–Rumuruti area; also spotted along the A1 in Turkana (Lokichar, Kainuk).",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-c3e5.webp",
+    "maps_url": "https://maps.app.goo.gl/R32vpfDdhp4q3gkp7",
+    "maps_latlon": [
+      -0.149,
+      34.459
+    ]
+  },
+  {
+    "id": "man-92e8",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Poles — low bar with nusa-style supports",
+    "description": "Low-bar poles with supports (as seen in Nusa Tenggara) sit on the B5 corridor northeast of the Aberdares (Belle Vue–Lamuria–Muiga). The similar pole without supports is not useful — too many exceptions — though one road uses it often.",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-92e8.webp",
+    "maps_url": "https://maps.app.goo.gl/1DRMNnUReuC9orZeA",
+    "maps_latlon": [
+      -0.227,
+      36.737
+    ]
+  },
+  {
+    "id": "man-2ffd",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Poles — 1–2 insulator configuration",
+    "description": "Besides Nairobi, this pole appears on three rural main roads: the C58 south of Nairobi (whose pavement is also unique), the A1 between Lokichar and Kainuk, and the A109 highway to Mombasa.",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-2ffd.webp",
+    "maps_url": "https://maps.app.goo.gl/KMtCLJsQ7to3XiXX9",
+    "maps_latlon": [
+      -1.052,
+      36.506
+    ]
+  },
+  {
+    "id": "man-81a1",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Poles — Ontario configuration",
+    "description": "Ontario-style pole configuration on three stretches around Nairobi: the C58 toward Magadi, the Mlolongo–Athi River–Konza corridor, and a spur at Limuru.",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-81a1.webp",
+    "maps_url": "https://maps.app.goo.gl/XyoVX2YdcBoP8GpC8",
+    "maps_latlon": [
+      -1.546,
+      37.142
+    ]
+  },
+  {
+    "id": "man-a3d5",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Poles — triple pole (A104 Kitengela–Kajiado)",
+    "description": "The overall distribution of the triple pole is not helpful, but one road uses it consistently: the A104 south of Nairobi between Kitengela and Kajiado. Also identifiable by heavy traffic; use the driving angle.",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-a3d5.webp",
+    "maps_url": "https://maps.app.goo.gl/NmD1Euij2w8kB4KM8",
+    "maps_latlon": [
+      -1.653,
+      36.868
+    ]
+  },
+  {
+    "id": "man-8576",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Poles — trident pole and UFO insulators",
+    "description": "Trident poles with UFO-shaped insulators on the road southeast of Embu toward Mavuria/Masinga.",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-8576.webp",
+    "maps_url": "https://maps.app.goo.gl/1677dHtMm1Kowvdr5",
+    "maps_latlon": [
+      -0.661,
+      37.607
+    ]
+  },
+  {
+    "id": "man-f2d4",
+    "country": "KE",
+    "tier": "manual",
+    "title": "C58 pavement",
+    "description": "The C58 (Kiserian toward Magadi) has a unique pavement.",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-f2d4.webp",
+    "maps_url": "https://maps.app.goo.gl/tbZ8PqRo1zqMGAP88",
+    "maps_latlon": [
+      -1.792,
+      36.335
+    ]
+  },
+  {
+    "id": "man-b5a9",
+    "country": "KE",
+    "tier": "manual",
+    "title": "B8 pavement",
+    "description": "The B8 south of Garissa: wide shoulders and no road lines.",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-b5a9.webp",
+    "maps_url": "https://maps.app.goo.gl/z5sXSyt9H5h49ULv7",
+    "maps_latlon": [
+      -0.861,
+      39.713
+    ]
+  },
+  {
+    "id": "man-d861",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Kisumu downtown",
+    "description": "Kisumu city southwest of the map label has rich neighborhoods that look almost like Panama.",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-d861.webp",
+    "maps_url": "https://maps.app.goo.gl/QQgYxc1iRpaj3Dae7",
+    "maps_latlon": [
+      -0.113,
+      34.751
+    ]
+  },
+  {
+    "id": "man-9554",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Wind turbines",
+    "description": "Only two wind parks exist in Kenya — Ngong Hills west of Nairobi and one west of Kajiado — and wind turbines are never found outside them.",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-9554.webp",
+    "maps_url": "https://maps.app.goo.gl/mrHnEju7648KqoSp7",
+    "maps_latlon": [
+      -1.381,
+      36.636
+    ]
+  },
+  {
+    "id": "man-4d8e",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Coastal walls",
+    "description": "The whole coast excessively often uses walls made of white stones with too much mortar. Houses are built from the same stones (see the white bricks meta).",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-4d8e.webp",
+    "maps_url": "https://maps.app.goo.gl/bjiwyZ1AahknuCXX9",
+    "maps_latlon": [
+      -4.107,
+      39.665
+    ]
+  },
+  {
+    "id": "man-bd47",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Nakuru walls",
+    "description": "Nakuru commonly uses walls with decently large, dark gray rocky stones of varying sizes and lightish mortar. Beware of lookalikes elsewhere (the author lists counterexamples near Nairobi and Naivasha).",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-bd47.webp",
+    "maps_url": "https://maps.app.goo.gl/pTyJKTLs1XqFkk1t9",
+    "maps_latlon": [
+      -0.268,
+      36.136
+    ]
+  },
+  {
+    "id": "man-67e2",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Garissa walls",
+    "description": "This wall design — edges built from the distinctive shapes seen in the pictures — is unique to Garissa.",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-67e2.webp",
+    "maps_url": "https://maps.app.goo.gl/pPZN9ZoxBWo6Nsvx5",
+    "maps_latlon": [
+      -0.46,
+      39.665
+    ]
+  },
+  {
+    "id": "man-c29a",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Narok fences",
+    "description": "Tall wooden sticks connected by barely visible metal wires — practically the only fence design around Narok, where they also run on forever (unlike other areas using the same fence). A lighter presence near Nanyuki.",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-c29a.webp",
+    "maps_url": "https://maps.app.goo.gl/V77UtPThRtLdQ2m79",
+    "maps_latlon": [
+      -1.039,
+      35.736
+    ]
+  },
+  {
+    "id": "man-0e4d",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Bamboo-looking fences",
+    "description": "Found rarely in the lush parts of the country, but the only area that consistently uses them is northeast of the Aberdares (Belle Vue–Muiga corridor).",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-0e4d.webp",
+    "maps_url": "https://maps.app.goo.gl/aDAQKC3EfpWu1ZoL6",
+    "maps_latlon": [
+      -0.312,
+      36.767
+    ]
+  },
+  {
+    "id": "man-48cc",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Bound shrub fences",
+    "description": "Dried-out shrub fences of far eastern Kenya (Wajir–Habaswein–Dadaab–Garissa road network). Especially common in the refugee camps around Dadaab — densely built, more trash on the ground, worse buildings than other eastern villages.",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-48cc.webp",
+    "maps_url": "https://maps.app.goo.gl/EGkX4oQm8dXdkc4h8",
+    "maps_latlon": [
+      0.125,
+      40.304
+    ]
+  },
+  {
+    "id": "man-107a",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ White bricks (coast)",
+    "description": "Almost all buildings on the coast are made of these white bricks with lots of mortar. This wall style is unique to the coast without a single exception.",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-107a.webp",
+    "maps_url": "https://maps.app.goo.gl/qhqvW12PqnyQesg56",
+    "maps_latlon": [
+      -4.19,
+      39.597
+    ]
+  },
+  {
+    "id": "man-7353",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Nakuru bricks",
+    "description": "Same stones as the Nakuru walls, used for buildings.",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-7353.webp",
+    "maps_url": "https://maps.app.goo.gl/MEvHkK57yuhDiqe98",
+    "maps_latlon": [
+      -0.263,
+      36.112
+    ]
+  },
+  {
+    "id": "man-a19a",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Red bricks",
+    "description": "The most common and useful Kenya meta: red bricks with light mortar. One of the best ways to separate the west of Kenya (and Ukambani east of Nairobi) from everything around Mount Kenya and the Aberdares.",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-a19a.webp",
+    "maps_url": "https://maps.app.goo.gl/keuFR6Rkek5MnyNY7",
+    "maps_latlon": [
+      0.044,
+      34.304
+    ]
+  },
+  {
+    "id": "man-5a17",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Red bricks without light mortar",
+    "description": "Red bricks without the light mortar are specific to the Ukambani band east of Nairobi (Thika–Embu–Mwingi–Kitui down to Kibwezi). Bricks with residual mortar count as both this and the normal red-brick meta.",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-5a17.webp",
+    "maps_url": "https://maps.app.goo.gl/UFh7XyEcSYxLJPy58",
+    "maps_latlon": [
+      -1.548,
+      37.478
+    ]
+  },
+  {
+    "id": "man-8c91",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Vertical wooden planks",
+    "description": "Vertical plank walls rule out most of the lush western part of Kenya: they concentrate on the Eldoret/Kitale plateau, the Kericho–Bomet–Kilgoris band, around Nyahururu, and the Mount Kenya ring down to Nairobi. (Horizontal planks are rarer but too widespread to be useful.)",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-8c91.webp",
+    "maps_url": "https://maps.app.goo.gl/wmeSDNqh3jzon9Vk7",
+    "maps_latlon": [
+      -0.318,
+      36.794
+    ]
+  },
+  {
+    "id": "man-d87e",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Painted wooden planks",
+    "description": "Painted plank houses (one colour combination dominates) concentrate in the Meru band on the northeastern side of Mount Kenya (Meru–Nkubu–Igoji–Chogoria, up to Maua).",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-d87e.webp",
+    "maps_url": "https://maps.app.goo.gl/8wpFp6ZdXvgEab8Q8",
+    "maps_latlon": [
+      -0.176,
+      37.755
+    ]
+  },
+  {
+    "id": "man-824a",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Sticks and dirt houses",
+    "description": "Houses made of sticks and dirt (sometimes the sticks are not visible). Found near the Kitale/Bungoma border strip, in Kisii/Migori, in a Nakuru pocket, in the Thika–Machakos–Sultan Hamud band, and on the coast.",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-824a.webp",
+    "maps_url": "https://maps.app.goo.gl/w7XjxTn23x5H78eW7",
+    "maps_latlon": [
+      0.963,
+      35.194
+    ]
+  },
+  {
+    "id": "man-83b2",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Light metal roofs",
+    "description": "Light (shiny) metal roofs are found everywhere except the lush slopes of Mount Kenya and the Aberdares — but a roof THIS light most likely puts you in western Kenya, roughly everything west of Eldoret's longitude.",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-83b2.webp",
+    "maps_url": "https://maps.app.goo.gl/cjA9q7e5pRYgKZZg8",
+    "maps_latlon": [
+      0.752,
+      34.543
+    ]
+  },
+  {
+    "id": "man-3c02",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Bengali roofs",
+    "description": "Bengali-style roofs: trustworthy once two or more are present, but even one should strongly lean you to the west (Lake Victoria basin). Good luck finding one near Mount Kenya or the Aberdares.",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-3c02.webp",
+    "maps_url": "https://maps.app.goo.gl/uQVZsWt1uiGU8RGC9",
+    "maps_latlon": [
+      -0.047,
+      34.689
+    ]
+  },
+  {
+    "id": "man-1aea",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Homemade fortress",
+    "description": "Homestead compounds enclosed like small fortresses, in the Kuria area (Kehancha–Sirari, along the Tanzanian border).",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-1aea.webp",
+    "maps_url": "https://maps.app.goo.gl/dYRrDQ8W9MjyVESs5",
+    "maps_latlon": [
+      -1.211,
+      34.587
+    ]
+  },
+  {
+    "id": "man-5e2c",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Ruins",
+    "description": "Stone ruins on the southern coast (Diani area).",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-5e2c.webp",
+    "maps_url": "https://maps.app.goo.gl/Au7MJR7iWQYSY5hS6",
+    "maps_latlon": [
+      -4.193,
+      39.615
+    ]
+  },
+  {
+    "id": "man-a899",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Mombasa blue/white",
+    "description": "Mombasa's blue-and-white painted buildings.",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-a899.webp",
+    "maps_url": "https://maps.app.goo.gl/1UnpFNMTpU2YoAiv8",
+    "maps_latlon": [
+      -4.037,
+      39.664
+    ]
+  },
+  {
+    "id": "man-bcd8",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Nairobi skyline",
+    "description": "Nairobi is the only Kenyan city with a skyline — or even skyscrapers.",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-bcd8.webp",
+    "maps_url": "https://maps.app.goo.gl/d7wGrTZj2M3cSQWg6",
+    "maps_latlon": [
+      -1.296,
+      36.822
+    ]
+  },
+  {
+    "id": "man-e65b",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Eastern Nairobi suburbs (gridded)",
+    "description": "Grid-patterned suburbs east of Nairobi with a distinct vibe: a lot going on, gray soil, wealthier homes, unfinished multi-story buildings, construction material on the ground, gray brick walls (not Nakuru bricks!).",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-e65b.webp",
+    "maps_url": "https://maps.app.goo.gl/WeWtGKFe9gj7vmNE6",
+    "maps_latlon": [
+      -1.349,
+      36.95
+    ]
+  },
+  {
+    "id": "man-a4b6",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Nanyuki (gridded)",
+    "description": "Nanyuki grids: Mount Kenya to the southeast, driving slightly uphill toward it, empty plots with grass or whistling thorns, endless long grayish (sometimes rocky) roads. In a 50/50 against Nakuru: Nanyuki is 99% blurred car, whatever the year.",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-a4b6.webp",
+    "maps_url": "https://maps.app.goo.gl/JiMss6t2Xv614Efp8",
+    "maps_latlon": [
+      -0.022,
+      37.028
+    ]
+  },
+  {
+    "id": "man-87e7",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Nakuru (gridded)",
+    "description": "Nakuru grids: lots of corn, walled buildings using Nakuru bricks, decently common fever trees. The car (old snorkel version or new gray car) is 99% visible/unblurred.",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-87e7.webp",
+    "maps_url": "https://maps.app.goo.gl/u8w4rBqjgepv5un9A",
+    "maps_latlon": [
+      -0.256,
+      36.167
+    ]
+  },
+  {
+    "id": "man-c888",
+    "country": "KE",
+    "tier": "manual",
+    "title": "⭐ Eldoret (gridded)",
+    "description": "Eldoret also has endless straight grid roads, but with lots of red soil on fields and roads, plus eastern metas like red bricks.",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-c888.webp",
+    "maps_url": "https://maps.app.goo.gl/tE3z5ykMr5cYnMzE6",
+    "maps_latlon": [
+      0.488,
+      35.244
+    ]
+  },
+  {
+    "id": "man-25e6",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Gen 3 — Lodwar–Kalokol road",
+    "description": "Blurred-car gen 3 road with a NE/SW angle, gray grass and savannah-like landscape. Makalani palms once you reach Kalokol.",
+    "category": "car",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-25e6.webp",
+    "maps_url": null,
+    "maps_latlon": [
+      3.3,
+      35.75
+    ]
+  },
+  {
+    "id": "man-4ce0",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Gen 3 — Kerio Loop",
+    "description": "Same savannah landscape with gray grass as Lodwar–Kalokol but completely flat with sandier soil. Covered by a gray-bar car; the road loops from Lodwar toward Kerio near the lake.",
+    "category": "car",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-4ce0.webp",
+    "maps_url": null,
+    "maps_latlon": [
+      3.0,
+      35.85
+    ]
+  },
+  {
+    "id": "man-a6a6",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Gen 3 — Lokichar N road (A1)",
+    "description": "Blurred car on a wide, white-soil north/south unpaved road: the A1 between Lokichar and Lodwar.",
+    "category": "car",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-a6a6.webp",
+    "maps_url": null,
+    "maps_latlon": [
+      2.7,
+      35.62
+    ]
+  },
+  {
+    "id": "man-4236",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Gen 3 — Lokichar SE road",
+    "description": "Unpaved road under construction, covered by a gray-bar car, heading southeast from Lokichar toward Lokori.",
+    "category": "car",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-4236.webp",
+    "maps_url": null,
+    "maps_latlon": [
+      2.2,
+      35.85
+    ]
+  },
+  {
+    "id": "man-b5a2",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Gen 3 — Marsabit",
+    "description": "The Marsabit gen 3 coverage is surprisingly green for how far north it is — the only gen 3 in the north/northeast. Covered by a black car with an exposed hood and a front smudge (the smudge is not entirely unique to Marsabit, but its orientation technically is).",
+    "category": "car",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-b5a2.webp",
+    "maps_url": "https://maps.app.goo.gl/m8Zx8FiuCCkryDT99",
+    "maps_latlon": [
+      2.327,
+      37.99
+    ]
+  },
+  {
+    "id": "man-f69c",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Light brown clay walls (needs more research)",
+    "description": "Author's note, unverified: light-brown coloured clay walls appear only in the lush west of Kenya.",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": null,
+    "maps_url": "https://maps.app.goo.gl/DAgWDgzzf8Qkz2ci9",
+    "maps_latlon": [
+      0.138,
+      34.309
+    ]
+  },
+  {
+    "id": "man-4b17",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Water tanks (needs more research)",
+    "description": "Author's note, unverified: water tanks only near Mount Kenya and the Aberdares.",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": null,
+    "maps_url": "https://maps.app.goo.gl/KhWALXmqakdyfwDv7",
+    "maps_latlon": [
+      -0.498,
+      36.967
+    ]
+  },
+  {
+    "id": "man-e7ef",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Exposed red soil walls (needs more research)",
+    "description": "Author's note, unverified: walls with exposed red soil are more common near Mount Kenya and the Aberdares.",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": null,
+    "maps_url": "https://maps.app.goo.gl/7QbaNtWbD45j9xhU6",
+    "maps_latlon": [
+      -0.641,
+      36.914
+    ]
+  },
+  {
+    "id": "man-c5e7",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Metal sheet fences (needs more research)",
+    "description": "Author's note, unverified: metal sheet fences are most common near Eldoret, Nakuru and Mount Kenya.",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": null,
+    "maps_url": "https://maps.app.goo.gl/ZJ12cVmeE8XfuhqN9",
+    "maps_latlon": [
+      -0.961,
+      36.885
+    ]
+  }
+]
