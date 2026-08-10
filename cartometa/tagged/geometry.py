@@ -93,6 +93,8 @@ def corridor_geometry(
     MST edges longer than link_km are cut: they would bridge distinct road
     segments. A point left without any edge becomes a disc.
     """
+    if not points:
+        raise ValueError("no points: nothing to trace")
     to_xy, to_wgs = _projector(points)
     xy = [to_xy(lng, lat) for lat, lng in points]
     edges = [e for e in mst_edges(xy) if e[2] <= link_km]
@@ -114,6 +116,8 @@ def zone_geometry(
     Clusters of one or two points have no hull: the buffer alone gives a disc
     or a capsule.
     """
+    if not points:
+        raise ValueError("no points: nothing to trace")
     to_xy, to_wgs = _projector(points)
     xy = [to_xy(lng, lat) for lat, lng in points]
     shapes = []

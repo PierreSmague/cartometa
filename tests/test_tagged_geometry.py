@@ -109,3 +109,10 @@ def test_a_corridor_survives_the_build_simplification():
     geom = corridor_geometry(_chain(30))
     simplifiee = shape(simplify_geometry(mapping(geom)))
     assert simplifiee.area == pytest.approx(geom.area, rel=0.25)
+
+
+def test_an_empty_cloud_is_refused():
+    with pytest.raises(ValueError):
+        corridor_geometry([])
+    with pytest.raises(ValueError):
+        zone_geometry([])
