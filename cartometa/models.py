@@ -12,6 +12,7 @@ TIER_MANUAL = "manual"
 ORIGIN_PLONKIT = "plonkit"
 ORIGIN_MANUAL = "manual"
 ORIGIN_RMRG = "rmrg"
+ORIGIN_TAGGED = "tagged"
 
 # Two DECISION statuses: a geometry that exists was drawn by hand by
 # construction. `proposé` is not a decision but a pre-drawn footprint waiting

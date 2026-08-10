@@ -49,6 +49,10 @@ class CountryPaths:
         return self.data / "metas" / f"{self.country}-rmrg.json"
 
     @property
+    def tagged_metas(self) -> Path:
+        return self.data / "metas" / f"{self.country}-tagged.json"
+
+    @property
     def manual_dir(self) -> Path:
         return self.data / "manual" / self.country
 
@@ -81,10 +85,11 @@ def read_json_list(path: Path) -> list[dict]:
 
 
 def load_metas(paths: CountryPaths) -> list[dict]:
-    """Imported metas (Plonk It then RMRG) then manual ones, in that order."""
+    """Imported metas (Plonk It, RMRG, tagged imports) then manual ones, in that order."""
     return (
         read_json_list(paths.imported_metas)
         + read_json_list(paths.rmrg_metas)
+        + read_json_list(paths.tagged_metas)
         + read_json_list(paths.manual_metas)
     )
 
