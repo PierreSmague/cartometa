@@ -54,5 +54,19 @@ def test_dry_run_prints_but_writes_nothing(data_dir, tmp_path, capsys):
     main([str(_source(tmp_path)), "--mode", "route", "--category", "car",
           "--data-dir", str(data_dir), "--dry-run"])
 
-    assert "Ring" in capsys.readouterr().out
+    out = capsys.readouterr().out
+    assert "Ring" in out
+    assert "[dry-run" in out
     assert not CountryPaths(data_dir, "AA").geo.exists()
+
+
+def test_tagged_file_error_is_caught_and_exits(data_dir, tmp_path):
+    invalid_source = tmp_path / "invalid.json"
+    invalid_source.write_text(json.dumps({"name": "x"}), "utf-8")
+
+    with pytest.raises(SystemExit) as excinfo:
+        main([str(invalid_source), "--mode", "route", "--category", "car",
+              "--data-dir", str(data_dir)])
+
+    assert isinstance(excinfo.value.code, str)
+    assert "customCoordinates" in excinfo.value.code
