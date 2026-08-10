@@ -89,7 +89,29 @@ function render() {
   refresh();
 }
 
+function piecesBounds(pieces) {
+  // Seules les pièces à coordonnées cadrent ; `country`, `admin1` et `clip`
+  // n'en portent pas et retombent sur le cadrage existant.
+  const latlngs = [];
+  for (const piece of pieces || []) {
+    if (piece.kind === 'rect') {
+      const [west, south, east, north] = piece.bounds;
+      latlngs.push([south, west], [north, east]);
+    } else if (piece.kind === 'polygon') {
+      for (const [lon, lat] of piece.ring) latlngs.push([lat, lon]);
+    }
+  }
+  return latlngs.length ? L.latLngBounds(latlngs) : null;
+}
+
 async function frame(item) {
+  // Une empreinte préchargée (meta importée, ou --all) est le vrai sujet :
+  // on la cadre elle, pas le pays entier où un corridor de 500 m disparaît.
+  const bounds = piecesBounds(item.pieces);
+  if (bounds) {
+    map.fitBounds(bounds, { padding: [20, 20] });
+    return;
+  }
   // Everything arrives blank: the Maps point is the only landmark when it exists,
   // otherwise we frame the country so as not to leave the map in the middle of
   // nowhere.
