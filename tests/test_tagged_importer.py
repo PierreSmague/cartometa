@@ -141,3 +141,17 @@ def test_zone_mode_uses_the_hull(data_dir, tmp_path):
     records = load_geo(CountryPaths(data_dir, "AA"))
     (record,) = records.values()
     assert len(record.pieces) == 1
+
+
+def test_a_rerun_preserves_an_attached_image(data_dir, tmp_path):
+    src = _source(tmp_path, [_point(5.0, 5.0, ["Ring"]), _point(5.01, 5.01, ["Ring"])])
+    import_tagged(data_dir, src, mode="route", category="car")
+    aa = CountryPaths(data_dir, "AA")
+    metas = json.loads(aa.tagged_metas.read_text("utf-8"))
+    metas[0]["image"] = "data/manual/AA/images/tag-000000.png"
+    aa.tagged_metas.write_text(json.dumps(metas), "utf-8")
+
+    import_tagged(data_dir, src, mode="route", category="car")
+
+    metas = json.loads(aa.tagged_metas.read_text("utf-8"))
+    assert metas[0]["image"] == "data/manual/AA/images/tag-000000.png"

@@ -166,7 +166,10 @@ def import_tagged(
                 # Kept across re-runs: two identical runs must be byte-identical.
                 "extracted_at": metas.get(pid, {}).get("extracted_at", now),
                 "description_origin": "imported", "origin": ORIGIN_TAGGED,
-                "image": None, "maps_url": None, "maps_latlon": None,
+                # Kept across re-runs, like extracted_at: the reviewer may have
+                # attached a screenshot — irreplaceable, unlike the rest of
+                # this regenerable record.
+                "image": metas.get(pid, {}).get("image"), "maps_url": None, "maps_latlon": None,
                 "source_file": name, "source_tag": tag,
             }
             record = GeoRecord(id=pid, geometry=None, pieces=pieces,
