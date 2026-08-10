@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,22 +17,23 @@
   <meta property="og:image" content="__SITE_URL__/__OG_IMAGE__">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="The Cartometa map, with a highlighted area in South Africa and a gallery of meta hint photographs.">
+  <meta property="og:image:alt"
+    content="The Cartometa map, with a highlighted area in South Africa and a gallery of meta hint photographs.">
   <meta name="twitter:card" content="summary_large_image">
   <!-- SHA-384 digests verified identical on unpkg, jsdelivr and cdnjs on
        2026-08-03: the browser will refuse to execute an altered file. To be
        recomputed if the Leaflet version changes, otherwise the map disappears
        without a message. -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H"
-        crossorigin="anonymous">
+    integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-          integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH"
-          crossorigin="anonymous"></script>
+    integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH"
+    crossorigin="anonymous"></script>
   <link rel="stylesheet" href="__CSS__">
   <script defer type="module" src="__JS__"></script>
   <script defer type="module" src="__ANKI_JS__"></script>
 </head>
+
 <body>
   <header id="entete">
     <div class="marque">
@@ -46,26 +48,30 @@
            `https://` with a system tooltip and stops the handler from running. We
            prefer to validate ourselves and explain ourselves. -->
       <input id="lien" type="text" inputmode="url" spellcheck="false"
-             placeholder="Paste a Google Street View or Maps link…"
-             aria-label="Google Street View or Maps link">
+        placeholder="Paste a Google Street View or Maps link…" aria-label="Google Street View or Maps link">
       <button type="submit" id="lien-go">Go</button>
       <!-- aria-live: the outcome of a paste (resolution, failure) gets announced,
            otherwise it only exists visually. -->
       <span id="lien-etat" role="status" aria-live="polite"></span>
     </form>
     <span id="compteurs" class="compteurs"></span>
-    <!-- Discord invite. The logo alone, with no label: the header already carries
+
+    <div id="liens-externes">
+      <!-- Extension page link-->
+      <a id="extension" href="extension.html" title="Cartometa Extension for GeoGuessr">Extension for Geoguessr</a>
+
+      <!-- Discord invite. The logo alone, with no label: the header already carries
          the one action the page exists for (pasting a link), and a second worded
          button would compete with it. The accessible name lives in aria-label,
          the tooltip in title — an icon on its own says nothing to a screen
          reader, and not much more to a mouse. -->
-    <a id="discord" href="https://discord.gg/H48jFZtjey" target="_blank"
-       rel="noopener" title="Join the Cartometa Discord"
-       aria-label="Join the Cartometa Discord">
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <path d="M20.317 4.3698a19.7913 19.7913 0 0 0-4.8851-1.5152.0741.0741 0 0 0-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 0 0-.0785-.037 19.7363 19.7363 0 0 0-4.8852 1.515.0699.0699 0 0 0-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 0 0 .0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 0 0 .0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 0 0-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 0 1-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 0 1 .0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 0 1 .0785.0095c.1202.099.246.198.3728.2924a.077.077 0 0 1-.0066.1276 12.2986 12.2986 0 0 1-1.873.8914.0766.0766 0 0 0-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 0 0 .0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 0 0 .0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 0 0-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/>
-      </svg>
-    </a>
+      <a id="discord" href="https://discord.gg/H48jFZtjey" target="_blank" rel="noopener"
+        title="Join the Cartometa Discord" aria-label="Join the Cartometa Discord">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M20.317 4.3698a19.7913...Z" />
+        </svg>
+      </a>
+    </div>
   </header>
 
   <main id="principal">
@@ -138,17 +144,19 @@
         <summary>Anki integration</summary>
         <ol>
           <li>Install <a href="https://apps.ankiweb.net/" target="_blank" rel="noopener">Anki</a>
-              and the <a href="https://ankiweb.net/shared/info/2055492159" target="_blank"
-              rel="noopener">AnkiConnect</a> add-on (code <code>2055492159</code>).</li>
+            and the <a href="https://ankiweb.net/shared/info/2055492159" target="_blank" rel="noopener">AnkiConnect</a>
+            add-on (code <code>2055492159</code>).</li>
           <li>In Anki: Tools &rarr; Add-ons &rarr; AnkiConnect &rarr; Config, add
-              <code>"https://cartometa.com"</code> to <code>webCorsOriginList</code>.</li>
+            <code>"https://cartometa.com"</code> to <code>webCorsOriginList</code>.
+          </li>
           <li>Restart Anki, keep it open, and click the button again. Allow the
-              browser&rsquo;s local-network permission if it asks.</li>
+            browser&rsquo;s local-network permission if it asks.</li>
         </ol>
         <p>Works in Chrome, Edge and Firefox. Safari does not let pages talk to
-           local apps.</p>
+          local apps.</p>
       </details>
     </div>
   </div>
 </body>
+
 </html>

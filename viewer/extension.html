@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cartometa — Extension for GeoGuessr</title>
+<meta name="description" content="How to install the Cartometa userscript and get GeoGuessr metas without leaving your round.">
+<link rel="canonical" href="__SITE_URL__/extension">
+<link rel="icon" type="image/svg+xml" href="__ICON_SVG__">
+<link rel="icon" type="image/png" sizes="32x32" href="__ICON_PNG__">
+<link rel="stylesheet" href="__CSS__">
+<style>
+/* Fallback values for the site's colour variables: __CSS__ only resolves to the
+   real stylesheet once cartometa-build has run. Opening this file straight from
+   viewer/ (no build) would otherwise leave every var(--...) below undefined,
+   button included — same values as viewer/style.css, so nothing changes once
+   the real stylesheet does load, it just stops depending on it being there. */
+:root {
+  --fond: #fbfbfa;
+  --fond-carte: #ffffff;
+  --trait: #e7e7e3;
+  --texte: #1c1c1a;
+  --texte-doux: #86867f;
+  --accent: #c1283a;
+  --rayon: 6px;
+}
+body { display: block; background: var(--fond); }
+main { max-width: 640px; margin: 0 auto; padding: 0 24px 80px; }
+
+.retour {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 18px 0 0;
+  font-size: 13px;
+  color: var(--texte-doux);
+  text-decoration: none;
+}
+.retour:hover { color: var(--texte); }
+
+.hero {
+  margin-top: 18px;
+  padding: 30px 28px;
+  border-radius: 12px;
+  background: var(--fond-carte);
+  border: 1px solid var(--trait);
+  border-top: 3px solid var(--accent);
+}
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.eyebrow svg { width: 13px; height: 13px; fill: currentColor; }
+h1 { font-size: 24px; margin: 10px 0 8px; letter-spacing: -0.01em; }
+.intro { color: var(--texte-doux); font-size: 14.5px; margin: 0 0 18px; max-width: 52ch; }
+
+.cta-rangee { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border-radius: var(--rayon);
+  background: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(193, 40, 58, 0.25);
+}
+.cta:hover { background: #a72131; }
+.cta svg { width: 14px; height: 14px; fill: currentColor; }
+.saute {
+  font-size: 13px;
+  color: var(--texte-doux);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--trait);
+}
+.saute:hover { color: var(--texte); border-color: var(--texte-doux); }
+
+h2 {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texte-doux);
+  margin: 40px 0 16px;
+}
+
+.etapes { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.etapes > li {
+  display: flex;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: var(--rayon);
+  background: var(--fond-carte);
+  border: 1px solid var(--trait);
+  scroll-margin-top: 16px;
+}
+.num {
+  flex: none;
+  position: relative;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--texte);
+  color: var(--fond-carte);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.num svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.corps h3 { font-size: 15px; margin: 3px 0 5px; }
+.corps p { margin: 0; font-size: 14px; line-height: 1.55; color: #45453f; }
+.corps p + p { margin-top: 8px; }
+.corps code {
+  font-size: 12.5px;
+  background: var(--fond);
+  border: 1px solid var(--trait);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+.pastilles-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; }
+.pastilles-nav .etiquette {
+  font-size: 12px;
+  color: var(--texte-doux);
+  margin-right: 2px;
+}
+.pastilles-nav span:not(.etiquette) {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 99px;
+  background: var(--fond);
+  border: 1px solid var(--trait);
+  color: var(--texte-doux);
+}
+
+.aide {
+  margin-top: 28px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: var(--rayon);
+  background: var(--fond-carte);
+  border: 1px solid var(--trait);
+  font-size: 13.5px;
+  color: var(--texte-doux);
+}
+.aide a { color: var(--texte); font-weight: 600; text-decoration: none; }
+.aide a:hover { color: #5865f2; }
+.aide svg { width: 20px; height: 20px; flex: none; fill: #5865f2; }
+</style>
+</head>
+<body>
+<main>
+<a class="retour" href="index.html">&larr; back to the map</a>
+
+<div class="hero">
+<span class="eyebrow">
+<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 2 7l10 5 10-5-10-5Zm0 8L2 5v6l10 5 10-5V5l-10 5Z"/></svg>
+Guide
+</span>
+<h1>Cartometa Extension for GeoGuessr</h1>
+<p class="intro">
+A userscript that brings Cartometa into the game itself: the metas for
+where you've landed show up on screen, no link to paste and no tab to
+switch to. One-time setup, about a minute.
+</p>
+<div class="cta-rangee">
+<a class="cta" href="https://greasyfork.org/fr/scripts/589913-cartometa-extension-for-geoguessr" rel="noopener">
+<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5M5 19h14"/></svg>
+Get the script on Greasy Fork
+</a>
+<a class="saute" href="#etape-3">Already have Tampermonkey? Skip to step 3</a>
+</div>
+</div>
+
+<h2>Setting it up</h2>
+<ol class="etapes">
+
+<li>
+<span class="num">
+<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16v12H4z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+</span>
+<div class="corps">
+<h3>Install a userscript manager</h3>
+<p>
+The script needs a userscript manager to run in your browser —
+<a href="https://www.tampermonkey.net/" rel="noopener">Tampermonkey</a>
+is the most common one and works on Chrome, Firefox, Edge and most other
+browsers. Install it from your browser's extension store if you don't
+already have one.
+</p>
+</div>
+</li>
+
+<li>
+<span class="num">
+<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="18" height="8" rx="4"/><circle cx="16" cy="12" r="2.6"/></svg>
+</span>
+<div class="corps">
+<h3>Enable Developer mode <span style="font-weight:400;color:var(--texte-doux)">(Chrome &amp; Chromium browsers)</span></h3>
+<p>
+Chrome disables userscripts by default since it moved to Manifest V3.
+Go to <code>chrome://extensions</code> and turn on <strong>Developer
+mode</strong> (top right corner) — that's what unlocks Tampermonkey's
+ability to run userscripts on this version of Chrome. Without it,
+Tampermonkey stays installed but never actually runs anything, with no
+warning.
+</p>
+<p>
+See <a href="https://www.tampermonkey.net/faq.php?locale=en#Q209" rel="noopener">Tampermonkey's FAQ on this setting</a>
+if Developer mode alone doesn't do it — some Chrome versions instead
+expose a separate <strong>Allow User Scripts</strong> toggle on
+Tampermonkey's own details page. Firefox doesn't need this step.
+</p>
+<div class="pastilles-nav">
+<span class="etiquette">Same steps on:</span>
+<span>Chrome</span><span>Edge</span><span>Brave</span><span>Opera</span>
+</div>
+</div>
+</li>
+
+<li id="etape-3">
+<span class="num">
+<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5"/><path d="M5 19h14"/></svg>
+</span>
+<div class="corps">
+<h3>Install the script</h3>
+<p>
+Open the <a href="https://greasyfork.org/fr/scripts/589913-cartometa-extension-for-geoguessr" rel="noopener">Cartometa Extension for GeoGuessr</a>
+page on Greasy Fork and click <strong>Install this script</strong>.
+Your userscript manager takes it from there.
+</p>
+</div>
+</li>
+
+<li>
+<span class="num">
+<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg>
+</span>
+<div class="corps">
+<h3>Start a fresh round</h3>
+<p>
+Open a new tab (or restart your browser) before playing — a userscript
+only attaches to tabs opened after it was installed. Then play GeoGuessr
+as usual: the matching metas appear on their own.
+</p>
+</div>
+</li>
+
+</ol>
+
+<div class="aide">
+<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.317 4.3698a19.7913 19.7913 0 0 0-4.8851-1.5152.0741.0741 0 0 0-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 0 0-.0785-.037 19.7363 19.7363 0 0 0-4.8852 1.515.0699.0699 0 0 0-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 0 0 .0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 0 0 .0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 0 0-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 0 1-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 0 1 .0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 0 1 .0785.0095c.1202.099.246.198.3728.2924a.077.077 0 0 1-.0066.1276 12.2986 12.2986 0 0 1-1.873.8914.0766.0766 0 0 0-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 0 0 .0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 0 0 .0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 0 0-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg>
+<span>
+Nothing showing up? Double-check step 2 first — it's the one most
+people skip on Chrome. Still stuck? Ask on the
+<a href="https://discord.gg/H48jFZtjey" target="_blank" rel="noopener">Cartometa Discord</a>.
+</span>
+</div>
+
+</main>
+</body>
+</html>
