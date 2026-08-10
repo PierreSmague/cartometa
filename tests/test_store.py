@@ -11,6 +11,7 @@ from cartometa.review.store import (
     clear_decision,
     load_geo,
     load_metas,
+    restore_proposal,
     save_geo,
     set_decision,
 )
@@ -218,6 +219,23 @@ def test_undoing_removes_the_meta_from_the_file(paths):
 def test_undoing_a_meta_with_no_decision_raises(paths):
     with pytest.raises(UnknownMetaError):
         clear_decision(paths, "aaaa")
+
+
+def test_restore_proposal_puts_the_imported_footprint_back(paths):
+    piece = {"kind": "polygon", "ring": [[2.0, 48.0], [3.0, 48.0], [3.0, 49.0]]}
+    set_decision(paths, "aaaa", STATUS_TRACED, CARRE, [piece])
+
+    restore_proposal(paths, "aaaa", [piece])
+
+    record = load_geo(paths)["aaaa"]
+    assert record.status == STATUS_PROPOSED
+    assert record.pieces == [piece]
+    assert record.geometry is None
+
+
+def test_restore_proposal_refuses_an_unknown_meta(paths):
+    with pytest.raises(UnknownMetaError):
+        restore_proposal(paths, "zzzz", [])
 
 
 def test_deciding_on_an_unknown_meta_raises(paths):

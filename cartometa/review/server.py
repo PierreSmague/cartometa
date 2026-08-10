@@ -13,7 +13,7 @@ from shapely.geometry import mapping
 from cartometa.extract.categories import infer_category
 from cartometa.geo.admin1 import country_regions
 from cartometa.geo.reference import country_geometry
-from cartometa.models import STATUS_REJECTED, STATUS_TRACED
+from cartometa.models import STATUS_PROPOSED, STATUS_REJECTED, STATUS_TRACED
 from cartometa.review.manual import ManualMetaError, create_meta, save_image
 from cartometa.review.pieces import PieceError, resolve_pieces
 from cartometa.review.store import (
@@ -21,6 +21,7 @@ from cartometa.review.store import (
     UnknownMetaError,
     build_queue,
     clear_decision,
+    restore_proposal,
     set_decision,
 )
 
@@ -65,6 +66,19 @@ def apply_decision(meta_id: str, status: str, pieces: list) -> None:
     # place that validates the status, so as not to duplicate the check with a less
     # useful message that does not name the accepted values.
     set_decision(paths(), meta_id, status, None, [])
+
+
+def apply_undo(meta_id: str, restore: dict | None) -> None:
+    """Undo a decision — back to blank, or back to the imported proposal.
+
+    An imported meta was never blank: its pre-drawn pieces only exist by
+    re-running the import. The client, who loaded them with the queue, sends
+    them back for restoration.
+    """
+    if isinstance(restore, dict) and restore.get("status") == STATUS_PROPOSED:
+        restore_proposal(paths(), meta_id, restore.get("pieces") or [])
+    else:
+        clear_decision(paths(), meta_id)
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -180,7 +194,7 @@ class Handler(SimpleHTTPRequestHandler):
             if route == "/api/decision":
                 apply_decision(payload["id"], payload["status"], payload.get("pieces") or [])
             elif route == "/api/undo":
-                clear_decision(paths(), payload["id"])
+                apply_undo(payload["id"], payload.get("restore"))
             elif route == "/api/meta":
                 meta = create_meta(
                     paths(),

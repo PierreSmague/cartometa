@@ -9,7 +9,7 @@ from http.server import HTTPServer
 import pytest
 from shapely.geometry import shape
 
-from cartometa.models import STATUS_REJECTED, STATUS_TRACED
+from cartometa.models import STATUS_PROPOSED, STATUS_REJECTED, STATUS_TRACED
 from cartometa.review import server
 from cartometa.review.pieces import PieceError
 from cartometa.review.store import CountryPaths, load_geo
@@ -87,6 +87,26 @@ def test_validating_without_a_piece_is_refused(paths):
 def test_an_unknown_status_is_refused(paths):
     with pytest.raises(ValueError):
         server.apply_decision("aaaa", "corrigé", [{"kind": "country"}])
+
+
+def test_undo_restores_an_imported_proposal(paths):
+    piece = {"kind": "rect", "bounds": [2, 48, 3, 49]}
+    server.apply_decision("aaaa", STATUS_TRACED, [piece])
+
+    server.apply_undo("aaaa", {"status": STATUS_PROPOSED, "pieces": [piece]})
+
+    record = load_geo(paths)["aaaa"]
+    assert record.status == STATUS_PROPOSED
+    assert record.pieces == [piece]
+    assert record.geometry is None
+
+
+def test_undo_without_restore_erases_the_record(paths):
+    server.apply_decision("aaaa", STATUS_TRACED, [{"kind": "country"}])
+
+    server.apply_undo("aaaa", None)
+
+    assert "aaaa" not in load_geo(paths)
 
 
 def test_nothing_is_written_when_a_piece_is_invalid(paths):

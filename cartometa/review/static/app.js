@@ -200,7 +200,14 @@ async function undo() {
   }
   busy = true;
   try {
-    await postJSON('/api/undo', { id: last.id });
+    // Une meta importée « proposé » ne doit pas redevenir vierge : U restaure
+    // l'état que la file avait chargé (statut et pièces d'origine).
+    const item = queue.find((q) => q.id === last.id);
+    const payload = { id: last.id };
+    if (item && item.status === 'proposé') {
+      payload.restore = { status: item.status, pieces: item.pieces };
+    }
+    await postJSON('/api/undo', payload);
     clearError();
     history.pop();
     index = Math.max(0, index - 1);

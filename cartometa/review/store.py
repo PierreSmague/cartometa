@@ -7,7 +7,13 @@ from pathlib import Path
 from shapely.geometry import Polygon, mapping, shape
 
 from cartometa.atomic_write import write_json_atomic
-from cartometa.models import ORIGIN_PLONKIT, STATUS_TRACED, STATUSES, GeoRecord
+from cartometa.models import (
+    ORIGIN_PLONKIT,
+    STATUS_PROPOSED,
+    STATUS_TRACED,
+    STATUSES,
+    GeoRecord,
+)
 from cartometa.review.pieces import resolve_pieces
 
 # Piece kinds whose surface comes entirely from the Natural Earth reference:
@@ -287,4 +293,21 @@ def clear_decision(paths: CountryPaths, meta_id: str) -> None:
     if meta_id not in records:
         raise UnknownMetaError(f"no decision to undo for {meta_id!r}")
     del records[meta_id]
+    save_geo(paths, records)
+
+
+def restore_proposal(paths: CountryPaths, meta_id: str, pieces: list[dict]) -> None:
+    """Put an imported proposal back after its decision is undone.
+
+    clear_decision would erase the record entirely — correct for a meta whose
+    blank state IS the absence of a record, destructive for an imported one
+    whose pre-drawn pieces only exist by re-running the import. The client owns
+    the original state (the queue item it loaded) and sends it back.
+    """
+    if meta_id not in {meta["id"] for meta in load_metas(paths)}:
+        raise UnknownMetaError(f"unknown meta: {meta_id!r}")
+    records = load_geo(paths)
+    records[meta_id] = GeoRecord(
+        id=meta_id, geometry=None, pieces=list(pieces), status=STATUS_PROPOSED
+    )
     save_geo(paths, records)
