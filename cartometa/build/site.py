@@ -80,6 +80,10 @@ HEADERS = """\
   Cache-Control: no-cache
 /licence.html
   Cache-Control: no-cache
+/extension
+  Cache-Control: no-cache
+/extension.html
+  Cache-Control: no-cache
 /404
   Cache-Control: no-cache
 /404.html
@@ -331,7 +335,7 @@ def build_site(
         tige, suffixe = chemin.stem, chemin.suffix
         noms_statiques[marqueur] = write_hashed(out_dir, tige, suffixe, octets)
 
-    for page in ("index.html", "licence.html", "404.html"):
+    for page in ("index.html", "licence.html", "extension.html", "404.html"):
         source = viewer_dir / page
         if not source.exists():
             continue
