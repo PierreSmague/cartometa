@@ -60,6 +60,26 @@ def paths(tmp_path):
     return CountryPaths(tmp_path / "data", "PL")
 
 
+@pytest.fixture
+def paths_with_a_tagged_meta(paths):
+    """Like `paths`, but with one tagged-import meta already sitting in
+    `<CC>-tagged.json`, on the model of `cartometa.tagged.importer.import_tagged`."""
+    paths.tagged_metas.parent.mkdir(parents=True, exist_ok=True)
+    write_json_atomic(paths.tagged_metas, [_tagged_meta_stub("tag-a1b2c3")])
+    return paths
+
+
+def _tagged_meta_stub(meta_id: str) -> dict:
+    return {
+        "id": meta_id, "country": "PL", "tier": "manual",
+        "title": "borne", "description": "borne", "category": "infrastructure",
+        "source_url": "", "extracted_at": "2026-07-30T00:00:00+00:00",
+        "description_origin": "imported", "origin": "tagged", "image": None,
+        "maps_url": None, "maps_latlon": None,
+        "source_file": "test.json", "source_tag": "borne",
+    }
+
+
 def _create(paths, **extra):
     champs = {"title": "Bornes jaunes", "description": "Les bornes sont jaunes.",
               "category": "infrastructure"}
@@ -172,6 +192,29 @@ def test_a_decompression_bomb_is_refused(paths):
 
     with pytest.raises(ManualMetaError):
         save_image(paths, meta["id"], _decompression_bomb_png())
+
+
+def test_an_image_attaches_to_a_tagged_meta(paths_with_a_tagged_meta):
+    stored = save_image(paths_with_a_tagged_meta, "tag-a1b2c3", _png())
+
+    # `_relative_to_cwd` only yields a repo-relative path when tmp_path sits
+    # under the cwd, which it does not under pytest: same convention as
+    # `test_the_image_is_attached_to_the_meta` above, checking the suffix
+    # rather than the full path.
+    assert stored.endswith("tag-a1b2c3.png")
+    metas = read_json_list(paths_with_a_tagged_meta.tagged_metas)
+    assert metas[0]["image"] == stored
+    assert (paths_with_a_tagged_meta.manual_images / "tag-a1b2c3.png").exists()
+
+
+def test_a_tagged_id_absent_from_both_files_is_refused(paths):
+    with pytest.raises(ManualMetaError, match="unknown"):
+        save_image(paths, "tag-ffffff", _png())
+
+
+def test_a_plonkit_id_still_cannot_receive_an_image(paths):
+    with pytest.raises(ManualMetaError, match="invalid"):
+        save_image(paths, "aaaa", _png())
 
 
 def test_an_image_for_an_unknown_meta_is_refused(paths):
