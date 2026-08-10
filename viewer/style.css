@@ -52,12 +52,13 @@ body {
 #liens-externes {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 18px;
   flex: none;
 }
 #extension {
   display: inline-flex;
   align-items: center;
+  flex: none;
   font-size: 11.5px;
   color: var(--texte-doux);
   text-decoration: none;
