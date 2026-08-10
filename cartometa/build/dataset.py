@@ -10,7 +10,7 @@ from shapely.geometry import shape
 
 from cartometa.build.geometry import DEFAULT_TOLERANCE, part_bboxes, simplify_geometry
 from cartometa.extract.categories import CATEGORIES
-from cartometa.models import STATUS_TRACED, STATUSES
+from cartometa.models import STATUS_TRACED, STATUS_PROPOSED, STATUSES
 from cartometa.review.store import CountryPaths, load_geo, load_metas
 
 EXPORTABLE = (STATUS_TRACED,)
@@ -142,7 +142,8 @@ def build_dataset(
         records = load_geo(chemins, resolve=True)
         features = [records[k].to_feature() for k in sorted(records)]
         jeu.legacy_statuses += sum(
-            1 for f in features if f["properties"]["status"] not in STATUSES
+            1 for f in features
+            if f["properties"]["status"] not in STATUSES + (STATUS_PROPOSED,)
         )
         publiables = [
             f for f in features

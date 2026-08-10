@@ -3,7 +3,7 @@ import json
 import pytest
 
 from cartometa.geo.reference import DATASET_NAME
-from cartometa.models import STATUS_REJECTED, STATUS_TRACED, GeoRecord
+from cartometa.models import STATUS_REJECTED, STATUS_TRACED, STATUS_PROPOSED, GeoRecord
 from cartometa.review.store import (
     CountryPaths,
     UnknownMetaError,
@@ -65,6 +65,21 @@ def test_the_queue_skips_already_handled_metas_by_default(paths):
     assert [item["id"] for item in queue["items"]] == ["bbbb", "man-1a2b"]
     assert queue["done"] == 1
     assert queue["total"] == 3
+
+
+def test_a_proposed_meta_stays_in_the_default_queue_with_its_pieces(paths):
+    piece = {"kind": "polygon", "ring": [[2.0, 48.0], [3.0, 48.0], [3.0, 49.0]]}
+    save_geo(paths, {"aaaa": GeoRecord(
+        id="aaaa", geometry=None, pieces=[piece], status=STATUS_PROPOSED,
+    )})
+
+    queue = build_queue(paths)
+
+    item = next(i for i in queue["items"] if i["id"] == "aaaa")
+    assert item["status"] == STATUS_PROPOSED
+    assert item["pieces"] == [piece]
+    # Une proposition n'est pas une décision : elle ne compte pas dans `done`.
+    assert queue["done"] == 0
 
 
 def test_a_rejected_meta_does_not_come_back_in_the_queue(paths):

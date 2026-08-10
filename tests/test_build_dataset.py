@@ -236,6 +236,30 @@ def test_legacy_statuses_are_counted_and_not_published(tmp_path):
     assert set(jeu.countries["LG"]["metas"]) == {"lg1"}
 
 
+def test_a_proposed_footprint_is_neither_published_nor_counted_as_legacy(tmp_path):
+    data_dir = tmp_path / "data"
+    (data_dir / "metas").mkdir(parents=True)
+    (data_dir / "geo").mkdir(parents=True)
+    (data_dir / "metas" / "PL.json").write_text(
+        json.dumps([_meta("aaaa"), _meta("bbbb")]), "utf-8")
+    (data_dir / "geo" / "PL.geojson").write_text(json.dumps({
+        "type": "FeatureCollection",
+        "features": [
+            {"type": "Feature", "geometry": _carre(0, 0, 1), "properties": {
+                "id": "aaaa", "status": "validé",
+                "pieces": [{"kind": "polygon", "ring": [[0, 0], [1, 0], [1, 1]]}]}},
+            {"type": "Feature", "geometry": _carre(2, 2, 1), "properties": {
+                "id": "bbbb", "status": "proposé",
+                "pieces": [{"kind": "polygon", "ring": [[2, 2], [3, 2], [3, 3]]}]}},
+        ],
+    }), "utf-8")
+
+    jeu = build_dataset(data_dir, ["PL"])
+
+    assert set(jeu.countries["PL"]["metas"]) == {"aaaa"}
+    assert jeu.legacy_statuses == 0
+
+
 def test_a_stripped_reference_geometry_is_resolved_at_build_time(tmp_path):
     """`save_geo` (task 3) strips a footprint whose pieces are entirely reference
     kinds down to `geometry: None`, precisely so the versioned geojson does not carry

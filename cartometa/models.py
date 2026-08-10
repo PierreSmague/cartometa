@@ -13,10 +13,14 @@ ORIGIN_PLONKIT = "plonkit"
 ORIGIN_MANUAL = "manual"
 ORIGIN_RMRG = "rmrg"
 
-# Two statuses, not four: a geometry that exists was drawn by hand by
-# construction, there is no longer anything automatic to distinguish.
+# Two DECISION statuses: a geometry that exists was drawn by hand by
+# construction. `proposé` is not a decision but a pre-drawn footprint waiting
+# for one (cartometa-import-tagged): it stays in the review queue and is never
+# published. `STATUSES` deliberately keeps only the decisions — that is what
+# gates set_decision and the build's EXPORTABLE filter.
 STATUS_TRACED = "validé"
 STATUS_REJECTED = "rejeté"
+STATUS_PROPOSED = "proposé"
 STATUSES = (STATUS_TRACED, STATUS_REJECTED)
 
 

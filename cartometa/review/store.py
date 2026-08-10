@@ -7,7 +7,7 @@ from pathlib import Path
 from shapely.geometry import Polygon, mapping, shape
 
 from cartometa.atomic_write import write_json_atomic
-from cartometa.models import ORIGIN_PLONKIT, STATUS_TRACED, STATUSES, GeoRecord
+from cartometa.models import ORIGIN_PLONKIT, STATUS_TRACED, STATUS_PROPOSED, STATUSES, GeoRecord
 from cartometa.review.pieces import resolve_pieces
 
 # Piece kinds whose surface comes entirely from the Natural Earth reference:
@@ -229,7 +229,9 @@ def build_queue(paths: CountryPaths, include_all: bool = False) -> dict:
     queued_ids = set()
     for meta in metas:
         record = geo.get(meta["id"])
-        if record is not None and not include_all:
+        # A decided meta leaves the queue; a *proposed* one (imported footprint
+        # awaiting yes/no) stays in it, pieces preloaded.
+        if record is not None and record.status in STATUSES and not include_all:
             continue
         queued_ids.add(meta["id"])
         items.append({
