@@ -1,9 +1,10 @@
 import json
+import math
 
 import pytest
 
 from cartometa.geo.reference import DATASET_NAME
-from cartometa.review.pieces import PieceError, resolve_pieces
+from cartometa.review.pieces import MAX_RING_POINTS, PieceError, resolve_pieces
 
 
 def _box(x0, y0, x1, y1):
@@ -206,9 +207,11 @@ def test_a_country_absent_from_natural_earth_is_refused(cache_dir):
 
 
 def test_an_overlong_outline_is_refused(cache_dir):
-    ring = [[float(i) / 1000.0, 48.0 + float(i) / 1000.0] for i in range(2001)]
+    # Generate a ring with MAX_RING_POINTS + 1 vertices on a circle (non-collinear).
+    n = MAX_RING_POINTS + 1
+    ring = [[10.0 * math.cos(i * 2 * math.pi / n), 10.0 * math.sin(i * 2 * math.pi / n)] for i in range(n)]
 
-    with pytest.raises(PieceError):
+    with pytest.raises(PieceError, match="needs between.*and.*vertices"):
         resolve_pieces([{"kind": "polygon", "ring": ring}], "PL", cache_dir)
 
 
