@@ -253,7 +253,13 @@ export class Sketch {
       };
     }
     if (piece.kind === 'polygon') {
-      return { type: 'Polygon', coordinates: [[...piece.ring, piece.ring[0]]] };
+      // Les trous n'existent que sur les pièces importées (corridors) : le
+      // dessin à la souris n'en produit jamais.
+      const close = (ring) => [...ring, ring[0]];
+      return {
+        type: 'Polygon',
+        coordinates: [close(piece.ring), ...(piece.holes || []).map(close)],
+      };
     }
     if (piece.kind === 'country') return this.country;
     const region = (this.regions || []).find((r) => r.code === piece.code);

@@ -11,10 +11,11 @@ from cartometa.geo.admin1 import region_geometry
 from cartometa.geo.reference import country_geometry
 
 MIN_RING_POINTS = 3
-# An outline drawn with the mouse has a few dozen vertices. This cap is not an
-# ergonomic limit but a safety rail: it stops a misbehaving client from running
-# shapely over an endless list.
-MAX_RING_POINTS = 2000
+# A hand-drawn outline has a few dozen vertices; an imported corridor
+# (cartometa-import-tagged) has thousands. The cap is still not an ergonomic
+# limit but a safety rail: it stops a misbehaving client from running shapely
+# over an endless list.
+MAX_RING_POINTS = 20_000
 
 # The only "piece" that is not a surface to unite but a modifier applied to the
 # union: it clips the result to the country borders.
@@ -35,6 +36,22 @@ def _check_lonlat(lon: Any, lat: Any) -> tuple[float, float]:
     return x, y
 
 
+def _ring_points(ring: Any, label: str) -> list[tuple[float, float]]:
+    if not isinstance(ring, (list, tuple)):
+        raise PieceError(f"an outline needs {label} = [[lon, lat], ...]")
+    if not (MIN_RING_POINTS <= len(ring) <= MAX_RING_POINTS):
+        raise PieceError(
+            f"a {label} needs between {MIN_RING_POINTS} and {MAX_RING_POINTS} "
+            f"vertices, got {len(ring)}"
+        )
+    points = []
+    for vertex in ring:
+        if not isinstance(vertex, (list, tuple)) or len(vertex) != 2:
+            raise PieceError(f"unreadable vertex: {vertex!r}")
+        points.append(_check_lonlat(vertex[0], vertex[1]))
+    return points
+
+
 def _rectangle(piece: dict) -> BaseGeometry:
     bounds = piece.get("bounds")
     if not isinstance(bounds, (list, tuple)) or len(bounds) != 4:
@@ -51,21 +68,13 @@ def _rectangle(piece: dict) -> BaseGeometry:
 
 
 def _contour(piece: dict) -> BaseGeometry:
-    ring = piece.get("ring")
-    if not isinstance(ring, (list, tuple)):
-        raise PieceError("an outline needs ring = [[lon, lat], ...]")
-    if not (MIN_RING_POINTS <= len(ring) <= MAX_RING_POINTS):
-        raise PieceError(
-            f"an outline needs between {MIN_RING_POINTS} and {MAX_RING_POINTS} "
-            f"vertices, got {len(ring)}"
-        )
-    points = []
-    for vertex in ring:
-        if not isinstance(vertex, (list, tuple)) or len(vertex) != 2:
-            raise PieceError(f"unreadable vertex: {vertex!r}")
-        points.append(_check_lonlat(vertex[0], vertex[1]))
+    points = _ring_points(piece.get("ring"), "ring")
+    holes = piece.get("holes") or []
+    if not isinstance(holes, (list, tuple)):
+        raise PieceError("holes must be a list of rings")
+    shells = [_ring_points(hole, "hole") for hole in holes]
 
-    geom = Polygon(points)
+    geom = Polygon(points, shells)
     if not geom.is_valid:
         # An outline drawn with the mouse self-intersects easily. `buffer(0)`
         # repairs it without betraying the intent — the same treatment as damaged

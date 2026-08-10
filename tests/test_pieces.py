@@ -210,3 +210,31 @@ def test_an_overlong_outline_is_refused(cache_dir):
 
     with pytest.raises(PieceError):
         resolve_pieces([{"kind": "polygon", "ring": ring}], "PL", cache_dir)
+
+
+def test_a_polygon_piece_can_carry_holes(tmp_path):
+    piece = {
+        "kind": "polygon",
+        "ring": [[0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0]],
+        "holes": [[[4.0, 4.0], [6.0, 4.0], [6.0, 6.0], [4.0, 6.0]]],
+    }
+    geometry = resolve_pieces([piece], "PL", tmp_path)
+    # 10×10 moins le trou 2×2.
+    assert geometry.area == pytest.approx(96.0)
+
+
+def test_a_hole_must_be_a_valid_ring(tmp_path):
+    piece = {
+        "kind": "polygon",
+        "ring": [[0.0, 0.0], [10.0, 0.0], [10.0, 10.0]],
+        "holes": [[[4.0, 4.0], [6.0, 4.0]]],  # deux sommets : pas un anneau
+    }
+    with pytest.raises(PieceError):
+        resolve_pieces([piece], "PL", tmp_path)
+
+
+def test_holes_default_to_absent(tmp_path):
+    # Le dessin à la main n'envoie jamais `holes` : l'absence du champ est la norme.
+    piece = {"kind": "polygon", "ring": [[0.0, 0.0], [10.0, 0.0], [10.0, 10.0]]}
+    geometry = resolve_pieces([piece], "PL", tmp_path)
+    assert geometry.area == pytest.approx(50.0)
