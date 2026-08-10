@@ -253,8 +253,8 @@ export class Sketch {
       };
     }
     if (piece.kind === 'polygon') {
-      // Les trous n'existent que sur les pièces importées (corridors) : le
-      // dessin à la souris n'en produit jamais.
+      // Holes exist only on imported pieces (corridors): mouse drawing
+      // never produces them.
       const close = (ring) => [...ring, ring[0]];
       return {
         type: 'Polygon',

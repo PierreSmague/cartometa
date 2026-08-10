@@ -15,6 +15,7 @@ from cartometa.models import (
     TIER_MANUAL,
     GeoRecord,
 )
+from cartometa.review.server import DEFAULT_PORT as REVIEW_PORT
 from cartometa.review.store import CountryPaths, load_geo, read_json_list, save_geo
 from cartometa.tagged.countries import CountryIndex
 from cartometa.tagged.geometry import corridor_geometry, geometry_to_pieces, zone_geometry
@@ -23,7 +24,6 @@ from cartometa.tagged.geometry import corridor_geometry, geometry_to_pieces, zon
 # 500 m ribbon faithful, ~500 m is plenty for hulls inflated by 10 km.
 SIMPLIFY_DEG = {"route": 0.0005, "zone": 0.005}
 DEFAULT_LINK_KM = {"route": 5.0, "zone": 40.0}
-REVIEW_PORT = 8799
 
 
 class TaggedFileError(ValueError):

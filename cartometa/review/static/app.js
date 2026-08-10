@@ -222,8 +222,8 @@ async function undo() {
   }
   busy = true;
   try {
-    // Une meta importée « proposé » ne doit pas redevenir vierge : U restaure
-    // l'état que la file avait chargé (statut et pièces d'origine).
+    // An imported meta marked 'proposed' must not become blank: U restores
+    // the state that the queue had loaded (status and original pieces).
     const item = queue.find((q) => q.id === last.id);
     const payload = { id: last.id };
     if (item && item.status === 'proposé') {
