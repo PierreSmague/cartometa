@@ -67,10 +67,18 @@ THIN_DIVISOR = 50
 # for the intermediate band of footprints whose width bound lands between
 # this floor and the diagonal cap.
 #
-# 2000 comes from the measured table above: worst drift 0.9 %, heaviest
+# 2000 came from the measured table above: worst drift 0.9 %, heaviest
 # country still under the cap even if EVERY footprint used it — and here
 # only the rough-perimeter ones fall back to it.
-THIN_FLOOR_DIVISOR = 2000
+#
+# Raised to 8000 for the corridor footprints (cartometa-import-tagged, route
+# mode): a 500 m ribbon spanning a whole country has a huge diagonal, so the
+# old floor (~0.0037° for Ukraine-wide networks) exceeded the ribbon's own
+# width and drove area drift to 14 % (UA "Normal B", measured). At 8000 that
+# same corridor lands at 2.5 % drift for 755 vertices instead of 421 — the
+# weight increase only touches large thin geometries, by construction the
+# ones where the floor is the binding bound.
+THIN_FLOOR_DIVISOR = 8000
 
 
 def _en_listes(valeur: Any) -> Any:
