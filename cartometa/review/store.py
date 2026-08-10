@@ -7,7 +7,7 @@ from pathlib import Path
 from shapely.geometry import Polygon, mapping, shape
 
 from cartometa.atomic_write import write_json_atomic
-from cartometa.models import ORIGIN_PLONKIT, STATUS_TRACED, STATUS_PROPOSED, STATUSES, GeoRecord
+from cartometa.models import ORIGIN_PLONKIT, STATUS_TRACED, STATUSES, GeoRecord
 from cartometa.review.pieces import resolve_pieces
 
 # Piece kinds whose surface comes entirely from the Natural Earth reference:
