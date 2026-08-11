@@ -1,0 +1,50 @@
+[
+  {
+    "id": "man-4798",
+    "country": "IN",
+    "tier": "manual",
+    "title": "Pomegranate culture",
+    "description": "In India, pomegranates are grown almost exclusively in Maharashtra and its immediate vicinity.",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-11T19:01:08.982572+00:00",
+    "description_origin": "manual",
+    "origin": "manual",
+    "image": "data/manual/IN/images/man-4798.png",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-bde9",
+    "country": "IN",
+    "tier": "manual",
+    "title": "Southern yellow watertanks",
+    "description": "The yellow water tanks on rooftops in India are characteristic of the southern states—namely, Kerala, Telangana, Andhra Pradesh, Tamil Nadu, and Karnataka.",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-11T19:02:57.590223+00:00",
+    "description_origin": "manual",
+    "origin": "manual",
+    "image": "data/manual/IN/images/man-bde9.png",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-f12a",
+    "country": "IN",
+    "tier": "manual",
+    "title": "Bihar \"kebab\" fences",
+    "description": "Those fences looking like kebab sekewers are located in northern Bihar",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-11T19:04:12.264333+00:00",
+    "description_origin": "manual",
+    "origin": "manual",
+    "image": "data/manual/IN/images/man-f12a.png",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

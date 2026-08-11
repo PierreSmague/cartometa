@@ -1,0 +1,18 @@
+[
+  {
+    "id": "man-99fd",
+    "country": "SK",
+    "tier": "manual",
+    "title": "Presovsky bus stops",
+    "description": "In Slovakia, if you see this bus stop that looks like a yellow “No Entry” sign, you're in the northeastern part of the country—in the Presvosky region.",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-11T19:58:16.675999+00:00",
+    "description_origin": "manual",
+    "origin": "manual",
+    "image": "data/manual/SK/images/man-99fd.png",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

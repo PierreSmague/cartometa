@@ -1,0 +1,50 @@
+[
+  {
+    "id": "man-d681",
+    "country": "GB",
+    "tier": "manual",
+    "title": "Cambridge/Coventry stickers",
+    "description": "White stickers with black letters are common in those two cities",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-11T18:59:26.013771+00:00",
+    "description_origin": "manual",
+    "origin": "manual",
+    "image": "data/manual/GB/images/man-d681.png",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-d133",
+    "country": "GB",
+    "tier": "manual",
+    "title": "Aberdeen houses",
+    "description": "The houses in Aberdeen and the surrounding area are distinctive and very common: a slate roof, exposed gray stone walls (or cob of the same color), and a chimney at each end of the house.",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-11T19:06:16.270484+00:00",
+    "description_origin": "manual",
+    "origin": "manual",
+    "image": "data/manual/GB/images/man-d133.png",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-4801",
+    "country": "GB",
+    "tier": "manual",
+    "title": "Norther England walls",
+    "description": "Their structure is very distinctive: a well-organized lower section topped by a layer in which the semi-precious stones are set at an angle",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-11T19:07:09.718274+00:00",
+    "description_origin": "manual",
+    "origin": "manual",
+    "image": "data/manual/GB/images/man-4801.png",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "id": "man-2b88",
+    "country": "MK",
+    "tier": "manual",
+    "title": "Prilep mountains",
+    "description": "Northwest of Prilep you'll find those very distinctive rocky triangle shaped mountains.",
+    "category": "landscape",
+    "source_url": "",
+    "extracted_at": "2026-08-11T19:51:59.075309+00:00",
+    "description_origin": "manual",
+    "origin": "manual",
+    "image": "data/manual/MK/images/man-2b88.png",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

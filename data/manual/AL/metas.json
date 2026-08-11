@@ -1,0 +1,18 @@
+[
+  {
+    "id": "man-ef48",
+    "country": "AL",
+    "tier": "manual",
+    "title": "Kruje bollard",
+    "description": "In Albania, you can find this unique bollard on the road to Kruje.",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-11T19:36:20.913575+00:00",
+    "description_origin": "manual",
+    "origin": "manual",
+    "image": "data/manual/AL/images/man-ef48.png",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

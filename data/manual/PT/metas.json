@@ -1,0 +1,18 @@
+[
+  {
+    "id": "man-8a4e",
+    "country": "PT",
+    "tier": "manual",
+    "title": "Central Portugal architecture",
+    "description": "In the central part of the country, you'll find these dark-stone houses, which are very typical of the area between Coimbra and Castelo Branco.",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-11T19:54:35.955355+00:00",
+    "description_origin": "manual",
+    "origin": "manual",
+    "image": "data/manual/PT/images/man-8a4e.png",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

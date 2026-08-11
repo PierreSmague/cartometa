@@ -1,0 +1,18 @@
+[
+  {
+    "id": "man-d78b",
+    "country": "HU",
+    "tier": "manual",
+    "title": "Black locust trees along the roadside",
+    "description": "If you're in a flat landscape with not-very-tall black locust trees along the roadside, you can head to Hungary with confidence.",
+    "category": "vegetation",
+    "source_url": "",
+    "extracted_at": "2026-08-11T19:46:10.956559+00:00",
+    "description_origin": "manual",
+    "origin": "manual",
+    "image": "data/manual/HU/images/man-d78b.png",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

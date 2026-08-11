@@ -1,0 +1,18 @@
+[
+  {
+    "id": "man-a536",
+    "country": "LU",
+    "tier": "manual",
+    "title": "Rumelange red street signs",
+    "description": "In Rumelange, you'll find those red street signs instead of the traditional blue one.",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-11T19:50:12.307762+00:00",
+    "description_origin": "manual",
+    "origin": "manual",
+    "image": "data/manual/LU/images/man-a536.png",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

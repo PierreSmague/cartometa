@@ -622,5 +622,53 @@
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
+  },
+  {
+    "id": "man-9f64",
+    "country": "CO",
+    "tier": "manual",
+    "title": "Nairo Quintana graffitos",
+    "description": "The first Colombian to win a Grand Tour and a fan favorite, he is adored in his home country, especially in his hometown of Tunja.\n\nA true source of local pride, murals of the cyclist and his iconic Movistar jersey can often be seen in several villages around Tunja.",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-11T19:22:10.912192+00:00",
+    "description_origin": "manual",
+    "origin": "manual",
+    "image": "data/manual/CO/images/man-9f64.png",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-7210",
+    "country": "CO",
+    "tier": "manual",
+    "title": "Black car with antenna",
+    "description": "You're probably familiar with this car with a Gen 3 antenna that can be found in Mexico, Colombia, Ecuador, and Brazil, but keep in mind that if it's black (the car, not the antenna), you're definitely in Colombia",
+    "category": "car",
+    "source_url": "",
+    "extracted_at": "2026-08-11T19:22:54.544224+00:00",
+    "description_origin": "manual",
+    "origin": "manual",
+    "image": "data/manual/CO/images/man-7210.png",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-166a",
+    "country": "CO",
+    "tier": "manual",
+    "title": "Eje Cafetero jeeps",
+    "description": "Jeeps are ULTRA POPULAR in Colombia’s Coffee Triangle (Caldas, Risaralda, Quindío), and especially in Quindío. If you see one on the road, keep an eye out; if you see two and the scenery matches, it’s totally free. They’re sometimes decked out in a “Pimp My Ride” style, which is an even stronger clue.",
+    "category": "culture",
+    "source_url": "",
+    "extracted_at": "2026-08-11T19:23:33.720395+00:00",
+    "description_origin": "manual",
+    "origin": "manual",
+    "image": "data/manual/CO/images/man-166a.png",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]

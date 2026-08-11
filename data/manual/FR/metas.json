@@ -1,0 +1,50 @@
+[
+  {
+    "id": "man-99d5",
+    "country": "FR",
+    "tier": "manual",
+    "title": "Bretagne white car",
+    "description": "White car (no antenna) in France is almost exclusively found in the region of Bretagne.",
+    "category": "car",
+    "source_url": "",
+    "extracted_at": "2026-08-11T18:52:17.797466+00:00",
+    "description_origin": "manual",
+    "origin": "manual",
+    "image": "data/manual/FR/images/man-99d5.png",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-06b1",
+    "country": "FR",
+    "tier": "manual",
+    "title": "Slate roofs",
+    "description": "The roofs made of slate are mainly situated in the Massif Central zone. You might find a few of them in very tiny zones in the Pyreneas and Manche.",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-11T18:54:44.341351+00:00",
+    "description_origin": "manual",
+    "origin": "manual",
+    "image": "data/manual/FR/images/man-06b1.png",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-637b",
+    "country": "FR",
+    "tier": "manual",
+    "title": "French \"cat\" pylons",
+    "description": "If you see an electric pylon looking like a cat (two ears and danders), you're 95% of times in France",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-08-11T18:57:44.509634+00:00",
+    "description_origin": "manual",
+    "origin": "manual",
+    "image": "data/manual/FR/images/man-637b.png",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]
