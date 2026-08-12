@@ -542,5 +542,556 @@
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
+  },
+  {
+    "id": "man-0922",
+    "country": "US",
+    "tier": "manual",
+    "title": "Oklahoma fence",
+    "description": "Red metallic fences are very common in Oklahoma and the surrounding states, particularly Kansas, Texas, and Arkansas. Not 100% reliable, so look for other clues before sending. (★★★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-0922.webp",
+    "maps_url": "https://www.google.com/maps/@35.8446329,-96.5657389,3a,22.7y,265.13h,85.2t/data=!3m7!1e1!3m5!1sqesD3G9N2f3eCGUXJUSJkQ!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fw%3D900%26h%3D600%26panoid%3DqesD3G9N2f3eCGUXJUSJkQ%26cb_client%3Dmaps_sv.share%26yaw%3D265.1268198110253%26pitch%3D4.79748662064398%26thumbfov%3D23!7i16384!8i8192?coh=205409&entry=ttu&g_ep=EgoyMDI0MDkxOC4xIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      35.8446329,
+      -96.5657389
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-f9eb",
+    "country": "US",
+    "tier": "manual",
+    "title": "Texas little bumps",
+    "description": "These little rectangular bumps on center lines are unique to Texas. Round bumps exist in some other states, but rectangular ones are only seen in Texas. (★★★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-f9eb.webp",
+    "maps_url": "https://www.google.fr/maps/@30.9601382,-96.2689198,3a,15.1y,31.23h,69.94t/data=!3m7!1e1!3m5!1sOClPkIPfmPSj12zy_MdH_g!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fpanoid%3DOClPkIPfmPSj12zy_MdH_g%26cb_client%3Dmaps_sv.tactile.gps%26w%3D203%26h%3D100%26yaw%3D283.81906%26pitch%3D0%26thumbfov%3D100!7i16384!8i8192?coh=205409&entry=ttu&g_ep=EgoyMDI0MDkwNC4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      30.9601382,
+      -96.2689198
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-b68e",
+    "country": "US",
+    "tier": "manual",
+    "title": "Massachusetts pole plates",
+    "description": "These rectangular plates, which can be white or yellow, can be seen on the side of poles in eastern Massachusetts, Rhode Island and Connecticut. Very rarely seen elsewhere. (★★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-b68e.webp",
+    "maps_url": "https://www.google.fr/maps/@42.1142976,-70.8191655,3a,15.4y,328.29h,88.24t/data=!3m6!1e1!3m4!1sAjefBpESSDV1YKS6ggbtbQ!2e0!7i16384!8i8192?coh=205409&entry=ttu&g_ep=EgoyMDI0MDkwNC4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      42.1142976,
+      -70.8191655
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-2ed1",
+    "country": "US",
+    "tier": "manual",
+    "title": "Alabama pole plate",
+    "description": "Fine plates with a round part on the side, seen on most poles in Alabama. The author has never seen anything like this elsewhere. (★★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-2ed1.webp",
+    "maps_url": "https://www.google.fr/maps/@32.8850858,-86.2217525,3a,15y,321.92h,85.83t/data=!3m6!1e1!3m4!1sBKsliqM5T7efr2XwqHNkZA!2e0!7i16384!8i8192?coh=205409&entry=ttu&g_ep=EgoyMDI0MDkwNC4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      32.8850858,
+      -86.2217525
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-78bd",
+    "country": "US",
+    "tier": "manual",
+    "title": "Ohio gap",
+    "description": "In Ohio, you can often see gaps in road lines where there is a raised pavement marker (RPM). Also sometimes seen in Tennessee or New Jersey, but much rarer. (★★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-78bd.webp",
+    "maps_url": "https://www.google.com/maps/@40.2561606,-83.6190099,3a,22.1y,26.77h,58.86t/data=!3m6!1e1!3m4!1sf4FWNxvydh8HMoPb4nTYHg!2e0!7i16384!8i8192?coh=205409&entry=ttu&g_ep=EgoyMDI0MDkxOC4xIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      40.2561606,
+      -83.6190099
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-be26",
+    "country": "US",
+    "tier": "manual",
+    "title": "South Carolina roads",
+    "description": "In South Carolina, small roads will often have no road lines, with southern RPMs in the middle — almost only seen in SC. Elsewhere RPMs are always next to road lines, though those can sometimes be faded, so be careful. (★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-be26.webp",
+    "maps_url": "https://www.google.com/maps/@34.0289503,-81.6746983,3a,48y,345.1h,66.78t/data=!3m6!1e1!3m4!1sjp_ap3aQMKRNczBMG2wcww!2e0!7i16384!8i8192?coh=205409&entry=ttu&g_ep=EgoyMDI0MTAwMS4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      34.0289503,
+      -81.6746983
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-03c4",
+    "country": "US",
+    "tier": "manual",
+    "title": "Oregon white lines",
+    "description": "Short, fine lines often seen in between Oregon's road lines, which are usually wide. Similar lines exist elsewhere, but this is useful to distinguish Oregon from surrounding states, especially Washington, which also often uses wide road lines. (★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-03c4.webp",
+    "maps_url": "https://www.google.fr/maps/@42.5579447,-117.8763626,3a,15y,352.67h,79.23t/data=!3m7!1e1!3m5!1sn15GXfo64fJQr4s0bOACew!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fpanoid%3Dn15GXfo64fJQr4s0bOACew%26cb_client%3Dmaps_sv.tactile.gps%26w%3D203%26h%3D100%26yaw%3D94.418526%26pitch%3D0%26thumbfov%3D100!7i16384!8i8192?coh=205409&entry=ttu&g_ep=EgoyMDI0MDkwNC4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      42.5579447,
+      -117.8763626
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-cd16",
+    "country": "US",
+    "tier": "manual",
+    "title": "Kentucky roads",
+    "description": "In Kentucky it is pretty common to see roads with no middle line and only white outer lines. Also common in California (already covered on Plonk It). (★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-cd16.webp",
+    "maps_url": "https://www.google.fr/maps/@37.5322229,-85.5164198,3a,90y,84.86h,79.03t/data=!3m7!1e1!3m5!1s2dFfRFR7QvWi3QZD9HGFpw!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fpanoid%3D2dFfRFR7QvWi3QZD9HGFpw%26cb_client%3Dmaps_sv.tactile.gps%26w%3D203%26h%3D100%26yaw%3D344.46448%26pitch%3D0%26thumbfov%3D100!7i16384!8i8192?coh=205409&entry=ttu&g_ep=EgoyMDI0MDkwNC4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      37.5322229,
+      -85.5164198
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-4feb",
+    "country": "US",
+    "tier": "manual",
+    "title": "Yellow post",
+    "description": "Yellow posts like this one are common in Colorado, seen more rarely in Utah or Texas, and rarely elsewhere. (★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-4feb.webp",
+    "maps_url": "https://www.google.fr/maps/@38.5032394,-106.7290884,3a,17y,345.63h,86.99t/data=!3m6!1e1!3m4!1s9Smo5M1VQq8Ay_E7nrCzyg!2e0!7i16384!8i8192?coh=205409&entry=ttu&g_ep=EgoyMDI0MDkwNC4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      38.5032394,
+      -106.7290884
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-360e",
+    "country": "US",
+    "tier": "manual",
+    "title": "Oregon bollard",
+    "description": "This bollard is extremely common in Oregon and almost exclusive to this state. Rarely seen in California, and even then usually not exactly the same (bigger white rectangle, or not all the way on top). (★★★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-360e.webp",
+    "maps_url": "https://www.google.fr/maps/@43.6806666,-122.2452151,3a,15y,25.69h,82.88t/data=!3m6!1e1!3m4!1s_DDJOdOUgY4fiURFohM5gg!2e0!7i16384!8i8192?coh=205409&entry=ttu&g_ep=EgoyMDI0MDkwNC4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      43.6806666,
+      -122.2452151
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-4715",
+    "country": "US",
+    "tier": "manual",
+    "title": "Utah bollard",
+    "description": "This bollard is unique to Utah. (★★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-4715.webp",
+    "maps_url": "https://www.google.fr/maps/@39.0733825,-109.2354894,3a,15y,68.45h,84.9t/data=!3m6!1e1!3m4!1snYkj3O-LAkHpbvJil84gPg!2e0!7i16384!8i8192?coh=205409&entry=ttu&g_ep=EgoyMDI0MDkwNC4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      39.0733825,
+      -109.2354894
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-a68a",
+    "country": "US",
+    "tier": "manual",
+    "title": "Utah and Idaho bollard",
+    "description": "This bollard, with a white square on top, is unique to Utah, Idaho and Arizona. In Arizona there is only one screw, whereas in Utah there are two. If the square is not totally on top, it should be Idaho. (★★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-a68a.webp",
+    "maps_url": "https://www.google.fr/maps/@39.4105441,-110.4320088,3a,15y,177.04h,81.45t/data=!3m6!1e1!3m4!1s7BGq9jmuCjZOmJRLU0Q1KA!2e0!7i16384!8i8192?coh=205409&entry=ttu&g_ep=EgoyMDI0MDkwNC4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      39.4105441,
+      -110.4320088
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-1d0b",
+    "country": "US",
+    "tier": "manual",
+    "title": "Green bollards",
+    "description": "Green bollards are common and almost unique to Idaho and Colorado; they exist in several different forms, not only the one pictured. (★★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-1d0b.webp",
+    "maps_url": "https://www.google.fr/maps/@43.1455195,-114.0617777,3a,28.3y,160.63h,75.21t/data=!3m6!1e1!3m4!1sIHxXF2jUZYuYg4upjgJs4A!2e0!7i16384!8i8192?entry=ttu&g_ep=EgoyMDI0MDkxMS4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      43.1455195,
+      -114.0617777
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-939d",
+    "country": "US",
+    "tier": "manual",
+    "title": "Montana yellow rectangular bollard",
+    "description": "In the western US, this bollard can only be seen in Montana. (★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-939d.webp",
+    "maps_url": "https://www.google.fr/maps/@48.3373983,-112.2501025,3a,15.1y,163.21h,82.97t/data=!3m6!1e1!3m4!1sp4N20u0CHU1r81dsaCBzLg!2e0!7i16384!8i8192?entry=ttu&g_ep=EgoyMDI0MDkxMS4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      48.3373983,
+      -112.2501025
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-23ff",
+    "country": "US",
+    "tier": "manual",
+    "title": "Idaho rectangular bollard",
+    "description": "These bollards with a rectangle on top are common in Idaho and, in the western US, can only be seen there. The rectangle can be white or yellow and is smaller than the one on the Utah/Idaho bollard. (★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-23ff.webp",
+    "maps_url": "https://www.google.com/maps/@47.4105533,-116.9559466,3a,17.5y,345.38h,78.71t/data=!3m7!1e1!3m5!1s-PySpiJGaORukQvzmyfVEQ!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fw%3D900%26h%3D600%26panoid%3D-PySpiJGaORukQvzmyfVEQ%26cb_client%3Dmaps_sv.share%26yaw%3D346.41502432224036%26pitch%3D10.211973338174417%26thumbfov%3D18!7i16384!8i8192?coh=205409&entry=ttu&g_ep=EgoyMDI0MDkxOC4xIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      47.4105533,
+      -116.9559466
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-4afd",
+    "country": "US",
+    "tier": "manual",
+    "title": "Round bollard with circle on top",
+    "description": "This bollard with a white circle totally on top can be found in Illinois, Iowa, Nebraska and New Mexico — part of the wider round-bollard family also seen in Wyoming, Colorado and Oklahoma. Do not confuse it with the bollard whose circle is not totally on top; rarely seen elsewhere. (★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-4afd.webp",
+    "maps_url": "https://www.google.fr/maps/@41.1353841,-88.3750828,3a,15y,88.65h,83.88t/data=!3m6!1e1!3m4!1s65oQiCxuBP8MxZYIi_Rpsw!2e0!7i16384!8i8192?entry=ttu&g_ep=EgoyMDI0MDkxMS4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      41.1353841,
+      -88.3750828
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-40be",
+    "country": "US",
+    "tier": "manual",
+    "title": "Round bollard with circle not totally on top",
+    "description": "This bollard, with a white circle not totally on top, can only be seen in Wyoming and Colorado. Be careful not to mistake it for the bollard with the circle fully on top. (★★★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-40be.webp",
+    "maps_url": "https://www.google.fr/maps/@39.0963844,-107.356847,3a,15y,222.59h,79.45t/data=!3m6!1e1!3m4!1sXyQSYMy3zxDZqsXX0zuwjw!2e0!7i16384!8i8192?coh=205409&entry=ttu&g_ep=EgoyMDI0MDkwNC4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      39.0963844,
+      -107.356847
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-c37b",
+    "country": "US",
+    "tier": "manual",
+    "title": "Round Wyoming bollard",
+    "description": "A round bollard with the top of the post painted white means you are in Wyoming — though not all round bollards in Wyoming look like this. (★★★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-c37b.webp",
+    "maps_url": "https://www.google.fr/maps/@44.0797149,-108.7450377,3a,15y,0.31h,83.45t/data=!3m6!1e1!3m4!1sBMyI_xEwnI616twF0rPATQ!2e0!7i13312!8i6656?coh=205409&entry=ttu&g_ep=EgoyMDI0MDkwNC4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      44.0797149,
+      -108.7450377
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-73d0",
+    "country": "US",
+    "tier": "manual",
+    "title": "Green post",
+    "description": "Round bollards with a green-painted post are common in Colorado and can also be seen in New Mexico. (★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-73d0.webp",
+    "maps_url": "https://www.google.fr/maps/@39.0962384,-107.3568636,3a,17.1y,40.58h,80.31t/data=!3m6!1e1!3m4!1sTYfMkxBUiGM1E16zen0rLw!2e0!7i16384!8i8192?coh=205409&entry=ttu&g_ep=EgoyMDI0MDkwNC4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      39.0962384,
+      -107.3568636
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-2a38",
+    "country": "US",
+    "tier": "manual",
+    "title": "Bollard with double circle on top",
+    "description": "This bollard, with 2 circles on each side, is unique to western Nebraska, New Mexico and Illinois. (★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-2a38.webp",
+    "maps_url": "https://www.google.fr/maps/@42.5770971,-101.7079321,3a,15y,135.23h,80.26t/data=!3m6!1e1!3m4!1sNqD07O3zfNFI4gX3ZnxOgQ!2e0!7i13312!8i6656?entry=ttu&g_ep=EgoyMDI0MDkxMS4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      42.5770971,
+      -101.7079321
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-2961",
+    "country": "US",
+    "tier": "manual",
+    "title": "Bollard with 3 circles spaced",
+    "description": "This bollard, with space between its circles, is common in New Mexico and Colorado, and can more rarely be seen in Wyoming. (★★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-2961.webp",
+    "maps_url": "https://www.google.fr/maps/@34.0142224,-104.7209155,3a,15y,99.67h,86.54t/data=!3m6!1e1!3m4!1sAI0vGWEqcV88HNVs94TGcQ!2e0!7i16384!8i8192?coh=205409&entry=ttu&g_ep=EgoyMDI0MDkwNC4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      34.0142224,
+      -104.7209155
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-58e1",
+    "country": "US",
+    "tier": "manual",
+    "title": "Bollard with 3 circles close together",
+    "description": "This bollard, with circles very close to each other, is common in Oklahoma and can rarely be seen in Texas and New Mexico. Do not mistake it for the spaced-circle bollard. (★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-58e1.webp",
+    "maps_url": "https://www.google.fr/maps/@35.623692,-96.6624778,3a,15y,318.66h,80.72t/data=!3m6!1e1!3m4!1sTy4M2D1I7iX_41sz77xu2A!2e0!7i16384!8i8192?entry=ttu&g_ep=EgoyMDI0MDkxMS4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      35.623692,
+      -96.6624778
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-7db0",
+    "country": "US",
+    "tier": "manual",
+    "title": "Utah pole plate",
+    "description": "Most poles in Utah, south-east Idaho and Wyoming have a rectangular yellow plate like this one. Be very careful, as similar plates can also be seen in Oregon, California and Washington. (★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-7db0.webp",
+    "maps_url": "https://www.google.fr/maps/@40.701568,-111.8769188,3a,39.3y,89.72h,86.97t/data=!3m6!1e1!3m4!1sEIUBx0mqVS6UUBaiF3WFtQ!2e0!7i16384!8i8192?coh=205409&entry=ttu&g_ep=EgoyMDI0MDkwNC4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      40.701568,
+      -111.8769188
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-1177",
+    "country": "US",
+    "tier": "manual",
+    "title": "North Carolina white lines",
+    "description": "It is common to see white lines in between road lines in North Carolina, which also has fairly wide road lines. Use with a lot of caution: such white lines can be seen pretty much anywhere. (★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-1177.webp",
+    "maps_url": "https://www.google.fr/maps/@35.1337822,-80.2523732,3a,17.2y,216.49h,76.47t/data=!3m6!1e1!3m4!1sBzPU8XqHMMz9bOl9ZYhASw!2e0!7i16384!8i8192?coh=205409&entry=ttu&g_ep=EgoyMDI0MDkwNC4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      35.1337822,
+      -80.2523732
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-fd41",
+    "country": "US",
+    "tier": "manual",
+    "title": "Yellow wide rectangular bollard",
+    "description": "This lower-than-usual bollard is very common in South Dakota and Nebraska, and fairly common in Louisiana and Texas. Can also be seen in pretty much any state, but more rarely. (★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-fd41.webp",
+    "maps_url": "https://www.google.fr/maps/@43.7894016,-97.3496572,3a,18.2y,116.88h,77.97t/data=!3m7!1e1!3m5!1s70WCrjZFr-X0H9LwNSZCFQ!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fpanoid%3D70WCrjZFr-X0H9LwNSZCFQ%26cb_client%3Dmaps_sv.tactile.gps%26w%3D203%26h%3D100%26yaw%3D309.68494%26pitch%3D0%26thumbfov%3D100!7i16384!8i8192?entry=ttu&g_ep=EgoyMDI0MDkxMS4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      43.7894016,
+      -97.3496572
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-d7ef",
+    "country": "US",
+    "tier": "manual",
+    "title": "Arizona round white marks",
+    "description": "On some roads in Arizona you can see this white circle with a dot in it. Such markings are very rare elsewhere, and the author has never seen them in any state that resembles Arizona. (★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-d7ef.webp",
+    "maps_url": "https://www.google.fr/maps/@33.8978235,-113.3134655,3a,30.4y,157.96h,39.54t/data=!3m6!1e1!3m4!1sM3PPeChqAHdFP_7jjTV6wA!2e0!7i16384!8i8192?coh=205409&entry=ttu&g_ep=EgoyMDI0MDkwNC4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      33.8978235,
+      -113.3134655
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-318d",
+    "country": "US",
+    "tier": "manual",
+    "title": "Red roads",
+    "description": "Roads with a red tint are particularly common in Nebraska and South Dakota, and more rarely Minnesota. Such roads can be seen anywhere, so be careful. (★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-318d.webp",
+    "maps_url": "https://www.google.fr/maps/@41.5711239,-100.497352,3a,21.4y,0.15h,86.39t/data=!3m6!1e1!3m4!1sWd1YilJrr4VIMMkQ9LX6lw!2e0!7i16384!8i8192?coh=205409&entry=ttu&g_ep=EgoyMDI0MDkwOC4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      41.5711239,
+      -100.497352
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-5723",
+    "country": "US",
+    "tier": "manual",
+    "title": "North Dakota pole top",
+    "description": "This pole top is very common in North Dakota, and can also be seen in Iowa, Minnesota and South Dakota. Be careful not to mix it up with other similar pole tops. (★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-5723.webp",
+    "maps_url": "https://www.google.fr/maps/@47.8020763,-100.0258366,3a,15y,328.67h,95.57t/data=!3m6!1e1!3m4!1sVfI_WF1CELDmnTIz8FtL9Q!2e0!7i16384!8i8192?coh=205409&entry=ttu&g_ep=EgoyMDI0MDkwNC4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      47.8020763,
+      -100.0258366
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-6fe5",
+    "country": "US",
+    "tier": "manual",
+    "title": "Kansas rumble strips",
+    "description": "In Kansas, almost every outer rumble strip is small, consisting of 5 to 12 rumbles, unlike other states which use much longer rumble strips. Also true on interstate highways in South Dakota (I-90 and I-29 through the state), and in other states sometimes. (★)",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1LtICAM_wEDISOcyccaxtlR6RmSLwBpBcTTwW5PjPWYk/edit?tab=t.0",
+    "extracted_at": "2026-08-12T07:04:37.232605+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/US/images/man-6fe5.webp",
+    "maps_url": "https://www.google.fr/maps/@32.8850858,-86.2217525,3a,15y,321.92h,85.83t/data=!3m6!1e1!3m4!1sBKsliqM5T7efr2XwqHNkZA!2e0!7i16384!8i8192?coh=205409&entry=ttu&g_ep=EgoyMDI0MDkwNC4wIKXMDSoASAFQAw%3D%3D",
+    "maps_latlon": [
+      32.8850858,
+      -86.2217525
+    ],
+    "overlay": null
   }
 ]
