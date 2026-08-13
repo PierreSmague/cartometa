@@ -62,21 +62,5 @@
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
-  },
-  {
-    "id": "man-8941",
-    "country": "FR",
-    "tier": "manual",
-    "title": "Test",
-    "description": "Test",
-    "category": "autre",
-    "source_url": "",
-    "extracted_at": "2026-08-13T16:50:36.165763+00:00",
-    "description_origin": "manual",
-    "origin": "manual",
-    "image": null,
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
   }
 ]
