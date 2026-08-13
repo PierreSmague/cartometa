@@ -46,5 +46,21 @@
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
+  },
+  {
+    "id": "man-0324",
+    "country": "FR",
+    "tier": "manual",
+    "title": "Périgord yellow limestone",
+    "description": "In Périgord, a lot of buildings are made using the local limestone with a very distinct yellow tint.",
+    "category": "architecture",
+    "source_url": "",
+    "extracted_at": "2026-08-13T10:25:19.405987+00:00",
+    "description_origin": "manual",
+    "origin": "manual",
+    "image": "data/manual/FR/images/man-0324.png",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]
