@@ -104,10 +104,21 @@ then by meta id.
 ### Correcting a meta already entered
 
 A typo in a title, a description that reads badly, a category you would file
-differently now, a difficulty you want to set: press `M` on the meta on screen.
-The same form reopens, prefilled, and `Save changes` rewrites it in place. The
-footprint is untouched — including one you are in the middle of drawing, which
-survives the save.
+differently now, a difficulty you want to set. Reopen the country in correction
+mode:
+
+```
+uv run cartometa-review FR --edit
+```
+
+That queue holds only the metas you can edit, footprints included. Reach the one
+you want with `Space` / `Shift+Space`, press `M`, and the same form reopens,
+prefilled; `Save changes` rewrites it in place. The footprint is untouched —
+including one you are in the middle of drawing, which survives the save.
+
+Without `--edit` the interface is unusable for this: by default the queue skips
+every meta already drawn, so it comes back empty, and `--all` alone puts your
+metas behind all the imported ones (positions 92 to 107 on FR).
 
 `M` only works on **hand-entered metas**, the ones in `data/manual/`. On an
 imported meta the interface says so and refuses: the Plonk It, RMRG and tagged
@@ -398,7 +409,8 @@ Messages are quoted as the tool prints them.
 
 ```
 uv sync                          # once
-uv run cartometa-review FR       # N → enter, M → correct, D/C/S/E/F → draw, A → save
+uv run cartometa-review FR       # N → enter, D/C/S/E/F → draw, A → save
+uv run cartometa-review FR --edit  # go back over your own metas, M → correct
 uv run cartometa-build FR        # check (the country code is mandatory)
 python -m http.server 8010 --directory dist
 

@@ -31,7 +31,7 @@ from cartometa.review.store import (
 )
 
 STATIC = Path(__file__).resolve().parent / "static"
-STATE: dict = {"paths": None, "include_all": False}
+STATE: dict = {"paths": None, "include_all": False, "editable_only": False}
 
 # Outside `static/`, the interface only needs the metas' images: imported ones
 # live under `input/`, hand-entered ones under `data/manual/`. Nothing else in the
@@ -117,7 +117,9 @@ class Handler(SimpleHTTPRequestHandler):
             self._json({"category": infer_category(text, text)})
             return
         if route == "/api/queue":
-            self._json(build_queue(paths(), STATE["include_all"]))
+            self._json(build_queue(
+                paths(), STATE["include_all"], STATE["editable_only"]
+            ))
             return
         if route == "/api/country-polygon":
             try:
@@ -276,7 +278,24 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Reopen every meta, including those already drawn or rejected.",
     )
+    parser.add_argument(
+        "--edit",
+        action="store_true",
+        help="Only the metas whose texts can be edited (data/manual/), reopened, "
+             "to go over one's own with M. Implies --all.",
+    )
     return parser
+
+
+def queue_flags(args: argparse.Namespace) -> tuple[bool, bool]:
+    """The CLI flags as `build_queue`'s two parameters.
+
+    `--edit` reopens everything by itself: the texts one wants to correct belong to
+    metas that are, by definition, already drawn, and the default queue excludes those
+    — the flag alone would come back empty. Better implied here than discovered once
+    in front of an empty interface.
+    """
+    return (args.all or args.edit, args.edit)
 
 
 def main() -> None:
@@ -293,9 +312,10 @@ def main() -> None:
         raise SystemExit(1)
 
     STATE["paths"] = CountryPaths(args.data, args.country.upper())
-    STATE["include_all"] = args.all
+    STATE["include_all"], STATE["editable_only"] = queue_flags(args)
 
-    print(f"Reviewing {STATE['paths'].country}: http://127.0.0.1:{args.port}")
+    portee = " (hand-entered metas only)" if args.edit else ""
+    print(f"Reviewing {STATE['paths'].country}{portee}: http://127.0.0.1:{args.port}")
     print(TOUCHES)
     HTTPServer(("127.0.0.1", args.port), Handler).serve_forever()
 

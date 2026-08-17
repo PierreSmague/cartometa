@@ -227,12 +227,19 @@ def _relative_url(path: str | None) -> str | None:
     return "/" + path if path else None
 
 
-def build_queue(paths: CountryPaths, include_all: bool = False) -> dict:
+def build_queue(
+    paths: CountryPaths, include_all: bool = False, editable_only: bool = False
+) -> dict:
     """The country's review queue.
 
     By default, metas already drawn or rejected are excluded from it. `include_all`
     reopens them with their pieces, to go over a country again when a new source does
     better.
+
+    `editable_only` narrows the queue to the metas whose texts can be edited — those
+    of `data/manual/` — for a pass of corrections with `M`. Without it, reaching one's
+    own metas means going past every imported meta first: on FR they sit at positions
+    92 to 107 of a 108-meta queue.
     """
     metas = load_metas(paths)
     geo = load_geo(paths)
@@ -242,6 +249,12 @@ def build_queue(paths: CountryPaths, include_all: bool = False) -> dict:
     # to know that before showing the form, not after saving. See
     # `cartometa.review.manual.update_meta`.
     editables = {meta["id"] for meta in read_json_list(paths.manual_metas)}
+    if editable_only:
+        metas = [meta for meta in metas if meta["id"] in editables]
+    # The metas this queue is about — all of them, or only the editable ones. Both
+    # counters below are scoped to it, otherwise they would speak of metas the queue
+    # never shows.
+    examined = {meta["id"] for meta in metas}
     items = []
     queued_ids = set()
     for meta in metas:
@@ -273,9 +286,12 @@ def build_queue(paths: CountryPaths, include_all: bool = False) -> dict:
     # not simply `len(geo)`: by default the two coincide (a decided meta is always
     # excluded from the queue), but under `include_all` everything is reopened and put
     # back in the queue, so `done` falls back to 0. That is what lets the JS caller
-    # keep the same `done + current index` formula in both modes, with no special
+    # keep the same `done + current index` formula in every mode, with no special
     # case.
-    done = sum(1 for meta_id in geo if meta_id not in queued_ids)
+    # Restricted to `examined` for the same reason: a decision on a meta this queue
+    # filtered out is not progress through this queue, and counting it made the
+    # client's formula overflow its total (`67/37` once observed).
+    done = sum(1 for meta_id in geo if meta_id in examined and meta_id not in queued_ids)
     return {
         "country": paths.country,
         "total": len(metas),

@@ -112,9 +112,17 @@ meta's Maps link.
 `M` only applies to hand-entered metas, those of `data/manual/`. The imported
 texts (Plonk It, RMRG, tagged) live in `data/metas/`, which is not versioned and
 is rewritten wholesale by the next import: the interface refuses the edit and
-says why, rather than writing where the change would be lost. Combined with
-`--all` below, it is the way to go back over a country's own texts long after
-they were drawn.
+says why, rather than writing where the change would be lost.
+
+```
+uv run cartometa-review <CC> --edit
+```
+
+is the pass of corrections: only the metas you can edit, reopened with their
+footprints. Without it, reaching them means going past every imported meta
+first — on FR they sit at positions 92 to 107 of a 108-meta queue. `--edit`
+implies `--all` below, since the texts one wants to correct belong to metas
+already drawn.
 
 `cartometa-review <CC> --all` reopens every meta, including the ones already
 drawn, with their pieces — to go over a country again when a new source does

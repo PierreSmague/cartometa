@@ -45,9 +45,10 @@ That is the point of this split: you can make mistakes without consequence.
 
 2. **Enter and draw** — `uv run cartometa-review <CC>` (`FR`, `BE`, `JP`…)
    then <http://127.0.0.1:8799>. `N` creates a meta, the keys `D` `C` `S`
-   `E` `F` draw its footprint, `A` saves it, and `M` reopens the form on a
-   meta already entered to correct its texts. No prior data is needed: an
-   empty country is a valid starting point.
+   `E` `F` draw its footprint, `A` saves it. No prior data is needed: an
+   empty country is a valid starting point. To go back over metas already
+   entered and correct their texts: `uv run cartometa-review <CC> --edit`,
+   then `M` on the one to fix.
 
 3. **Check** — `uv run cartometa-build <CC>` then
    `python -m http.server 8010 --directory dist`. **The country code is

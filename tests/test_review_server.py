@@ -48,6 +48,7 @@ def paths(tmp_path):
     (p.cache / "ne_10m_admin_0_countries.geojson").write_text(json.dumps(COUNTRIES), "utf-8")
     server.STATE["paths"] = p
     server.STATE["include_all"] = False
+    server.STATE["editable_only"] = False
     return p
 
 
@@ -501,3 +502,24 @@ def test_the_form_offers_exactly_the_known_difficulties():
     """Same contract, plus the leading empty value: "not rated" is the absence of a
     difficulty, and it has to be reachable to be able to clear one."""
     assert _options("manual-difficulty") == ["", *DIFFICULTIES]
+
+
+def test_the_edit_flag_is_off_by_default():
+    assert server.build_parser().parse_args(["PL"]).edit is False
+
+
+def test_the_edit_flag_reopens_everything_on_its_own():
+    """`--edit` without `--all` would come back empty: the texts one wants to correct
+    belong to metas already drawn, which the default queue excludes. The flag
+    therefore implies reopening, rather than being a trap the human falls into once."""
+    args = server.build_parser().parse_args(["PL", "--edit"])
+
+    assert server.queue_flags(args) == (True, True)
+
+
+def test_the_default_flags_review_the_undecided_metas_only():
+    assert server.queue_flags(server.build_parser().parse_args(["PL"])) == (False, False)
+
+
+def test_all_alone_reopens_everything_without_filtering():
+    assert server.queue_flags(server.build_parser().parse_args(["PL", "--all"])) == (True, False)

@@ -418,3 +418,39 @@ def test_only_the_hand_entered_metas_are_flagged_editable(paths):
 
     assert items["man-1a2b"]["editable"] is True
     assert items["aaaa"]["editable"] is False
+
+
+def test_the_edit_mode_keeps_only_the_editable_metas(paths):
+    """`cartometa-review <CC> --edit`: going back over one's own texts must not mean
+    pressing Space past every imported meta first — on FR they sat at positions 92 to
+    107 of the queue."""
+    items = build_queue(paths, include_all=True, editable_only=True)["items"]
+
+    assert [item["id"] for item in items] == ["man-1a2b"]
+
+
+def test_the_edit_mode_counts_only_the_metas_it_shows(paths):
+    """The client's progress formula is `done + index` over `total`: it overflows as
+    soon as `done` or `total` counts metas the queue does not show. Same trap as the
+    `67/37` of `include_all`, and the decided imported meta below is what triggers it.
+    """
+    set_decision(paths, "aaaa", STATUS_TRACED, CARRE, [{"kind": "country"}])
+
+    queue = build_queue(paths, include_all=True, editable_only=True)
+
+    assert queue["total"] == 1
+    assert queue["done"] == 0
+    assert queue["done"] + len(queue["items"]) == queue["total"]
+
+
+def test_the_edit_mode_leaves_the_other_two_modes_alone(paths):
+    """A third mode must not silently change what the first two return."""
+    set_decision(paths, "aaaa", STATUS_TRACED, CARRE, [{"kind": "country"}])
+
+    defaut = build_queue(paths)
+    tout = build_queue(paths, include_all=True)
+
+    assert [item["id"] for item in defaut["items"]] == ["bbbb", "man-1a2b"]
+    assert defaut["total"] == 3 and defaut["done"] == 1
+    assert [item["id"] for item in tout["items"]] == ["aaaa", "bbbb", "man-1a2b"]
+    assert tout["total"] == 3 and tout["done"] == 0
