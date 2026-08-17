@@ -148,9 +148,6 @@ body {
   cursor: pointer;
 }
 .pastille.active { background: var(--texte); color: var(--fond-carte); border-color: var(--texte); }
-/* Difficulty pills below the chosen ceiling: included in the results but not the
-   active choice. Lit enough to read as "on", quieter than .active. */
-.pastille.incluse { background: var(--trait); color: var(--texte); border-color: var(--trait); }
 #recherche {
   flex: 1;
   min-width: 140px;

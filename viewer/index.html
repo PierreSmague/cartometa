@@ -90,13 +90,18 @@
           <button class="pastille" data-categorie="autre">Other</button>
           <input id="recherche" type="search" placeholder="Filter these results…">
         </div>
-        <!-- Cumulative ceiling, not an exact match: "Intermediate" means Beginner +
-             Intermediate. "Pro" is the default because it shows everything, i.e. no
-             filter at all. -->
+        <!-- Strict match, exactly like the category row above: "Intermediate" shows
+             the Intermediate metas and nothing else, and the leading empty value
+             ("All") is the default because it filters nothing. `none` is not a level
+             the build ever writes — it selects the metas whose difficulty nobody has
+             judged yet. Keep these values in sync with `DIFFICULTIES` in
+             `cartometa/build/dataset.py`; a test enforces it. -->
         <div id="filtres-difficulte" class="ligne-pastilles">
+          <button class="pastille active" data-difficulte="">All</button>
           <button class="pastille" data-difficulte="Beginner">Beginner</button>
           <button class="pastille" data-difficulte="Intermediate">Intermediate</button>
-          <button class="pastille active" data-difficulte="Pro">Pro</button>
+          <button class="pastille" data-difficulte="Pro">Pro</button>
+          <button class="pastille" data-difficulte="none">Not rated</button>
         </div>
       </div>
       <div id="accueil">
