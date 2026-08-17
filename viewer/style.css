@@ -120,13 +120,23 @@ body {
 
 #filtres {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
+  flex-direction: column;
+  gap: 8px;
   padding: 10px 16px;
   border-bottom: 1px solid var(--trait);
 }
 #filtres[hidden] { display: none; }
+.ligne-pastilles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+/* Separates the difficulty group from the category group above it. */
+#filtres-difficulte {
+  padding-top: 8px;
+  border-top: 1px solid var(--trait);
+}
 .pastille {
   font: inherit;
   font-size: 11px;
@@ -251,6 +261,18 @@ body {
   background: var(--texte);
   color: var(--fond-carte);
   margin-right: 5px;
+}
+/* Below the title: grey and abbreviated, no colour coding by difficulty level. */
+.badge-difficulte {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  padding: 2px 5px;
+  border-radius: 3px;
+  background: var(--trait);
+  color: var(--texte);
 }
 
 .squelette {
