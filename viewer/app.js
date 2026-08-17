@@ -504,6 +504,27 @@ function ouvrirLoupe(meta) {
   } else {
     texte.textContent = meta.title;
   }
+  const description = document.getElementById('loupe-description');
+  // textContent for the same reason as the cards: descriptions come from third-party
+  // HTML and can contain anything. Two out of three descriptions open with the title
+  // verbatim (the title is extracted from the description's opening): showing both
+  // would print the same sentence twice in a row, so the title prefix is stripped —
+  // but only when the title is a complete sentence. A fragment title ("Yellow",
+  // "Pas de la Casa") continues its sentence in the description, and the remainder
+  // alone would start mid-sentence; there the whole description is kept. A description
+  // that says nothing beyond the title — or none at all, the field is optional on
+  // hand-entered metas — hides the paragraph entirely rather than leaving an empty
+  // block between the title and the Anki zone.
+  const complet = (meta.description || '').trim();
+  const titre = (meta.title || '').trim();
+  let reste = complet;
+  if (complet === titre) {
+    reste = '';
+  } else if (/[.!?…:]$/.test(titre) && complet.startsWith(titre)) {
+    reste = complet.slice(titre.length).trim();
+  }
+  description.textContent = reste;
+  description.hidden = !reste;
   // Everything the Anki module needs to know goes through this event: app.js does not
   // know about Anki, anki.js knows neither the map nor the gallery. The image URL is
   // absolute because it leaves the page — it is Anki (the software) that will download
