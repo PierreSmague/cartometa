@@ -21,8 +21,15 @@ then <http://127.0.0.1:8010/>. `Ctrl+C` to stop.
 
 Clicking the map opens a gallery of the matching metas, sorted by increasing
 area. Hovering a thumbnail highlights its footprint on the map; clicking it
-opens the full-size image. Filters stack: category, scope (regional /
-national) and free-text search.
+opens the full-size image. Filters stack: category, difficulty, and free-text
+search. Scope (regional / national) is no longer a filter: it splits the
+results into two collapsible sections, read together.
+
+Difficulty is `Beginner`, `Intermediate` or `Pro`, and it is **optional**: a
+meta nobody has judged carries none, shows no badge, and answers to the "Not
+rated" pill. Both pill rows are a strict single choice — "Intermediate" shows
+the Intermediate metas and nothing else — with a leading "All" that filters
+nothing.
 
 The seven categories are Infrastructures, Vegetation & Agriculture, Landscape,
 Architecture, Car meta, Culture and Other. A meta's category is inferred from
