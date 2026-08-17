@@ -93,6 +93,7 @@ arrives **without geometry**: drawing its footprint is up to you.
 | `Space` / `Shift+Space` | next / previous meta |
 | `U` | undoes the last decision |
 | `N` | enters a manual meta (text + pasted or dropped image) |
+| `M` | reopens that form on the current meta to correct its title, description, category and difficulty |
 
 Modes are **sticky**: once a rectangle is laid down, laying the next one takes
 no keypress. A footprint is the union of its pieces — two disjoint rectangles,
@@ -107,6 +108,13 @@ never in the browser.
 
 The blue dot, when present, is the **ground truth**: the position of the
 meta's Maps link.
+
+`M` only applies to hand-entered metas, those of `data/manual/`. The imported
+texts (Plonk It, RMRG, tagged) live in `data/metas/`, which is not versioned and
+is rewritten wholesale by the next import: the interface refuses the edit and
+says why, rather than writing where the change would be lost. Combined with
+`--all` below, it is the way to go back over a country's own texts long after
+they were drawn.
 
 `cartometa-review <CC> --all` reopens every meta, including the ones already
 drawn, with their pieces — to go over a country again when a new source does

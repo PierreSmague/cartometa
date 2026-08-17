@@ -236,6 +236,12 @@ def build_queue(paths: CountryPaths, include_all: bool = False) -> dict:
     """
     metas = load_metas(paths)
     geo = load_geo(paths)
+    # Which metas the interface may offer to edit: only those of `data/manual/`, the
+    # versioned source. The others come from `data/metas/`, gitignored and rewritten
+    # wholesale by the next import, which would swallow the edit — the interface has
+    # to know that before showing the form, not after saving. See
+    # `cartometa.review.manual.update_meta`.
+    editables = {meta["id"] for meta in read_json_list(paths.manual_metas)}
     items = []
     queued_ids = set()
     for meta in metas:
@@ -250,6 +256,10 @@ def build_queue(paths: CountryPaths, include_all: bool = False) -> dict:
             "title": meta["title"],
             "description": meta["description"],
             "category": meta["category"],
+            # Absent on every meta that nobody has judged, which is most of them:
+            # `None` is the value the review form shows as "not rated".
+            "difficulty": meta.get("difficulty"),
+            "editable": meta["id"] in editables,
             "tier": meta["tier"],
             "origin": meta.get("origin", ORIGIN_PLONKIT),
             "image": _relative_url(meta.get("image")),

@@ -1,6 +1,11 @@
 import { getJSON, postJSON, postBytes } from './api.js';
 import { Sketch } from './sketch.js';
-import { closeManualForm, isManualFormOpen, openManualForm } from './manual.js';
+import {
+  closeManualForm,
+  isManualFormOpen,
+  openEditForm,
+  openManualForm,
+} from './manual.js';
 
 const map = L.map('map').setView([52, 19], 5);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -71,8 +76,23 @@ function render() {
     return;
   }
   document.getElementById('progress').textContent = `${done + index} / ${total}`;
+  showMeta(item);
+
+  sketch.reset(item.pieces);
+  frame(item);
+  loadPiecesGeometry(item);
+  refresh();
+}
+
+function showMeta(item) {
+  // Everything the two panes say about the meta itself, and nothing about its
+  // footprint. Extracted from render() so that saving an edit can refresh the texts
+  // without going through it: a full render() calls sketch.reset() and would throw
+  // away an outline in progress.
   document.getElementById('context').textContent =
-    `${item.category} — ${item.tier}${item.status ? ` — ${item.status}` : ''}`;
+    `${item.category} — ${item.tier}`
+    + `${item.difficulty ? ` — ${item.difficulty}` : ''}`
+    + `${item.status ? ` — ${item.status}` : ''}`;
   if (item.image) document.getElementById('image').src = item.image;
   else document.getElementById('image').removeAttribute('src');
   const overlay = document.getElementById('overlay');
@@ -82,11 +102,6 @@ function render() {
   document.getElementById('title').textContent = item.title;
   document.getElementById('description').textContent = item.description;
   document.getElementById('source-link').href = item.source_url || '#';
-
-  sketch.reset(item.pieces);
-  frame(item);
-  loadPiecesGeometry(item);
-  refresh();
 }
 
 function piecesBounds(pieces) {
@@ -307,12 +322,49 @@ function onManualCreated(meta) {
   // source is still in front of us.
   queue.splice(index, 0, {
     id: meta.id, title: meta.title, description: meta.description,
-    category: meta.category, tier: meta.tier, origin: meta.origin,
+    category: meta.category, difficulty: meta.difficulty || null,
+    // It has just been written to data/manual/: editable by construction.
+    editable: true, tier: meta.tier, origin: meta.origin,
     image: meta.image || null, latlon: null, source_url: meta.source_url,
     status: null, pieces: [],
   });
   total += 1;
   render();
+}
+
+function editCurrent() {
+  const item = current();
+  if (!item || busy) return;
+  if (!item.editable) {
+    // Said before the form opens, not after a refused save: the texts of an
+    // imported meta live in a file the next import rewrites wholesale.
+    showError(`${item.id} cannot be edited here: its texts come from a regenerable `
+      + `source (data/metas/), which the next import would rewrite. `
+      + `Only hand-entered metas can be edited.`);
+    return;
+  }
+  clearError();
+  openEditForm(item, onMetaEdited);
+}
+
+function onMetaEdited(meta) {
+  // The queue item is updated in place, so coming back to this meta shows the new
+  // texts without a reload — and the pane is refreshed through showMeta() rather
+  // than render(), which would reset a footprint being drawn.
+  const item = queue.find((entry) => entry.id === meta.id);
+  if (!item) return;
+  Object.assign(item, {
+    title: meta.title,
+    description: meta.description,
+    category: meta.category,
+    // Absent from the stored meta when it is not rated: normalised to null, the
+    // value the rest of the interface tests.
+    difficulty: meta.difficulty ?? null,
+    source_url: meta.source_url,
+    image: meta.image ?? item.image,
+  });
+  clearError();
+  if (item === current()) showMeta(item);
 }
 
 document.addEventListener('keydown', (event) => {
@@ -352,6 +404,7 @@ document.addEventListener('keydown', (event) => {
     case 'r': decide('rejeté'); break;
     case 'u': undo(); break;
     case 'n': openManualForm(onManualCreated); break;
+    case 'm': editCurrent(); break;
     default: break;
   }
 });

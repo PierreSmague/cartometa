@@ -391,3 +391,30 @@ def test_build_queue_exposes_the_overlay_like_the_image(paths):
     assert items["landscape/water-plots1"]["overlay"] == "/input/save_files/water-plots1.extracted.svg"
     # A meta without the key (every Plonk It and manual meta) exposes None.
     assert items["aaaa"]["overlay"] is None
+
+
+def _par_id(paths, include_all=False):
+    return {item["id"]: item for item in build_queue(paths, include_all)["items"]}
+
+
+def test_the_queue_carries_the_difficulty(paths):
+    """The review form prefills from the queue: without the field it would show
+    "not rated" on a meta that has been judged, and clear it on the first save."""
+    paths.manual_metas.write_text(json.dumps([
+        _meta("man-1a2b", tier="manual", origin="manual", difficulty="Pro"),
+    ]), "utf-8")
+
+    assert _par_id(paths)["man-1a2b"]["difficulty"] == "Pro"
+
+
+def test_a_meta_with_no_difficulty_arrives_with_none(paths):
+    assert _par_id(paths)["man-1a2b"]["difficulty"] is None
+
+
+def test_only_the_hand_entered_metas_are_flagged_editable(paths):
+    """`data/metas/` is gitignored and rewritten by the imports: the interface has to
+    know, before offering the form, that an edit there would be lost."""
+    items = _par_id(paths)
+
+    assert items["man-1a2b"]["editable"] is True
+    assert items["aaaa"]["editable"] is False

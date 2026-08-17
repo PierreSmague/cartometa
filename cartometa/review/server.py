@@ -14,7 +14,12 @@ from cartometa.extract.categories import infer_category
 from cartometa.geo.admin1 import country_regions
 from cartometa.geo.reference import country_geometry
 from cartometa.models import STATUS_PROPOSED, STATUS_REJECTED, STATUS_TRACED
-from cartometa.review.manual import ManualMetaError, create_meta, save_image
+from cartometa.review.manual import (
+    ManualMetaError,
+    create_meta,
+    save_image,
+    update_meta,
+)
 from cartometa.review.pieces import PieceError, resolve_pieces
 from cartometa.review.store import (
     CountryPaths,
@@ -202,6 +207,21 @@ class Handler(SimpleHTTPRequestHandler):
                     description=payload.get("description"),
                     category=payload.get("category"),
                     source_url=payload.get("source_url", ""),
+                    difficulty=payload.get("difficulty"),
+                )
+                self._json({"ok": True, "meta": meta})
+                return
+            elif route == "/api/meta/edit":
+                # The updated meta comes back so the interface can redraw from it: a
+                # queue reload would reset a footprint being drawn.
+                meta = update_meta(
+                    paths(),
+                    payload["id"],
+                    title=payload.get("title"),
+                    description=payload.get("description"),
+                    category=payload.get("category"),
+                    source_url=payload.get("source_url", ""),
+                    difficulty=payload.get("difficulty"),
                 )
                 self._json({"ok": True, "meta": meta})
                 return
@@ -229,7 +249,7 @@ TOUCHES = """Keys - D rectangle, C freehand outline, Enter close the outline, S 
        F clip the area to the country borders (press again to unclip)
        Backspace remove the last piece, Escape leave the mode, 0 empty
        A save, R reject, Space next (Shift+Space previous), U undo
-       N new manual meta"""
+       N new manual meta, M edit the current meta's texts"""
 
 
 def port_is_taken(host: str, port: int) -> bool:
