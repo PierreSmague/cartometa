@@ -1,0 +1,13 @@
+{
+  "name": "cartometa-meta-editor",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Editeur local simplifie des metas Cartometa (GeoJSON) avec publication automatique en branche + PR GitHub.",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

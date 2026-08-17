@@ -1,0 +1,8 @@
+{
+  "repoRoot": "../..",
+  "tiers": [
+    { "name": "manual", "dir": "data/manual" }
+  ],
+  "baseBranch": "master",
+  "port": 4545
+}

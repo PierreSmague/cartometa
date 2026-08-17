@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cartometa — Meta Editor</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <h1>Cartometa<br><span>Meta Editor</span></h1>
+    <div id="country-list"></div>
+  </aside>
+
+  <section id="list-panel" hidden>
+    <div id="list-controls">
+      <input id="search-input" placeholder="Search by id or title…">
+      <select id="filter-category"><option value="">Category (all)</option></select>
+      <select id="filter-difficulty"><option value="">Difficulty (all)</option></select>
+      <label id="select-all-row">
+        <input type="checkbox" id="select-all-checkbox">
+        Select all
+      </label>
+      <p class="hint">Click = select. Ctrl/Cmd+click or checkbox = add to selection. Shift+click = select range.</p>
+    </div>
+    <div id="meta-list"></div>
+  </section>
+
+  <main id="editor" hidden>
+    <header id="editor-header">
+      <span id="editor-title">—</span>
+      <button id="publish-btn" disabled>Publish (0)</button>
+    </header>
+
+    <div id="editor-body">
+      <div id="single-panel">
+        <div id="preview-panel">
+          <img id="preview-image" alt="" hidden>
+          <div id="no-image">No image</div>
+          <dl id="readonly-info"></dl>
+        </div>
+
+        <form id="feature-form" onsubmit="return false">
+          <label>ID
+            <input id="f-id" disabled>
+          </label>
+
+          <label>Title
+            <input id="f-title" placeholder="Meta title">
+          </label>
+
+          <label>Category
+            <input id="f-category" list="category-list" placeholder="e.g. car, architecture, landscape…">
+          </label>
+
+          <label>Difficulty
+            <select id="f-difficulty">
+              <option value="">—</option>
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Pro">Pro</option>
+            </select>
+          </label>
+
+          <label>Source URL
+            <input id="f-source" placeholder="https://…">
+          </label>
+
+          <label>Description
+            <textarea id="f-description" rows="8" placeholder="Meta description"></textarea>
+          </label>
+        </form>
+      </div>
+    </div>
+
+    <div id="status-bar"></div>
+  </main>
+</div>
+
+<datalist id="category-list"></datalist>
+
+<div id="publish-modal" class="modal-overlay" hidden>
+  <div class="modal">
+    <h2>Publish</h2>
+    <p id="publish-modal-summary"></p>
+    <ul id="publish-modal-list"></ul>
+    <p id="publish-modal-other-pending" class="modal-warning" hidden></p>
+    <div class="modal-actions">
+      <button id="publish-modal-cancel">Cancel</button>
+      <button id="publish-modal-confirm">Open Pull Request</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

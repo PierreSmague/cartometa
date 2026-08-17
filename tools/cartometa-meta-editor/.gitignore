@@ -1,0 +1,11 @@
+# Node dependencies, reinstall locally with `npm install`
+node_modules/
+
+# Local config (repoRoot/tiers/port can vary per machine).
+# NEVER commit this file: if it shows up as "untracked", it will make the
+# Publish button's clean-repo check (assertCleanOrOnly) fail.
+config.json
+
+# Local recovery drafts of unpublished edits (see server.js). Machine-local
+# by nature and may contain unpublished editorial content — never commit.
+.drafts/

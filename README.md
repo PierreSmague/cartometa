@@ -240,6 +240,8 @@ data/categories.json category corrections, applied at build time (versioned)
 data/metas/          Plonk It texts (never versioned, regenerable)
 input/               saved pages (never versioned)
 docs/                specs, plans, contribution guides
+tools/cartometa-meta-editor/  local UI to edit data/manual/ metas and publish
+                               them as a PR — see its own README
 ```
 
 ## Status

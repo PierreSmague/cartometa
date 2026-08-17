@@ -1,0 +1,330 @@
+:root {
+  --bg: #1c1c1a;
+  --card: #262624;
+  --accent: #e08b2a;
+  --text: #eae7e0;
+  --text-dim: #9a968c;
+  --border: #3a3a36;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+#app {
+  display: grid;
+  grid-template-columns: 200px 320px 1fr;
+  height: 100vh;
+}
+
+#sidebar {
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  padding: 16px;
+  overflow-y: auto;
+}
+
+#sidebar h1 { font-size: 16px; margin: 0 0 16px; }
+#sidebar h1 span { font-size: 12px; color: var(--text-dim); font-weight: normal; }
+
+.country-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  margin-bottom: 4px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 13px;
+}
+.country-btn:hover { background: #333; }
+.country-btn.active { border-color: var(--accent); color: var(--accent); }
+
+/* Dot marking a country with unpublished edits (this run's session, or a
+   recovered draft from a previous one) — visible without opening it. */
+.pending-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+button {
+  background: #333;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+button:hover { background: #3f3f3b; }
+button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+input, select, textarea {
+  background: #1c1c1a;
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 13px;
+  font-family: inherit;
+}
+input:disabled, select:disabled, textarea:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* --- Colonne liste --- */
+#list-panel {
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#list-controls {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+#list-controls input, #list-controls select { width: 100%; }
+
+#select-all-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+#select-all-row input { width: auto; }
+
+.hint {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin: 0;
+  line-height: 1.4;
+}
+
+#meta-list { flex: 1; overflow-y: auto; }
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+}
+.meta-row:hover { background: #2f2f2c; }
+.meta-row.selected { background: #3a2f1f; }
+/* A row with edits already saved server-side (but not yet Published) —
+   independent of selection, so it stays visible after you click away. */
+.meta-row.modified .meta-row-title::after {
+  content: '●';
+  color: var(--accent);
+  font-size: 8px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.list-loading {
+  padding: 20px 12px;
+  font-size: 12px;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+.meta-checkbox { flex-shrink: 0; }
+
+.meta-thumb {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.meta-thumb-empty {
+  background: #1c1c1a;
+}
+
+.meta-row-text { min-width: 0; }
+.meta-row-title {
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.meta-row-sub {
+  font-size: 11px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- Colonne éditeur --- */
+#editor {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#editor-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+#editor-title {
+  font-size: 14px;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#publish-btn {
+  background: var(--accent);
+  color: #1c1c1a;
+  border: none;
+  font-weight: 600;
+}
+#publish-btn:hover:not(:disabled) { filter: brightness(1.1); }
+
+#editor-body { flex: 1; overflow: hidden; }
+
+#single-panel {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  height: 100%;
+}
+
+#preview-panel {
+  border-right: 1px solid var(--border);
+  background: var(--card);
+  padding: 16px;
+  overflow-y: auto;
+}
+#preview-image {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+  display: block;
+}
+#no-image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  font-size: 13px;
+  margin-bottom: 16px;
+  text-align: center;
+  padding: 12px;
+}
+#readonly-info { margin: 0; font-size: 12px; }
+#readonly-info dt { color: var(--text-dim); margin-top: 8px; }
+#readonly-info dd { margin: 2px 0 0; word-break: break-word; }
+
+#feature-form { padding: 20px 24px; overflow-y: auto; }
+#feature-form label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+}
+#feature-form label input,
+#feature-form label select,
+#feature-form label textarea {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  font-size: 14px;
+}
+#feature-form label textarea { resize: vertical; line-height: 1.5; }
+
+#status-bar {
+  padding: 8px 16px;
+  font-size: 13px;
+  border-top: 1px solid var(--border);
+  background: var(--card);
+}
+#status-bar a { color: var(--accent); }
+
+/* --- Publish confirmation modal --- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.modal-overlay[hidden] { display: none; }
+.modal {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 24px;
+  width: 440px;
+  max-width: 90vw;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+.modal h2 { margin: 0 0 8px; font-size: 16px; }
+#publish-modal-summary { font-size: 13px; color: var(--text-dim); margin: 0 0 12px; }
+#publish-modal-list {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 40px;
+  max-height: 260px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+#publish-modal-list li {
+  padding: 6px 10px;
+  font-size: 12px;
+  border-bottom: 1px solid var(--border);
+}
+#publish-modal-list li:last-child { border-bottom: none; }
+.modal-warning {
+  background: #3a2f1f;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 0 0 12px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
