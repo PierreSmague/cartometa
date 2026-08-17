@@ -13,7 +13,7 @@ from cartometa.atomic_write import write_json_atomic
 # Imported rather than duplicated: the form's valid values and the inference
 # cannot drift apart if there is only one owner of the list.
 from cartometa.extract.categories import CATEGORIES
-from cartometa.models import ORIGIN_MANUAL, TIER_MANUAL, MetaRecord
+from cartometa.models import DIFFICULTIES, ORIGIN_MANUAL, TIER_MANUAL, MetaRecord
 from cartometa.review.store import CountryPaths, load_metas, read_json_list
 
 # A pasted screenshot rarely goes beyond a megabyte. The cap does not exist to
@@ -53,6 +53,52 @@ def _required(value: str | None, label: str) -> str:
     return cleaned
 
 
+def _editorial_fields(
+    *,
+    title: str | None,
+    description: str | None,
+    category: str | None,
+    source_url: str | None,
+    difficulty: str | None,
+) -> dict:
+    """The fields a human owns on a meta, validated.
+
+    Shared by creation and edition rather than duplicated: the two must accept
+    exactly the same values, and the form behind them is the same one.
+    """
+    validated = {
+        "title": _required(title, "the title"),
+        "description": _required(description, "the description"),
+    }
+    if category not in CATEGORIES:
+        raise ManualMetaError(
+            f"unknown category: {category!r} (expected {', '.join(CATEGORIES)})"
+        )
+    # Empty is legitimate and means "not rated": only a *filled* value has to be one
+    # of the known levels.
+    if difficulty and difficulty not in DIFFICULTIES:
+        raise ManualMetaError(
+            f"unknown difficulty: {difficulty!r} (expected {', '.join(DIFFICULTIES)})"
+        )
+    validated["category"] = category
+    validated["source_url"] = (source_url or "").strip()
+    validated["difficulty"] = difficulty or None
+    return validated
+
+
+def _apply_difficulty(meta: dict, difficulty: str | None) -> None:
+    """Set the level, or remove the key altogether.
+
+    "Not rated" is the *absence* of the field, never an empty string: that is what
+    the build reads, and a meta carrying `""` would publish the same thing while
+    reading, in the file, as a judgement someone had made.
+    """
+    if difficulty:
+        meta["difficulty"] = difficulty
+    else:
+        meta.pop("difficulty", None)
+
+
 def create_meta(
     paths: CountryPaths,
     *,
@@ -60,34 +106,86 @@ def create_meta(
     description: str | None,
     category: str | None,
     source_url: str | None = "",
+    difficulty: str | None = None,
 ) -> dict:
     """Create a hand-entered meta and append it to the country's manual file."""
-    title = _required(title, "the title")
-    description = _required(description, "the description")
-    if category not in CATEGORIES:
-        raise ManualMetaError(
-            f"unknown category: {category!r} (expected {', '.join(CATEGORIES)})"
-        )
-
+    champs = _editorial_fields(
+        title=title, description=description, category=category,
+        source_url=source_url, difficulty=difficulty,
+    )
     meta = MetaRecord(
         # Uniqueness is judged over BOTH sources: an identifier free on the manual
         # side but already taken on the imported side would break the merge.
         id=new_meta_id({m["id"] for m in load_metas(paths)}),
         country=paths.country,
         tier=TIER_MANUAL,
-        title=title,
-        description=description,
-        category=category,
-        source_url=(source_url or "").strip(),
+        title=champs["title"],
+        description=champs["description"],
+        category=champs["category"],
+        source_url=champs["source_url"],
         extracted_at=datetime.now(timezone.utc).isoformat(),
         description_origin="manual",
         origin=ORIGIN_MANUAL,
     ).to_dict()
+    # Not a `MetaRecord` field: an unrated meta must carry no key at all, where the
+    # dataclass would always serialise a `difficulty: null`.
+    _apply_difficulty(meta, champs["difficulty"])
 
     existing = read_json_list(paths.manual_metas)
     existing.append(meta)
     write_json_atomic(paths.manual_metas, existing)
     return meta
+
+
+def update_meta(
+    paths: CountryPaths,
+    meta_id: str,
+    *,
+    title: str | None,
+    description: str | None,
+    category: str | None,
+    source_url: str | None = "",
+    difficulty: str | None = None,
+) -> dict:
+    """Rewrite the editorial fields of a hand-entered meta, and return it.
+
+    Only the metas of `data/manual/<CC>/metas.json` can be edited. The other sources
+    — Plonk It, RMRG, tagged imports — live under `data/metas/`, which is gitignored
+    and rewritten wholesale by `cartometa-extract` / `cartometa-import-tagged`: an
+    edit there would look saved, then disappear at the next import. The same reason
+    keeps Plonk It identifiers out of `save_image`.
+
+    Everything is validated before the file is read, so a refused edit writes nothing.
+    """
+    champs = _editorial_fields(
+        title=title, description=description, category=category,
+        source_url=source_url, difficulty=difficulty,
+    )
+    metas = read_json_list(paths.manual_metas)
+    target = next((m for m in metas if m["id"] == meta_id), None)
+    if target is None:
+        raise _refuse_edit(paths, meta_id)
+
+    difficulte = champs.pop("difficulty")
+    target.update(champs)
+    _apply_difficulty(target, difficulte)
+    write_json_atomic(paths.manual_metas, metas)
+    return target
+
+
+def _refuse_edit(paths: CountryPaths, meta_id: str) -> ManualMetaError:
+    """Why this meta cannot be edited — two very different fixes.
+
+    A meta absent from `data/manual/` but known to another source is a scope
+    limitation to be explained; an identifier known to nobody is a mistake.
+    """
+    if any(m["id"] == meta_id for m in load_metas(paths)):
+        return ManualMetaError(
+            f"{meta_id!r} is not in data/manual/{paths.country}/metas.json: its texts "
+            "come from a regenerable source, which the next import would rewrite. "
+            "Only hand-entered metas can be edited."
+        )
+    return ManualMetaError(f"unknown meta: {meta_id!r}")
 
 
 def _relative_to_cwd(path: Path) -> str:

@@ -1,4 +1,5 @@
 import json
+import re
 import socket
 import sys
 import threading
@@ -9,7 +10,13 @@ from http.server import HTTPServer
 import pytest
 from shapely.geometry import shape
 
-from cartometa.models import STATUS_PROPOSED, STATUS_REJECTED, STATUS_TRACED
+from cartometa.extract.categories import CATEGORIES
+from cartometa.models import (
+    DIFFICULTIES,
+    STATUS_PROPOSED,
+    STATUS_REJECTED,
+    STATUS_TRACED,
+)
 from cartometa.review import server
 from cartometa.review.pieces import PieceError
 from cartometa.review.store import CountryPaths, load_geo
@@ -41,6 +48,7 @@ def paths(tmp_path):
     (p.cache / "ne_10m_admin_0_countries.geojson").write_text(json.dumps(COUNTRIES), "utf-8")
     server.STATE["paths"] = p
     server.STATE["include_all"] = False
+    server.STATE["editable_only"] = False
     return p
 
 
@@ -410,3 +418,108 @@ def test_main_refuses_an_occupied_port_instead_of_announcing_a_url(monkeypatch, 
     sortie = capsys.readouterr()
     assert str(port) in sortie.err
     assert "http://127.0.0.1" not in sortie.out
+
+
+def _un_meta_manuel(paths, **extra):
+    """One hand-entered meta in `data/manual/PL/metas.json`, the only editable source."""
+    meta = {
+        "id": "man-1a2b", "country": "PL", "tier": "manual", "title": "titre",
+        "description": "description", "category": "autre", "source_url": "",
+        "extracted_at": "2026-07-30T00:00:00+00:00",
+        "description_origin": "manual", "origin": "manual", "image": None,
+    }
+    meta.update(extra)
+    paths.manual_metas.parent.mkdir(parents=True, exist_ok=True)
+    paths.manual_metas.write_text(json.dumps([meta]), "utf-8")
+    return meta
+
+
+def test_post_meta_edit_http_rewrites_the_meta(paths, live_server):
+    _un_meta_manuel(paths)
+
+    status, body = _post(live_server, "/api/meta/edit", {
+        "id": "man-1a2b", "title": "Titre neuf", "description": "Description neuve.",
+        "category": "car", "source_url": "https://example.org/x", "difficulty": "Pro",
+    })
+
+    assert status == 200
+    assert json.loads(body)["meta"]["title"] == "Titre neuf"
+    stored = json.loads(paths.manual_metas.read_text("utf-8"))[0]
+    assert stored["title"] == "Titre neuf"
+    assert stored["difficulty"] == "Pro"
+
+
+def test_post_meta_edit_http_on_an_imported_meta_is_refused(paths, live_server):
+    """`aaaa` comes from Plonk It: its file is regenerated, so the edit is refused
+    rather than written where the next import would erase it."""
+    with pytest.raises(urllib.error.HTTPError) as excinfo:
+        _post(live_server, "/api/meta/edit", {
+            "id": "aaaa", "title": "Titre neuf", "description": "D", "category": "car",
+        })
+
+    assert excinfo.value.code == 400
+    assert "data/manual" in json.loads(excinfo.value.read())["error"]
+
+
+def test_post_meta_edit_http_with_an_unknown_difficulty_is_refused(paths, live_server):
+    _un_meta_manuel(paths)
+
+    with pytest.raises(urllib.error.HTTPError) as excinfo:
+        _post(live_server, "/api/meta/edit", {
+            "id": "man-1a2b", "title": "T", "description": "D",
+            "category": "car", "difficulty": "Expert",
+        })
+
+    assert excinfo.value.code == 400
+    assert json.loads(paths.manual_metas.read_text("utf-8"))[0]["title"] == "titre"
+
+
+def test_the_queue_says_which_metas_are_editable(paths, live_server):
+    _un_meta_manuel(paths)
+
+    _status, body = _get(live_server, "/api/queue")
+
+    editables = {item["id"]: item["editable"] for item in json.loads(body)["items"]}
+    assert editables == {"aaaa": False, "man-1a2b": True}
+
+
+def _options(select_id: str) -> list[str]:
+    """The `value`s offered by one <select> of the review form."""
+    html = (server.STATIC / "index.html").read_text("utf-8")
+    bloc = re.search(rf'<select id="{select_id}".*?</select>', html, re.S)
+    assert bloc is not None, f"no <select id={select_id!r}> in the review form"
+    return re.findall(r'<option value="([^"]*)"', bloc.group(0))
+
+
+def test_the_form_offers_exactly_the_known_categories():
+    """A contract invisible to the compiler: the form hardcodes its options, and the
+    server refuses anything outside `CATEGORIES`. A category added on one side only
+    is either unreachable from the form, or refused on save."""
+    assert _options("manual-category") == list(CATEGORIES)
+
+
+def test_the_form_offers_exactly_the_known_difficulties():
+    """Same contract, plus the leading empty value: "not rated" is the absence of a
+    difficulty, and it has to be reachable to be able to clear one."""
+    assert _options("manual-difficulty") == ["", *DIFFICULTIES]
+
+
+def test_the_edit_flag_is_off_by_default():
+    assert server.build_parser().parse_args(["PL"]).edit is False
+
+
+def test_the_edit_flag_reopens_everything_on_its_own():
+    """`--edit` without `--all` would come back empty: the texts one wants to correct
+    belong to metas already drawn, which the default queue excludes. The flag
+    therefore implies reopening, rather than being a trap the human falls into once."""
+    args = server.build_parser().parse_args(["PL", "--edit"])
+
+    assert server.queue_flags(args) == (True, True)
+
+
+def test_the_default_flags_review_the_undecided_metas_only():
+    assert server.queue_flags(server.build_parser().parse_args(["PL"])) == (False, False)
+
+
+def test_all_alone_reopens_everything_without_filtering():
+    assert server.queue_flags(server.build_parser().parse_args(["PL", "--all"])) == (True, False)
