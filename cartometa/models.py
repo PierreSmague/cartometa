@@ -24,6 +24,16 @@ STATUS_REJECTED = "rejeté"
 STATUS_PROPOSED = "proposé"
 STATUSES = (STATUS_TRACED, STATUS_REJECTED)
 
+# How hard a meta is to use in game, as the site offers it for filtering. Optional
+# and deliberately without a default: a meta nobody has judged carries no difficulty
+# rather than being assumed to be a beginner's.
+#
+# Here rather than in `cartometa.build.dataset`, which publishes it, because the
+# review interface — which now lets a human set it — cannot import from `build`:
+# `build.dataset` already imports `review.store`, so the reverse direction would be
+# a circular import.
+DIFFICULTIES = ("Beginner", "Intermediate", "Pro")
+
 
 @dataclass
 class MetaRecord:

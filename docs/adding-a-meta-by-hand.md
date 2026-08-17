@@ -10,6 +10,7 @@ A manual meta is **five things**:
 | a title | short, what you see |
 | a description | what it lets you deduce |
 | a category | one of six, fixed |
+| a difficulty *(optional)* | Beginner, Intermediate or Pro — left unrated by default |
 | an image *(optional)* | the screenshot showing the clue |
 | **a footprint** | the area of the globe where the meta applies — drawn with the mouse |
 
@@ -79,6 +80,7 @@ Press `N` (focus must be on the page, not in a field). The form opens.
 | **Title** | required |
 | **Description** | required |
 | **Category** | one of the seven below — no other value |
+| **Difficulty** | optional: `Beginner`, `Intermediate`, `Pro`. Leave it on *not rated* if you have no opinion — that is not a flaw, and the site filters those separately |
 | **Source (URL)** | optional; left empty, no link shows on the site |
 | **Image** | optional: `Ctrl+V` to paste a screenshot, or drag a file onto the dashed frame |
 
@@ -98,6 +100,33 @@ metas, and renaming it would migrate most of the corpus for a cosmetic gain.
 If the form files your meta in the wrong category, do not fight it: pick the
 closest one, then add the correction to `data/categories.json`, keyed by country
 then by meta id.
+
+### Correcting a meta already entered
+
+A typo in a title, a description that reads badly, a category you would file
+differently now, a difficulty you want to set. Reopen the country in correction
+mode:
+
+```
+uv run cartometa-review FR --edit
+```
+
+That queue holds only the metas you can edit, footprints included. Reach the one
+you want with `Space` / `Shift+Space`, press `M`, and the same form reopens,
+prefilled; `Save changes` rewrites it in place. The footprint is untouched —
+including one you are in the middle of drawing, which survives the save.
+
+Without `--edit` the interface is unusable for this: by default the queue skips
+every meta already drawn, so it comes back empty, and `--all` alone puts your
+metas behind all the imported ones (positions 92 to 107 on FR).
+
+`M` only works on **hand-entered metas**, the ones in `data/manual/`. On an
+imported meta the interface says so and refuses: the Plonk It, RMRG and tagged
+texts live in `data/metas/`, which is not versioned and is rewritten wholesale
+by the next import — an edit there would look saved, then vanish.
+
+Editing rewrites `data/manual/<CC>/metas.json`, so it goes into a commit exactly
+like a creation does. Nothing else changes in the workflow.
 
 ```json
 { "FR": { "Izqw": "landscape" } }
@@ -153,6 +182,7 @@ This is the heart of the work. The map is on the right, the source on the left.
 | `Space` / `Shift+Space` | next / previous meta |
 | `U` | undoes the last decision |
 | `N` | new manual meta |
+| `M` | edit the current meta's texts, category and difficulty (hand-entered metas only) |
 
 Modes are **sticky**: once a rectangle is laid down, laying the next one takes
 no keypress.
@@ -380,6 +410,7 @@ Messages are quoted as the tool prints them.
 ```
 uv sync                          # once
 uv run cartometa-review FR       # N → enter, D/C/S/E/F → draw, A → save
+uv run cartometa-review FR --edit  # go back over your own metas, M → correct
 uv run cartometa-build FR        # check (the country code is mandatory)
 python -m http.server 8010 --directory dist
 

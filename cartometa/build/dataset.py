@@ -10,7 +10,7 @@ from shapely.geometry import shape
 
 from cartometa.build.geometry import DEFAULT_TOLERANCE, part_bboxes, simplify_geometry
 from cartometa.extract.categories import CATEGORIES
-from cartometa.models import STATUS_TRACED, STATUS_PROPOSED, STATUSES
+from cartometa.models import DIFFICULTIES, STATUS_TRACED, STATUS_PROPOSED, STATUSES
 from cartometa.review.store import CountryPaths, load_geo, load_metas
 
 EXPORTABLE = (STATUS_TRACED,)
@@ -19,11 +19,11 @@ EXPORTABLE = (STATUS_TRACED,)
 SCOPE_NATIONAL = "national"
 SCOPE_REGIONAL = "regional"
 
-# How hard the meta is to use in game, as the site offers it for filtering. There is
-# deliberately no default: the field is optional, and a meta nobody has judged is
-# published with `difficulty: None` rather than assumed to be a beginner's. The
-# viewer then shows it no badge, and groups those under its "Not rated" pill.
-DIFFICULTIES = ("Beginner", "Intermediate", "Pro")
+# `DIFFICULTIES` now lives in `cartometa.models`, imported above: the review
+# interface, which lets a human set the field, cannot import from `build` — this
+# module already imports `review.store`, so the reverse would be circular. It stays
+# reachable as `dataset.DIFFICULTIES` for the callers that read it as the list the
+# build publishes.
 
 
 def scope_de(pieces: list[dict]) -> str:
