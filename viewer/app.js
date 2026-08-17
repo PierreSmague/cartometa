@@ -4,6 +4,7 @@ const etat = {
   pays: new Map(),   // country code -> {metas, geometries}
   resultats: [],
   categorie: '',
+  difficulte: 'Pro',
   recherche: '',
   pret: false,   // true only once BOTH manifest and index have loaded successfully
   // These two flags tell `rendre()` (and its callers other than the click: search,
@@ -31,6 +32,11 @@ const pointInterroge = L.layerGroup().addTo(carte);
 // Hard-coded for the same reason as the highlight below: Leaflet sets the colour as
 // an SVG presentation attribute, where CSS variables are not reliably substituted.
 const COULEUR_POINT = '#0057d9';
+
+// Ordered low to high: index comparison is what makes the difficulty filter a
+// cumulative ceiling rather than an exact match. Mirrors `DIFFICULTIES` in
+// `cartometa/build/dataset.py`.
+const DIFFICULTES = ['Beginner', 'Intermediate', 'Pro'];
 
 async function demarrer() {
   try {
@@ -388,8 +394,10 @@ function afficherSquelettes() {
 
 function visibles() {
   const terme = etat.recherche.trim().toLowerCase();
+  const plafond = DIFFICULTES.indexOf(etat.difficulte);
   return etat.resultats.filter((meta) => {
     if (etat.categorie && meta.category !== etat.categorie) return false;
+    if (DIFFICULTES.indexOf(meta.difficulty) > plafond) return false;
     if (!terme) return true;
     return `${meta.title} ${meta.description}`.toLowerCase().includes(terme);
   });
@@ -414,7 +422,10 @@ function creerCarte(meta) {
   const code = document.createElement('span');
   code.className = 'code-pays';
   code.textContent = meta.code;
-  legende.append(code, document.createTextNode(meta.title));
+  const difficulte = document.createElement('span');
+  difficulte.className = 'badge-difficulte';
+  difficulte.textContent = meta.difficulty;
+  legende.append(code, difficulte, document.createTextNode(meta.title));
   bloc.appendChild(legende);
   bloc.addEventListener('mouseenter', () => {
     surlignage.clearLayers();
@@ -515,16 +526,44 @@ document.getElementById('recherche').addEventListener('input', (e) => {
 // Category filter: a single active choice, combined with the search in `visibles`.
 // Scope is no longer a filter — it splits the results between the two collapsible
 // sections, which are therefore read together.
-const pastilles = [...document.querySelectorAll('.pastille')];
-for (const bouton of pastilles) {
+// Scoped to its own container, and not a bare `.pastille` selector: the difficulty
+// group below has its own pills, and a click there must not touch this group's
+// `active` state (and vice versa).
+const pastillesCategorie = [...document.querySelectorAll('#filtres-categorie .pastille')];
+for (const bouton of pastillesCategorie) {
   bouton.addEventListener('click', () => {
     // Same safety rail as for the search: see the comment above.
     if (etat.chargement || etat.erreur) return;
-    for (const autre of pastilles) autre.classList.toggle('active', autre === bouton);
+    for (const autre of pastillesCategorie) autre.classList.toggle('active', autre === bouton);
     etat.categorie = bouton.dataset.categorie;
     rendre();
   });
 }
+
+// Difficulty filter: a cumulative ceiling rather than an exact match. Clicking
+// "Intermediate" shows Beginner + Intermediate; clicking "Pro" shows everything.
+// Pills below the chosen ceiling get `.incluse` (included, but not the active
+// choice) so their own "on" state stays visible alongside the ceiling pill.
+const pastillesDifficulte = [...document.querySelectorAll('#filtres-difficulte .pastille')];
+function appliquerPlafondDifficulte(plafond) {
+  const indexPlafond = DIFFICULTES.indexOf(plafond);
+  for (const bouton of pastillesDifficulte) {
+    const indexBouton = DIFFICULTES.indexOf(bouton.dataset.difficulte);
+    bouton.classList.toggle('active', indexBouton === indexPlafond);
+    bouton.classList.toggle('incluse', indexBouton < indexPlafond);
+  }
+  etat.difficulte = plafond;
+}
+for (const bouton of pastillesDifficulte) {
+  bouton.addEventListener('click', () => {
+    if (etat.chargement || etat.erreur) return;
+    appliquerPlafondDifficulte(bouton.dataset.difficulte);
+    rendre();
+  });
+}
+// Matches the `active` class already set on the Pro button in the template — this
+// just brings its siblings' `.incluse` state in sync at load time.
+appliquerPlafondDifficulte(etat.difficulte);
 
 // --- Street View link bar --------------------------------------------------
 

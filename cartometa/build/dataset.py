@@ -18,6 +18,8 @@ EXPORTABLE = (STATUS_TRACED,)
 # Scope of a footprint, as the site offers it for filtering.
 SCOPE_NATIONAL = "national"
 SCOPE_REGIONAL = "regional"
+DIFFICULTIES = ("Beginner", "Intermediate", "Pro")
+DIFFICULTY_DEFAULT = "Beginner"
 
 
 def scope_de(pieces: list[dict]) -> str:
@@ -188,6 +190,12 @@ def build_dataset(
             if meta is None:
                 jeu.orphans.append((pays, identifiant))
                 continue
+            difficulty = meta.get("difficulty", DIFFICULTY_DEFAULT)
+            if difficulty not in DIFFICULTIES:
+                raise SystemExit(
+                    f"{pays}/{identifiant}: unknown difficulty {difficulty!r}.\n"
+                    f"Expected one of {', '.join(DIFFICULTIES)}."
+                )
             geometrie = simplify_geometry(feature["geometry"], tolerance)
             forme = shape(geometrie)
             # One index row per group of parts, not per footprint: the overall
@@ -210,6 +218,7 @@ def build_dataset(
                 "title": meta["title"],
                 "description": meta["description"],
                 "category": corrections.get(identifiant, meta["category"]),
+                "difficulty": difficulty,
                 "scope": scope_de(feature["properties"].get("pieces", [])),
                 "source_url": meta["source_url"],
                 "image_source": meta.get("image"),
