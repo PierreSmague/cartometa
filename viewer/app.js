@@ -38,6 +38,10 @@ const COULEUR_POINT = '#0057d9';
 // `cartometa/build/dataset.py`.
 const DIFFICULTES = ['Beginner', 'Intermediate', 'Pro'];
 
+// Shortened form shown on the meta card's badge — the pill has no room for the full
+// word next to the country code.
+const ABREVIATIONS_DIFFICULTE = { Beginner: 'Beg.', Intermediate: 'Int.', Pro: 'Pro' };
+
 async function demarrer() {
   try {
     const manifeste = await (await fetch('data/manifest.json')).json();
@@ -422,11 +426,13 @@ function creerCarte(meta) {
   const code = document.createElement('span');
   code.className = 'code-pays';
   code.textContent = meta.code;
+  legende.append(code, document.createTextNode(meta.title));
+  bloc.appendChild(legende);
+  // Below the title: difficulty (abbreviated, grey), appearing after country + title.
   const difficulte = document.createElement('span');
   difficulte.className = 'badge-difficulte';
-  difficulte.textContent = meta.difficulty;
-  legende.append(code, difficulte, document.createTextNode(meta.title));
-  bloc.appendChild(legende);
+  difficulte.textContent = ABREVIATIONS_DIFFICULTE[meta.difficulty];
+  bloc.appendChild(difficulte);
   bloc.addEventListener('mouseenter', () => {
     surlignage.clearLayers();
     // Hard-coded colour and not `var(--accent)`: Leaflet sets it as an SVG

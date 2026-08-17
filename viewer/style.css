@@ -255,9 +255,7 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-/* Country and difficulty badges: same neutral style for both, no colour coding by
-   difficulty level. */
-.code-pays, .badge-difficulte {
+.code-pays {
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.07em;
@@ -266,6 +264,18 @@ body {
   background: var(--texte);
   color: var(--fond-carte);
   margin-right: 5px;
+}
+/* Below the title: grey and abbreviated, no colour coding by difficulty level. */
+.badge-difficulte {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  padding: 2px 5px;
+  border-radius: 3px;
+  background: var(--trait);
+  color: var(--texte);
 }
 
 .squelette {
