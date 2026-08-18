@@ -3,7 +3,7 @@
     "id": "man-99d5",
     "country": "FR",
     "tier": "manual",
-    "title": "Bretagne white car",
+    "title": "Bretagne white carm",
     "description": "White car (no antenna) in France is almost exclusively found in the region of Bretagne.",
     "category": "car",
     "source_url": "",
@@ -13,13 +13,14 @@
     "image": "data/manual/FR/images/man-99d5.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Pro"
   },
   {
     "id": "man-06b1",
     "country": "FR",
     "tier": "manual",
-    "title": "Slate roofs",
+    "title": "Slate roofsm",
     "description": "The roofs made of slate are mainly situated in the Massif Central zone. You might find a few of them in very tiny zones in the Pyreneas and Manche.",
     "category": "architecture",
     "source_url": "",
@@ -29,13 +30,14 @@
     "image": "data/manual/FR/images/man-06b1.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Intermediate"
   },
   {
     "id": "man-637b",
     "country": "FR",
     "tier": "manual",
-    "title": "French \"cat\" pylons",
+    "title": "French \"cat\" pylonsm",
     "description": "If you see an electric pylon looking like a cat (two ears and danders), you're 95% of times in France",
     "category": "infrastructure",
     "source_url": "",
@@ -45,13 +47,14 @@
     "image": "data/manual/FR/images/man-637b.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Beginner"
   },
   {
     "id": "man-e34c",
     "country": "FR",
     "tier": "manual",
-    "title": "Réunion car",
+    "title": "Réunion carm",
     "description": "Réunion has a Street View car with visible side mirrors, a roof rack, and black tape at the end of the rear right bar.\n\nNOTE: Make sure not to get this confused with the Ghana car, which has tape on the front right bar.",
     "category": "car",
     "source_url": "https://www.plonkit.net/reunion/4ixl",
@@ -61,13 +64,14 @@
     "image": "data/manual/FR/images/man-e34c.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Beginner"
   },
   {
     "id": "man-54a1",
     "country": "FR",
     "tier": "manual",
-    "title": "French infrastructures",
+    "title": "French infrastructuresm",
     "description": "Being a French Department, you will see French infrastructure, such as signs, bollards and poles.",
     "category": "infrastructure",
     "source_url": "https://www.plonkit.net/reunion/TYj8",
@@ -77,13 +81,14 @@
     "image": "data/manual/FR/images/man-54a1.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Beginner"
   },
   {
     "id": "man-4ea1",
     "country": "FR",
     "tier": "manual",
-    "title": "Réunion landscape",
+    "title": "Réunion landscapem",
     "description": "Réunion is a mountainous volcanic island in the Indian Ocean on a similar latitude to Queensland, Australia. Most roads are along the coast, with lush green mountains visible close by. Vegetation consists of palms and ferns, pine trees at higher elevation, and flowering plants due to the island’s tropical savanna climate.",
     "category": "landscape",
     "source_url": "https://www.plonkit.net/reunion/Ccd5",
@@ -93,13 +98,14 @@
     "image": "data/manual/FR/images/man-4ea1.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Beginner"
   },
   {
     "id": "man-b7d5",
     "country": "FR",
     "tier": "manual",
-    "title": "Réunion bus stops",
+    "title": "Réunion bus stopsm",
     "description": "There are six distinct bus stop designs on Réunion\nThis infographic shows where each one can be found. The list above is ranked by how common each one is found.",
     "category": "infrastructure",
     "source_url": "https://www.plonkit.net/reunion/oFny",
@@ -109,13 +115,14 @@
     "image": "data/manual/FR/images/man-b7d5.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Pro"
   },
   {
     "id": "man-ec42",
     "country": "FR",
     "tier": "manual",
-    "title": "Sugarcane",
+    "title": "Sugarcanem",
     "description": "Sugarcane plantations on Réunion can be found in two regions: the northeast and the southwest. The southwest is generally more built up and densely populated, meaning you will see more buildings or cars around.",
     "category": "vegetation",
     "source_url": "https://www.plonkit.net/reunion/5wwx",
@@ -125,13 +132,14 @@
     "image": "data/manual/FR/images/man-ec42.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Beginner"
   },
   {
     "id": "man-531e",
     "country": "FR",
     "tier": "manual",
-    "title": "Cilaos",
+    "title": "Cilaosm",
     "description": "Cilaos is a town inside a caldera. It can be recognized by the wall of mountains surrounding the town with overcast coverage.",
     "category": "landscape",
     "source_url": "https://www.plonkit.net/reunion/m512",
@@ -141,13 +149,14 @@
     "image": "data/manual/FR/images/man-531e.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Intermediate"
   },
   {
     "id": "man-e36c",
     "country": "FR",
     "tier": "manual",
-    "title": "Saint Louis blur",
+    "title": "Saint Louis blurm",
     "description": "You can spot this rectangular blur on the front camera in all the coverage going north of Saint-Louis.",
     "category": "car",
     "source_url": "https://www.plonkit.net/reunion/nllT",
@@ -157,13 +166,14 @@
     "image": "data/manual/FR/images/man-e36c.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Intermediate"
   },
   {
     "id": "man-7eb1",
     "country": "FR",
     "tier": "manual",
-    "title": "North East N1",
+    "title": "North East N1m",
     "description": "The northwestern section of the N1 is divided, with a distinct ridge to the southeast and the ocean to the northwest.\nNote that although a bridge appears on the map, the coverage was taken before the bridge was built, meaning you will not see the bridge.",
     "category": "landscape",
     "source_url": "https://www.plonkit.net/reunion/gOIT",
@@ -173,13 +183,14 @@
     "image": "data/manual/FR/images/man-7eb1.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Intermediate"
   },
   {
     "id": "man-5292",
     "country": "FR",
     "tier": "manual",
-    "title": "Volcano Road",
+    "title": "Volcano Roadm",
     "description": "Route du Volcan can be recognized by the Martian landscape. The only vegetation is scattered shrubs and the soil is a distinct brown-red colour. These white stones lining the road are also a good clue.",
     "category": "landscape",
     "source_url": "https://www.plonkit.net/reunion/e1PC",
@@ -189,13 +200,14 @@
     "image": "data/manual/FR/images/man-5292.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Intermediate"
   },
   {
     "id": "man-1d4c",
     "country": "FR",
     "tier": "manual",
-    "title": "Route Forestière 58",
+    "title": "Route Forestière 58m",
     "description": "La Route Forestière 58 de la Scierie et du Haut des Makes is a winding dirt track that can be recognized by the dense vegetation surrounding it, particularly pine trees and eucalyptus. The track itself is also dark in colour, with grass growing in the middle of it.",
     "category": "landscape",
     "source_url": "https://www.plonkit.net/reunion/aap9",
@@ -205,13 +217,14 @@
     "image": "data/manual/FR/images/man-1d4c.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Pro"
   },
   {
     "id": "man-d363",
     "country": "FR",
     "tier": "manual",
-    "title": "East",
+    "title": "Eastm",
     "description": "The eastern region of Réunion is the least densely populated, evident by the eastern part of the N2, which is a single carriageway passing through somewhat dense vegetation on both sides, or a vast landscape with little to no trees.",
     "category": "landscape",
     "source_url": "https://www.plonkit.net/reunion/UMXJ",
@@ -221,13 +234,14 @@
     "image": "data/manual/FR/images/man-d363.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Intermediate"
   },
   {
     "id": "man-2e78",
     "country": "FR",
     "tier": "manual",
-    "title": "Saint Paul & Saint Denis bollards",
+    "title": "Saint Paul & Saint Denis bollardsm",
     "description": "The two largest towns in Réunion can be differentiated by their bollards, commonly seen at intersections. Saint Paul uses black bollards, while Saint Denis uses green bollards, often with white balls on top. Saint Denis is also more built up, being the capital.",
     "category": "infrastructure",
     "source_url": "https://www.plonkit.net/reunion/UhQa",
@@ -237,13 +251,14 @@
     "image": "data/manual/FR/images/man-2e78.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Intermediate"
   },
   {
     "id": "man-0324",
     "country": "FR",
     "tier": "manual",
-    "title": "Périgord yellow limestone",
+    "title": "Périgord yellow limestonem",
     "description": "In Périgord, a lot of buildings are made using the local limestone with a very distinct yellow tint.",
     "category": "architecture",
     "source_url": "",
@@ -253,6 +268,7 @@
     "image": "data/manual/FR/images/man-0324.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Intermediate"
   }
 ]
