@@ -13,7 +13,8 @@
     "image": "data/manual/FR/images/man-99d5.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Pro"
   },
   {
     "id": "man-06b1",
@@ -29,7 +30,8 @@
     "image": "data/manual/FR/images/man-06b1.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Intermediate"
   },
   {
     "id": "man-637b",
@@ -45,7 +47,8 @@
     "image": "data/manual/FR/images/man-637b.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Beginner"
   },
   {
     "id": "man-e34c",
@@ -61,7 +64,8 @@
     "image": "data/manual/FR/images/man-e34c.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Beginner"
   },
   {
     "id": "man-54a1",
@@ -77,7 +81,8 @@
     "image": "data/manual/FR/images/man-54a1.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Beginner"
   },
   {
     "id": "man-4ea1",
@@ -93,7 +98,8 @@
     "image": "data/manual/FR/images/man-4ea1.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Beginner"
   },
   {
     "id": "man-b7d5",
@@ -109,7 +115,8 @@
     "image": "data/manual/FR/images/man-b7d5.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Pro"
   },
   {
     "id": "man-ec42",
@@ -125,7 +132,8 @@
     "image": "data/manual/FR/images/man-ec42.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Beginner"
   },
   {
     "id": "man-531e",
@@ -141,7 +149,8 @@
     "image": "data/manual/FR/images/man-531e.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Intermediate"
   },
   {
     "id": "man-e36c",
@@ -157,7 +166,8 @@
     "image": "data/manual/FR/images/man-e36c.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Intermediate"
   },
   {
     "id": "man-7eb1",
@@ -173,7 +183,8 @@
     "image": "data/manual/FR/images/man-7eb1.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Intermediate"
   },
   {
     "id": "man-5292",
@@ -189,7 +200,8 @@
     "image": "data/manual/FR/images/man-5292.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Intermediate"
   },
   {
     "id": "man-1d4c",
@@ -205,7 +217,8 @@
     "image": "data/manual/FR/images/man-1d4c.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Pro"
   },
   {
     "id": "man-d363",
@@ -221,7 +234,8 @@
     "image": "data/manual/FR/images/man-d363.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Intermediate"
   },
   {
     "id": "man-2e78",
@@ -237,7 +251,8 @@
     "image": "data/manual/FR/images/man-2e78.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Intermediate"
   },
   {
     "id": "man-0324",
@@ -253,6 +268,7 @@
     "image": "data/manual/FR/images/man-0324.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
+    "overlay": null,
+    "difficulty": "Intermediate"
   }
 ]
