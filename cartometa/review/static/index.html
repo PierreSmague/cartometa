@@ -50,7 +50,7 @@
       <kbd>S</kbd> subdivisions <kbd>E</kbd> country <kbd>F</kbd> clip
       <kbd>⌫</kbd> remove <kbd>0</kbd> empty
       <kbd>A</kbd> save <kbd>R</kbd> reject <kbd>Space</kbd> next
-      <kbd>U</kbd> undo <kbd>N</kbd> new meta
+      <kbd>U</kbd> undo <kbd>N</kbd> new meta <kbd>M</kbd> edit texts
       <kbd>Ctrl+V</kbd> image
     </span>
   </header>
@@ -67,7 +67,7 @@
   </div>
 
   <div id="manual" hidden>
-    <h3>New meta</h3>
+    <h3 id="manual-heading">New meta</h3>
     <label for="manual-title">Title</label>
     <input id="manual-title" type="text">
     <label for="manual-description">Description</label>
@@ -81,6 +81,15 @@
       <option value="car">car</option>
       <option value="culture">culture</option>
       <option value="autre" selected>autre</option>
+    </select>
+    <!-- Empty value first, and selected by default: a meta nobody has judged carries
+         no difficulty at all, and that has to stay reachable to clear one. -->
+    <label for="manual-difficulty">Difficulty</label>
+    <select id="manual-difficulty">
+      <option value="" selected>not rated</option>
+      <option value="Beginner">Beginner</option>
+      <option value="Intermediate">Intermediate</option>
+      <option value="Pro">Pro</option>
     </select>
     <label for="manual-source">Source (URL, optional)</label>
     <input id="manual-source" type="text">

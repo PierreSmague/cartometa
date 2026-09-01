@@ -6,6 +6,7 @@ import pytest
 
 from cartometa.extract.categories import CATEGORIES
 from cartometa.build.dataset import (
+    DIFFICULTIES,
     SCOPE_NATIONAL,
     SCOPE_REGIONAL,
     build_dataset,
@@ -45,6 +46,19 @@ def _ecrire_pays(data_dir: Path, pays: str, entrees: list[tuple[str, str, float]
             for i, statut, cote in entrees
         ],
     }), "utf-8")
+
+
+def _ecrire_pays_un_meta(data_dir: Path, **champs) -> None:
+    """One drawn meta in PL, with `champs` merged into it.
+
+    `_ecrire_pays` builds its metas through `_meta`, which sets the required fields
+    only: this is the way to give a single meta an optional one — or, by passing
+    nothing, to assert what the build does when that field is absent.
+    """
+    _ecrire_pays(data_dir, "PL", [("pl1", "validé", 3.0)])
+    (data_dir / "metas" / "PL.json").write_text(
+        json.dumps([{**_meta("pl1"), **champs}]), "utf-8"
+    )
 
 
 def _ecrire_pays_pieces(
@@ -600,3 +614,62 @@ def test_the_front_end_category_values_match_the_build_ones():
     valeurs = re.findall(r'data-categorie="([^"]*)"', html)
 
     assert valeurs == ["", *CATEGORIES]
+
+
+def test_a_meta_with_no_difficulty_is_published_unrated(tmp_path):
+    """The field is optional and most metas do not have it. It must not be guessed:
+    defaulting to `Beginner` would make the site claim a level nobody has judged, on
+    every meta entered before the field existed."""
+    data_dir = tmp_path / "data"
+    _ecrire_pays_un_meta(data_dir)
+
+    jeu = build_dataset(data_dir, ["PL"])
+
+    assert jeu.countries["PL"]["metas"]["pl1"]["difficulty"] is None
+
+
+def test_a_filled_difficulty_is_published_as_it_stands(tmp_path):
+    data_dir = tmp_path / "data"
+    _ecrire_pays_un_meta(data_dir, difficulty="Intermediate")
+
+    jeu = build_dataset(data_dir, ["PL"])
+
+    assert jeu.countries["PL"]["metas"]["pl1"]["difficulty"] == "Intermediate"
+
+
+def test_an_empty_difficulty_counts_as_unrated(tmp_path):
+    """What an editing form leaves behind when the level is cleared. It means "not
+    rated", and must not be taken for an unknown level and stop the build."""
+    data_dir = tmp_path / "data"
+    _ecrire_pays_un_meta(data_dir, difficulty="")
+
+    jeu = build_dataset(data_dir, ["PL"])
+
+    assert jeu.countries["PL"]["metas"]["pl1"]["difficulty"] is None
+
+
+def test_an_unknown_difficulty_is_refused(tmp_path):
+    """Same reasoning as an unknown category: `Expert` must fail loudly rather than
+    be published, since the site has no pill for it — the meta would show under All
+    and be unreachable through every difficulty filter."""
+    data_dir = tmp_path / "data"
+    _ecrire_pays_un_meta(data_dir, difficulty="Expert")
+
+    with pytest.raises(SystemExit, match="Expert"):
+        build_dataset(data_dir, ["PL"])
+
+
+def test_the_front_end_difficulty_values_match_the_build_ones():
+    """The same cross-language contract as for the categories above, and just as
+    silent when it breaks: `app.js` filters by comparing `data-difficulte` to the
+    `difficulty` the build wrote, for equality.
+
+    The leading empty value is the "All" pill, which filters nothing. The trailing
+    `none` is the "Not rated" one: a value the build never writes, since it selects
+    the metas that carry no difficulty at all.
+    """
+    html = (Path(__file__).resolve().parents[1] / "viewer" / "index.html").read_text("utf-8")
+
+    valeurs = re.findall(r'data-difficulte="([^"]*)"', html)
+
+    assert valeurs == ["", *DIFFICULTIES, "none"]

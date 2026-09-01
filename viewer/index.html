@@ -79,15 +79,30 @@
     <div id="carte"></div>
     <section id="panneau">
       <div id="filtres" hidden>
-        <button class="pastille active" data-categorie="">All</button>
-        <button class="pastille" data-categorie="infrastructure">Infrastructures</button>
-        <button class="pastille" data-categorie="vegetation">Vegetation &amp; Agriculture</button>
-        <button class="pastille" data-categorie="landscape">Landscape</button>
-        <button class="pastille" data-categorie="architecture">Architecture</button>
-        <button class="pastille" data-categorie="car">Car meta</button>
-        <button class="pastille" data-categorie="culture">Culture</button>
-        <button class="pastille" data-categorie="autre">Other</button>
-        <input id="recherche" type="search" placeholder="Filter these results…">
+        <div id="filtres-categorie" class="ligne-pastilles">
+          <button class="pastille active" data-categorie="">All</button>
+          <button class="pastille" data-categorie="infrastructure">Infrastructures</button>
+          <button class="pastille" data-categorie="vegetation">Vegetation &amp; Agriculture</button>
+          <button class="pastille" data-categorie="landscape">Landscape</button>
+          <button class="pastille" data-categorie="architecture">Architecture</button>
+          <button class="pastille" data-categorie="car">Car meta</button>
+          <button class="pastille" data-categorie="culture">Culture</button>
+          <button class="pastille" data-categorie="autre">Other</button>
+          <input id="recherche" type="search" placeholder="Filter these results…">
+        </div>
+        <!-- Strict match, exactly like the category row above: "Intermediate" shows
+             the Intermediate metas and nothing else, and the leading empty value
+             ("All") is the default because it filters nothing. `none` is not a level
+             the build ever writes — it selects the metas whose difficulty nobody has
+             judged yet. Keep these values in sync with `DIFFICULTIES` in
+             `cartometa/build/dataset.py`; a test enforces it. -->
+        <div id="filtres-difficulte" class="ligne-pastilles">
+          <button class="pastille active" data-difficulte="">All</button>
+          <button class="pastille" data-difficulte="Beginner">Beginner</button>
+          <button class="pastille" data-difficulte="Intermediate">Intermediate</button>
+          <button class="pastille" data-difficulte="Pro">Pro</button>
+          <button class="pastille" data-difficulte="none">Not rated</button>
+        </div>
       </div>
       <div id="accueil">
         <h1>Click anywhere on the map</h1>
@@ -132,6 +147,7 @@
     <button id="loupe-fermer" aria-label="Close">×</button>
     <img id="loupe-image" alt="">
     <p id="loupe-texte"></p>
+    <p id="loupe-description"></p>
     <div id="anki-zone">
       <button id="anki-ajouter" type="button" hidden>Add to Anki</button>
       <span id="anki-etat" role="status" aria-live="polite"></span>

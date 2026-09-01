@@ -10,7 +10,7 @@ from shapely.geometry import shape
 
 from cartometa.build.geometry import DEFAULT_TOLERANCE, part_bboxes, simplify_geometry
 from cartometa.extract.categories import CATEGORIES
-from cartometa.models import STATUS_TRACED, STATUS_PROPOSED, STATUSES
+from cartometa.models import DIFFICULTIES, STATUS_TRACED, STATUS_PROPOSED, STATUSES
 from cartometa.review.store import CountryPaths, load_geo, load_metas
 
 EXPORTABLE = (STATUS_TRACED,)
@@ -18,6 +18,12 @@ EXPORTABLE = (STATUS_TRACED,)
 # Scope of a footprint, as the site offers it for filtering.
 SCOPE_NATIONAL = "national"
 SCOPE_REGIONAL = "regional"
+
+# `DIFFICULTIES` now lives in `cartometa.models`, imported above: the review
+# interface, which lets a human set the field, cannot import from `build` — this
+# module already imports `review.store`, so the reverse would be circular. It stays
+# reachable as `dataset.DIFFICULTIES` for the callers that read it as the list the
+# build publishes.
 
 
 def scope_de(pieces: list[dict]) -> str:
@@ -188,6 +194,18 @@ def build_dataset(
             if meta is None:
                 jeu.orphans.append((pays, identifiant))
                 continue
+            # A missing field is the normal case, not an error; only a *filled* one
+            # has to be one of the three known levels. Fatal rather than silently
+            # dropped, for the same reason as an unknown category: the meta would be
+            # published and unreachable through every difficulty pill.
+            # `or None` so that an empty string — what an editing form leaves behind
+            # when the level is cleared — means "not rated" and not "unknown level".
+            difficulty = meta.get("difficulty") or None
+            if difficulty is not None and difficulty not in DIFFICULTIES:
+                raise SystemExit(
+                    f"{pays}/{identifiant}: unknown difficulty {difficulty!r}.\n"
+                    f"Expected one of {', '.join(DIFFICULTIES)}."
+                )
             geometrie = simplify_geometry(feature["geometry"], tolerance)
             forme = shape(geometrie)
             # One index row per group of parts, not per footprint: the overall
@@ -210,6 +228,7 @@ def build_dataset(
                 "title": meta["title"],
                 "description": meta["description"],
                 "category": corrections.get(identifiant, meta["category"]),
+                "difficulty": difficulty,
                 "scope": scope_de(feature["properties"].get("pieces", [])),
                 "source_url": meta["source_url"],
                 "image_source": meta.get("image"),

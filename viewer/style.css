@@ -120,13 +120,23 @@ body {
 
 #filtres {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
+  flex-direction: column;
+  gap: 8px;
   padding: 10px 16px;
   border-bottom: 1px solid var(--trait);
 }
 #filtres[hidden] { display: none; }
+.ligne-pastilles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+/* Separates the difficulty group from the category group above it. */
+#filtres-difficulte {
+  padding-top: 8px;
+  border-top: 1px solid var(--trait);
+}
 .pastille {
   font: inherit;
   font-size: 11px;
@@ -252,6 +262,18 @@ body {
   color: var(--fond-carte);
   margin-right: 5px;
 }
+/* Below the title: grey and abbreviated, no colour coding by difficulty level. */
+.badge-difficulte {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  padding: 2px 5px;
+  border-radius: 3px;
+  background: var(--trait);
+  color: var(--texte);
+}
 
 .squelette {
   aspect-ratio: 16 / 8;
@@ -291,6 +313,19 @@ body {
 #loupe img { max-width: 100%; max-height: 76vh; object-fit: contain; border-radius: var(--rayon); }
 #loupe p { color: #f2f2ee; max-width: 80ch; text-align: center; margin: 0; font-size: 13px; }
 #loupe p a { color: #f2f2ee; }
+#loupe-description {
+  /* A handful of descriptions carry deliberate line breaks (lists of clues): pre-line
+     keeps them without letting the source's incidental spacing dictate the layout. */
+  white-space: pre-line;
+  /* Centred text reads fine for a one-line title, not for several sentences. */
+  text-align: left;
+  color: #d9d9d3;
+  line-height: 1.45;
+  /* The image already claims up to 76vh: without this cap, a long description pushes
+     the whole overlay past the viewport with no way to scroll to it. */
+  max-height: 22vh;
+  overflow-y: auto;
+}
 #loupe-fermer {
   position: absolute;
   top: 16px;

@@ -4,6 +4,7 @@ const etat = {
   pays: new Map(),   // country code -> {metas, geometries}
   resultats: [],
   categorie: '',
+  difficulte: '',
   recherche: '',
   pret: false,   // true only once BOTH manifest and index have loaded successfully
   // These two flags tell `rendre()` (and its callers other than the click: search,
@@ -31,6 +32,17 @@ const pointInterroge = L.layerGroup().addTo(carte);
 // Hard-coded for the same reason as the highlight below: Leaflet sets the colour as
 // an SVG presentation attribute, where CSS variables are not reliably substituted.
 const COULEUR_POINT = '#0057d9';
+
+// Value of the "Not rated" pill. It is not a difficulty the build ever writes — a
+// meta nobody has judged simply has no `difficulty` at all — so it needs a marker of
+// its own in the template, distinct from the empty value the "All" pill carries.
+const NON_EVALUEE = 'none';
+
+// Shortened form shown on the meta card's badge — there is no room for the full word
+// next to the country code. Its keys mirror `DIFFICULTIES` in
+// `cartometa/build/dataset.py`; a meta with no difficulty gets no badge at all,
+// rather than a badge claiming a level nobody has judged.
+const ABREVIATIONS_DIFFICULTE = { Beginner: 'Beg.', Intermediate: 'Int.', Pro: 'Pro' };
 
 async function demarrer() {
   try {
@@ -390,6 +402,12 @@ function visibles() {
   const terme = etat.recherche.trim().toLowerCase();
   return etat.resultats.filter((meta) => {
     if (etat.categorie && meta.category !== etat.categorie) return false;
+    // Strict match, like the category filter: "Intermediate" shows the Intermediate
+    // metas and nothing else. `NON_EVALUEE` is the one choice that matches on
+    // absence — the metas still waiting to be judged.
+    if (etat.difficulte === NON_EVALUEE) {
+      if (meta.difficulty) return false;
+    } else if (etat.difficulte && meta.difficulty !== etat.difficulte) return false;
     if (!terme) return true;
     return `${meta.title} ${meta.description}`.toLowerCase().includes(terme);
   });
@@ -416,6 +434,15 @@ function creerCarte(meta) {
   code.textContent = meta.code;
   legende.append(code, document.createTextNode(meta.title));
   bloc.appendChild(legende);
+  // Below the title: difficulty (abbreviated, grey), appearing after country + title.
+  // Absent on a meta nobody has judged: the card then says nothing about its level,
+  // which is exactly what is known about it.
+  if (meta.difficulty) {
+    const difficulte = document.createElement('span');
+    difficulte.className = 'badge-difficulte';
+    difficulte.textContent = ABREVIATIONS_DIFFICULTE[meta.difficulty];
+    bloc.appendChild(difficulte);
+  }
   bloc.addEventListener('mouseenter', () => {
     surlignage.clearLayers();
     // Hard-coded colour and not `var(--accent)`: Leaflet sets it as an SVG
@@ -477,6 +504,27 @@ function ouvrirLoupe(meta) {
   } else {
     texte.textContent = meta.title;
   }
+  const description = document.getElementById('loupe-description');
+  // textContent for the same reason as the cards: descriptions come from third-party
+  // HTML and can contain anything. Two out of three descriptions open with the title
+  // verbatim (the title is extracted from the description's opening): showing both
+  // would print the same sentence twice in a row, so the title prefix is stripped —
+  // but only when the title is a complete sentence. A fragment title ("Yellow",
+  // "Pas de la Casa") continues its sentence in the description, and the remainder
+  // alone would start mid-sentence; there the whole description is kept. A description
+  // that says nothing beyond the title — or none at all, the field is optional on
+  // hand-entered metas — hides the paragraph entirely rather than leaving an empty
+  // block between the title and the Anki zone.
+  const complet = (meta.description || '').trim();
+  const titre = (meta.title || '').trim();
+  let reste = complet;
+  if (complet === titre) {
+    reste = '';
+  } else if (/[.!?…:]$/.test(titre) && complet.startsWith(titre)) {
+    reste = complet.slice(titre.length).trim();
+  }
+  description.textContent = reste;
+  description.hidden = !reste;
   // Everything the Anki module needs to know goes through this event: app.js does not
   // know about Anki, anki.js knows neither the map nor the gallery. The image URL is
   // absolute because it leaves the page — it is Anki (the software) that will download
@@ -512,19 +560,28 @@ document.getElementById('recherche').addEventListener('input', (e) => {
   rendre();
 });
 
-// Category filter: a single active choice, combined with the search in `visibles`.
-// Scope is no longer a filter — it splits the results between the two collapsible
-// sections, which are therefore read together.
-const pastilles = [...document.querySelectorAll('.pastille')];
-for (const bouton of pastilles) {
-  bouton.addEventListener('click', () => {
-    // Same safety rail as for the search: see the comment above.
-    if (etat.chargement || etat.erreur) return;
-    for (const autre of pastilles) autre.classList.toggle('active', autre === bouton);
-    etat.categorie = bouton.dataset.categorie;
-    rendre();
-  });
+// Category and difficulty filters: two groups, one behaviour — a single active
+// choice per group, whose empty value ("All") filters nothing. Both are combined
+// with the search in `visibles`. Scope is no longer a filter: it splits the results
+// between the two collapsible sections, which are therefore read together.
+//
+// Each group is queried inside its own container, and not through a bare `.pastille`
+// selector: a click in one group must never touch the other's `active` state. One
+// function rather than two identical loops, so the two cannot drift apart.
+function brancherFiltre(conteneur, champ) {
+  const pastilles = [...document.querySelectorAll(`#${conteneur} .pastille`)];
+  for (const bouton of pastilles) {
+    bouton.addEventListener('click', () => {
+      // Same safety rail as for the search: see the comment above.
+      if (etat.chargement || etat.erreur) return;
+      for (const autre of pastilles) autre.classList.toggle('active', autre === bouton);
+      etat[champ] = bouton.dataset[champ];
+      rendre();
+    });
+  }
 }
+brancherFiltre('filtres-categorie', 'categorie');
+brancherFiltre('filtres-difficulte', 'difficulte');
 
 // --- Street View link bar --------------------------------------------------
 

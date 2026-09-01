@@ -21,8 +21,15 @@ then <http://127.0.0.1:8010/>. `Ctrl+C` to stop.
 
 Clicking the map opens a gallery of the matching metas, sorted by increasing
 area. Hovering a thumbnail highlights its footprint on the map; clicking it
-opens the full-size image. Filters stack: category, scope (regional /
-national) and free-text search.
+opens the full-size image. Filters stack: category, difficulty, and free-text
+search. Scope (regional / national) is no longer a filter: it splits the
+results into two collapsible sections, read together.
+
+Difficulty is `Beginner`, `Intermediate` or `Pro`, and it is **optional**: a
+meta nobody has judged carries none, shows no badge, and answers to the "Not
+rated" pill. Both pill rows are a strict single choice — "Intermediate" shows
+the Intermediate metas and nothing else — with a leading "All" that filters
+nothing.
 
 The seven categories are Infrastructures, Vegetation & Agriculture, Landscape,
 Architecture, Car meta, Culture and Other. A meta's category is inferred from
@@ -93,6 +100,7 @@ arrives **without geometry**: drawing its footprint is up to you.
 | `Space` / `Shift+Space` | next / previous meta |
 | `U` | undoes the last decision |
 | `N` | enters a manual meta (text + pasted or dropped image) |
+| `M` | reopens that form on the current meta to correct its title, description, category and difficulty |
 
 Modes are **sticky**: once a rectangle is laid down, laying the next one takes
 no keypress. A footprint is the union of its pieces — two disjoint rectangles,
@@ -107,6 +115,21 @@ never in the browser.
 
 The blue dot, when present, is the **ground truth**: the position of the
 meta's Maps link.
+
+`M` only applies to hand-entered metas, those of `data/manual/`. The imported
+texts (Plonk It, RMRG, tagged) live in `data/metas/`, which is not versioned and
+is rewritten wholesale by the next import: the interface refuses the edit and
+says why, rather than writing where the change would be lost.
+
+```
+uv run cartometa-review <CC> --edit
+```
+
+is the pass of corrections: only the metas you can edit, reopened with their
+footprints. Without it, reaching them means going past every imported meta
+first — on FR they sit at positions 92 to 107 of a 108-meta queue. `--edit`
+implies `--all` below, since the texts one wants to correct belong to metas
+already drawn.
 
 `cartometa-review <CC> --all` reopens every meta, including the ones already
 drawn, with their pieces — to go over a country again when a new source does
