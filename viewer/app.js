@@ -12,6 +12,10 @@ const etat = {
   // guess from `resultats` alone.
   chargement: false,   // a request for the current click is in flight
   erreur: false,       // the last click failed; the message stays on screen
+  // Pinned metas: meta object -> {indice, couleur, tirets, calque}. Lives here and
+  // not in the DOM because the cards are rebuilt on every filter or search: a card
+  // reads its pinned state back from this map when it is created.
+  epingles: new Map(),
 };
 
 const carte = L.map('carte', { worldCopyJump: true }).setView([25, 15], 3);
@@ -24,6 +28,11 @@ const surlignage = L.layerGroup().addTo(carte);
 // Indispensable for a pasted link, which the visitor did not point at on screen;
 // useful on click, where the footprint alone does not say which point selected it.
 const pointInterroge = L.layerGroup().addTo(carte);
+// Pinned footprints sit in a pane of their own, just below the overlay pane (400)
+// where the hover highlight and the point marker are drawn: however many areas are
+// pinned, the red of the hover and the blue of the point always stay readable on top.
+carte.createPane('epingles').style.zIndex = 399;
+const epingles = L.layerGroup().addTo(carte);
 // Blue, and not the site's red accent: that one already highlights a meta's
 // footprint on hover, and the marker would blend into what it is supposed to stand
 // out from. The same blue as the drawing tool's ground truth
@@ -32,6 +41,23 @@ const pointInterroge = L.layerGroup().addTo(carte);
 // Hard-coded for the same reason as the highlight below: Leaflet sets the colour as
 // an SVG presentation attribute, where CSS variables are not reliably substituted.
 const COULEUR_POINT = '#0057d9';
+
+// Palette of the pinned footprints. Eight hues chosen to stay apart from one another
+// and from the two colours already meaning something on the map: the red accent of
+// the hover highlight and the blue of the point marker. A pin takes the lowest free
+// slot and gives it back when removed, so a colour never changes under the visitor's
+// eyes while its meta stays pinned. Beyond eight pins the hues are reused with a
+// dashed outline, which keeps a ninth area distinguishable from the first.
+const PALETTE_EPINGLES = [
+  '#e08a00', // orange
+  '#6a3fb5', // violet
+  '#0c8f5f', // green
+  '#c72a8f', // magenta
+  '#00879e', // teal
+  '#8b5a2b', // brown
+  '#7a8f00', // olive
+  '#556b8d', // slate
+];
 
 // Value of the "Not rated" pill. It is not a difficulty the build ever writes — a
 // meta nobody has judged simply has no `difficulty` at all — so it needs a marker of
@@ -288,6 +314,10 @@ async function allerAuPoint(lon, lat) {
   afficherSquelettes();
   surlignage.clearLayers();
   pointInterroge.clearLayers();
+  // Pins belong to a query: their footprints can only be removed from their card, and
+  // the cards of the previous point are about to disappear. Keeping the polygons with
+  // no way left to dismiss them would be worse than starting afresh.
+  viderEpingles();
   // Placed before the network call: the marker appears on click, without waiting for
   // the gallery. It also survives a load failure, where it remains the only trace of
   // what was asked for.
@@ -416,6 +446,7 @@ function visibles() {
 function creerCarte(meta) {
   const bloc = document.createElement('article');
   bloc.className = 'carte-meta';
+  bloc.meta = meta; // read back by the pin toggle, see `basculerEpingle`
   // textContent rather than innerHTML: the titles come from third-party HTML and can
   // contain anything.
   // A meta with no image (the build omits `thumb`/`full` together when there is no
@@ -443,6 +474,20 @@ function creerCarte(meta) {
     difficulte.textContent = ABREVIATIONS_DIFFICULTE[meta.difficulty];
     bloc.appendChild(difficulte);
   }
+  // Pin button, top-right of the card. A button and not the card's own click: that
+  // one has opened the blow-up since the first day, the userscript's users know it,
+  // and a toggle needs a target one can also hit with a finger, where hover does not
+  // exist. `stopPropagation` keeps the pin from opening the blow-up as well.
+  const epingle = document.createElement('button');
+  epingle.type = 'button';
+  epingle.className = 'epingle';
+  epingle.innerHTML = ICONE_EPINGLE;
+  epingle.addEventListener('click', (evenement) => {
+    evenement.stopPropagation();
+    basculerEpingle(meta);
+  });
+  bloc.appendChild(epingle);
+  marquerCarte(bloc, meta);
   bloc.addEventListener('mouseenter', () => {
     surlignage.clearLayers();
     // Hard-coded colour and not `var(--accent)`: Leaflet sets it as an SVG
@@ -460,6 +505,84 @@ function creerCarte(meta) {
   bloc.addEventListener('click', () => ouvrirLoupe(meta));
   return bloc;
 }
+
+// --- Pinned footprints -------------------------------------------------------
+
+// Inline SVG rather than an emoji: the glyph then takes `currentColor`, so the same
+// drawing serves for the idle grey and for the pin's own colour once active.
+const ICONE_EPINGLE = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">'
+  + '<path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7z'
+  + 'm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>';
+
+const boutonViderEpingles = document.getElementById('epingles-vider');
+
+// Reflects the pinned state on a card: coloured outline and pressed button. Called
+// when a card is built (the gallery is rebuilt on every filter) and when its pin is
+// toggled, so that one function owns what "pinned" looks like.
+function marquerCarte(bloc, meta) {
+  const epingle = etat.epingles.get(meta);
+  bloc.classList.toggle('epinglee', Boolean(epingle));
+  bloc.style.setProperty('--couleur-epingle', epingle ? epingle.couleur : '');
+  const bouton = bloc.querySelector('.epingle');
+  const libelle = epingle ? 'Unpin this area' : 'Pin this area on the map';
+  bouton.setAttribute('aria-pressed', String(Boolean(epingle)));
+  bouton.setAttribute('aria-label', libelle);
+  bouton.title = libelle;
+}
+
+function majBoutonVider() {
+  const nombre = etat.epingles.size;
+  boutonViderEpingles.hidden = !nombre;
+  boutonViderEpingles.textContent = `Clear pins (${nombre})`;
+}
+
+// Lowest free slot of the palette; past the eighth pin, hues come round again with a
+// dashed outline (see PALETTE_EPINGLES).
+function attribuerCouleur() {
+  const prises = new Set([...etat.epingles.values()].map((e) => e.indice));
+  let indice = PALETTE_EPINGLES.findIndex((_, i) => !prises.has(i));
+  let tirets = false;
+  if (indice === -1) {
+    indice = etat.epingles.size % PALETTE_EPINGLES.length;
+    tirets = true;
+  }
+  return { indice, couleur: PALETTE_EPINGLES[indice], tirets };
+}
+
+function basculerEpingle(meta) {
+  const existante = etat.epingles.get(meta);
+  if (existante) {
+    epingles.removeLayer(existante.calque);
+    etat.epingles.delete(meta);
+  } else {
+    const { indice, couleur, tirets } = attribuerCouleur();
+    const calque = L.geoJSON(etat.pays.get(meta.code).geometries[meta.geom], {
+      // interactive: false for the same reason as the hover highlight: an
+      // interactive footprint would swallow the map click over its whole area, and
+      // the visitor could no longer query a point inside a pinned meta.
+      interactive: false,
+      pane: 'epingles',
+      color: couleur, weight: 2, fillOpacity: 0.18,
+      dashArray: tirets ? '6 4' : null,
+    }).addTo(epingles);
+    etat.epingles.set(meta, { indice, couleur, tirets, calque });
+  }
+  // The cards carry no id in the DOM: the one showing this meta is found through the
+  // object `creerCarte` leaves on the element.
+  for (const bloc of document.querySelectorAll('.carte-meta')) {
+    if (bloc.meta === meta) marquerCarte(bloc, meta);
+  }
+  majBoutonVider();
+}
+
+function viderEpingles() {
+  epingles.clearLayers();
+  etat.epingles.clear();
+  for (const bloc of document.querySelectorAll('.carte-meta')) marquerCarte(bloc, bloc.meta);
+  majBoutonVider();
+}
+
+boutonViderEpingles.addEventListener('click', viderEpingles);
 
 function rendre() {
   const metas = visibles();

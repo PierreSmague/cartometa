@@ -234,7 +234,33 @@ body {
   color: var(--texte-doux);
 }
 
-.carte-meta { cursor: zoom-in; }
+.carte-meta { cursor: zoom-in; position: relative; }
+/* A pinned card takes the colour of its footprint on the map: the outline is the
+   legend, there is no separate one. The colour arrives through a custom property set
+   by the script — plain CSS here, unlike the SVG attributes Leaflet writes. */
+.carte-meta.epinglee { outline: 2px solid var(--couleur-epingle); outline-offset: 3px; border-radius: var(--rayon); }
+.epingle {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--trait);
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--texte-doux);
+  cursor: pointer;
+}
+.epingle svg { width: 15px; height: 15px; fill: currentColor; }
+.epingle:hover { color: var(--texte); }
+.epingle[aria-pressed="true"] { color: var(--couleur-epingle); border-color: var(--couleur-epingle); background: var(--fond-carte); }
+.epingle:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+/* Pushed to the end of the difficulty row, apart from the pills it does not belong to. */
+#epingles-vider { margin-left: auto; }
+#epingles-vider[hidden] { display: none; }
 .carte-meta img {
   width: 100%;
   aspect-ratio: 16 / 8;

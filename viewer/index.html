@@ -102,6 +102,11 @@
           <button class="pastille" data-difficulte="Intermediate">Intermediate</button>
           <button class="pastille" data-difficulte="Pro">Pro</button>
           <button class="pastille" data-difficulte="none">Not rated</button>
+          <!-- Pinned footprints (see `basculerEpingle` in app.js). Hidden until the
+               first pin: with nothing to clear, the button would only raise the
+               question of what a pin is. Outside the two filter groups' selectors,
+               so `brancherFiltre` never touches it. -->
+          <button id="epingles-vider" class="pastille" type="button" hidden>Clear pins</button>
         </div>
       </div>
       <div id="accueil">
