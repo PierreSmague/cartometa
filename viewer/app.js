@@ -490,6 +490,11 @@ function creerCarte(meta) {
   marquerCarte(bloc, meta);
   bloc.addEventListener('mouseenter', () => {
     surlignage.clearLayers();
+    // Once something is pinned, hover stops drawing: a red footprint sliding over the
+    // pinned colours made the whole map hard to read, and what the visitor is looking
+    // at from then on is the set of pins, not the card under the mouse. Hover comes
+    // back on its own when the last pin goes.
+    if (etat.epingles.size) return;
     // Hard-coded colour and not `var(--accent)`: Leaflet sets it as an SVG
     // presentation attribute, where CSS variable substitution is not reliable across
     // browsers. Keep both values in sync with `--accent` in style.css.
@@ -566,6 +571,9 @@ function basculerEpingle(meta) {
       dashArray: tirets ? '6 4' : null,
     }).addTo(epingles);
     etat.epingles.set(meta, { indice, couleur, tirets, calque });
+    // The hover footprint of the card just pinned would otherwise stay in red on top
+    // of its own pin (see the `mouseenter` handler in `creerCarte`).
+    surlignage.clearLayers();
   }
   // The cards carry no id in the DOM: the one showing this meta is found through the
   // object `creerCarte` leaves on the element.
