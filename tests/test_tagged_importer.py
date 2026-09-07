@@ -155,3 +155,28 @@ def test_a_rerun_preserves_an_attached_image(data_dir, tmp_path):
 
     metas = json.loads(aa.tagged_metas.read_text("utf-8"))
     assert metas[0]["image"] == "data/manual/AA/images/tag-000000.png"
+
+
+def test_a_difficulty_is_stamped_on_every_proposal(data_dir, tmp_path):
+    src = _source(tmp_path, [_point(5.0, 5.0, ["Ring"]), _point(5.01, 5.01, ["Ring"])])
+
+    import_tagged(data_dir, src, mode="route", category="car", difficulty="Pro")
+
+    (meta,) = load_metas(CountryPaths(data_dir, "AA"))
+    assert meta["difficulty"] == "Pro"
+
+
+def test_without_difficulty_the_key_is_absent(data_dir, tmp_path):
+    src = _source(tmp_path, [_point(5.0, 5.0, ["Ring"]), _point(5.01, 5.01, ["Ring"])])
+
+    import_tagged(data_dir, src, mode="route", category="car")
+
+    (meta,) = load_metas(CountryPaths(data_dir, "AA"))
+    assert "difficulty" not in meta
+
+
+def test_an_unknown_difficulty_is_refused(data_dir, tmp_path):
+    src = _source(tmp_path, [_point(5.0, 5.0, ["Ring"])])
+
+    with pytest.raises(TaggedFileError, match="difficulty"):
+        import_tagged(data_dir, src, mode="route", category="car", difficulty="Expert")

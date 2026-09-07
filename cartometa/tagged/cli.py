@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 
 from cartometa.extract.categories import CATEGORIES
+from cartometa.models import DIFFICULTIES
 from cartometa.tagged.importer import ImportReport, TaggedFileError, import_tagged
 
 
@@ -38,6 +39,8 @@ def main(argv: list[str] | None = None) -> None:
                         help="seuil de chaînage en km (défaut 5 en route, 40 en zone)")
     parser.add_argument("--hull-buffer-km", type=float, default=10.0,
                         help="gonflement de l'enveloppe en km (défaut 10)")
+    parser.add_argument("--difficulty", default=None, choices=DIFFICULTIES,
+                        help="difficulté posée sur chaque meta produite (défaut : non notée)")
     parser.add_argument("--dry-run", action="store_true",
                         help="calcule et affiche le récapitulatif sans rien écrire")
     parser.add_argument("--data-dir", type=Path, default=Path("data"),
@@ -51,7 +54,8 @@ def main(argv: list[str] | None = None) -> None:
         report = import_tagged(
             args.data_dir, args.file, mode=args.mode, category=args.category,
             buffer_m=args.buffer_m, link_km=args.link_km,
-            hull_buffer_km=args.hull_buffer_km, dry_run=args.dry_run,
+            hull_buffer_km=args.hull_buffer_km, difficulty=args.difficulty,
+            dry_run=args.dry_run,
         )
     except TaggedFileError as exc:
         raise SystemExit(str(exc)) from None

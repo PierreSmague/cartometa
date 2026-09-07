@@ -70,3 +70,17 @@ def test_tagged_file_error_is_caught_and_exits(data_dir, tmp_path):
 
     assert isinstance(excinfo.value.code, str)
     assert "customCoordinates" in excinfo.value.code
+
+
+def test_the_cli_passes_the_difficulty(data_dir, tmp_path):
+    main([str(_source(tmp_path)), "--mode", "route", "--category", "car",
+          "--difficulty", "Pro", "--data-dir", str(data_dir)])
+
+    (meta,) = json.loads(CountryPaths(data_dir, "AA").tagged_metas.read_text("utf-8"))
+    assert meta["difficulty"] == "Pro"
+
+
+def test_an_unknown_difficulty_is_refused_by_the_cli(data_dir, tmp_path):
+    with pytest.raises(SystemExit):
+        main([str(_source(tmp_path)), "--mode", "route", "--category", "car",
+              "--difficulty", "Expert", "--data-dir", str(data_dir)])

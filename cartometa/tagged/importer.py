@@ -9,6 +9,7 @@ from pathlib import Path
 
 from cartometa.atomic_write import write_json_atomic
 from cartometa.models import (
+    DIFFICULTIES,
     ORIGIN_TAGGED,
     STATUS_PROPOSED,
     STATUSES,
@@ -104,10 +105,17 @@ def import_tagged(
     buffer_m: float = 250.0,
     link_km: float | None = None,
     hull_buffer_km: float = 10.0,
+    difficulty: str | None = None,
     dry_run: bool = False,
 ) -> ImportReport:
     if mode not in SIMPLIFY_DEG:
         raise TaggedFileError(f"unknown mode: {mode!r} (expected route or zone)")
+    # Same rule as the manual metas: unrated is legitimate, a filled value must
+    # be a known level.
+    if difficulty and difficulty not in DIFFICULTIES:
+        raise TaggedFileError(
+            f"unknown difficulty: {difficulty!r} (expected {', '.join(DIFFICULTIES)})"
+        )
     if not dry_run and _review_running():
         raise TaggedFileError(
             "a cartometa-review session seems active (port 8799 answers): "
@@ -172,6 +180,11 @@ def import_tagged(
                 "image": metas.get(pid, {}).get("image"), "maps_url": None, "maps_latlon": None,
                 "source_file": name, "source_tag": tag,
             }
+            # Absent rather than null when unrated, like the manual metas: the
+            # build treats both the same but the file stays byte-identical to
+            # what earlier imports wrote.
+            if difficulty:
+                meta["difficulty"] = difficulty
             record = GeoRecord(id=pid, geometry=None, pieces=pieces,
                                status=STATUS_PROPOSED)
             if existing is None:
