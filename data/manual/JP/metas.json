@@ -8292,5 +8292,725 @@
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
+  },
+  {
+    "id": "man-4895",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: standard horizontal",
+    "description": "Horizontal bars bolted between the anchors, the plainest of the Japanese roadside fences. Significantly more common in Shikoku, Chugoku and Kyushu; a bit more common in Miyagi, Fukushima and Chiba.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-4895.webp",
+    "maps_url": "https://maps.app.goo.gl/W4SLAcb9dPviStiP6",
+    "maps_latlon": [
+      34.5127541,
+      132.9205667
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-937f",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: standard horizontal, gray",
+    "description": "The standard horizontal fence in gray instead of white. Most common in Tokushima, very common in the rest of Shikoku, somewhat common in Chugoku.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-937f.webp",
+    "maps_url": "https://maps.app.goo.gl/rfNJQZ3JczcQp9Hi8",
+    "maps_latlon": [
+      33.9686125,
+      134.3490526
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-ab74",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: triangle connector",
+    "description": "A triangle-ish connecting piece where the rail meets the anchor. A bunch of them in Fukushima and Shimane.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-ab74.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-587a",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: outwards horizontal",
+    "description": "Horizontal bars connected to the front of the anchor rather than between the anchors. Very common in Hokkaido, Gifu, Mie, Aichi, Ishikawa and Tochigi; somewhat common in Iwate, Miyagi, Fukushima, Nagano and on Amami Island.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-587a.webp",
+    "maps_url": "https://maps.app.goo.gl/nqnHm3MJERFDL5ZG7",
+    "maps_latlon": [
+      34.6783291,
+      136.4330252
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-18d0",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: outwards horizontal, gray",
+    "description": "The outwards horizontal fence in gray instead of white. Most common in Hokkaido.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-18d0.webp",
+    "maps_url": "https://maps.app.goo.gl/urNTCDkSrx5NDSvM9",
+    "maps_latlon": [
+      44.4695488,
+      143.1304749
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-6424",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: outwards horizontal, 3 bars",
+    "description": "An outwards horizontal fence with three bars instead of the usual two. Very common in Gifu.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-6424.webp",
+    "maps_url": "https://maps.app.goo.gl/MDd1j79AXDhbN16n7",
+    "maps_latlon": [
+      35.493635,
+      137.0801829
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-5bb8",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: thick outwards horizontal",
+    "description": "An outwards horizontal fence on noticeably thicker anchors. Common in Niigata and Toyama.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-5bb8.webp",
+    "maps_url": "https://maps.app.goo.gl/L7LE2zCWVaAhKUzZ8",
+    "maps_latlon": [
+      36.9520564,
+      137.5326347
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-8dd5",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: vertical connected",
+    "description": "Vertical bars, with the panels joined by a small connector at the top of the anchor. Very common in Aomori, Akita, Yamagata, Gunma and Hyogo; somewhat common in Fukushima, Saitama, Yamanashi and Okinawa.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-8dd5.webp",
+    "maps_url": "https://maps.app.goo.gl/Crd1hmoXAo48u2hq7",
+    "maps_latlon": [
+      39.156462,
+      140.565427
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-d65c",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: vertical connected, gray",
+    "description": "The vertical connected fence in gray instead of white. Very common in Hyogo, Awaji Island included.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-d65c.webp",
+    "maps_url": "https://maps.app.goo.gl/hzhdacvsNB9EQV2f6",
+    "maps_latlon": [
+      34.8989752,
+      135.0800509
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-3f2e",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: round vertical connected",
+    "description": "Vertical bars with rounded top corners, the panels joined by a connector. Very common in Kyoto, Fukui, Osaka, northern Hyogo and northern Wakayama.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-3f2e.webp",
+    "maps_url": "https://maps.app.goo.gl/iKNBmbMTvf9vkx2U9",
+    "maps_latlon": [
+      34.3151579,
+      135.5955907
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-e54e",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: round vertical connected, gray",
+    "description": "The round vertical connected fence in gray, which is what almost all of them are. Same Kansai range: Kyoto, Fukui, Osaka, northern Hyogo and northern Wakayama.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-e54e.webp",
+    "maps_url": "https://maps.app.goo.gl/JREXMn5C1MFDKd8BA",
+    "maps_latlon": [
+      35.1967412,
+      135.636438
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-b844",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence cap: yellow holes",
+    "description": "A white end cap pierced with yellow holes on top of the fence post. Mostly Kagawa, but can be found elsewhere.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-b844.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-c3a5",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Snow fence",
+    "description": "A tall lattice fence set back from the road to keep drifting snow off it; a low version bolted onto the guardrail exists too. Common in Hokkaido and on the west side of Tohoku: Aomori, Akita, Yamagata and parts of Niigata.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-c3a5.webp",
+    "maps_url": "https://maps.app.goo.gl/vpT7BnCdmKZbiQJa6",
+    "maps_latlon": [
+      38.9517088,
+      139.8952784
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-fa00",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: high wave",
+    "description": "A fence whose wave has a very high amplitude, nearly filling the panel. Unique to Hokkaido.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-fa00.webp",
+    "maps_url": "https://maps.app.goo.gl/Vepa9YnnkopdG68U6",
+    "maps_latlon": [
+      42.8285624,
+      141.6499234
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-55bd",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: eye",
+    "description": "A wide almond shape in the middle of the panel, like an eye. Mostly Nagano, Kanto and Tohoku.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-55bd.webp",
+    "maps_url": "https://maps.app.goo.gl/jqRk9ud1pruAb5N4A",
+    "maps_latlon": [
+      39.4025216,
+      141.0338163
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-0ce1",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: diamond",
+    "description": "A diamond in the middle of the panel. Mostly Tohoku and Yamaguchi.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-0ce1.webp",
+    "maps_url": "https://maps.app.goo.gl/1Xiu4SDBJX5mzgV86",
+    "maps_latlon": [
+      38.3672614,
+      140.7698377
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-5f64",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: apple",
+    "description": "Panels carrying a row of apples. Only found in Aomori. The red apple fence is around Aomori City, the green apple fence mostly follows national route 7.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-5f64.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-57c1",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: cut diamond",
+    "description": "A diamond cut in half horizontally, the two halves left as a wide flat lozenge. Unique to Iwate.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-57c1.webp",
+    "maps_url": "https://maps.app.goo.gl/TWeYvPVixhFt7F4D7",
+    "maps_latlon": [
+      39.666304,
+      141.1144187
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-8b23",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: sunrise",
+    "description": "A fence carrying the top of a semicircle, like a rising sun. Found in Nerima Ward, Tokyo and in Yamagata.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-8b23.webp",
+    "maps_url": "https://maps.app.goo.gl/asVgxxwm1mhmz9nB6",
+    "maps_latlon": [
+      39.0224982,
+      139.8892341
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-1df3",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: double semicircle",
+    "description": "A fence with two halves of a semicircle side by side. Mostly found in Yamagata and Akita.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-1df3.webp",
+    "maps_url": "https://maps.app.goo.gl/u2LtVeGVByF6pNr29",
+    "maps_latlon": [
+      38.3741256,
+      140.3157971
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-80f7",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: mountain",
+    "description": "Three mountains drawn in the panel. Unique to Yamagata.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-80f7.webp",
+    "maps_url": "https://maps.app.goo.gl/3Wes8aS4EG46mucz5",
+    "maps_latlon": [
+      38.629603,
+      140.389673
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-5a21",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: three diagonal lines",
+    "description": "Three diagonal lines crossing the panel. Almost unique to Yamagata.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-5a21.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-4bb0",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: cut primogem",
+    "description": "A tall pointed shape open at the bottom, like a gem cut off. Mostly Miyagi and some of Kanto.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-4bb0.webp",
+    "maps_url": "https://maps.app.goo.gl/obM5rq93wswFUjaR9",
+    "maps_latlon": [
+      36.2135848,
+      139.2764501
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-3715",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: gingko",
+    "description": "The signature fence of Tokyo: a gingko leaf, the prefecture symbol, drawn in the middle of the panel. Spammed everywhere along big roads. Oshima is the only island the author has seen it on.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-3715.webp",
+    "maps_url": "https://maps.app.goo.gl/vxUFg58zoeCUc6Q29",
+    "maps_latlon": [
+      35.7370146,
+      139.6700164
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-6ce1",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: plus sign",
+    "description": "A plus sign in the centre of the panel. Unique to Chiba.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-6ce1.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-b0af",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: Chiba circle",
+    "description": "A circle with some fancy lines around it. Unique to Chiba.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-b0af.webp",
+    "maps_url": "https://maps.app.goo.gl/qk6Xj1ZRWz38KrQM7",
+    "maps_latlon": [
+      35.5135628,
+      140.0884295
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-6612",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: wide double V",
+    "description": "A unique looking fence, two wide shallow V shapes under the handrail. Found on the coast of Kanagawa.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-6612.webp",
+    "maps_url": "https://maps.app.goo.gl/ogi3RF9Lm5kSk8CZ9",
+    "maps_latlon": [
+      35.3356412,
+      139.6238811
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-6f4f",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: upside-down eye",
+    "description": "An almond shape like the eye fence, but pointing the other way. Mostly Yamanashi.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-6f4f.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-f6b5",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: cedar",
+    "description": "Two cedar trees drawn in the panel. Unique to Daisen, Akita.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-f6b5.webp",
+    "maps_url": "https://maps.app.goo.gl/PWoaquqMSVKCR9Tg7",
+    "maps_latlon": [
+      39.4362809,
+      140.5081803
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-4534",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: Zelkova branches",
+    "description": "A dark fence drawn as the spreading branches of a Zelkova tree. Unique to Fukushima City.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-4534.webp",
+    "maps_url": "https://maps.app.goo.gl/ehMd3dCuqBCArc8F8",
+    "maps_latlon": [
+      37.7558289,
+      140.4524799
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-cb85",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: double house",
+    "description": "A fence carrying two house outlines. Unique to Kitakata, Fukushima.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-cb85.webp",
+    "maps_url": "https://maps.app.goo.gl/hGH29ttH8j6pVug18",
+    "maps_latlon": [
+      37.6727847,
+      139.8886622
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-17c1",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: Mount Bandai",
+    "description": "A fence in the shape of Mount Bandai, a broad peak with a notch. Found near the mountain itself, around Inawashiro and Aizu in Fukushima.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-17c1.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-c298",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: smoke",
+    "description": "Blue curls in the panel, like smoke rising from a cup. Unique to Edogawa Ward, Tokyo.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-c298.webp",
+    "maps_url": "https://maps.app.goo.gl/ppLzFzGEbZMrkub17",
+    "maps_latlon": [
+      35.681272,
+      139.868052
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-d08d",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: Edogawa ward logo",
+    "description": "A blue shape like a fancy C, the ward logo. Unique to Edogawa Ward, Tokyo.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-d08d.webp",
+    "maps_url": "https://maps.app.goo.gl/XLob3hBvCFHWguuo8",
+    "maps_latlon": [
+      35.7018717,
+      139.8934149
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-6b85",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: three waves",
+    "description": "A fence drawn as three waves. Unique to Koto Ward, Tokyo.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-6b85.webp",
+    "maps_url": "https://maps.app.goo.gl/HJGYKxcwpvexmDwa9",
+    "maps_latlon": [
+      35.6840611,
+      139.8320222
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-23e2",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: fancy star",
+    "description": "A jigsaw-like design with a star in the middle. Unique to Hamura City, Tokyo.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-23e2.webp",
+    "maps_url": "https://maps.app.goo.gl/VgTwHP7N5MqFPkJa8",
+    "maps_latlon": [
+      35.7607593,
+      139.3290825
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-dcbd",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: Zelkova",
+    "description": "A green Zelkova, the official city tree of Fuchu, drawn across the panel; a white fence with a small teal Zelkova motif exists too. Unique to Fuchu, Tokyo.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-dcbd.webp",
+    "maps_url": "https://maps.app.goo.gl/And3ngEPjuQMg9JJ7",
+    "maps_latlon": [
+      35.668142,
+      139.468783
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-aa7d",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: Hachioji",
+    "description": "A unique looking fence the author could not describe well: a flat lattice of thin bars under the handrail. Unique to Hachioji City, Tokyo.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-aa7d.webp",
+    "maps_url": "https://maps.app.goo.gl/vTkZfyhgJPvb9CB99",
+    "maps_latlon": [
+      35.6545021,
+      139.3518722
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-29b9",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Fence: ocean wave with fish",
+    "description": "A dark fence depicting a continuous ocean wave with fishes in it. Unique to Kawasaki, Kanagawa.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
+    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-29b9.webp",
+    "maps_url": "https://maps.app.goo.gl/7tXaevTH1JP2pAp9A",
+    "maps_latlon": [
+      35.5134581,
+      139.7110109
+    ],
+    "overlay": null
   }
 ]
