@@ -126,5 +126,22 @@
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
+  },
+  {
+    "id": "man-edd9",
+    "country": "AR",
+    "tier": "manual",
+    "title": "Mendoza Drainage",
+    "description": "These open-air drainage ditches or canals can be seen along the streets throughout the province of Mendoza—a unique feature of the region that can be very useful in an urban loc.",
+    "category": "infrastructure",
+    "source_url": "",
+    "extracted_at": "2026-09-11T08:11:03.170659+00:00",
+    "description_origin": "manual",
+    "origin": "manual",
+    "image": "data/manual/AR/images/man-edd9.png",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null,
+    "difficulty": "Intermediate"
   }
 ]
