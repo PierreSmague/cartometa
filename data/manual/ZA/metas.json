@@ -1,0 +1,1288 @@
+[
+  {
+    "id": "man-2e3d",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Low-faced '<' pole",
+    "description": "A variant of the '<' pole whose crossarm sits low on the pole (\"low-faced\"). Mostly in the Free State, many of them around the Vaal Dam; less often in the Northern Cape and North West.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-2e3d.webp",
+    "maps_url": "https://maps.app.goo.gl/NaKVgr1pKUQJjii76",
+    "maps_latlon": [
+      -28.9430381,
+      26.0158228
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-bf47",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Wide-faced '<' pole",
+    "description": "Same as the '<' pole, but the '<' is noticeably longer. Found in Mpumalanga.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-bf47.webp",
+    "maps_url": "https://maps.app.goo.gl/nLt23MeUA9Eg6HEW6",
+    "maps_latlon": [
+      -25.6974659,
+      29.5639401
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-f174",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "W pole",
+    "description": "Similar to the trident pole, except that all three insulators sit at the same height on the crossarm. Mainly North West and Free State; less often Gauteng, Mpumalanga and Eastern Cape.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-f174.webp",
+    "maps_url": "https://maps.app.goo.gl/tLx1QTexZfjNbiAd8",
+    "maps_latlon": [
+      -26.1986941,
+      26.0370946
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-9eb3",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "W pole with pickaxe insulators",
+    "description": "A W pole carrying pickaxe-shaped insulators. Mainly North West; less often Northern Cape and Free State.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-9eb3.webp",
+    "maps_url": "https://maps.app.goo.gl/5DyNddspceHt8BgRA",
+    "maps_latlon": [
+      -26.246907,
+      24.261741
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-7b8a",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Uneven W pole",
+    "description": "A W pole whose three insulators are not at the same height. Mainly Free State; less often Eastern Cape.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-7b8a.webp",
+    "maps_url": "https://maps.app.goo.gl/LYxL6zs8w3rDqU1A6",
+    "maps_latlon": [
+      -29.4966849,
+      25.1524789
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-d7c9",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Trident pole",
+    "description": "Crossarm with the middle insulator standing higher than the two outer ones, like a trident. Mainly North West and KwaZulu-Natal; less often Free State and Mpumalanga.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-d7c9.webp",
+    "maps_url": "https://maps.app.goo.gl/1587L2vPJuzcKoqi8",
+    "maps_latlon": [
+      -28.6364841,
+      30.0809956
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-670b",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Bushveld savannah",
+    "description": "Dry, flat landscape with scattered green trees. Across the north: northern North West, Limpopo and Mpumalanga, Kruger National Park aside.",
+    "category": "landscape",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-670b.webp",
+    "maps_url": "https://maps.app.goo.gl/WJ8oCnnM8gWMr4vt6",
+    "maps_latlon": [
+      -22.2257548,
+      29.5964207
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-682c",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Highlands around Lesotho",
+    "description": "Open, high grassland plateaus around Lesotho: eastern Free State, the KwaZulu-Natal Drakensberg and Midlands, and the north-east of the Eastern Cape.",
+    "category": "landscape",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-682c.webp",
+    "maps_url": "https://maps.app.goo.gl/Njz3BHDSViEhV4Kv9",
+    "maps_latlon": [
+      -28.330149,
+      29.5398501
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-663c",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Northeast mountains",
+    "description": "Lush green vegetation and reddish soil on the escarpment running north–south through eastern Limpopo and Mpumalanga.",
+    "category": "landscape",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-663c.webp",
+    "maps_url": "https://maps.app.goo.gl/Z3SFtfDDkMJ9rtLZ9",
+    "maps_latlon": [
+      -24.7063443,
+      30.7942151
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-c70a",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "North mountains (Richtersveld)",
+    "description": "Extremely dry, sandy mountains in the far north-west of the Northern Cape, along the lower Orange River and the coast.",
+    "category": "landscape",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-c70a.webp",
+    "maps_url": "https://maps.app.goo.gl/tU3rD85rebP9mXWS6",
+    "maps_latlon": [
+      -28.7978423,
+      17.4463892
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-ff77",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Pink soil",
+    "description": "Pinkish soil. Two main areas: a pocket in the central Northern Cape, and the inland Eastern Cape north-east of Gqeberha.",
+    "category": "landscape",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-ff77.webp",
+    "maps_url": "https://maps.app.goo.gl/nwxmG1RGpxgbM6qVA",
+    "maps_latlon": [
+      -28.267087,
+      22.9472528
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-573b",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Fruit plantations",
+    "description": "Orchards. Main areas: Limpopo around Tzaneen and Hoedspruit, the Mpumalanga lowveld, the Western Cape valleys inland of Cape Town, the Eastern Cape around Gqeberha, and irrigated pockets along the Vaal and Orange rivers.",
+    "category": "vegetation",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-573b.webp",
+    "maps_url": "https://maps.app.goo.gl/WMFGRazkLbB8vnRT7",
+    "maps_latlon": [
+      -23.7047237,
+      30.5916826
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-317a",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Maize, pea and sunflower fields",
+    "description": "Large flat fields of maize, peas or sunflowers on the Highveld: Free State, eastern North West, southern Gauteng and the Mpumalanga highveld.",
+    "category": "vegetation",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-317a.webp",
+    "maps_url": "https://maps.app.goo.gl/WJTxuB1czMx4mRY38",
+    "maps_latlon": [
+      -26.4145605,
+      29.3672209
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-2607",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Orange wildflowers",
+    "description": "Fields of orange wildflowers. Namaqualand along the Northern Cape west coast, down the Western Cape west coast and into the western Karoo.",
+    "category": "vegetation",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-2607.webp",
+    "maps_url": "https://maps.app.goo.gl/21Vt6a5K5uPH5sCU6",
+    "maps_latlon": [
+      -28.6368146,
+      16.9632483
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-aa93",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Garden cosmos",
+    "description": "Pink and white cosmos flowers along the roads. Seasonal: in the right season they can be found all across the Free State and Mpumalanga, most of all in the eastern Free State.",
+    "category": "vegetation",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-aa93.webp",
+    "maps_url": "https://maps.app.goo.gl/18eBqraVswEsuU9dA",
+    "maps_latlon": [
+      -28.128885,
+      28.95635
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-b334",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Date palms",
+    "description": "Clumps of low palms. Northern KwaZulu-Natal coast, from Richards Bay up towards Mozambique; rarely further south on the Eastern Cape coast.",
+    "category": "vegetation",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-b334.webp",
+    "maps_url": "https://maps.app.goo.gl/3ZCWGgzTuaxNYECX9",
+    "maps_latlon": [
+      -27.0614276,
+      32.688582
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-7842",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Blue euphorbia",
+    "description": "Stands of bluish-grey columnar euphorbias. Eastern Cape, inland of Gqeberha.",
+    "category": "vegetation",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-7842.webp",
+    "maps_url": "https://maps.app.goo.gl/cG7mBbfP1cFXQnad7",
+    "maps_latlon": [
+      -32.9915773,
+      24.5791575
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-334c",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Candelabra trees",
+    "description": "Tree euphorbias shaped like candelabras. Mostly Limpopo, plus the northern KwaZulu-Natal coast.",
+    "category": "vegetation",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-334c.webp",
+    "maps_url": "https://maps.app.goo.gl/kMdoYBDJazWMUcbi8",
+    "maps_latlon": [
+      -23.3619824,
+      29.6845613
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-7753",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Round houses",
+    "description": "Round houses with either thatched or metal roofs. Metal roofs are more common in the Eastern Cape, thatched roofs in KwaZulu-Natal.",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-7753.webp",
+    "maps_url": "https://maps.app.goo.gl/9i61tUCX4T2ZwFeR7",
+    "maps_latlon": [
+      -32.1257097,
+      28.4301175
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-5df8",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Cape houses",
+    "description": "Houses almost always painted white or grey, with distinctive roof shapes. Mainly Western Cape and the west of the Eastern Cape; less often Northern Cape and North West.",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-5df8.webp",
+    "maps_url": "https://maps.app.goo.gl/aB9Dt9qv9TXQbKF39",
+    "maps_latlon": [
+      -32.1602275,
+      25.6263699
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-2f5d",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Closed-off front yards",
+    "description": "Front yards and verandas closed off by a low wall right on the street. Mainly Northern Cape; less often Western Cape.",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-2f5d.webp",
+    "maps_url": "https://maps.app.goo.gl/fEArjnaBn25HfTbZ9",
+    "maps_latlon": [
+      -30.9680304,
+      22.1310875
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-e315",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Thatched-roof shelters",
+    "description": "Small round structures under a thatched roof, probably covering fireplaces. Mainly Limpopo; less often North West, Gauteng, Mpumalanga and Northern Cape.",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-e315.webp",
+    "maps_url": "https://maps.app.goo.gl/4f3tFNvLJQbLZTUN6",
+    "maps_latlon": [
+      -24.5827663,
+      27.3846031
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-1b14",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Castle-shaped roofs",
+    "description": "Flat-roofed houses with crenellated, castle-like parapets. Mainly Limpopo and North West; less often Gauteng and Northern Cape.",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-1b14.webp",
+    "maps_url": "https://maps.app.goo.gl/uJnoPDgDE3uV3efv5",
+    "maps_latlon": [
+      -25.1384393,
+      28.6431493
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-1b17",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Power stations by cooling tower count",
+    "description": "The Mpumalanga power stations can be told apart by counting their cooling towers: 3 Daggakraal, 4 Ga-Nala or Wallmannsthal, 5 Thaba-Kgwali, 7 Hendrina, 8 Secunda or Komati. Six towers is every other station.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-1b17.webp",
+    "maps_url": "https://maps.app.goo.gl/8vUFwkCNg3ydDXG3A",
+    "maps_latlon": [
+      -25.9488094,
+      29.3192319
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-5afd",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Wind turbines",
+    "description": "Wind farms are found either around Gqeberha or around Vredenburg, sometimes also around East London (KuGompo City).",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-5afd.webp",
+    "maps_url": "https://maps.app.goo.gl/qQ5YVmNzjJcDjpF27",
+    "maps_latlon": [
+      -33.6739986,
+      25.5914715
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-2c25",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Black-and-white lamp posts",
+    "description": "Lamp posts painted with black and white bands. Found in a band across the Karoo, from the north of the Western Cape into the west of the Eastern Cape.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-2c25.webp",
+    "maps_url": "https://maps.app.goo.gl/HrK9Vxid8JHuxnSi9",
+    "maps_latlon": [
+      -31.9128666,
+      21.5120164
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-4ed4",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Thabazimbi orange-striped bins",
+    "description": "Blue barrel bins with an orange stripe, in Thabazimbi (Limpopo).",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-4ed4.webp",
+    "maps_url": "https://maps.app.goo.gl/8fywm8wqnNr8orYC8",
+    "maps_latlon": [
+      -24.5964504,
+      27.4173049
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-3f54",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Polokwane pole paint",
+    "description": "Poles painted with red and yellow bands, in Polokwane (Limpopo).",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-3f54.webp",
+    "maps_url": "https://maps.app.goo.gl/tFY6mN8FMhsDoaPS7",
+    "maps_latlon": [
+      -23.9016521,
+      29.4563456
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-9372",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Modimolle street signs",
+    "description": "White street name signs surrounded by a greenish frame, in Modimolle (Limpopo).",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-9372.webp",
+    "maps_url": "https://maps.app.goo.gl/eSmrTfCGNYuDvRHn6",
+    "maps_latlon": [
+      -24.702364,
+      28.3915438
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-08e3",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Tzaneen green-and-white signposts",
+    "description": "Street sign posts painted with green and white bands, in Tzaneen (Limpopo).",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-08e3.webp",
+    "maps_url": "https://maps.app.goo.gl/jtUXpgb1syzwBzqw6",
+    "maps_latlon": [
+      -23.8319569,
+      30.1576218
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-43f7",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Rustenburg pole paint",
+    "description": "Poles painted white, orange and white, in Rustenburg (North West).",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-43f7.webp",
+    "maps_url": "https://maps.app.goo.gl/yDSWFJt9FsQ2Qg1e6",
+    "maps_latlon": [
+      -25.6807509,
+      27.2240457
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-d038",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Klerksdorp pole paint",
+    "description": "Poles painted with an orange band, in Klerksdorp (North West).",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-d038.webp",
+    "maps_url": "https://maps.app.goo.gl/ihoi7uVTHtb8nVA27",
+    "maps_latlon": [
+      -26.8583976,
+      26.6376804
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-f364",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Pofadder pole paint",
+    "description": "Wooden poles painted with white and yellow bands at the base, in Pofadder (Northern Cape).",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-f364.webp",
+    "maps_url": "https://maps.app.goo.gl/8vAQU9qoYNCpxhHDA",
+    "maps_latlon": [
+      -29.1289436,
+      19.393232
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-75ec",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Brenton street signs",
+    "description": "White street signs with small animal silhouettes on each side, in Brenton-on-Sea (Western Cape).",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-75ec.webp",
+    "maps_url": "https://maps.app.goo.gl/9rTpCETBgVnUoWZE8",
+    "maps_latlon": [
+      -34.0704878,
+      23.0231686
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-b687",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Heidelberg pole paint",
+    "description": "Poles painted red, in Heidelberg (Western Cape).",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-b687.webp",
+    "maps_url": "https://maps.app.goo.gl/UBSU8db85dd447797",
+    "maps_latlon": [
+      -34.0950644,
+      20.9614023
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-843b",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Piketberg bins",
+    "description": "Red, yellow and blue striped bins hung between two posts, in Piketberg (Western Cape).",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-843b.webp",
+    "maps_url": "https://maps.app.goo.gl/rLSniGWjhBZxddJx8",
+    "maps_latlon": [
+      -32.9005949,
+      18.7591983
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-ced2",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Lutzville bins",
+    "description": "Barrel bins painted green, white with orange dots, and blue, in Lutzville (Western Cape).",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-ced2.webp",
+    "maps_url": "https://maps.app.goo.gl/pH99ry6q8v63kgHq5",
+    "maps_latlon": [
+      -31.5590084,
+      18.3446668
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-bb68",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Free State pole paint",
+    "description": "White poles painted with reddish bands, in the Free State.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-bb68.webp",
+    "maps_url": "https://maps.app.goo.gl/55RShuHrC2SmuVRk6",
+    "maps_latlon": [
+      -27.0074405,
+      27.3636522
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-f10d",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Fouriesburg street signs",
+    "description": "Dark street name signs with a white border and pointed ends, in Fouriesburg (Free State).",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-f10d.webp",
+    "maps_url": "https://maps.app.goo.gl/A2rrz5hjbznWDPUu9",
+    "maps_latlon": [
+      -28.6184037,
+      28.2085503
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-cf13",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Middelburg (EC) pole paint",
+    "description": "White poles with a dark green dot, in Middelburg (Eastern Cape).",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-cf13.webp",
+    "maps_url": "https://maps.app.goo.gl/panbExtUHzEuyWgY7",
+    "maps_latlon": [
+      -31.4949377,
+      25.0000461
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-fdf7",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Gqeberha old route signs",
+    "description": "Old green signs with the metropolitan route number (M) in yellow in a rounded shield, next to the arrow. Gqeberha.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-fdf7.webp",
+    "maps_url": "https://maps.app.goo.gl/zTjxo1QHknyqzgFy9",
+    "maps_latlon": [
+      -33.952527,
+      25.5124362
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-c914",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Durban old route signs",
+    "description": "Old green signs with the metropolitan route number (M) and its direction letter in yellow in a rounded shield. Durban.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-c914.webp",
+    "maps_url": "https://maps.app.goo.gl/GiK5c3jTCnpv3F2M8",
+    "maps_latlon": [
+      -29.811229,
+      30.8830689
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-f92b",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Richards Bay yellow stripes",
+    "description": "Poles marked with two yellow stripes, in Richards Bay (KwaZulu-Natal).",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-f92b.webp",
+    "maps_url": "https://maps.app.goo.gl/46oSjPhbay5b1kJY9",
+    "maps_latlon": [
+      -28.7558585,
+      32.0626019
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-1524",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Blue kilometre markers",
+    "description": "Small blue markers along the road give the road number and the distance, e.g. \"R516-1 / 1.6E\".",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-1524.webp",
+    "maps_url": "https://maps.app.goo.gl/uJZ1kBZSbm4MP2rf9",
+    "maps_latlon": [
+      -24.8897452,
+      27.5454534
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-9534",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Piketberg mountain",
+    "description": "The Piketberg range rising from the flat farmland north of Cape Town (Western Cape).",
+    "category": "landscape",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-9534.webp",
+    "maps_url": "https://maps.app.goo.gl/6GkYGbmneJ29pAz46",
+    "maps_latlon": [
+      -32.8321577,
+      18.8349573
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-d11d",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Paarl Rock",
+    "description": "The granite domes of Paarl Rock, above Paarl (Western Cape).",
+    "category": "landscape",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-d11d.webp",
+    "maps_url": "https://maps.app.goo.gl/nYEDWmWP8j6PzKov9",
+    "maps_latlon": [
+      -33.6944349,
+      18.9836238
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-6109",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Phuthaditjhaba mountain",
+    "description": "Flat-topped mountain seen from around Phuthaditjhaba (Free State).",
+    "category": "landscape",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-6109.webp",
+    "maps_url": "https://maps.app.goo.gl/MoURLND2VBp3PoFV7",
+    "maps_latlon": [
+      -28.5480689,
+      28.8392254
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-5598",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Acornhoek ridge",
+    "description": "Long ridge on the horizon around Acornhoek (Mpumalanga).",
+    "category": "landscape",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-5598.webp",
+    "maps_url": "https://maps.app.goo.gl/vCfVKm3JLSPKtyNC8",
+    "maps_latlon": [
+      -24.6668768,
+      30.9675834
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-04c6",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "The Oaks mountain",
+    "description": "Banded cliffs seen from around The Oaks (Limpopo).",
+    "category": "landscape",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-04c6.webp",
+    "maps_url": "https://maps.app.goo.gl/1mp79PNjADhdDb9Z8",
+    "maps_latlon": [
+      -24.3598617,
+      30.6341912
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-dfa1",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Hazy September 2025 coverage",
+    "description": "Hazy coverage from September 2025 in the north-west, between Rustenburg, the Botswana border and Lephalale.",
+    "category": "car",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-dfa1.webp",
+    "maps_url": "https://maps.app.goo.gl/aqtYphrZegoc3U2XA",
+    "maps_latlon": [
+      -24.5288538,
+      26.7040033
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-9d41",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Sandy clouds",
+    "description": "Coverage with sandy, pinkish clouds. Northern Cape, around Upington and towards Bokspits.",
+    "category": "car",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-9d41.webp",
+    "maps_url": "https://maps.app.goo.gl/DpDWDbVPXRB3PFp2A",
+    "maps_latlon": [
+      -28.0651609,
+      22.0382699
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-db77",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "March cycle",
+    "description": "The name of a single capture route. It covers Namaqualand and the Knersvlakte, from Steinkopf and Springbok down to Vredendal and Lutzville, with loops inland towards Loeriesfontein and Williston.",
+    "category": "car",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-db77.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-2c22",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Snow coverage",
+    "description": "Coverage taken in snow, in the north-east of the Eastern Cape highlands around Rhodes.",
+    "category": "car",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-2c22.webp",
+    "maps_url": "https://maps.app.goo.gl/RQJ3XUFKdgPm3iNu5",
+    "maps_latlon": [
+      -30.9697171,
+      27.5131188
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-6100",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Madikwe pixel",
+    "description": "A dark pixel visible when looking straight down and then north-east. Coverage around Madikwe and Zeerust (North West), up to the Botswana border.",
+    "category": "car",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-6100.webp",
+    "maps_url": "https://maps.app.goo.gl/FayrKnFwiXfWx7mx6",
+    "maps_latlon": [
+      -25.7858635,
+      26.2016707
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-68c8",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "South Heilbron pixel",
+    "description": "A white pixel visible when looking back, up and to the north-east. Free State, south of Heilbron towards Lindley, Reitz and Frankfort.",
+    "category": "car",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-68c8.webp",
+    "maps_url": "https://maps.app.goo.gl/e9bCuw3Rp8yd8HnM6",
+    "maps_latlon": [
+      -27.6603809,
+      28.380742
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-7716",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "N1 through the Karoo",
+    "description": "Most of the N1 around Beaufort West has January 2026 coverage, which is extremely rare, and its south-western start has sunset coverage.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-7716.webp",
+    "maps_url": "https://maps.app.goo.gl/61vKaVEvg6RieeN28",
+    "maps_latlon": [
+      -31.8748309,
+      23.2426287
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-171d",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "R339 (Uniondale to Knysna)",
+    "description": "Easy to identify: you are either in a valley, on a plateau or in the forest. Past the valley it is less recognisable.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-171d.webp",
+    "maps_url": "https://maps.app.goo.gl/EiywsdyGDhUvWTbg9",
+    "maps_latlon": [
+      -33.9403725,
+      23.1613555
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-48df",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "R382 (Port Nolloth to Alexander Bay)",
+    "description": "Constant sunset coverage and sandy soil.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-48df.webp",
+    "maps_url": "https://maps.app.goo.gl/AewnCJy33NQJ1bNw9",
+    "maps_latlon": [
+      -28.8066904,
+      16.6418612
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-1467",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Namibian border road",
+    "description": "The road east of Alexander Bay along the Namibian border: it feels like the middle of the desert, with sunset coverage.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-1467.webp",
+    "maps_url": "https://maps.app.goo.gl/RhvdWB3HPygpP9z8A",
+    "maps_latlon": [
+      -28.4987499,
+      16.6646833
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-2f11",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Namaqualand coast road",
+    "description": "The coast road between Kleinzee and Koingnaas. In the north it looks like a normal coastal road; further south the road turns red.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-2f11.webp",
+    "maps_url": "https://maps.app.goo.gl/SShR6ZYX1WcV9oEh6",
+    "maps_latlon": [
+      -29.8956711,
+      17.1448318
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-5cf0",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Eswatini border road",
+    "description": "The road along the Eswatini border north of Jozini (KwaZulu-Natal): just trees, with houses scattered on random hills.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-5cf0.webp",
+    "maps_url": "https://maps.app.goo.gl/jJr3qdtHHatpepvr7",
+    "maps_latlon": [
+      -27.3030611,
+      31.9794287
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-ac23",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Road to the R40 (Bulembu)",
+    "description": "The road from Nhlaba to Bulembu (Mpumalanga) only has Gen 2 coverage, which is very rare for the region, and runs only through mountains.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-ac23.webp",
+    "maps_url": "https://maps.app.goo.gl/5tA4JBfUe8NGBNRh8",
+    "maps_latlon": [
+      -26.0386103,
+      31.0508613
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-637e",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "R543 (Free State side)",
+    "description": "Only Gen 2 coverage on the Free State side, east of Vrede, through the highlands.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-637e.webp",
+    "maps_url": "https://maps.app.goo.gl/cK55y8JTYutsY3Rh7",
+    "maps_latlon": [
+      -27.4133102,
+      29.3360442
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-ff78",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Kruger roads in Gen 4",
+    "description": "The roads along the western edge of Kruger National Park look like Kruger, but in Gen 4.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-ff78.webp",
+    "maps_url": "https://maps.app.goo.gl/sesgVQSzrCzuctQJA",
+    "maps_latlon": [
+      -23.6475052,
+      31.4900023
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-b97c",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "R37 through the Burgersfort valley",
+    "description": "Easy to identify because it runs through the Burgersfort valley (Limpopo).",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-b97c.webp",
+    "maps_url": "https://maps.app.goo.gl/KM4aaaGEVcSBrTfQ8",
+    "maps_latlon": [
+      -24.5645893,
+      30.1599907
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-749e",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Eastern R71",
+    "description": "Lush green vegetation. Between Tzaneen and Phalaborwa it is the only paved road in the coverage that heads east for a long time without fruit plantations along it.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-749e.webp",
+    "maps_url": "https://maps.app.goo.gl/LyuuzEmZdapfzY796",
+    "maps_latlon": [
+      -23.9229515,
+      30.8244745
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-6d9e",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Landline area codes",
+    "description": "011 Johannesburg, 012 Pretoria, 013 Mbombela and eMalahleni, 014 Rustenburg, Lephalale and Modimolle, 015 Polokwane and Tzaneen, 016 Vaal Triangle, 017 southern Mpumalanga, 018 Klerksdorp and Potchefstroom. 021 Cape Town, 022 West Coast, 023 Worcester and Klein Karoo, 027 Namaqualand, 028 Overberg. 031 Durban, 032 KZN north coast, 033 Pietermaritzburg, 034 northern KZN, 035 Zululand, 036 Ladysmith and Drakensberg, 039 KZN south coast and Wild Coast. 040 Bhisho, 041 Gqeberha, 042 Jeffreys Bay, 043 East London, 044 Garden Route, 045 Komani, 046 Makhanda, 047 Mthatha, 048 Cradock, 049 Graaff-Reinet. 051 Bloemfontein, 053 Kimberley, 054 Upington, 056 Kroonstad, 057 Welkom, 058 Bethlehem.",
+    "category": "culture",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-6d9e.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-e68f",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Security company signs",
+    "description": "Armed-response signs on walls and fences identify a city or a region, and the phone number they sometimes carry gives away the area code.",
+    "category": "culture",
+    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
+    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-e68f.webp",
+    "maps_url": "https://maps.app.goo.gl/6YYz6GPgsVtAdAqw6",
+    "maps_latlon": [
+      -26.1382794,
+      27.9964434
+    ],
+    "overlay": null
+  }
+]
