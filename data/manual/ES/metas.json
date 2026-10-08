@@ -356,7 +356,7 @@
     "extracted_at": "2026-10-08T07:15:12.512759+00:00",
     "description_origin": "imported",
     "origin": "manual",
-    "image": null,
+    "image": "data/manual/ES/images/man-6ff3.png",
     "maps_url": "https://goo.gl/maps/mR81avuoyKdy7wzr7",
     "maps_latlon": [
       39.3022178,
@@ -375,7 +375,7 @@
     "extracted_at": "2026-10-08T07:15:12.512759+00:00",
     "description_origin": "imported",
     "origin": "manual",
-    "image": null,
+    "image": "data/manual/ES/images/man-fa22.png",
     "maps_url": "https://goo.gl/maps/4pMAg68wEngsuiac9",
     "maps_latlon": [
       42.1829233,
@@ -394,7 +394,7 @@
     "extracted_at": "2026-10-08T07:15:12.512759+00:00",
     "description_origin": "imported",
     "origin": "manual",
-    "image": null,
+    "image": "data/manual/ES/images/man-f926.png",
     "maps_url": "https://goo.gl/maps/E2efmwiEW9GkFrzu9",
     "maps_latlon": [
       37.0815875,
@@ -470,7 +470,7 @@
     "extracted_at": "2026-10-08T07:15:12.512759+00:00",
     "description_origin": "imported",
     "origin": "manual",
-    "image": null,
+    "image": "data/manual/ES/images/man-0563.png",
     "maps_url": "https://goo.gl/maps/KTJJjvaRFvNz4XNb9",
     "maps_latlon": [
       41.2341884,
@@ -489,7 +489,7 @@
     "extracted_at": "2026-10-08T07:15:12.512759+00:00",
     "description_origin": "imported",
     "origin": "manual",
-    "image": null,
+    "image": "data/manual/ES/images/man-fc50.png",
     "maps_url": "https://goo.gl/maps/2ZVWGLDwQM6XogtYA",
     "maps_latlon": [
       38.2596362,
@@ -584,7 +584,7 @@
     "extracted_at": "2026-10-08T07:15:12.512759+00:00",
     "description_origin": "imported",
     "origin": "manual",
-    "image": "data/manual/ES/images/man-9556.webp",
+    "image": "data/manual/ES/images/man-9556.png",
     "maps_url": "https://goo.gl/maps/NnzBs9izcTPbLeDu8",
     "maps_latlon": [
       38.1824582,
@@ -638,7 +638,7 @@
     "extracted_at": "2026-10-08T07:15:12.512759+00:00",
     "description_origin": "imported",
     "origin": "manual",
-    "image": null,
+    "image": "data/manual/ES/images/man-f960.png",
     "maps_url": "https://maps.app.goo.gl/h3hPg3q9ZeeeRZb16",
     "maps_latlon": [
       40.816692,
@@ -673,7 +673,7 @@
     "extracted_at": "2026-10-08T07:15:12.512759+00:00",
     "description_origin": "imported",
     "origin": "manual",
-    "image": null,
+    "image": "data/manual/ES/images/man-9b59.png",
     "maps_url": "https://maps.app.goo.gl/BT7mpF26EaPqZPdg6",
     "maps_latlon": [
       42.5157981,
