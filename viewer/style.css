@@ -258,9 +258,10 @@ body {
 .epingle:hover { color: var(--texte); }
 .epingle[aria-pressed="true"] { color: var(--couleur-epingle); border-color: var(--couleur-epingle); background: var(--fond-carte); }
 .epingle:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-/* Pushed to the end of the difficulty row, apart from the pills it does not belong to. */
-#epingles-vider { margin-left: auto; }
-#epingles-vider[hidden] { display: none; }
+/* Pushed to the end of the difficulty row, apart from the pills they do not belong to. */
+#epingles-actions { margin-left: auto; display: flex; flex-wrap: wrap; gap: 6px; }
+#epingles-actions[hidden],
+#epingles-actions [hidden] { display: none; }
 .carte-meta img {
   width: 100%;
   aspect-ratio: 16 / 8;
