@@ -103,10 +103,17 @@
           <button class="pastille" data-difficulte="Pro">Pro</button>
           <button class="pastille" data-difficulte="none">Not rated</button>
           <!-- Pinned footprints (see `basculerEpingle` in app.js). Hidden until the
-               first pin: with nothing to clear, the button would only raise the
-               question of what a pin is. Outside the two filter groups' selectors,
-               so `brancherFiltre` never touches it. -->
-          <button id="epingles-vider" class="pastille" type="button" hidden>Clear pins</button>
+               first pin: with nothing to clear, the buttons would only raise the
+               question of what a pin is. Union and intersection wait for a second
+               pin, below which they would only redraw the one footprint. No
+               `data-difficulte`, so `brancherFiltre` never touches them. -->
+          <span id="epingles-actions" hidden>
+            <button id="epingles-union" class="pastille" type="button" aria-pressed="false" hidden
+              title="Show the union of the pinned areas">Union</button>
+            <button id="epingles-intersection" class="pastille" type="button" aria-pressed="false" hidden
+              title="Show the intersection of the pinned areas">Intersection</button>
+            <button id="epingles-vider" class="pastille" type="button">Clear pins</button>
+          </span>
         </div>
       </div>
       <div id="accueil">

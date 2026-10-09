@@ -12,10 +12,16 @@ const etat = {
   // guess from `resultats` alone.
   chargement: false,   // a request for the current click is in flight
   erreur: false,       // the last click failed; the message stays on screen
-  // Pinned metas: meta object -> {indice, couleur, tirets, calque}. Lives here and
+  // Pinned metas: `code/id` -> {meta, indice, couleur, tirets, calque}. Lives here and
   // not in the DOM because the cards are rebuilt on every filter or search: a card
-  // reads its pinned state back from this map when it is created.
+  // reads its pinned state back from this map when it is created. Keyed by id and not
+  // by the meta object: every query builds fresh objects, and a pin survives queries
+  // (see `allerAuPoint`), so the card of a pinned meta met again on a later click
+  // must still find itself pinned.
   epingles: new Map(),
+  // '' (each pin drawn in its own colour), 'union' or 'intersection' (the pins drawn
+  // as one combined footprint). See `afficherCombinaison`.
+  combinaison: '',
 };
 
 const carte = L.map('carte', { worldCopyJump: true }).setView([25, 15], 3);
@@ -104,11 +110,15 @@ async function demarrer() {
 let fondGoogle = null;        // built on the first switch, never before
 let chargementGoogle = null;  // memoised promise: never two loads
 
-function chargerScript(src) {
+function chargerScript(src, integrite) {
   return new Promise((resolve, reject) => {
     const balise = document.createElement('script');
     balise.src = src;
     balise.async = true;
+    if (integrite) {
+      balise.integrity = integrite;
+      balise.crossOrigin = 'anonymous';
+    }
     balise.addEventListener('load', resolve);
     balise.addEventListener('error', () => reject(new Error(`script failed: ${src}`)));
     document.head.append(balise);
@@ -314,10 +324,9 @@ async function allerAuPoint(lon, lat) {
   afficherSquelettes();
   surlignage.clearLayers();
   pointInterroge.clearLayers();
-  // Pins belong to a query: their footprints can only be removed from their card, and
-  // the cards of the previous point are about to disappear. Keeping the polygons with
-  // no way left to dismiss them would be worse than starting afresh.
-  viderEpingles();
+  // Pins are deliberately left alone: they exist to follow a meta across several
+  // queries — the Aleppo pine pinned in Spain, then in Italy, then in Greece — and
+  // "Clear pins" stays the one way to start afresh.
   // Placed before the network call: the marker appears on click, without waiting for
   // the gallery. It also survives a load failure, where it remains the only trace of
   // what was asked for.
@@ -519,13 +528,48 @@ const ICONE_EPINGLE = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="fa
   + '<path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7z'
   + 'm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>';
 
+const actionsEpingles = document.getElementById('epingles-actions');
 const boutonViderEpingles = document.getElementById('epingles-vider');
+const boutonsCombinaison = {
+  union: document.getElementById('epingles-union'),
+  intersection: document.getElementById('epingles-intersection'),
+};
+
+// The combined footprint shares the pins' pane. Near-black: none of the palette's
+// hues, nor the red of the hover or the blue of the point — it stands for no single
+// meta, only for the set of them.
+const combinaison = L.layerGroup().addTo(carte);
+const COULEUR_COMBINAISON = '#1d1d1b';
+
+// polygon-clipping (MIT), for the union and the intersection. Loaded on the first
+// press only, like the Google plugin: most visitors never pin two areas. SHA-384
+// digest verified identical on unpkg and jsdelivr on 2026-10-09 — to be recomputed
+// if the version changes, otherwise both buttons fail.
+const DECOUPE_SRC = 'https://unpkg.com/polygon-clipping@0.15.7/dist/polygon-clipping.umd.min.js';
+const DECOUPE_SRI = 'sha384-2gzcIyrtB96QDjrxsFcJ1O461CWiXJ8fiHgIkJLwTgy4WTktHXTOXt4dviXz9Y5Q';
+let chargementDecoupe = null; // memoised promise: never two loads
+
+function chargerDecoupe() {
+  chargementDecoupe = chargementDecoupe
+    || chargerScript(DECOUPE_SRC, DECOUPE_SRI).then(() => window.polygonClipping);
+  // A failed load must not be memoised: the next press tries again.
+  chargementDecoupe.catch(() => { chargementDecoupe = null; });
+  return chargementDecoupe;
+}
+
+function cleMeta(meta) {
+  return `${meta.code}/${meta.id}`;
+}
+
+function geometrieMeta(meta) {
+  return etat.pays.get(meta.code).geometries[meta.geom];
+}
 
 // Reflects the pinned state on a card: coloured outline and pressed button. Called
 // when a card is built (the gallery is rebuilt on every filter) and when its pin is
 // toggled, so that one function owns what "pinned" looks like.
 function marquerCarte(bloc, meta) {
-  const epingle = etat.epingles.get(meta);
+  const epingle = etat.epingles.get(cleMeta(meta));
   bloc.classList.toggle('epinglee', Boolean(epingle));
   bloc.style.setProperty('--couleur-epingle', epingle ? epingle.couleur : '');
   const bouton = bloc.querySelector('.epingle');
@@ -535,10 +579,16 @@ function marquerCarte(bloc, meta) {
   bouton.title = libelle;
 }
 
-function majBoutonVider() {
+function majBoutonsEpingles() {
   const nombre = etat.epingles.size;
-  boutonViderEpingles.hidden = !nombre;
+  actionsEpingles.hidden = !nombre;
   boutonViderEpingles.textContent = `Clear pins (${nombre})`;
+  for (const [mode, bouton] of Object.entries(boutonsCombinaison)) {
+    const actif = etat.combinaison === mode;
+    bouton.hidden = nombre < 2;
+    bouton.classList.toggle('active', actif);
+    bouton.setAttribute('aria-pressed', String(actif));
+  }
 }
 
 // Lowest free slot of the palette; past the eighth pin, hues come round again with a
@@ -555,13 +605,14 @@ function attribuerCouleur() {
 }
 
 function basculerEpingle(meta) {
-  const existante = etat.epingles.get(meta);
+  const cle = cleMeta(meta);
+  const existante = etat.epingles.get(cle);
   if (existante) {
     epingles.removeLayer(existante.calque);
-    etat.epingles.delete(meta);
+    etat.epingles.delete(cle);
   } else {
     const { indice, couleur, tirets } = attribuerCouleur();
-    const calque = L.geoJSON(etat.pays.get(meta.code).geometries[meta.geom], {
+    const calque = L.geoJSON(geometrieMeta(meta), {
       // interactive: false for the same reason as the hover highlight: an
       // interactive footprint would swallow the map click over its whole area, and
       // the visitor could no longer query a point inside a pinned meta.
@@ -570,7 +621,7 @@ function basculerEpingle(meta) {
       color: couleur, weight: 2, fillOpacity: 0.18,
       dashArray: tirets ? '6 4' : null,
     }).addTo(epingles);
-    etat.epingles.set(meta, { indice, couleur, tirets, calque });
+    etat.epingles.set(cle, { meta, indice, couleur, tirets, calque });
     // The hover footprint of the card just pinned would otherwise stay in red on top
     // of its own pin (see the `mouseenter` handler in `creerCarte`).
     surlignage.clearLayers();
@@ -578,19 +629,79 @@ function basculerEpingle(meta) {
   // The cards carry no id in the DOM: the one showing this meta is found through the
   // object `creerCarte` leaves on the element.
   for (const bloc of document.querySelectorAll('.carte-meta')) {
-    if (bloc.meta === meta) marquerCarte(bloc, meta);
+    if (cleMeta(bloc.meta) === cle) marquerCarte(bloc, bloc.meta);
   }
-  majBoutonVider();
+  // A combination on screen follows the pins: it is recomputed with the new set, or
+  // given up below two pins, where it would only redraw one footprint.
+  afficherCombinaison(etat.epingles.size < 2 ? '' : etat.combinaison);
 }
 
 function viderEpingles() {
   epingles.clearLayers();
   etat.epingles.clear();
   for (const bloc of document.querySelectorAll('.carte-meta')) marquerCarte(bloc, bloc.meta);
-  majBoutonVider();
+  afficherCombinaison('');
+}
+
+// Generation counter of the combination, same idea as the queries' one: the library
+// may still be loading when the pins or the mode change again, and the late answer
+// must not draw over a more recent choice.
+let generationCombinaison = 0;
+
+// Draws the pins either one by one ('') or as their union or intersection. While a
+// combination is shown, the individual footprints step aside: the outlines of the
+// pinned cards keep telling which metas it is made of.
+async function afficherCombinaison(mode) {
+  const generationDemandee = ++generationCombinaison;
+  etat.combinaison = mode;
+  combinaison.clearLayers();
+  boutonsCombinaison.intersection.textContent = 'Intersection';
+  majBoutonsEpingles();
+  if (!mode) {
+    epingles.addTo(carte);
+    return;
+  }
+  carte.removeLayer(epingles);
+  let resultat;
+  try {
+    const decoupe = await chargerDecoupe();
+    if (generationDemandee !== generationCombinaison) return;
+    // Polygon and MultiPolygon both become MultiPolygon coordinates, the one form
+    // the library takes for every operand.
+    const operandes = [...etat.epingles.values()].map(({ meta }) => {
+      const geometrie = geometrieMeta(meta);
+      return geometrie.type === 'Polygon' ? [geometrie.coordinates] : geometrie.coordinates;
+    });
+    resultat = decoupe[mode](...operandes);
+  } catch (erreur) {
+    // Library unreachable (network, content blocker) or a geometry it chokes on:
+    // back to the individual pins rather than an empty map with a lit button.
+    if (generationDemandee !== generationCombinaison) return;
+    afficherCombinaison('');
+    boutonsCombinaison[mode].title = `Could not compute the ${mode} of the pinned areas`;
+    return;
+  }
+  boutonsCombinaison[mode].title = `Show the ${mode} of the pinned areas`;
+  // Pins with no common ground: the button says so, otherwise the empty map would
+  // read as a bug.
+  if (!resultat.length) {
+    boutonsCombinaison.intersection.textContent = 'Intersection (empty)';
+    return;
+  }
+  L.geoJSON({ type: 'MultiPolygon', coordinates: resultat }, {
+    interactive: false, // see `basculerEpingle`
+    pane: 'epingles',
+    color: COULEUR_COMBINAISON, weight: 2.5, fillOpacity: 0.22,
+  }).addTo(combinaison);
 }
 
 boutonViderEpingles.addEventListener('click', viderEpingles);
+for (const [mode, bouton] of Object.entries(boutonsCombinaison)) {
+  // A second press on the active mode goes back to the individual pins.
+  bouton.addEventListener('click', () => {
+    afficherCombinaison(etat.combinaison === mode ? '' : mode);
+  });
+}
 
 function rendre() {
   const metas = visibles();
@@ -700,7 +811,9 @@ document.getElementById('recherche').addEventListener('input', (e) => {
 // selector: a click in one group must never touch the other's `active` state. One
 // function rather than two identical loops, so the two cannot drift apart.
 function brancherFiltre(conteneur, champ) {
-  const pastilles = [...document.querySelectorAll(`#${conteneur} .pastille`)];
+  // Only the pills carrying the field: the pin actions share the difficulty row and
+  // must not be taken for a filter value.
+  const pastilles = [...document.querySelectorAll(`#${conteneur} .pastille[data-${champ}]`)];
   for (const bouton of pastilles) {
     bouton.addEventListener('click', () => {
       // Same safety rail as for the search: see the comment above.
