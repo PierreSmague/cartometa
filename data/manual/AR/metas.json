@@ -141,8 +141,7 @@
     "image": "data/manual/AR/images/man-edd9.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Intermediate"
+    "overlay": null
   },
   {
     "id": "man-d4a8",
