@@ -14,5 +14,37 @@
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
+  },
+  {
+    "id": "man-2d26",
+    "country": "SK",
+    "tier": "manual",
+    "title": "Yellow bus stop signs (eastern Prešov region)",
+    "description": "Bus stop signs looking like a 'no entry' sign on a yellow background are found in the northeast, in the Prešov region, apparently only in its eastern part; in the west of the region they are blue like in the rest of the country.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:13.928900+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/SK/images/man-2d26.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-25fb",
+    "country": "SK",
+    "tier": "manual",
+    "title": "Pedestrian crossing sign vs Czechia",
+    "description": "Slovak and Czech pedestrian crossing signs differ: in Slovakia the white edge touches the edge of the sign, the figure's jacket hangs over the trousers, and the left foot points up. In Czechia a thin blue border separates the white edge, the jacket is tucked in and the left foot points down.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:13.928900+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/SK/images/man-25fb.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]

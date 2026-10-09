@@ -1,0 +1,34 @@
+[
+  {
+    "id": "man-8d1a",
+    "country": "UY",
+    "tier": "manual",
+    "title": "Four-lane highways",
+    "description": "Four-lane highways in Uruguay all start from Montevideo and run either west or east, so align with the road direction.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:58.807598+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/UY/images/man-8d1a.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-39c2",
+    "country": "UY",
+    "tier": "manual",
+    "title": "Blue bins of Tacuarembó",
+    "description": "Entirely blue rubbish bins are found in many urban locations in the Tacuarembó region and nowhere else. The bin must be fully blue; other colour combinations belong to other regions.",
+    "category": "culture",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:58.807598+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/UY/images/man-39c2.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

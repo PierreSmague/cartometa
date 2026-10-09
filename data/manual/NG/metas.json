@@ -1,0 +1,18 @@
+[
+  {
+    "id": "man-e895",
+    "country": "NG",
+    "tier": "manual",
+    "title": "Okene, a basin among green hills",
+    "description": "Okene is very recognisable: the town sits in a basin surrounded by green mountains.",
+    "category": "landscape",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:25.283737+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NG/images/man-e895.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

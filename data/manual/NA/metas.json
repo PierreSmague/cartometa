@@ -1,0 +1,34 @@
+[
+  {
+    "id": "man-8418",
+    "country": "NA",
+    "tier": "manual",
+    "title": "Red dunes of Sossusvlei",
+    "description": "Red dunes of fine sand along the road to Sossusvlei are a unique landscape in Namibia, on the way from Sesriem to the Sossusvlei pan.",
+    "category": "landscape",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:24.209272+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NA/images/man-8418.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-eba5",
+    "country": "NA",
+    "tier": "manual",
+    "title": "Google car with bitten rear corner (C26, C35, C36, C43)",
+    "description": "This Google car has a distinctive bite-like mark on the rear corner of the window. It is only found on four roads: the C26, C35, C36 and C43. If you are heading south-west, it is the C26.",
+    "category": "car",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:24.209272+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NA/images/man-eba5.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

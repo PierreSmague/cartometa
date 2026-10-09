@@ -1,0 +1,50 @@
+[
+  {
+    "id": "man-c77f",
+    "country": "PL",
+    "tier": "manual",
+    "title": "Google car with antenna around Płock",
+    "description": "A Google car with a visible antenna in Poland points to the area around Płock (Masovia).",
+    "category": "car",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:10.995867+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/PL/images/man-c77f.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-5914",
+    "country": "PL",
+    "tier": "manual",
+    "title": "Narrow horizontal upstairs windows (east)",
+    "description": "Houses with very narrow, horizontal windows on the upper floor are found mostly in the eastern half of Poland.",
+    "category": "architecture",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:10.995867+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/PL/images/man-5914.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-1a3e",
+    "country": "PL",
+    "tier": "manual",
+    "title": "Traditional wooden houses (northeast)",
+    "description": "Traditional wooden houses, in various colours but always with walls of horizontal planks and a roof of imitation tiles, point to northeastern Poland.",
+    "category": "architecture",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:10.995867+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/PL/images/man-1a3e.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

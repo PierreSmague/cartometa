@@ -1,22 +1,5 @@
 [
   {
-    "id": "man-99d5",
-    "country": "FR",
-    "tier": "manual",
-    "title": "Bretagne white car",
-    "description": "White car (no antenna) in France is almost exclusively found in the region of Bretagne.",
-    "category": "car",
-    "source_url": "",
-    "extracted_at": "2026-08-11T18:52:17.797466+00:00",
-    "description_origin": "manual",
-    "origin": "manual",
-    "image": "data/manual/FR/images/man-99d5.png",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
-  },
-  {
     "id": "man-06b1",
     "country": "FR",
     "tier": "manual",
@@ -829,5 +812,53 @@
     "maps_latlon": null,
     "overlay": null,
     "difficulty": "Intermediate"
+  },
+  {
+    "id": "man-7794",
+    "country": "FR",
+    "tier": "manual",
+    "title": "White bus stops with a red band (Cotentin)",
+    "description": "If the area looks very Breton (architecture, landscape) but bus stops are white with a red band, you are in the Cotentin peninsula, in the Manche department.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:26.419381+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/FR/images/man-7794.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-d07f",
+    "country": "FR",
+    "tier": "manual",
+    "title": "Very thin centre lines (Saône-et-Loire)",
+    "description": "This extremely thin central road marking is characteristic of Saône-et-Loire, where it is found about 90% of the time.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:26.419381+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/FR/images/man-d07f.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-c537",
+    "country": "FR",
+    "tier": "manual",
+    "title": "Gen 4 white car (Brittany without antenna, north-east with antenna)",
+    "description": "France has a Gen 4 white Google car. The white car without antenna is found in Brittany; the white car with antenna is found in the north-east (Lorraine, Champagne, Franche-Comté and southern Alsace). On some frames of the antenna coverage the antenna is missing because of a camera bug.",
+    "category": "car",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:26.419381+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/FR/images/man-c537.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]

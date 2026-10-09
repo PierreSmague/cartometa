@@ -1,0 +1,34 @@
+[
+  {
+    "id": "man-981c",
+    "country": "FI",
+    "tier": "manual",
+    "title": "Gen 3 car without antenna (south-central)",
+    "description": "In Finnish Gen 3 coverage, a car with no antenna at all points to the south-central part of the country (roughly from the Helsinki area up through Häme and Päijät-Häme to the south of Central Finland and Southern Savonia). A Gen 3 car with an antenna tilted to the left points to the southwest coast instead.",
+    "category": "car",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:13.000183+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/FI/images/man-981c.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-6590",
+    "country": "FI",
+    "tier": "manual",
+    "title": "Gen 3 car with tilted antenna (southwest)",
+    "description": "In Finnish Gen 3 coverage, a car with an antenna tilted to the left points to the southwest coast (from Turku north along the coast through Satakunta towards Ostrobothnia). A Gen 3 car with no antenna points to the south-central part of the country instead.",
+    "category": "car",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:13.000183+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/FI/images/man-6590.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

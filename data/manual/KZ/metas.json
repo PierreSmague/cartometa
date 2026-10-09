@@ -1,0 +1,34 @@
+[
+  {
+    "id": "man-6cd8",
+    "country": "KZ",
+    "tier": "manual",
+    "title": "Visible lakes of Kazakhstan",
+    "description": "Few lakes are visible on Kazakh coverage: Lake Balkhash along the M36, seen from a road with barren brown surroundings; the lakes around Karaganda, with a late-summer feel of slightly orange shrubs and grass away from the main roads; Lake Shchuchinsk (Burabay area), surrounded by Scots pines; and the lakes around Petropavl, with lush, very green spring-like vegetation.",
+    "category": "landscape",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:43.811558+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KZ/images/man-6cd8.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-6569",
+    "country": "KZ",
+    "tier": "manual",
+    "title": "Wide unpaved A26 road",
+    "description": "The A26 in Kazakhstan is very recognisable: unpaved, very wide and in very good condition. It has two sections with very different orientations, making it relatively easy to pinpoint.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:43.811558+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KZ/images/man-6569.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

@@ -1,0 +1,34 @@
+[
+  {
+    "id": "man-f7e2",
+    "country": "GR",
+    "tier": "manual",
+    "title": "Resurfaced strip along road edges",
+    "description": "When Greece rolled out internet across the country, a narrow strip of asphalt was removed along road edges to lay cables and then refilled with newer asphalt. Greek roads therefore very often show a differently coloured strip along the edge.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:04.658060+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GR/images/man-f7e2.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-0397",
+    "country": "GR",
+    "tier": "manual",
+    "title": "STOP signs",
+    "description": "The Greek STOP sign is recognisable by its thick white border and a very wide, tall font that fills almost the whole sign.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:04.658060+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GR/images/man-0397.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

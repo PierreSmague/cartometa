@@ -1,0 +1,18 @@
+[
+  {
+    "id": "man-4991",
+    "country": "CY",
+    "tier": "manual",
+    "title": "Place names in Greek capitals",
+    "description": "On Cypriot road signs, place names in the Greek alphabet are written entirely in capital letters, unlike on Greek signs.",
+    "category": "culture",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:16.658743+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/CY/images/man-4991.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

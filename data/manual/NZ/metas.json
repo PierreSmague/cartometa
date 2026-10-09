@@ -218,5 +218,53 @@
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
+  },
+  {
+    "id": "man-7b22",
+    "country": "NZ",
+    "tier": "manual",
+    "title": "Fence posts with wooden extensions",
+    "description": "Fence posts are sometimes raised with wooden extensions. On the North Island this points to Hawke's Bay (hilly green landscape with big mountains to the west); on the South Island to Southland/Otago (flatter, drier landscape, sometimes with snowy mountains to the west).",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:13:06.960848+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NZ/images/man-7b22.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-a470",
+    "country": "NZ",
+    "tier": "manual",
+    "title": "Long possum guards (Marlborough and Southland)",
+    "description": "Long possum guards on poles are found in only two places: Marlborough, where they are long, fairly dark and rather square, and Southland, where they are slightly shorter and much more silvery.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:13:06.960848+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NZ/images/man-a470.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-da65",
+    "country": "NZ",
+    "tier": "manual",
+    "title": "Yellow tags on poles (Gisborne)",
+    "description": "A small yellow metal tag shaped like a cattle ear tag, sometimes found on New Zealand poles, points to the far northeast of the North Island, around Gisborne.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:13:06.960848+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NZ/images/man-da65.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]

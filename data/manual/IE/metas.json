@@ -14,5 +14,21 @@
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
+  },
+  {
+    "id": "man-4f18",
+    "country": "IE",
+    "tier": "manual",
+    "title": "2021 coverage in the north",
+    "description": "In Ireland, apart from a few reprocessed panoramas, 2021 coverage is always in the northern third of the island, including Northern Ireland. The Google car has since revisited this area in 2024 and 2025.",
+    "category": "car",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:03.220174+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/IE/images/man-4f18.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]

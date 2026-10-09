@@ -1,0 +1,18 @@
+[
+  {
+    "id": "man-d948",
+    "country": "KR",
+    "tier": "manual",
+    "title": "Double-crossarm poles (Busan area)",
+    "description": "Poles with a double crossarm (two parallel bars braced together) indicate the far southeast of South Korea, around Busan, Gimhae and Changwon.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:13:06.141662+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KR/images/man-d948.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

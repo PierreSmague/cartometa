@@ -1,0 +1,18 @@
+[
+  {
+    "id": "man-5887",
+    "country": "CR",
+    "tier": "manual",
+    "title": "Macaw palms in the northwest",
+    "description": "The macaw palm (thin spiny trunk, long leaves drooping irregularly), well known from Brazil, is also useful in Costa Rica: it is mostly found in the northwest of the country.",
+    "category": "vegetation",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:12.373359+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/CR/images/man-5887.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

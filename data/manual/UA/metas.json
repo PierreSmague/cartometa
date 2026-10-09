@@ -1,0 +1,18 @@
+[
+  {
+    "id": "man-3b5e",
+    "country": "UA",
+    "tier": "manual",
+    "title": "Chipped antenna (north-east of Kyiv to Dnipro)",
+    "description": "A Google car whose antenna has a small white chip on its upper left side. It can be hard to spot but is very localised: east of Kyiv through southern Chernihiv and western Sumy oblasts, then south through Poltava oblast towards Dnipro.",
+    "category": "car",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:44.692509+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/UA/images/man-3b5e.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

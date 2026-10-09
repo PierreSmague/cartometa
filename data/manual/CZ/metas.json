@@ -878,5 +878,37 @@
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
+  },
+  {
+    "id": "man-4b59",
+    "country": "CZ",
+    "tier": "manual",
+    "title": "Isolated conical hills (northwest Bohemia)",
+    "description": "Northwestern Bohemia features many small, well-defined conical hills rising from flat fields, sometimes four or five in the same view (České středohoří and surroundings).",
+    "category": "landscape",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:13.490612+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/CZ/images/man-4b59.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-e819",
+    "country": "CZ",
+    "tier": "manual",
+    "title": "Pedestrian crossing sign vs Slovakia",
+    "description": "Czech and Slovak pedestrian crossing signs differ: in Czechia a thin blue border separates the white edge from the sign's edge, the figure's jacket is tucked into the trousers, and the left foot points down. In Slovakia the white edge touches the sign's edge, the jacket hangs over the trousers and the left foot points up.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:13.490612+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/CZ/images/man-e819.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]

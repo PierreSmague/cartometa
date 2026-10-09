@@ -38,25 +38,6 @@
     "overlay": null
   },
   {
-    "id": "man-a010",
-    "country": "DE",
-    "tier": "manual",
-    "title": "Concrete pole with metal straps",
-    "description": "A round concrete pole with metal straps banded around it. Found across the east, a little more often in Saxony than elsewhere, though the difference is slight.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1nbpKI6y21Y-FKjwf6dCNYYZ9tmNIq8VVEVDcqMls6wA/edit",
-    "extracted_at": "2026-09-22T12:37:49.159489+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/DE/images/man-a010.webp",
-    "maps_url": "https://www.google.com/maps/@53.5076073,11.3694071,3a,48.8y,196.29h,94.98t/data=!3m6!1e1!3m4!1sPV211UWctbMvfghJlC_pqQ!2e0!7i16384!8i8192?entry=ttu",
-    "maps_latlon": [
-      53.5076073,
-      11.3694071
-    ],
-    "overlay": null
-  },
-  {
     "id": "man-fa81",
     "country": "DE",
     "tier": "manual",
@@ -352,44 +333,6 @@
     "overlay": null
   },
   {
-    "id": "man-4e7f",
-    "country": "DE",
-    "tier": "manual",
-    "title": "Lüneburg and Uelzen bollard",
-    "description": "A distinctive bollard top, very common where it occurs but confined to the districts of Lüneburg and Uelzen in eastern Lower Saxony.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1nbpKI6y21Y-FKjwf6dCNYYZ9tmNIq8VVEVDcqMls6wA/edit",
-    "extracted_at": "2026-09-22T12:37:49.159489+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/DE/images/man-4e7f.webp",
-    "maps_url": "https://www.google.com/maps/@53.0162338,10.5577194,3a,17.1y,78.02h,79.33t/data=!3m6!1e1!3m4!1scV5nQcHi3gkjIstaCgDa9Q!2e0!7i16384!8i8192?entry=ttu",
-    "maps_latlon": [
-      53.0162338,
-      10.5577194
-    ],
-    "overlay": null
-  },
-  {
-    "id": "man-fe01",
-    "country": "DE",
-    "tier": "manual",
-    "title": "Road numbers on bollard plates",
-    "description": "The white plates on bollards often carry the road number. L roads are the smallest and show white on the map, B roads are the yellow ones and are the rarest to come across, and A roads are the motorways and show blue.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1nbpKI6y21Y-FKjwf6dCNYYZ9tmNIq8VVEVDcqMls6wA/edit",
-    "extracted_at": "2026-09-22T12:37:49.159489+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/DE/images/man-fe01.webp",
-    "maps_url": "https://goo.gl/maps/3zK4Bj1YcF4aF9vz9",
-    "maps_latlon": [
-      52.056318,
-      8.338046
-    ],
-    "overlay": null
-  },
-  {
     "id": "man-2cfd",
     "country": "DE",
     "tier": "manual",
@@ -425,22 +368,6 @@
       49.964882,
       11.561941
     ],
-    "overlay": null
-  },
-  {
-    "id": "man-56fd",
-    "country": "DE",
-    "tier": "manual",
-    "title": "Green sticker above the reflector",
-    "description": "A green sticker fixed just above the bollard's reflector. Not very common, and other colours may exist. North Rhine-Westphalia.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1nbpKI6y21Y-FKjwf6dCNYYZ9tmNIq8VVEVDcqMls6wA/edit",
-    "extracted_at": "2026-09-22T12:37:49.159489+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/DE/images/man-56fd.webp",
-    "maps_url": null,
-    "maps_latlon": null,
     "overlay": null
   },
   {
@@ -624,44 +551,6 @@
     "maps_latlon": [
       49.537991,
       6.977238
-    ],
-    "overlay": null
-  },
-  {
-    "id": "man-a30f",
-    "country": "DE",
-    "tier": "manual",
-    "title": "Kilometre marker, Schleswig-Holstein format",
-    "description": "A kilometre marker that looks like several others in the country; what separates it is the format of its letters and numbers. Only found in this state.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1nbpKI6y21Y-FKjwf6dCNYYZ9tmNIq8VVEVDcqMls6wA/edit",
-    "extracted_at": "2026-09-22T12:37:49.159489+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/DE/images/man-a30f.webp",
-    "maps_url": "https://www.google.com/maps/@53.642344,10.4201955,3a,15y,94.81h,78.52t/data=!3m6!1e1!3m4!1s0h1myWJbg4BrJyIobgiz3A!2e0!7i16384!8i8192?entry=ttu",
-    "maps_latlon": [
-      53.642344,
-      10.4201955
-    ],
-    "overlay": null
-  },
-  {
-    "id": "man-d3b2",
-    "country": "DE",
-    "tier": "manual",
-    "title": "Kilometre marker, Lower Saxony format",
-    "description": "Nearly identical to the Schleswig-Holstein marker, and again told apart only by the format of its letters and numbers. Only found in this state.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1nbpKI6y21Y-FKjwf6dCNYYZ9tmNIq8VVEVDcqMls6wA/edit",
-    "extracted_at": "2026-09-22T12:37:49.159489+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/DE/images/man-d3b2.webp",
-    "maps_url": "https://www.google.com/maps/@52.965255,9.1902853,3a,15y,203.65h,73.16t/data=!3m6!1e1!3m4!1sJili3VK6O9BIMaPEvMtmJw!2e0!7i16384!8i8192?entry=ttu",
-    "maps_latlon": [
-      52.965255,
-      9.1902853
     ],
     "overlay": null
   },
@@ -1060,25 +949,6 @@
     "overlay": null
   },
   {
-    "id": "man-4e70",
-    "country": "DE",
-    "tier": "manual",
-    "title": "Polish pines in the east",
-    "description": "Stands of tall, bare-trunked pines of the kind found in Poland. Most common in the east, especially Brandenburg and Saxony, the states bordering Poland.",
-    "category": "vegetation",
-    "source_url": "https://docs.google.com/document/d/1nbpKI6y21Y-FKjwf6dCNYYZ9tmNIq8VVEVDcqMls6wA/edit",
-    "extracted_at": "2026-09-22T12:37:49.159489+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/DE/images/man-4e70.webp",
-    "maps_url": "https://www.google.com/maps/@52.1595781,13.2401039,3a,90y,78.29h,92.67t/data=!3m6!1e1!3m4!1sD1Sfmj3vKx9EbLMr11o70w!2e0!7i16384!8i8192?entry=ttu",
-    "maps_latlon": [
-      52.1595781,
-      13.2401039
-    ],
-    "overlay": null
-  },
-  {
     "id": "man-da83",
     "country": "DE",
     "tier": "manual",
@@ -1329,6 +1199,38 @@
     "description_origin": "imported",
     "origin": "manual",
     "image": "data/manual/DE/images/man-a11b.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-4086",
+    "country": "DE",
+    "tier": "manual",
+    "title": "German pole tops",
+    "description": "Four useful pole tops: the trident, fairly useful for the south; the triangle, usually in the west but not fully reliable; the thick crossbar, reminiscent of Argentine poles, a very good clue for the north-east; and the rounded crossbar, found only in south-eastern Bavaria (the rest of Bavaria has a small cap on the middle bar instead).",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:03.432982+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/DE/images/man-4086.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-cab3",
+    "country": "DE",
+    "tier": "manual",
+    "title": "Plates on trees (Mecklenburg and Brandenburg)",
+    "description": "These green-and-white (sometimes black-and-white) plates fixed on roadside trees are unique to Mecklenburg-Vorpommern and Brandenburg.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:03.432982+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/DE/images/man-cab3.webp",
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
