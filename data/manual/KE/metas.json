@@ -609,24 +609,6 @@
     ]
   },
   {
-    "id": "man-4d47",
-    "country": "KE",
-    "tier": "manual",
-    "title": "Wajir soil combination",
-    "description": "The distinctive soil combination around Wajir.",
-    "category": "landscape",
-    "source_url": "https://docs.google.com/document/d/1RFuMD_hNikWzUQhld4h4s9EMTTfpCmiN6OiJmznHmYc/edit?tab=t.0",
-    "extracted_at": "2026-08-10T19:54:57.110462+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/KE/images/man-4d47.webp",
-    "maps_url": "https://maps.app.goo.gl/3QVUGP3pQDKRn7j7A",
-    "maps_latlon": [
-      1.78,
-      40.061
-    ]
-  },
-  {
     "id": "man-3bab",
     "country": "KE",
     "tier": "manual",
@@ -696,24 +678,6 @@
     "maps_latlon": [
       -1.009,
       34.057
-    ]
-  },
-  {
-    "id": "man-1f03",
-    "country": "KE",
-    "tier": "manual",
-    "title": "Rocky desert (A2 Marsabit–Turbi)",
-    "description": "Rocky desert stretch on the A2 north of Marsabit. The far southern part starts to have vegetation; a ridge at the most northern point (Turbi village) can be used to pinpoint along the road.",
-    "category": "landscape",
-    "source_url": "https://docs.google.com/document/d/1RFuMD_hNikWzUQhld4h4s9EMTTfpCmiN6OiJmznHmYc/edit?tab=t.0",
-    "extracted_at": "2026-08-10T19:56:45.970988+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/KE/images/man-1f03.webp",
-    "maps_url": "https://maps.app.goo.gl/ftTfUseqioJqKoK37",
-    "maps_latlon": [
-      3.026,
-      38.22
     ]
   },
   {
@@ -1182,42 +1146,6 @@
     ]
   },
   {
-    "id": "man-4d8e",
-    "country": "KE",
-    "tier": "manual",
-    "title": "⭐ Coastal walls",
-    "description": "The whole coast excessively often uses walls made of white stones with too much mortar. Houses are built from the same stones (see the white bricks meta).",
-    "category": "architecture",
-    "source_url": "https://docs.google.com/document/d/1RFuMD_hNikWzUQhld4h4s9EMTTfpCmiN6OiJmznHmYc/edit?tab=t.0",
-    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/KE/images/man-4d8e.webp",
-    "maps_url": "https://maps.app.goo.gl/bjiwyZ1AahknuCXX9",
-    "maps_latlon": [
-      -4.107,
-      39.665
-    ]
-  },
-  {
-    "id": "man-bd47",
-    "country": "KE",
-    "tier": "manual",
-    "title": "⭐ Nakuru walls",
-    "description": "Nakuru commonly uses walls with decently large, dark gray rocky stones of varying sizes and lightish mortar. Beware of lookalikes elsewhere (the author lists counterexamples near Nairobi and Naivasha).",
-    "category": "architecture",
-    "source_url": "https://docs.google.com/document/d/1RFuMD_hNikWzUQhld4h4s9EMTTfpCmiN6OiJmznHmYc/edit?tab=t.0",
-    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/KE/images/man-bd47.webp",
-    "maps_url": "https://maps.app.goo.gl/pTyJKTLs1XqFkk1t9",
-    "maps_latlon": [
-      -0.268,
-      36.136
-    ]
-  },
-  {
     "id": "man-67e2",
     "country": "KE",
     "tier": "manual",
@@ -1233,24 +1161,6 @@
     "maps_latlon": [
       -0.46,
       39.665
-    ]
-  },
-  {
-    "id": "man-c29a",
-    "country": "KE",
-    "tier": "manual",
-    "title": "⭐ Narok fences",
-    "description": "Tall wooden sticks connected by barely visible metal wires — practically the only fence design around Narok, where they also run on forever (unlike other areas using the same fence). A lighter presence near Nanyuki.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1RFuMD_hNikWzUQhld4h4s9EMTTfpCmiN6OiJmznHmYc/edit?tab=t.0",
-    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/KE/images/man-c29a.webp",
-    "maps_url": "https://maps.app.goo.gl/V77UtPThRtLdQ2m79",
-    "maps_latlon": [
-      -1.039,
-      35.736
     ]
   },
   {
@@ -1323,24 +1233,6 @@
     "maps_latlon": [
       -0.263,
       36.112
-    ]
-  },
-  {
-    "id": "man-a19a",
-    "country": "KE",
-    "tier": "manual",
-    "title": "⭐ Red bricks",
-    "description": "The most common and useful Kenya meta: red bricks with light mortar. One of the best ways to separate the west of Kenya (and Ukambani east of Nairobi) from everything around Mount Kenya and the Aberdares.",
-    "category": "architecture",
-    "source_url": "https://docs.google.com/document/d/1RFuMD_hNikWzUQhld4h4s9EMTTfpCmiN6OiJmznHmYc/edit?tab=t.0",
-    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/KE/images/man-a19a.webp",
-    "maps_url": "https://maps.app.goo.gl/keuFR6Rkek5MnyNY7",
-    "maps_latlon": [
-      0.044,
-      34.304
     ]
   },
   {
@@ -1503,24 +1395,6 @@
     "maps_latlon": [
       -4.037,
       39.664
-    ]
-  },
-  {
-    "id": "man-bcd8",
-    "country": "KE",
-    "tier": "manual",
-    "title": "Nairobi skyline",
-    "description": "Nairobi is the only Kenyan city with a skyline — or even skyscrapers.",
-    "category": "architecture",
-    "source_url": "https://docs.google.com/document/d/1RFuMD_hNikWzUQhld4h4s9EMTTfpCmiN6OiJmznHmYc/edit?tab=t.0",
-    "extracted_at": "2026-08-10T19:58:32.448762+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/KE/images/man-bcd8.webp",
-    "maps_url": "https://maps.app.goo.gl/d7wGrTZj2M3cSQWg6",
-    "maps_latlon": [
-      -1.296,
-      36.822
     ]
   },
   {
@@ -1756,5 +1630,37 @@
       -0.961,
       36.885
     ]
+  },
+  {
+    "id": "man-b04c",
+    "country": "KE",
+    "tier": "manual",
+    "title": "Colourful striped houses of Meru",
+    "description": "Houses painted with coloured horizontal bands are found only around Meru.",
+    "category": "architecture",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:24.549760+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-b04c.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-710b",
+    "country": "KE",
+    "tier": "manual",
+    "title": "\"Migori\" houses around Lake Victoria",
+    "description": "Around Lake Victoria in far western Kenya there are many \"Migori\" houses: square, with a corrugated metal roof overhanging the walls. They are mostly concentrated around Kisii but also appear north of the lake; guessing near the lake is a good hedge.",
+    "category": "architecture",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:24.549760+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/KE/images/man-710b.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]

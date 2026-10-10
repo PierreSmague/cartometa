@@ -10,6 +10,7 @@ from cartometa.build.dataset import (
     SCOPE_NATIONAL,
     SCOPE_REGIONAL,
     build_dataset,
+    difficulty_de,
     discover_countries,
     scope_de,
 )
@@ -616,16 +617,69 @@ def test_the_front_end_category_values_match_the_build_ones():
     assert valeurs == ["", *CATEGORIES]
 
 
-def test_a_meta_with_no_difficulty_is_published_unrated(tmp_path):
-    """The field is optional and most metas do not have it. It must not be guessed:
-    defaulting to `Beginner` would make the site claim a level nobody has judged, on
-    every meta entered before the field existed."""
+def _rectangle(x: float, y: float, largeur: float, hauteur: float) -> dict:
+    return {"type": "Polygon", "coordinates": [[
+        [x, y], [x + largeur, y], [x + largeur, y + hauteur], [x, y + hauteur], [x, y],
+    ]]}
+
+
+NATIONAL = [{"kind": "country"}]
+REGIONAL = [{"kind": "polygon"}]
+
+
+@pytest.mark.parametrize("category,pieces,geometrie,attendu", [
+    # A national footprint is Beginner, whatever its size: a micro-state is
+    # national all the same.
+    ("architecture", NATIONAL, _carre(0.0, 0.0, 10.0), "Beginner"),
+    ("architecture", NATIONAL, _carre(0.0, 0.0, 0.05), "Beginner"),
+    # Every car meta is Pro, national ones included: the car rule wins.
+    ("car", NATIONAL, _carre(0.0, 0.0, 10.0), "Pro"),
+    ("car", REGIONAL, _carre(0.0, 0.0, 3.0), "Pro"),
+    # A city: 0.1° at the equator, about 11 x 11 km.
+    ("infrastructure", REGIONAL, _carre(0.0, 0.0, 0.1), "Pro"),
+    # About 33 x 33 km, above the 500 km² threshold.
+    ("infrastructure", REGIONAL, _carre(0.0, 0.0, 0.3), "Intermediate"),
+    # A road: about 17 km wide over 220 km — 3700 km², but a corridor.
+    ("infrastructure", REGIONAL, _rectangle(0.0, 0.0, 2.0, 0.15), "Pro"),
+    # Long, but 55 km wide: a region, not a road.
+    ("landscape", REGIONAL, _rectangle(0.0, 0.0, 4.0, 0.5), "Intermediate"),
+    # A plain region.
+    ("vegetation", REGIONAL, _carre(0.0, 0.0, 3.0), "Intermediate"),
+])
+def test_the_difficulty_is_derived_from_category_scope_and_footprint(
+    category, pieces, geometrie, attendu
+):
+    assert difficulty_de(category, pieces, geometrie) == attendu
+
+
+def test_the_footprint_area_is_measured_on_the_ground_not_in_degrees():
+    """0.25° x 0.25° is about 770 km² at the equator but 390 km² at 60°N, where a
+    degree of longitude is half as long. Measuring in square degrees would rate
+    every northern city Intermediate."""
+    assert difficulty_de("infrastructure", REGIONAL, _carre(0.0, 0.0, 0.25)) == "Intermediate"
+    assert difficulty_de("infrastructure", REGIONAL, _carre(0.0, 60.0, 0.25)) == "Pro"
+
+
+def test_a_meta_with_no_difficulty_gets_the_derived_one(tmp_path):
+    """3° x 3° regional, category `autre`: neither national, nor car, nor small."""
     data_dir = tmp_path / "data"
     _ecrire_pays_un_meta(data_dir)
 
     jeu = build_dataset(data_dir, ["PL"])
 
-    assert jeu.countries["PL"]["metas"]["pl1"]["difficulty"] is None
+    assert jeu.countries["PL"]["metas"]["pl1"]["difficulty"] == "Intermediate"
+
+
+def test_the_derived_difficulty_follows_the_corrected_category(tmp_path):
+    """A meta re-tagged `car` through categories.json is a car meta on the site, so
+    it must be rated as one."""
+    data_dir = tmp_path / "data"
+    _ecrire_pays_un_meta(data_dir)
+    (data_dir / "categories.json").write_text(json.dumps({"PL": {"pl1": "car"}}), "utf-8")
+
+    jeu = build_dataset(data_dir, ["PL"])
+
+    assert jeu.countries["PL"]["metas"]["pl1"]["difficulty"] == "Pro"
 
 
 def test_a_filled_difficulty_is_published_as_it_stands(tmp_path):
@@ -637,15 +691,15 @@ def test_a_filled_difficulty_is_published_as_it_stands(tmp_path):
     assert jeu.countries["PL"]["metas"]["pl1"]["difficulty"] == "Intermediate"
 
 
-def test_an_empty_difficulty_counts_as_unrated(tmp_path):
-    """What an editing form leaves behind when the level is cleared. It means "not
-    rated", and must not be taken for an unknown level and stop the build."""
+def test_an_empty_difficulty_gets_the_derived_one(tmp_path):
+    """What an editing form leaves behind when the level is cleared. It means "no
+    hand-set level", and must not be taken for an unknown level and stop the build."""
     data_dir = tmp_path / "data"
     _ecrire_pays_un_meta(data_dir, difficulty="")
 
     jeu = build_dataset(data_dir, ["PL"])
 
-    assert jeu.countries["PL"]["metas"]["pl1"]["difficulty"] is None
+    assert jeu.countries["PL"]["metas"]["pl1"]["difficulty"] == "Intermediate"
 
 
 def test_an_unknown_difficulty_is_refused(tmp_path):
@@ -664,12 +718,12 @@ def test_the_front_end_difficulty_values_match_the_build_ones():
     silent when it breaks: `app.js` filters by comparing `data-difficulte` to the
     `difficulty` the build wrote, for equality.
 
-    The leading empty value is the "All" pill, which filters nothing. The trailing
-    `none` is the "Not rated" one: a value the build never writes, since it selects
-    the metas that carry no difficulty at all.
+    The leading empty value is the "All" pill, which filters nothing. There is no
+    "Not rated" pill any more: the build derives a level for every meta, so it
+    would select nothing.
     """
     html = (Path(__file__).resolve().parents[1] / "viewer" / "index.html").read_text("utf-8")
 
     valeurs = re.findall(r'data-difficulte="([^"]*)"', html)
 
-    assert valeurs == ["", *DIFFICULTIES, "none"]
+    assert valeurs == ["", *DIFFICULTIES]

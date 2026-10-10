@@ -1,22 +1,5 @@
 [
   {
-    "id": "man-99d5",
-    "country": "FR",
-    "tier": "manual",
-    "title": "Bretagne white car",
-    "description": "White car (no antenna) in France is almost exclusively found in the region of Bretagne.",
-    "category": "car",
-    "source_url": "",
-    "extracted_at": "2026-08-11T18:52:17.797466+00:00",
-    "description_origin": "manual",
-    "origin": "manual",
-    "image": "data/manual/FR/images/man-99d5.png",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
-  },
-  {
     "id": "man-06b1",
     "country": "FR",
     "tier": "manual",
@@ -30,8 +13,7 @@
     "image": "data/manual/FR/images/man-06b1.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Intermediate"
+    "overlay": null
   },
   {
     "id": "man-637b",
@@ -47,8 +29,7 @@
     "image": "data/manual/FR/images/man-637b.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Beginner"
+    "overlay": null
   },
   {
     "id": "man-e34c",
@@ -64,8 +45,7 @@
     "image": "data/manual/FR/images/man-e34c.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Beginner"
+    "overlay": null
   },
   {
     "id": "man-54a1",
@@ -81,8 +61,7 @@
     "image": "data/manual/FR/images/man-54a1.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Beginner"
+    "overlay": null
   },
   {
     "id": "man-4ea1",
@@ -98,8 +77,7 @@
     "image": "data/manual/FR/images/man-4ea1.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Beginner"
+    "overlay": null
   },
   {
     "id": "man-b7d5",
@@ -115,8 +93,7 @@
     "image": "data/manual/FR/images/man-b7d5.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-ec42",
@@ -132,8 +109,7 @@
     "image": "data/manual/FR/images/man-ec42.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Beginner"
+    "overlay": null
   },
   {
     "id": "man-531e",
@@ -149,8 +125,7 @@
     "image": "data/manual/FR/images/man-531e.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Intermediate"
+    "overlay": null
   },
   {
     "id": "man-e36c",
@@ -166,8 +141,7 @@
     "image": "data/manual/FR/images/man-e36c.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Intermediate"
+    "overlay": null
   },
   {
     "id": "man-7eb1",
@@ -183,8 +157,7 @@
     "image": "data/manual/FR/images/man-7eb1.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Intermediate"
+    "overlay": null
   },
   {
     "id": "man-5292",
@@ -200,8 +173,7 @@
     "image": "data/manual/FR/images/man-5292.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Intermediate"
+    "overlay": null
   },
   {
     "id": "man-1d4c",
@@ -217,8 +189,7 @@
     "image": "data/manual/FR/images/man-1d4c.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-d363",
@@ -234,8 +205,7 @@
     "image": "data/manual/FR/images/man-d363.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Intermediate"
+    "overlay": null
   },
   {
     "id": "man-2e78",
@@ -251,8 +221,7 @@
     "image": "data/manual/FR/images/man-2e78.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Intermediate"
+    "overlay": null
   },
   {
     "id": "man-0324",
@@ -268,8 +237,7 @@
     "image": "data/manual/FR/images/man-0324.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Intermediate"
+    "overlay": null
   },
   {
     "id": "man-8a51",
@@ -285,8 +253,7 @@
     "image": "data/manual/FR/images/man-8a51.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-f7b3",
@@ -302,8 +269,7 @@
     "image": "data/manual/FR/images/man-f7b3.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-2e02",
@@ -319,8 +285,7 @@
     "image": "data/manual/FR/images/man-2e02.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Intermediate"
+    "overlay": null
   },
   {
     "id": "man-d23d",
@@ -336,8 +301,7 @@
     "image": "data/manual/FR/images/man-d23d.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-1e19",
@@ -353,8 +317,7 @@
     "image": "data/manual/FR/images/man-1e19.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Intermediate"
+    "overlay": null
   },
   {
     "id": "man-5a14",
@@ -370,8 +333,7 @@
     "image": "data/manual/FR/images/man-5a14.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-b06f",
@@ -387,8 +349,7 @@
     "image": "data/manual/FR/images/man-b06f.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Intermediate"
+    "overlay": null
   },
   {
     "id": "man-39cb",
@@ -404,8 +365,7 @@
     "image": "data/manual/FR/images/man-39cb.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-b2f5",
@@ -421,8 +381,7 @@
     "image": "data/manual/FR/images/man-b2f5.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-1957",
@@ -438,8 +397,7 @@
     "image": "data/manual/FR/images/man-1957.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-b398",
@@ -455,8 +413,7 @@
     "image": "data/manual/FR/images/man-b398.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-685a",
@@ -472,8 +429,7 @@
     "image": "data/manual/FR/images/man-685a.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-ea69",
@@ -489,8 +445,7 @@
     "image": "data/manual/FR/images/man-ea69.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-b716",
@@ -506,8 +461,7 @@
     "image": "data/manual/FR/images/man-b716.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Intermediate"
+    "overlay": null
   },
   {
     "id": "man-bbd2",
@@ -523,8 +477,7 @@
     "image": "data/manual/FR/images/man-bbd2.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-b6dd",
@@ -540,8 +493,7 @@
     "image": "data/manual/FR/images/man-b6dd.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-b040",
@@ -557,8 +509,7 @@
     "image": "data/manual/FR/images/man-b040.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-fcf7",
@@ -574,8 +525,7 @@
     "image": "data/manual/FR/images/man-fcf7.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-d298",
@@ -607,8 +557,7 @@
     "image": "data/manual/FR/images/man-0d20.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-c539",
@@ -624,8 +573,7 @@
     "image": "data/manual/FR/images/man-c539.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Intermediate"
+    "overlay": null
   },
   {
     "id": "man-3a02",
@@ -641,8 +589,7 @@
     "image": "data/manual/FR/images/man-3a02.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-9e5c",
@@ -658,8 +605,7 @@
     "image": "data/manual/FR/images/man-9e5c.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-dcfb",
@@ -675,8 +621,7 @@
     "image": "data/manual/FR/images/man-dcfb.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Intermediate"
+    "overlay": null
   },
   {
     "id": "man-9856",
@@ -692,8 +637,7 @@
     "image": "data/manual/FR/images/man-9856.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-a5ee",
@@ -725,8 +669,7 @@
     "image": "data/manual/FR/images/man-d468.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-0ecd",
@@ -742,8 +685,7 @@
     "image": "data/manual/FR/images/man-0ecd.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-53f9",
@@ -759,8 +701,7 @@
     "image": "data/manual/FR/images/man-53f9.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-7fd1",
@@ -776,8 +717,7 @@
     "image": "data/manual/FR/images/man-7fd1.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Intermediate"
+    "overlay": null
   },
   {
     "id": "man-6c86",
@@ -793,8 +733,7 @@
     "image": "data/manual/FR/images/man-6c86.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-171b",
@@ -810,8 +749,7 @@
     "image": "data/manual/FR/images/man-171b.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Intermediate"
+    "overlay": null
   },
   {
     "id": "man-9d10",
@@ -827,7 +765,54 @@
     "image": "data/manual/FR/images/man-9d10.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Intermediate"
+    "overlay": null
+  },
+  {
+    "id": "man-7794",
+    "country": "FR",
+    "tier": "manual",
+    "title": "White bus stops with a red band (Cotentin)",
+    "description": "If the area looks very Breton (architecture, landscape) but bus stops are white with a red band, you are in the Cotentin peninsula, in the Manche department.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:26.419381+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/FR/images/man-7794.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-d07f",
+    "country": "FR",
+    "tier": "manual",
+    "title": "Very thin centre lines (Saône-et-Loire)",
+    "description": "This extremely thin central road marking is characteristic of Saône-et-Loire, where it is found about 90% of the time.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:26.419381+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/FR/images/man-d07f.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-c537",
+    "country": "FR",
+    "tier": "manual",
+    "title": "Gen 4 white car (Brittany without antenna, north-east with antenna)",
+    "description": "France has a Gen 4 white Google car. The white car without antenna is found in Brittany; the white car with antenna is found in the north-east (Lorraine, Champagne, Franche-Comté and southern Alsace). On some frames of the antenna coverage the antenna is missing because of a camera bug.",
+    "category": "car",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:26.419381+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/FR/images/man-c537.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]

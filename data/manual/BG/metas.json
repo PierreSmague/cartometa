@@ -414,5 +414,21 @@
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
+  },
+  {
+    "id": "man-af2c",
+    "country": "BG",
+    "tier": "manual",
+    "title": "Poles with 45° supports (southeast)",
+    "description": "Utility poles with 45° braces attached to their base are found in a small area of southeastern Bulgaria, roughly between Varna and Burgas.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:15.252382+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/BG/images/man-af2c.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]

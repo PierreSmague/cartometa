@@ -141,7 +141,54 @@
     "image": "data/manual/AR/images/man-edd9.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Intermediate"
+    "overlay": null
+  },
+  {
+    "id": "man-d4a8",
+    "country": "AR",
+    "tier": "manual",
+    "title": "Table mountains west of Mar del Plata",
+    "description": "Green landscape with flat-topped hills (too green for Chubut, too hilly for Rosario): you are on the roads west of Mar del Plata, in south-eastern Buenos Aires province (Tandilia hills).",
+    "category": "landscape",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:57.604269+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/AR/images/man-d4a8.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-7520",
+    "country": "AR",
+    "tier": "manual",
+    "title": "Caranday palm (Córdoba sierras)",
+    "description": "The caranday palm (Trithrinax campestris), from the same family as the wax palm, has a thick 'hipster beard' of old leaf bases. It is native to the Sierras de Córdoba and found more rarely in the mountains further north and towards San Luis.",
+    "category": "vegetation",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:57.604269+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/AR/images/man-7520.png",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-758d",
+    "country": "AR",
+    "tier": "manual",
+    "title": "Tucumán pole stickers",
+    "description": "Small vertical white/grey stickers found on almost every utility pole are unique to Tucumán. They can be hard to see in NM when the poles are far away.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:57.604269+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/AR/images/man-758d.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]

@@ -1,0 +1,18 @@
+[
+  {
+    "id": "man-3c69",
+    "country": "PY",
+    "tier": "manual",
+    "title": "Telephone area codes",
+    "description": "Paraguayan landline area codes (0X XX XXX XXX) can be used for region guessing: the first digit indicates the region (e.g. 2 near Asunción, 3 north-east, 4 the Chaco, 5 centre, 6 east, 7 south/Itapúa, 8 Misiones/Ñeembucú). Mobile numbers start with 09; international code +595.",
+    "category": "culture",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:59.228051+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/PY/images/man-3c69.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

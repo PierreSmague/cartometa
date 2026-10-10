@@ -1,0 +1,34 @@
+[
+  {
+    "id": "man-d44e",
+    "country": "TW",
+    "tier": "manual",
+    "title": "Tea & Magic Hand bubble tea shops (south)",
+    "description": "Bubble tea chains help separate north and south Taiwan. 'Tea & Magic Hand' (茶の魔手), whose logo is a diagonal lightning-like stroke, is found in the south-west: from Taichung down the western plains to Kaohsiung and Pingtung, and on Penghu. CoCo (blue-and-white drop logo) dominates in the north.",
+    "category": "culture",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:13:05.771808+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/TW/images/man-d44e.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-ecd7",
+    "country": "TW",
+    "tier": "manual",
+    "title": "CoCo bubble tea shops (north)",
+    "description": "Bubble tea chains help separate north and south Taiwan. CoCo (都可), with a small blue-and-white drop logo, is concentrated in the north: Taipei, New Taipei, Keelung, Taoyuan, Hsinchu and Miaoli. 'Tea & Magic Hand' (diagonal lightning logo) dominates in the south-west.",
+    "category": "culture",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:13:05.771808+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/TW/images/man-ecd7.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

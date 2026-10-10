@@ -1198,5 +1198,21 @@
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
+  },
+  {
+    "id": "man-5368",
+    "country": "GE",
+    "tier": "manual",
+    "title": "Decorative awnings south of Rustavi",
+    "description": "Ornamented decorative awnings are unique to the area south of Rustavi, west of the Kura river.",
+    "category": "architecture",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:44.277734+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GE/images/man-5368.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]

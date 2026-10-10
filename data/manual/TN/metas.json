@@ -1,0 +1,34 @@
+[
+  {
+    "id": "man-735c",
+    "country": "TN",
+    "tier": "manual",
+    "title": "Light khaki follow car (north)",
+    "description": "The light khaki follow car is found only in the northern cities, from Hammamet and Nabeul on the coast up to Bizerte in the far north. It can be told apart from the dark khaki southern car by its licence plate: no red border means north.",
+    "category": "car",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:25.968508+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/TN/images/man-735c.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-ffde",
+    "country": "TN",
+    "tier": "manual",
+    "title": "Dark khaki follow car (Sahel and south-east)",
+    "description": "The dark khaki follow car is the most common in Tunisia, covering about 70% of the coverage. It runs from south of Hammamet down to Médenine in the far south, through Monastir, Sousse, Sfax, Gabès and also Kairouan; more rarely on Djerba. Its licence plate has a red border, unlike the northern light khaki car.",
+    "category": "car",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:25.968508+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/TN/images/man-ffde.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

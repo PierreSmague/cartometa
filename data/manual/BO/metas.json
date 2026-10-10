@@ -30,5 +30,21 @@
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
+  },
+  {
+    "id": "man-035b",
+    "country": "BO",
+    "tier": "manual",
+    "title": "Rock spires south-east of La Paz",
+    "description": "Very steep rock formations that seem to rise straight out of the ground, combined with Andean architecture, indicate one of the three roads leaving La Paz to the south-east.",
+    "category": "landscape",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:59.602062+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/BO/images/man-035b.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]

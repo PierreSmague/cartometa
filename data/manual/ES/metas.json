@@ -108,41 +108,6 @@
     "overlay": null
   },
   {
-    "id": "man-9955",
-    "country": "ES",
-    "tier": "manual",
-    "title": "Scots pine regions",
-    "description": "Scots pines (Pinus sylvestris, red trunk) come in four main areas: the Pyrenees (dense, mountainous forests), Soria, the high roads of the Sierra de Madrid, and Cuenca north-west of València (drier). North-west of Segovia and north-east of Ávila they form flat forests.",
-    "category": "vegetation",
-    "source_url": "https://docs.google.com/document/d/1HuIl3wEm9faelpGeFmO5ra49dK6tJ99C6vS07-_DRNM/edit",
-    "extracted_at": "2026-10-08T07:15:12.512759+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/ES/images/man-9955.webp",
-    "maps_url": "https://goo.gl/maps/svNYHBkFJVay6pq46",
-    "maps_latlon": [
-      41.8329676,
-      -2.9925676
-    ],
-    "overlay": null
-  },
-  {
-    "id": "man-1b37",
-    "country": "ES",
-    "tier": "manual",
-    "title": "Aleppo pine distribution",
-    "description": "The Aleppo pine (Pinus halepensis) is the most common pine in eastern Spain: País Valencià, Catalunya, Murcia and the Balearic Islands. It is rare elsewhere.",
-    "category": "vegetation",
-    "source_url": "https://docs.google.com/document/d/1HuIl3wEm9faelpGeFmO5ra49dK6tJ99C6vS07-_DRNM/edit",
-    "extracted_at": "2026-10-08T07:15:12.512759+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/ES/images/man-1b37.png",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
     "id": "man-fd93",
     "country": "ES",
     "tier": "manual",
@@ -1797,6 +1762,38 @@
       42.6281774,
       -1.8354354
     ],
+    "overlay": null
+  },
+  {
+    "id": "man-49d6",
+    "country": "ES",
+    "tier": "manual",
+    "title": "Hórreos of Galicia and Asturias",
+    "description": "Hórreos are the granaries of north-western Spain (Galicia and Asturias). They are always raised on pillars to keep rodents out, and very often (but not always) decorated with a cross or vertical ornaments at the ends.",
+    "category": "architecture",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:26.935592+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ES/images/man-49d6.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-8066",
+    "country": "ES",
+    "tier": "manual",
+    "title": "Picos de Europa",
+    "description": "In north-western Spain, the Picos de Europa are a small mountain range and national park, extremely recognisable by their huge, jagged rock formations.",
+    "category": "landscape",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:26.935592+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ES/images/man-8066.webp",
+    "maps_url": null,
+    "maps_latlon": null,
     "overlay": null
   }
 ]

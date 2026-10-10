@@ -2,11 +2,15 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable
 
+import numpy
+from shapely.affinity import scale
 from shapely.geometry import shape
+from shapely.validation import make_valid
 
 from cartometa.build.geometry import DEFAULT_TOLERANCE, part_bboxes, simplify_geometry
 from cartometa.extract.categories import CATEGORIES
@@ -50,6 +54,62 @@ def scope_de(pieces: list[dict]) -> str:
     """
     kinds = {piece.get("kind") for piece in pieces}
     return SCOPE_NATIONAL if kinds == {"country"} else SCOPE_REGIONAL
+
+
+# Below this area on the ground, a footprint is a city — or a valley, an island, a
+# national park: a place one has to know by name. Owner decision 2026-10-09, chosen
+# over 1000 and 2000 km² after looking at the metas each threshold catches.
+PRO_MAX_KM2 = 500.0
+# A road is drawn as a corridor about 15 to 20 km wide, so its area says nothing:
+# the B1 between Mariental and Rehoboth covers 1700 km². Its shape gives it away —
+# narrow, and long compared with its width.
+CORRIDOR_MAX_WIDTH_KM = 20.0
+CORRIDOR_MIN_ELONGATION = 6.0
+KM_PER_DEGREE = 111.32
+
+
+def _en_km(forme):
+    """The shape in kilometres, longitudes shrunk by the cosine of its latitude.
+
+    One cosine for the whole footprint: exact enough for anything small enough to
+    matter here, and a footprint spanning tens of degrees of latitude is far above
+    every threshold anyway.
+    """
+    facteur = math.cos(math.radians(forme.centroid.y))
+    return scale(forme, KM_PER_DEGREE * facteur, KM_PER_DEGREE, origin=(0, 0))
+
+
+def _est_un_couloir(forme_km) -> bool:
+    if forme_km.geom_type != "Polygon":
+        return False
+    # Shapely 2.1 warns (division by zero) on axis-aligned rectangles, while
+    # returning the right envelope: noise, not a degenerate footprint.
+    with numpy.errstate(divide="ignore", invalid="ignore"):
+        rectangle = forme_km.minimum_rotated_rectangle
+    if rectangle.geom_type != "Polygon":
+        return False
+    a, b, c = list(rectangle.exterior.coords)[:3]
+    cotes = sorted((math.dist(a, b), math.dist(b, c)))
+    largeur, longueur = cotes
+    return largeur < CORRIDOR_MAX_WIDTH_KM and longueur >= CORRIDOR_MIN_ELONGATION * largeur
+
+
+def difficulty_de(category: str, pieces: list[dict], geometrie: dict) -> str:
+    """The difficulty a meta gets when nobody has set one by hand.
+
+    Owner rules, in this order: every car meta is `Pro` (national ones included —
+    otherwise the rule would spare a third of them); a national footprint is
+    `Beginner`; a city or a road (see the constants above) is `Pro`; the rest is
+    `Intermediate`.
+    """
+    if category == "car":
+        return "Pro"
+    if scope_de(pieces) == SCOPE_NATIONAL:
+        return "Beginner"
+    forme_km = _en_km(make_valid(shape(geometrie)))
+    if forme_km.area < PRO_MAX_KM2 or _est_un_couloir(forme_km):
+        return "Pro"
+    return "Intermediate"
 
 
 @dataclass
@@ -194,17 +254,24 @@ def build_dataset(
             if meta is None:
                 jeu.orphans.append((pays, identifiant))
                 continue
-            # A missing field is the normal case, not an error; only a *filled* one
-            # has to be one of the three known levels. Fatal rather than silently
-            # dropped, for the same reason as an unknown category: the meta would be
-            # published and unreachable through every difficulty pill.
+            # A missing field is the normal case, not an error: the level is then
+            # derived from the meta (`difficulty_de`). Only a *filled* one — a hand
+            # correction of the rule — has to be one of the three known levels.
+            # Fatal rather than silently dropped, for the same reason as an unknown
+            # category: the meta would be published and unreachable through every
+            # difficulty pill.
             # `or None` so that an empty string — what an editing form leaves behind
-            # when the level is cleared — means "not rated" and not "unknown level".
+            # when the level is cleared — means "no correction" and not "unknown level".
             difficulty = meta.get("difficulty") or None
             if difficulty is not None and difficulty not in DIFFICULTIES:
                 raise SystemExit(
                     f"{pays}/{identifiant}: unknown difficulty {difficulty!r}.\n"
                     f"Expected one of {', '.join(DIFFICULTIES)}."
+                )
+            category = corrections.get(identifiant, meta["category"])
+            if difficulty is None:
+                difficulty = difficulty_de(
+                    category, feature["properties"].get("pieces", []), feature["geometry"]
                 )
             geometrie = simplify_geometry(feature["geometry"], tolerance)
             forme = shape(geometrie)
@@ -227,7 +294,7 @@ def build_dataset(
                 "geom": empreinte,
                 "title": meta["title"],
                 "description": meta["description"],
-                "category": corrections.get(identifiant, meta["category"]),
+                "category": category,
                 "difficulty": difficulty,
                 "scope": scope_de(feature["properties"].get("pieces", [])),
                 "source_url": meta["source_url"],

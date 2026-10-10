@@ -1,0 +1,18 @@
+[
+  {
+    "id": "man-dbd7",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Orange car with blue pompom (Biratnagar)",
+    "description": "Nepal has many car metas; the orange car with a blue pompom means you are around Biratnagar in the southeast.",
+    "category": "car",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:14.129999+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-dbd7.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

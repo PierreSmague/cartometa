@@ -1,0 +1,18 @@
+[
+  {
+    "id": "man-2b1c",
+    "country": "LA",
+    "tier": "manual",
+    "title": "Huge karst rocks of Vang Vieng",
+    "description": "Laos coverage outside Vientiane is limited to a few towns (Luang Prabang, Vang Vieng, Savannakhet, Pakse). Vang Vieng is the most recognisable, with huge karst formations rising out of nowhere.",
+    "category": "landscape",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:56.316372+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/LA/images/man-2b1c.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

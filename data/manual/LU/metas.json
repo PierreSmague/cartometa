@@ -14,5 +14,21 @@
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
+  },
+  {
+    "id": "man-3623",
+    "country": "LU",
+    "tier": "manual",
+    "title": "Red street name signs in Rumelange",
+    "description": "In the town of Rumelange, in the far south of the country, street name signs are red instead of the usual white on blue.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:05.315666+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/LU/images/man-3623.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]

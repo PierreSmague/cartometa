@@ -1,0 +1,34 @@
+[
+  {
+    "id": "man-9a28",
+    "country": "NO",
+    "tier": "manual",
+    "title": "Bus stop sign: Norwegian vs Swedish",
+    "description": "Norwegian and Swedish bus stop signs differ in the letter M: in Norway the middle strokes of the M go all the way down to the bottom of the sign, while in Sweden they only reach halfway.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:12.543232+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NO/images/man-9a28.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-fe0d",
+    "country": "NO",
+    "tier": "manual",
+    "title": "Trondheim farming valleys",
+    "description": "Norwegian agriculture is concentrated in two areas: mainly around Oslo, with large flat fields, and secondarily around Trondheim, where the terrain is gentler. The Trondheim area is recognisable by fairly small fields, often squeezed between two high hills.",
+    "category": "landscape",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:12.543232+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NO/images/man-fe0d.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

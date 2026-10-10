@@ -165,22 +165,6 @@
     "overlay": null
   },
   {
-    "id": "man-6fdc",
-    "country": "RU",
-    "tier": "manual",
-    "title": "Kursk dashed outer lines",
-    "description": "Outer road lines painted dashed rather than solid. Much more rarely found in Tuva, the Republic of Karelia, Kaliningrad, Khabarovsk and Primorsky.",
-    "category": "landscape",
-    "source_url": "https://docs.google.com/document/d/1drp1udLAXFNOMDvU0V6pLS2wLakmXujMepTUlkIbc_k/edit",
-    "extracted_at": "2026-09-10T09:19:50.511951+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/RU/images/man-6fdc.webp",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
     "id": "man-c259",
     "country": "RU",
     "tier": "manual",
@@ -426,22 +410,6 @@
     "overlay": null
   },
   {
-    "id": "man-186f",
-    "country": "RU",
-    "tier": "manual",
-    "title": "Omsk",
-    "description": "No car summer Generation 4, flat, with bunched birches.",
-    "category": "landscape",
-    "source_url": "https://docs.google.com/document/d/1drp1udLAXFNOMDvU0V6pLS2wLakmXujMepTUlkIbc_k/edit",
-    "extracted_at": "2026-09-10T09:19:50.511951+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/RU/images/man-186f.webp",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
     "id": "man-7fde",
     "country": "RU",
     "tier": "manual",
@@ -677,44 +645,6 @@
     "maps_latlon": [
       52.105354,
       87.093034
-    ],
-    "overlay": null
-  },
-  {
-    "id": "man-4565",
-    "country": "RU",
-    "tier": "manual",
-    "title": "Altai Republic south road",
-    "description": "Cloudy for most of its length, running between lush green mountains that turn dry towards the south, and rainy in places.",
-    "category": "landscape",
-    "source_url": "https://docs.google.com/document/d/1drp1udLAXFNOMDvU0V6pLS2wLakmXujMepTUlkIbc_k/edit",
-    "extracted_at": "2026-09-10T09:19:50.511951+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/RU/images/man-4565.webp",
-    "maps_url": "https://goo.gl/maps/1JRY7ZHRufKjmAV98",
-    "maps_latlon": [
-      49.738401,
-      89.144178
-    ],
-    "overlay": null
-  },
-  {
-    "id": "man-4b75",
-    "country": "RU",
-    "tier": "manual",
-    "title": "Tuva",
-    "description": "Dry steppe mountains. Siberian long grass appears here and in most areas further east. Tuva road lines show up occasionally, as does a traffic sticker inside the black bar, and a smudge near the Krasnoyarsk border. Tuva pavement is told from Altai pavement by its faded lines and generally dirtier look, Altai having outer lines.",
-    "category": "landscape",
-    "source_url": "https://docs.google.com/document/d/1drp1udLAXFNOMDvU0V6pLS2wLakmXujMepTUlkIbc_k/edit",
-    "extracted_at": "2026-09-10T09:19:50.511951+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/RU/images/man-4b75.webp",
-    "maps_url": "https://goo.gl/maps/GDbBtNgohJxLKQDt8",
-    "maps_latlon": [
-      51.035074,
-      95.121235
     ],
     "overlay": null
   },
@@ -961,54 +891,6 @@
     "overlay": null
   },
   {
-    "id": "man-61f2",
-    "country": "RU",
-    "tier": "manual",
-    "title": "Amur sunset and rain road",
-    "description": "Black car with a long blurred antenna driving north and west. The northern end of the road sits at sunset, the southern end in the rain.",
-    "category": "landscape",
-    "source_url": "https://docs.google.com/document/d/1drp1udLAXFNOMDvU0V6pLS2wLakmXujMepTUlkIbc_k/edit",
-    "extracted_at": "2026-09-10T09:19:50.511951+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/RU/images/man-61f2.webp",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
-    "id": "man-a3ff",
-    "country": "RU",
-    "tier": "manual",
-    "title": "Jewish Autonomous Oblast rain",
-    "description": "White car with a long antenna driving east through the mountains in extremely heavy rain.",
-    "category": "landscape",
-    "source_url": "https://docs.google.com/document/d/1drp1udLAXFNOMDvU0V6pLS2wLakmXujMepTUlkIbc_k/edit",
-    "extracted_at": "2026-09-10T09:19:50.511951+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/RU/images/man-a3ff.webp",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
-    "id": "man-70bf",
-    "country": "RU",
-    "tier": "manual",
-    "title": "Vanino road",
-    "description": "Black car with a long blurred antenna driving west through the mountains under an extremely sunny sky.",
-    "category": "landscape",
-    "source_url": "https://docs.google.com/document/d/1drp1udLAXFNOMDvU0V6pLS2wLakmXujMepTUlkIbc_k/edit",
-    "extracted_at": "2026-09-10T09:19:50.511951+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/RU/images/man-70bf.webp",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
     "id": "man-589c",
     "country": "RU",
     "tier": "manual",
@@ -1056,25 +938,6 @@
     "maps_latlon": [
       52.462467,
       143.107352
-    ],
-    "overlay": null
-  },
-  {
-    "id": "man-13f8",
-    "country": "RU",
-    "tier": "manual",
-    "title": "Road to Yakutsk",
-    "description": "White car summer Generation 4 through the mountains among Siberian larches, quite rainy both in this sample and generally.",
-    "category": "landscape",
-    "source_url": "https://docs.google.com/document/d/1drp1udLAXFNOMDvU0V6pLS2wLakmXujMepTUlkIbc_k/edit",
-    "extracted_at": "2026-09-10T09:19:50.511951+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/RU/images/man-13f8.webp",
-    "maps_url": "https://goo.gl/maps/VeuXjR2qer6X9bNZ8",
-    "maps_latlon": [
-      60.398167,
-      127.565054
     ],
     "overlay": null
   },
@@ -1159,6 +1022,102 @@
       53.005353,
       158.230948
     ],
+    "overlay": null
+  },
+  {
+    "id": "man-26f9",
+    "country": "RU",
+    "tier": "manual",
+    "title": "Salt-and-pepper road to Khanymey",
+    "description": "The road to Khanymey, branching off the road north to Novy Urengoy, has a very recognisable salt-and-pepper (grey-speckled) surface, in a far-northern landscape with very low, sparse vegetation.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:42.993450+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/RU/images/man-26f9.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-baf7",
+    "country": "RU",
+    "tier": "manual",
+    "title": "Boxy balconies of the Caucasus",
+    "description": "Boxy, closed balconies made of horizontal planks are found in urban areas of south-eastern European Russia, mainly Astrakhan oblast and the North Caucasus republics. Nalchik has a unique variant with metal panels in a frame.",
+    "category": "architecture",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:42.993450+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/RU/images/man-baf7.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-5b37",
+    "country": "RU",
+    "tier": "manual",
+    "title": "Square-tiled Soviet facades (Yekaterinburg/Tyumen)",
+    "description": "Soviet concrete apartment blocks whose facades are covered in perfectly square blocks are most likely in the Yekaterinburg–Tyumen area. Elsewhere, facades tend to use small rectangular bricks or other patterns.",
+    "category": "architecture",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:42.993450+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/RU/images/man-5b37.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-8fa7",
+    "country": "RU",
+    "tier": "manual",
+    "title": "Ornate gates of Dagestan",
+    "description": "Houses in Dagestan often have richly decorated gates with a large frame and wooden mouldings.",
+    "category": "architecture",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:42.993450+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/RU/images/man-8fa7.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-3827",
+    "country": "RU",
+    "tier": "manual",
+    "title": "Red-banded poles of Mordovia (Saransk)",
+    "description": "Poles painted white with red bands are very common in Saransk and are found in other towns of Mordovia, but almost nowhere else. Saransk also has unique street signs in Russian, Moksha, Erzya and English.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:42.993450+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/RU/images/man-3827.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-62fc",
+    "country": "RU",
+    "tier": "manual",
+    "title": "Four-language street signs of Saransk",
+    "description": "Saransk has uniquely shaped street signs written in four languages (Russian, Moksha, Erzya and English); outside the city centre, signs have three lines.",
+    "category": "culture",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:42.993450+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/RU/images/man-62fc.webp",
+    "maps_url": null,
+    "maps_latlon": null,
     "overlay": null
   }
 ]

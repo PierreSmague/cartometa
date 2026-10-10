@@ -1,0 +1,34 @@
+[
+  {
+    "id": "man-eace",
+    "country": "GT",
+    "tier": "manual",
+    "title": "Red and green painted poles (Quiché)",
+    "description": "Poles painted red and green are unique to Quiché department; one of the few clues for regionguessing Guatemala.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:12.049509+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GT/images/man-eace.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-c8b4",
+    "country": "GT",
+    "tier": "manual",
+    "title": "Door handle touching the mirror (north and east)",
+    "description": "In Guatemala, if the door handle reflected in the side mirror touches the top of the mirror, you are in the north or the east of the country.",
+    "category": "car",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:12.049509+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GT/images/man-c8b4.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

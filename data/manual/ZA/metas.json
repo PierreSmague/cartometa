@@ -95,25 +95,6 @@
     "overlay": null
   },
   {
-    "id": "man-d7c9",
-    "country": "ZA",
-    "tier": "manual",
-    "title": "Trident pole",
-    "description": "Crossarm with the middle insulator standing higher than the two outer ones, like a trident. Mainly North West and KwaZulu-Natal; less often Free State and Mpumalanga.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
-    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/ZA/images/man-d7c9.webp",
-    "maps_url": "https://maps.app.goo.gl/1587L2vPJuzcKoqi8",
-    "maps_latlon": [
-      -28.6364841,
-      30.0809956
-    ],
-    "overlay": null
-  },
-  {
     "id": "man-670b",
     "country": "ZA",
     "tier": "manual",
@@ -433,25 +414,6 @@
     "maps_latlon": [
       -25.1384393,
       28.6431493
-    ],
-    "overlay": null
-  },
-  {
-    "id": "man-1b17",
-    "country": "ZA",
-    "tier": "manual",
-    "title": "Power stations by cooling tower count",
-    "description": "The Mpumalanga power stations can be told apart by counting their cooling towers: 3 Daggakraal, 4 Ga-Nala or Wallmannsthal, 5 Thaba-Kgwali, 7 Hendrina, 8 Secunda or Komati. Six towers is every other station.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1pXm2yByo4qPlUG1UhIp1X6iVGprl-5nCvK2s1sPx9Hc/edit",
-    "extracted_at": "2026-10-06T07:15:49.946031+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/ZA/images/man-1b17.webp",
-    "maps_url": "https://maps.app.goo.gl/8vUFwkCNg3ydDXG3A",
-    "maps_latlon": [
-      -25.9488094,
-      29.3192319
     ],
     "overlay": null
   },
@@ -1283,6 +1245,70 @@
       -26.1382794,
       27.9964434
     ],
+    "overlay": null
+  },
+  {
+    "id": "man-eb31",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "African baobabs around Musina",
+    "description": "The African baobab also grows in South Africa, but only in the far north of the country. If you see one, you are in northern Limpopo, around the town of Musina.",
+    "category": "vegetation",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:23.237288+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-eb31.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-bffb",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Gen 3 coverage: Lindley–Kroonstad and Lichtenburg",
+    "description": "Gen 3 camera coverage in South Africa is limited and easy to regionguess. The most common area is between Lindley and Kroonstad (Free State), on almost always unpaved roads with black-brown soil and grass fields. The other area lies west of Johannesburg around Lichtenburg (North West), where the soil is much lighter and often quite red, also with grass fields.",
+    "category": "car",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:23.237288+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-bffb.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-b820",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Coal mining around eMalahleni",
+    "description": "Coal mining in South Africa is concentrated around eMalahleni, east of Johannesburg. Look for coal-processing plants and large blackish heaps.",
+    "category": "landscape",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:23.237288+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-b820.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-f281",
+    "country": "ZA",
+    "tier": "manual",
+    "title": "Yellow lamppost stickers, Durban–Pietermaritzburg",
+    "description": "Stickers with black letters on a yellow background on street lamps (not on utility poles) are found throughout the area between Durban and Pietermaritzburg.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:23.237288+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/ZA/images/man-f281.webp",
+    "maps_url": null,
+    "maps_latlon": null,
     "overlay": null
   }
 ]

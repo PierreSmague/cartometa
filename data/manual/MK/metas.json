@@ -14,5 +14,21 @@
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
+  },
+  {
+    "id": "man-42d1",
+    "country": "MK",
+    "tier": "manual",
+    "title": "Rocky peaks near Prilep",
+    "description": "Distinctive rocky peaks rise just northwest of Prilep.",
+    "category": "landscape",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:16.346010+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/MK/images/man-42d1.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]

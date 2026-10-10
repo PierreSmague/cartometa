@@ -65,15 +65,10 @@ const PALETTE_EPINGLES = [
   '#556b8d', // slate
 ];
 
-// Value of the "Not rated" pill. It is not a difficulty the build ever writes — a
-// meta nobody has judged simply has no `difficulty` at all — so it needs a marker of
-// its own in the template, distinct from the empty value the "All" pill carries.
-const NON_EVALUEE = 'none';
-
 // Shortened form shown on the meta card's badge — there is no room for the full word
 // next to the country code. Its keys mirror `DIFFICULTIES` in
-// `cartometa/build/dataset.py`; a meta with no difficulty gets no badge at all,
-// rather than a badge claiming a level nobody has judged.
+// `cartometa/build/dataset.py`, which gives every meta a level; a meta that still
+// came without one (an older data file) gets no badge rather than a made-up one.
 const ABREVIATIONS_DIFFICULTE = { Beginner: 'Beg.', Intermediate: 'Int.', Pro: 'Pro' };
 
 async function demarrer() {
@@ -442,11 +437,8 @@ function visibles() {
   return etat.resultats.filter((meta) => {
     if (etat.categorie && meta.category !== etat.categorie) return false;
     // Strict match, like the category filter: "Intermediate" shows the Intermediate
-    // metas and nothing else. `NON_EVALUEE` is the one choice that matches on
-    // absence — the metas still waiting to be judged.
-    if (etat.difficulte === NON_EVALUEE) {
-      if (meta.difficulty) return false;
-    } else if (etat.difficulte && meta.difficulty !== etat.difficulte) return false;
+    // metas and nothing else.
+    if (etat.difficulte && meta.difficulty !== etat.difficulte) return false;
     if (!terme) return true;
     return `${meta.title} ${meta.description}`.toLowerCase().includes(terme);
   });

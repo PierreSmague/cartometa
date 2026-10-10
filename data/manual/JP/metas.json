@@ -304,25 +304,6 @@
     "overlay": null
   },
   {
-    "id": "man-df58",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Tea (Camelia sinensis)",
-    "description": "Tea farms are recognizable by the dark green hedges planted in rows. These fans can also be found alongside them. Shizuoka is by far the biggest tea production prefecture followed by Kagoshima. Other spots include Iruma City, Suzuka City, Wazuka City, Yame City and scattered around the Miyazaki plain.",
-    "category": "vegetation",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.5wu1v5afwkj7",
-    "extracted_at": "2026-08-12T12:30:13.984428+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-df58.webp",
-    "maps_url": "https://maps.app.goo.gl/NrXPxZwr1FJ9BChz8",
-    "maps_latlon": [
-      34.7567495,
-      138.1601525
-    ],
-    "overlay": null
-  },
-  {
     "id": "man-1076",
     "country": "JP",
     "tier": "manual",
@@ -376,25 +357,6 @@
     "maps_latlon": [
       42.7245851,
       143.2760132
-    ],
-    "overlay": null
-  },
-  {
-    "id": "man-a43d",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Sugarcane (Saccharum officinarum)",
-    "description": "Super easy to notice. Mostly on the Ryukyu Islands.",
-    "category": "vegetation",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.5wu1v5afwkj7",
-    "extracted_at": "2026-08-12T12:30:13.984428+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-a43d.webp",
-    "maps_url": "https://maps.app.goo.gl/uu3Rt74bhzjgrCzz7",
-    "maps_latlon": [
-      24.7972384,
-      125.3283962
     ],
     "overlay": null
   },
@@ -1288,25 +1250,6 @@
     "maps_latlon": [
       35.4177816,
       138.0137842
-    ],
-    "overlay": null
-  },
-  {
-    "id": "man-2116",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Siberian Birch (Betula platyphylla)",
-    "description": "Grows straight up with a white bark. Found in Hokkaido and high elevation places in Honshu.",
-    "category": "vegetation",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.5wu1v5afwkj7",
-    "extracted_at": "2026-08-12T12:30:13.984428+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-2116.webp",
-    "maps_url": "https://maps.app.goo.gl/9GJHLGfbbWw8adZ38",
-    "maps_latlon": [
-      44.7543977,
-      141.9490136
     ],
     "overlay": null
   },
@@ -3681,22 +3624,6 @@
     "overlay": null
   },
   {
-    "id": "man-e379",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Hokkaido insulator: UFO and bell",
-    "description": "UFO and Bell also found in Kansai and Shikoku(rare), bell is found near the coast. Hokkaido Electric covers the island of Hokkaido.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.lod2gbuk4tav",
-    "extracted_at": "2026-08-12T15:45:53.742025+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-e379.png",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
     "id": "man-558c",
     "country": "JP",
     "tier": "manual",
@@ -3874,22 +3801,6 @@
     "description_origin": "imported",
     "origin": "manual",
     "image": "data/manual/JP/images/man-2528.webp",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
-    "id": "man-4d3b",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Tohoku transformer: zigzag version",
-    "description": "This version with the zigzag also exists. Hard to see from the back. Tohoku Electric covers the Tohoku region plus Niigata, which is not traditionally part of Tohoku.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.lod2gbuk4tav",
-    "extracted_at": "2026-08-12T15:45:53.742025+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-4d3b.webp",
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
@@ -4170,22 +4081,6 @@
       39.5856133,
       141.1701629
     ],
-    "overlay": null
-  },
-  {
-    "id": "man-9259",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Kanto transformer: standard",
-    "description": "These are standard transformers. Kanto Electric covers the Kanto region plus Yamanashi and the Izu Peninsula of Shizuoka; the split with Chubu follows the Fuji River.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.lod2gbuk4tav",
-    "extracted_at": "2026-08-12T15:45:53.742025+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-9259.png",
-    "maps_url": null,
-    "maps_latlon": null,
     "overlay": null
   },
   {
@@ -4987,22 +4882,6 @@
     "overlay": null
   },
   {
-    "id": "man-30fc",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Kansai stepdown: 120 degrees",
-    "description": "120 degrees stepdown. Kansai Electric covers the Kansai region plus southern Mie around Kumano and southern Fukui.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.lod2gbuk4tav",
-    "extracted_at": "2026-08-12T15:45:53.742025+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-30fc.png",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
     "id": "man-c28d",
     "country": "JP",
     "tier": "manual",
@@ -5030,22 +4909,6 @@
     "description_origin": "imported",
     "origin": "manual",
     "image": "data/manual/JP/images/man-2e50.webp",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
-    "id": "man-8199",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Kansai poletop: tuning fork with the middle white piece",
-    "description": "Kansai tuning fork, has to have middle white thing. Kansai Electric covers the Kansai region plus southern Mie around Kumano and southern Fukui.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.lod2gbuk4tav",
-    "extracted_at": "2026-08-12T15:45:53.742025+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-8199.webp",
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
@@ -5252,22 +5115,6 @@
     "overlay": null
   },
   {
-    "id": "man-96e0",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Shikoku pole plate: band",
-    "description": "Shikoku Band. Shikoku Electric covers Shikoku itself; almost all the surrounding islands are Chugoku Electric, the exception being those west of Matsuyama.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.lod2gbuk4tav",
-    "extracted_at": "2026-08-12T15:45:53.742025+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-96e0.webp",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
     "id": "man-2af3",
     "country": "JP",
     "tier": "manual",
@@ -5354,22 +5201,6 @@
       34.187108,
       134.3898386
     ],
-    "overlay": null
-  },
-  {
-    "id": "man-ed71",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Shikoku stepdown: 90 degrees",
-    "description": "90 degrees stepdown. Shikoku Electric covers Shikoku itself; almost all the surrounding islands are Chugoku Electric, the exception being those west of Matsuyama.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.lod2gbuk4tav",
-    "extracted_at": "2026-08-12T15:45:53.742025+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-ed71.webp",
-    "maps_url": null,
-    "maps_latlon": null,
     "overlay": null
   },
   {
@@ -5631,22 +5462,6 @@
     "overlay": null
   },
   {
-    "id": "man-2eac",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Chugoku pole plate: arrow",
-    "description": "Chugoku arrow (also seen in Miyazaki). Chugoku Electric covers the Chugoku region plus almost all the islands around Shikoku, except those west of Matsuyama.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.lod2gbuk4tav",
-    "extracted_at": "2026-08-12T15:45:53.742025+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-2eac.webp",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
     "id": "man-42fc",
     "country": "JP",
     "tier": "manual",
@@ -5674,22 +5489,6 @@
     "description_origin": "imported",
     "origin": "manual",
     "image": "data/manual/JP/images/man-66da.webp",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
-    "id": "man-52d0",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Chugoku transformer: full triangle and tissue roll",
-    "description": "Chugoku full triangle and tissue roll. Chugoku Electric covers the Chugoku region plus almost all the islands around Shikoku, except those west of Matsuyama.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.lod2gbuk4tav",
-    "extracted_at": "2026-08-12T15:45:53.742025+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-52d0.png",
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
@@ -5756,25 +5555,6 @@
     "image": "data/manual/JP/images/man-5c09.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null
-  },
-  {
-    "id": "man-5148",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Chugoku poletop",
-    "description": "The pole top as it is built in Chugoku. Chugoku Electric covers the Chugoku region plus almost all the islands around Shikoku, except those west of Matsuyama.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.lod2gbuk4tav",
-    "extracted_at": "2026-08-12T15:45:53.742025+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-5148.webp",
-    "maps_url": "https://maps.app.goo.gl/mXToKTEM7yVENhYV8",
-    "maps_latlon": [
-      35.1708822,
-      133.0862435
-    ],
     "overlay": null
   },
   {
@@ -6833,22 +6613,6 @@
     "overlay": null
   },
   {
-    "id": "man-2398",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Sign back sticker: left or none (Hokkaido)",
-    "description": "In Hokkaido the sticker on the back of signs is on the left, or there is no sticker at all.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit",
-    "extracted_at": "2026-09-07T09:50:12.955965+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-2398.webp",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
     "id": "man-4a36",
     "country": "JP",
     "tier": "manual",
@@ -6913,22 +6677,6 @@
     "overlay": null
   },
   {
-    "id": "man-1cb3",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Sign back sticker: right, sometimes double (Tokyo)",
-    "description": "Tokyo has the sign back sticker on the right, sometimes doubled (two stickers, the smaller one always slightly left).",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit",
-    "extracted_at": "2026-09-07T09:50:12.955965+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-1cb3.webp",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
     "id": "man-c321",
     "country": "JP",
     "tier": "manual",
@@ -6940,54 +6688,6 @@
     "description_origin": "imported",
     "origin": "manual",
     "image": "data/manual/JP/images/man-c321.webp",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
-    "id": "man-9d61",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Sign back sticker: left (Mie)",
-    "description": "Mie is the only prefecture of the Chubu Electric area with the sign back sticker on the left.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit",
-    "extracted_at": "2026-09-07T09:50:12.955965+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-9d61.webp",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
-    "id": "man-7582",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Sign back sticker: none (Gifu)",
-    "description": "Gifu has no stickers on the back of signs.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit",
-    "extracted_at": "2026-09-07T09:50:12.955965+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-7582.webp",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
-    "id": "man-9168",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Sign back sticker: always double (Aichi)",
-    "description": "Aichi always has a double sticker on the back of signs, the two at the same height.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit",
-    "extracted_at": "2026-09-07T09:50:12.955965+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-9168.webp",
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
@@ -7116,22 +6816,6 @@
     "description_origin": "imported",
     "origin": "manual",
     "image": "data/manual/JP/images/man-f7f3.webp",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
-    "id": "man-4bae",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Sign back sticker: mostly left (Tokushima)",
-    "description": "Tokushima is the only prefecture of the Shikoku Electric area with the sign back sticker mostly on the left, sometimes on the right.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit",
-    "extracted_at": "2026-09-07T09:50:12.955965+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-4bae.webp",
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
@@ -7930,38 +7614,6 @@
     "overlay": null
   },
   {
-    "id": "man-c048",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Guardrail band: green",
-    "description": "Green band on the guardrail post. Mostly Kyushu.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.14vh0pxqjujs",
-    "extracted_at": "2026-09-08T09:49:53.753193+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-c048.webp",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
-    "id": "man-1654",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Guardrail band: green on a plastic post",
-    "description": "Green band on a plastic guardrail post rather than a metal one. Mostly Oita and Miyazaki, rarely found in other prefectures.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.14vh0pxqjujs",
-    "extracted_at": "2026-09-08T09:49:53.753193+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-1654.webp",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
     "id": "man-0e1c",
     "country": "JP",
     "tier": "manual",
@@ -8125,22 +7777,6 @@
     "overlay": null
   },
   {
-    "id": "man-0fb9",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Guardrail: yellow (Yamaguchi)",
-    "description": "The very well known Yamaguchi guardrail: the whole rail is yellow.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.14vh0pxqjujs",
-    "extracted_at": "2026-09-08T09:49:53.753193+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-0fb9.webp",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
     "id": "man-68b1",
     "country": "JP",
     "tier": "manual",
@@ -8195,22 +7831,6 @@
     "overlay": null
   },
   {
-    "id": "man-4592",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Guardrail ending: red and yellow stripe",
-    "description": "The guardrail end cap striped red and yellow. Everywhere in Chugoku except Yamaguchi, and also found in Niigata.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.14vh0pxqjujs",
-    "extracted_at": "2026-09-08T09:49:53.753193+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-4592.webp",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
     "id": "man-9eee",
     "country": "JP",
     "tier": "manual",
@@ -8259,22 +7879,6 @@
       33.877726,
       132.666586
     ],
-    "overlay": null
-  },
-  {
-    "id": "man-f7a9",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Hokkaido guardrail: chevron stickers",
-    "description": "Hokkaido guardrails carry these chevron stickers most of the time.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.14vh0pxqjujs",
-    "extracted_at": "2026-09-08T09:49:53.753193+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-f7a9.webp",
-    "maps_url": null,
-    "maps_latlon": null,
     "overlay": null
   },
   {
@@ -8477,25 +8081,6 @@
     "maps_latlon": [
       34.3151579,
       135.5955907
-    ],
-    "overlay": null
-  },
-  {
-    "id": "man-e54e",
-    "country": "JP",
-    "tier": "manual",
-    "title": "Fence: round vertical connected, gray",
-    "description": "The round vertical connected fence in gray, which is what almost all of them are. Same Kansai range: Kyoto, Fukui, Osaka, northern Hyogo and northern Wakayama.",
-    "category": "infrastructure",
-    "source_url": "https://docs.google.com/document/d/1-LuFvtamo0CcYzEPxN1MN-2HU5mL6DI9yX51W7L0OkY/edit?tab=t.7yjudkikuhnt",
-    "extracted_at": "2026-09-08T12:08:46.501927+00:00",
-    "description_origin": "imported",
-    "origin": "manual",
-    "image": "data/manual/JP/images/man-e54e.webp",
-    "maps_url": "https://maps.app.goo.gl/JREXMn5C1MFDKd8BA",
-    "maps_latlon": [
-      35.1967412,
-      135.636438
     ],
     "overlay": null
   },
@@ -9011,6 +8596,134 @@
       35.5134581,
       139.7110109
     ],
+    "overlay": null
+  },
+  {
+    "id": "man-6e86",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Shark-fin roof ridges of Amami",
+    "description": "Many houses in the Amami Islands have a shark-fin shaped piece on their roof, often made of sheet metal. This helps distinguish Amami from the Ryukyu Islands (Okinawa).",
+    "category": "architecture",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:45.082759+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-6e86.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-5efa",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Okinawan tiled roofs",
+    "description": "Okinawan architecture is very recognisable: tiled roofs with mortared diagonal ridges topped by a round ornament. This helps distinguish the Ryukyu Islands (Okinawa, Naha) from the Amami Islands.",
+    "category": "architecture",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:45.082759+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-5efa.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-9488",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Thin rubber insulators (Kanto)",
+    "description": "Japan has two types of rubber insulators: thin ones found in Kanto, and thick ones found in Kyushu.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:45.082759+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-9488.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-aaaa",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Thick rubber insulators (Kyushu)",
+    "description": "Japan has two types of rubber insulators: thin ones found in Kanto, and thick ones found in Kyushu.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:45.082759+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-aaaa.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-8d32",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Stapler-shaped pole fittings",
+    "description": "A stapler-shaped device attached to the top crossarms of utility poles is exclusive to four regions: Chubu, Kansai, Chugoku and Shikoku.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:45.082759+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-8d32.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-0371",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Hand-shaped roof ornaments (W Shikoku, E Kyushu)",
+    "description": "Roof ridge ornaments with small metal 'fingers' (like a hand sign) are found mostly in western Shikoku and eastern Kyushu.",
+    "category": "architecture",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:45.082759+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-0371.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-a009",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Snow-melting road sprinklers (north-west coast)",
+    "description": "Small sprinklers along the road centre line spray warm groundwater to melt snow. They are found in the snowy prefectures of the north-west (Sea of Japan) coast, mainly from Fukui to Niigata, and also Yamagata and Akita.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:45.082759+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-a009.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-70c9",
+    "country": "JP",
+    "tier": "manual",
+    "title": "Steep snow roofs (Tohoku and Hokkaido)",
+    "description": "Almost right-angled steep roofs, designed to shed snow, are only found in northern Japan (Tohoku and Hokkaido).",
+    "category": "architecture",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:45.082759+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/JP/images/man-70c9.webp",
+    "maps_url": null,
+    "maps_latlon": null,
     "overlay": null
   }
 ]

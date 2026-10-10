@@ -1,0 +1,18 @@
+[
+  {
+    "id": "man-ee95",
+    "country": "NL",
+    "tier": "manual",
+    "title": "Pyramid-roofed farm barns of the north",
+    "description": "Huge barns with steep, tiled roofs coming down very low, often pyramid-shaped, are typical of the northern Netherlands.",
+    "category": "architecture",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:05.010616+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NL/images/man-ee95.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

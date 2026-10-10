@@ -1,0 +1,34 @@
+[
+  {
+    "id": "man-7c22",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Dry plains east of Accra",
+    "description": "East of Accra, between Prampram and Ada, the Accra Plains have long straight roads and a dry, flat landscape that can be mistaken for the north. Unlike the north, the soil is not red and the area is much more agricultural, whereas the north is mostly savanna. Note: newer Gen 4 coverage has weakened this clue.",
+    "category": "landscape",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:24.972327+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-7c22.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-ce89",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Dry red steppe and unpaved roads of the north-west",
+    "description": "North-western Ghana is much drier than the rest of the country: the soil turns reddish and the trees become sparse. On an unpaved road, look at the few roads in the far north-west along the border with Burkina Faso.",
+    "category": "landscape",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:24.972327+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-ce89.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

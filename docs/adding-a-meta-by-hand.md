@@ -10,7 +10,7 @@ A manual meta is **five things**:
 | a title | short, what you see |
 | a description | what it lets you deduce |
 | a category | one of six, fixed |
-| a difficulty *(optional)* | Beginner, Intermediate or Pro — left unrated by default |
+| a difficulty *(optional)* | Beginner, Intermediate or Pro — derived by the build when left empty |
 | an image *(optional)* | the screenshot showing the clue |
 | **a footprint** | the area of the globe where the meta applies — drawn with the mouse |
 
@@ -80,7 +80,7 @@ Press `N` (focus must be on the page, not in a field). The form opens.
 | **Title** | required |
 | **Description** | required |
 | **Category** | one of the seven below — no other value |
-| **Difficulty** | optional: `Beginner`, `Intermediate`, `Pro`. Leave it on *not rated* if you have no opinion — that is not a flaw, and the site filters those separately |
+| **Difficulty** | optional: `Beginner`, `Intermediate`, `Pro`. Leave it on *not rated* and the build derives it: car meta → Pro, national footprint → Beginner, city or road → Pro, otherwise Intermediate. Set it only to override that rule |
 | **Source (URL)** | optional; left empty, no link shows on the site |
 | **Image** | optional: `Ctrl+V` to paste a screenshot, or drag a file onto the dashed frame |
 

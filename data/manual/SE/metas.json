@@ -1,0 +1,50 @@
+[
+  {
+    "id": "man-b946",
+    "country": "SE",
+    "tier": "manual",
+    "title": "Bus stop sign: Swedish vs Norwegian",
+    "description": "Swedish and Norwegian bus stop signs differ in the letter M: in Sweden the middle strokes of the M only reach halfway down the sign, while in Norway they go all the way to the bottom.",
+    "category": "infrastructure",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:11.559791+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/SE/images/man-b946.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-4deb",
+    "country": "SE",
+    "tier": "manual",
+    "title": "Northern farmland plains (Umeå–Luleå)",
+    "description": "The farmland plains of the far northeast, along the Bothnian coast from Umeå to Luleå, can be confused with the southern plains. Signs you are in the north: very flat and open terrain with fields on average larger than in the south, northern architecture such as grey metal roofs, no deciduous trees like oak or elm (only spruce, fir and birch), and no red Google car (mostly a white or blue car).",
+    "category": "landscape",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:11.559791+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/SE/images/man-4deb.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-4be3",
+    "country": "SE",
+    "tier": "manual",
+    "title": "Grey metal roofs (north and centre-north)",
+    "description": "Grey metal roofs are found mainly in the northern and north-central half of Sweden.",
+    "category": "architecture",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:11.559791+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/SE/images/man-4be3.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

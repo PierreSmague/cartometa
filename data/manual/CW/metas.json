@@ -301,8 +301,7 @@
     "image": "data/manual/CW/images/man-5c5c.png",
     "maps_url": null,
     "maps_latlon": null,
-    "overlay": null,
-    "difficulty": "Pro"
+    "overlay": null
   },
   {
     "id": "man-3eb4",
@@ -316,22 +315,6 @@
     "description_origin": "manual",
     "origin": "manual",
     "image": "data/manual/CW/images/man-3eb4.png",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
-    "id": "man-24e9",
-    "country": "CW",
-    "tier": "manual",
-    "title": "Stick stuck in camera lens (Grote Berg)",
-    "description": "In the town of Grote Berg and on part of the road next to it, a stick is stuck in the Google camera lens.",
-    "category": "car",
-    "source_url": "",
-    "extracted_at": "2026-09-10T15:00:44.504149+00:00",
-    "description_origin": "manual",
-    "origin": "manual",
-    "image": "data/manual/CW/images/man-24e9.png",
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
@@ -849,22 +832,6 @@
     "overlay": null
   },
   {
-    "id": "man-9c74",
-    "country": "CW",
-    "tier": "manual",
-    "title": "Tafelberg Road",
-    "description": "On the coastal part you can see this distinctive beige wall on the left side of the road.",
-    "category": "infrastructure",
-    "source_url": "",
-    "extracted_at": "2026-09-10T16:08:27.615211+00:00",
-    "description_origin": "manual",
-    "origin": "manual",
-    "image": "data/manual/CW/images/man-9c74.png",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
     "id": "man-e53b",
     "country": "CW",
     "tier": "manual",
@@ -876,22 +843,6 @@
     "description_origin": "manual",
     "origin": "manual",
     "image": "data/manual/CW/images/man-e53b.png",
-    "maps_url": null,
-    "maps_latlon": null,
-    "overlay": null
-  },
-  {
-    "id": "man-3761",
-    "country": "CW",
-    "tier": "manual",
-    "title": "Queen Juliana Bridge",
-    "description": "Easily spotted by its yellow and blue guardrails and awesome view over Willemstad.",
-    "category": "infrastructure",
-    "source_url": "",
-    "extracted_at": "2026-09-10T16:14:15.920584+00:00",
-    "description_origin": "manual",
-    "origin": "manual",
-    "image": "data/manual/CW/images/man-3761.png",
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null

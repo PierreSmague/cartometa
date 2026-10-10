@@ -1,0 +1,34 @@
+[
+  {
+    "id": "man-0996",
+    "country": "SI",
+    "tier": "manual",
+    "title": "\"CONA 30\" zones",
+    "description": "30 km/h zones are signed \"CONA 30\" in Slovenia, unlike in Czechia, Slovakia or Croatia, which helps tell the Central European languages apart.",
+    "category": "culture",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:14.340883+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/SI/images/man-0996.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-94f7",
+    "country": "SI",
+    "tier": "manual",
+    "title": "Kozolec hay racks",
+    "description": "The kozolec, a wooden hay-drying rack, is almost exclusive to Slovenia and is common in rural areas, helping distinguish it from other Central European countries.",
+    "category": "architecture",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:12:14.340883+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/SI/images/man-94f7.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

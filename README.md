@@ -25,10 +25,13 @@ opens the full-size image. Filters stack: category, difficulty, and free-text
 search. Scope (regional / national) is no longer a filter: it splits the
 results into two collapsible sections, read together.
 
-Difficulty is `Beginner`, `Intermediate` or `Pro`, and it is **optional**: a
-meta nobody has judged carries none, shows no badge, and answers to the "Not
-rated" pill. Both pill rows are a strict single choice — "Intermediate" shows
-the Intermediate metas and nothing else — with a leading "All" that filters
+Difficulty is `Beginner`, `Intermediate` or `Pro`, and **every meta has one**.
+The build derives it (`difficulty_de` in `cartometa/build/dataset.py`): every
+car meta is Pro; a national footprint is Beginner; a city (under 500 km²) or a
+road (a corridor under 20 km wide, at least six times longer than wide) is Pro;
+the rest is Intermediate. A difficulty set by hand on a meta overrides the rule.
+Both pill rows are a strict single choice — "Intermediate" shows the
+Intermediate metas and nothing else — with a leading "All" that filters
 nothing.
 
 The seven categories are Infrastructures, Vegetation & Agriculture, Landscape,

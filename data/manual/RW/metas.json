@@ -1,0 +1,18 @@
+[
+  {
+    "id": "man-a648",
+    "country": "RW",
+    "tier": "manual",
+    "title": "Virunga volcanoes in the north-west",
+    "description": "If you see volcanoes in Rwanda, go to the far north-west, on the border with Uganda and the DRC (Virunga range, around Musanze and Rubavu).",
+    "category": "landscape",
+    "source_url": "https://learnablemeta.com/maps/6a441f72396b7267432b1853",
+    "extracted_at": "2026-10-09T08:11:25.603311+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/RW/images/man-a648.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]
