@@ -1,0 +1,370 @@
+[
+  {
+    "id": "man-fa24",
+    "country": "VN",
+    "tier": "manual",
+    "title": "Curved metal awnings (south, plus Sơn La and Phú Thọ)",
+    "description": "Metal awnings with a curved end are found in southern Vietnam, plus the Sơn La and Phú Thọ areas in the north (yellow dots on the map; red = flat awnings).",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1DyXTO-bSdAt8ptB3IXAZvL5jQfe520Hpkwl6LR8PzLY/edit",
+    "extracted_at": "2026-10-29T10:27:52.910290+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/VN/images/man-fa24.webp",
+    "maps_url": "https://maps.app.goo.gl/mu8jWVtXVsJifjaC8",
+    "maps_latlon": [
+      10.1734491,
+      104.9489905
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-bdf5",
+    "country": "VN",
+    "tier": "manual",
+    "title": "Flat-ended metal awnings (north)",
+    "description": "Metal awnings with a flat end are found in northern Vietnam (red dots on the map; yellow = curved awnings).",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1DyXTO-bSdAt8ptB3IXAZvL5jQfe520Hpkwl6LR8PzLY/edit",
+    "extracted_at": "2026-10-29T10:27:52.910290+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/VN/images/man-bdf5.webp",
+    "maps_url": "https://maps.app.goo.gl/Vin1sY8W5qM5ussG6",
+    "maps_latlon": [
+      19.6104392,
+      105.5687477
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-0cc5",
+    "country": "VN",
+    "tier": "manual",
+    "title": "Flat awnings with a sawtoothed/patterned bottom (Nghệ An)",
+    "description": "Flat awnings with a sawtoothed or patterned bottom edge are found in Nghệ An and neighbouring areas.",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1DyXTO-bSdAt8ptB3IXAZvL5jQfe520Hpkwl6LR8PzLY/edit",
+    "extracted_at": "2026-10-29T10:27:52.910290+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/VN/images/man-0cc5.webp",
+    "maps_url": "https://maps.app.goo.gl/z7yQ3aSzsCKpTpVr5",
+    "maps_latlon": [
+      18.6988936,
+      105.5024729
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-f496",
+    "country": "VN",
+    "tier": "manual",
+    "title": "Indented roof tiles (north and centre)",
+    "description": "Indented roof tiles are found in the north and centre of Vietnam.",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1DyXTO-bSdAt8ptB3IXAZvL5jQfe520Hpkwl6LR8PzLY/edit",
+    "extracted_at": "2026-10-29T10:27:52.910290+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/VN/images/man-f496.webp",
+    "maps_url": "https://maps.app.goo.gl/8LNznveqjpNQYbqy6",
+    "maps_latlon": [
+      21.2437224,
+      104.431162
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-f962",
+    "country": "VN",
+    "tier": "manual",
+    "title": "Round overlapping roof tiles (north-east of Hanoi)",
+    "description": "Round overlapping roof tiles are fairly common north-east of Hanoi.",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1DyXTO-bSdAt8ptB3IXAZvL5jQfe520Hpkwl6LR8PzLY/edit",
+    "extracted_at": "2026-10-29T10:27:52.910290+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/VN/images/man-f962.webp",
+    "maps_url": "https://maps.app.goo.gl/z2sXr6MrH9xR69ww5",
+    "maps_latlon": [
+      23.3582568,
+      105.3151036
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-904f",
+    "country": "VN",
+    "tier": "manual",
+    "title": "Diamond scale roof tiles (Mường Lay area)",
+    "description": "Diamond scale tiles are found in the Mường Lay area (Điện Biên and Lai Châu provinces), and some in Thanh Hóa. Needs more research.",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1DyXTO-bSdAt8ptB3IXAZvL5jQfe520Hpkwl6LR8PzLY/edit",
+    "extracted_at": "2026-10-29T10:27:52.910290+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/VN/images/man-904f.webp",
+    "maps_url": "https://maps.app.goo.gl/3awWqfHeNddjN2ES7",
+    "maps_latlon": [
+      21.9879114,
+      103.1513217
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-670f",
+    "country": "VN",
+    "tier": "manual",
+    "title": "Wooden shingle roofs (western Lào Cai, north-west Nghệ An)",
+    "description": "Wooden shingle roofs are found in pockets in western Lào Cai and north-western Nghệ An.",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1DyXTO-bSdAt8ptB3IXAZvL5jQfe520Hpkwl6LR8PzLY/edit",
+    "extracted_at": "2026-10-29T10:27:52.910290+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/VN/images/man-670f.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-8328",
+    "country": "VN",
+    "tier": "manual",
+    "title": "Square or flat raised roof ornaments (Red River Delta)",
+    "description": "Square or flat raised ornaments on the roof ridge are found in the Red River Delta (yellow dots on the map).",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1DyXTO-bSdAt8ptB3IXAZvL5jQfe520Hpkwl6LR8PzLY/edit",
+    "extracted_at": "2026-10-29T10:27:52.910290+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/VN/images/man-8328.webp",
+    "maps_url": "https://maps.app.goo.gl/aJPycfeZAYczJdmY6",
+    "maps_latlon": [
+      21.122954,
+      105.669528
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-b688",
+    "country": "VN",
+    "tier": "manual",
+    "title": "Arrow-shaped roof ornaments (south and centre)",
+    "description": "Arrow-shaped, or rarely rounded, roof ornaments are found in southern and central Vietnam (red dots on the map).",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1DyXTO-bSdAt8ptB3IXAZvL5jQfe520Hpkwl6LR8PzLY/edit",
+    "extracted_at": "2026-10-29T10:27:52.910290+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/VN/images/man-b688.webp",
+    "maps_url": "https://maps.app.goo.gl/bth1mV3Eef3YjzFU6",
+    "maps_latlon": [
+      13.4959056,
+      109.0334388
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-682c",
+    "country": "VN",
+    "tier": "manual",
+    "title": "Raised gables joined by a raised ridge bar (Mekong, Đà Nẵng)",
+    "description": "Roofs with raised gables or ridge ends connected by a raised bar along the central ridge, unadorned (no elaborate temple ornamentation): Mekong Delta and Đà Nẵng. May need further research.",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1DyXTO-bSdAt8ptB3IXAZvL5jQfe520Hpkwl6LR8PzLY/edit",
+    "extracted_at": "2026-10-29T10:27:52.910290+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/VN/images/man-682c.webp",
+    "maps_url": "https://maps.app.goo.gl/UzWwGAzLUKUCwJxYA",
+    "maps_latlon": [
+      9.6059623,
+      104.9335679
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-f5bf",
+    "country": "VN",
+    "tier": "manual",
+    "title": "Houses with thatch walls (southern Mekong Delta)",
+    "description": "Houses with thatched walls are found in the southern Mekong Delta.",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1DyXTO-bSdAt8ptB3IXAZvL5jQfe520Hpkwl6LR8PzLY/edit",
+    "extracted_at": "2026-10-29T10:27:52.910290+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/VN/images/man-f5bf.webp",
+    "maps_url": "https://maps.app.goo.gl/YdkdRicZZu5VSNcL7",
+    "maps_latlon": [
+      9.390468,
+      105.067519
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-c4fd",
+    "country": "VN",
+    "tier": "manual",
+    "title": "Simple wooden houses (Central Highlands)",
+    "description": "The Central Highlands have lots of very simple wooden houses, often with (1) a gable of wooden boards set diagonally, parallel to the roof, and/or (2) the short side of the house made of several columns of short horizontal boards.",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1DyXTO-bSdAt8ptB3IXAZvL5jQfe520Hpkwl6LR8PzLY/edit",
+    "extracted_at": "2026-10-29T10:27:52.910290+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/VN/images/man-c4fd.webp",
+    "maps_url": "https://maps.app.goo.gl/AqFCWR2s1uSGWra1A",
+    "maps_latlon": [
+      12.615055,
+      107.9181454
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-b814",
+    "country": "VN",
+    "tier": "manual",
+    "title": "Steeply angled gable wall ends (central Gia Lai)",
+    "description": "Steeply angled gable wall ends, shingled, metal or otherwise, are found in central Gia Lai (the province as merged in 2025, around An Khê).",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1DyXTO-bSdAt8ptB3IXAZvL5jQfe520Hpkwl6LR8PzLY/edit",
+    "extracted_at": "2026-10-29T10:27:52.910290+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/VN/images/man-b814.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-1f02",
+    "country": "VN",
+    "tier": "manual",
+    "title": "Metal squares covering the beam ends (coastal Gia Lai, Đà Nẵng)",
+    "description": "Metal squares covering the ends of the roof beams are found in coastal Gia Lai (former Bình Định) and Đà Nẵng (including former Quảng Nam).",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1DyXTO-bSdAt8ptB3IXAZvL5jQfe520Hpkwl6LR8PzLY/edit",
+    "extracted_at": "2026-10-29T10:27:52.910290+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/VN/images/man-1f02.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-a933",
+    "country": "VN",
+    "tier": "manual",
+    "title": "Katu longhouses (western Huế and Đà Nẵng)",
+    "description": "Katu longhouses (nhà gươl), with rounded corners and sometimes curved gable horns, are found in western Huế and western Đà Nẵng.",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1DyXTO-bSdAt8ptB3IXAZvL5jQfe520Hpkwl6LR8PzLY/edit",
+    "extracted_at": "2026-10-29T10:27:52.910290+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/VN/images/man-a933.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-33cc",
+    "country": "VN",
+    "tier": "manual",
+    "title": "Side gables with a row of pointed tiles (southern Nghệ An)",
+    "description": "Side gables topped with a row of pointed tiles are found mostly in southern Nghệ An.",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1DyXTO-bSdAt8ptB3IXAZvL5jQfe520Hpkwl6LR8PzLY/edit",
+    "extracted_at": "2026-10-29T10:27:52.910290+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/VN/images/man-33cc.webp",
+    "maps_url": "https://maps.app.goo.gl/rXJ5h8zyg1U6nb667",
+    "maps_latlon": [
+      18.663785,
+      105.5941557
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-ecc3",
+    "country": "VN",
+    "tier": "manual",
+    "title": "Tile-topped raised gables (mostly Nghệ An)",
+    "description": "Tile-topped raised gables are also found mostly in Nghệ An, but are less reliable (occasionally further north or south).",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1DyXTO-bSdAt8ptB3IXAZvL5jQfe520Hpkwl6LR8PzLY/edit",
+    "extracted_at": "2026-10-29T10:27:52.910290+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/VN/images/man-ecc3.webp",
+    "maps_url": "https://maps.app.goo.gl/XKAHTkFTVXNJJVBU9",
+    "maps_latlon": [
+      18.8222503,
+      105.4681691
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-9917",
+    "country": "VN",
+    "tier": "manual",
+    "title": "Roof windows with an inner 'shelf' (western Nghệ An)",
+    "description": "Roof windows with an additional 'shelf' of roof material inside are found in western Nghệ An, and rarely north of Hanoi.",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1DyXTO-bSdAt8ptB3IXAZvL5jQfe520Hpkwl6LR8PzLY/edit",
+    "extracted_at": "2026-10-29T10:27:52.910290+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/VN/images/man-9917.webp",
+    "maps_url": "https://maps.app.goo.gl/3XeFYqMPh3z3RGfe6",
+    "maps_latlon": [
+      19.527562,
+      104.3070543
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-fe09",
+    "country": "VN",
+    "tier": "manual",
+    "title": "Raised ridges in the middle of roofs (southern Ninh Bình, Quảng Trạch)",
+    "description": "Raised ridges in the middle of the roof slope are found in southern Ninh Bình (the province as merged in 2025) and around Quảng Trạch.",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1DyXTO-bSdAt8ptB3IXAZvL5jQfe520Hpkwl6LR8PzLY/edit",
+    "extracted_at": "2026-10-29T10:27:52.910290+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/VN/images/man-fe09.webp",
+    "maps_url": "https://maps.app.goo.gl/8wvXZHPER6weN7PVA",
+    "maps_latlon": [
+      20.010327,
+      106.172462
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-1217",
+    "country": "VN",
+    "tier": "manual",
+    "title": "Thatched houses with roof windows (western Nghệ An/Thanh Hóa, Tuyên Quang)",
+    "description": "Thatched houses with roof windows have two main pockets: western Nghệ An / Thanh Hóa, and around Tuyên Quang.",
+    "category": "architecture",
+    "source_url": "https://docs.google.com/document/d/1DyXTO-bSdAt8ptB3IXAZvL5jQfe520Hpkwl6LR8PzLY/edit",
+    "extracted_at": "2026-10-29T10:27:52.910290+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/VN/images/man-1217.webp",
+    "maps_url": "https://maps.app.goo.gl/Y3jz3j8QFcPmSBHq9",
+    "maps_latlon": [
+      20.1368411,
+      105.2622014
+    ],
+    "overlay": null
+  }
+]
