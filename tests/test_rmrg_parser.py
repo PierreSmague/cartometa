@@ -99,6 +99,20 @@ def test_title_is_the_humanised_slug():
     assert metas[0].title == "Water plots"
 
 
+def test_section_initial_prefix_is_dropped_from_the_title():
+    """The Bulgaria and Switzerland guides prefix slugs with their section's
+    initial (`l-rose-valley` in Landscape, `v-corn` in Agriculture, the
+    vegetation category). Only that initial is dropped: `u-shaped-...` in
+    Architecture is a real word, and so is a lone remainder (`l-a`)."""
+    assert title_from_slug("l-rose-valley", "l") == "Rose valley"
+    assert title_from_slug("v-corn", "av") == "Corn"
+    assert title_from_slug("u-shaped-chimney-openings", "a") == "U shaped chimney openings"
+    assert title_from_slug("l-a", "l") == "L a"
+    page = PAGE.replace("water-plots1", "l-water-plots1")
+    metas, _ = parse_rmrg_page(page, "BG", BASE_URL)
+    assert metas[0].title == "Water plots"
+
+
 def test_description_text_is_normalised():
     metas, _ = parse_rmrg_page(PAGE, "BD", BASE_URL)
     assert metas[0].description == "In the far south, roads run through water plots."
@@ -201,6 +215,41 @@ def test_svg_only_blocks_put_their_map_in_the_overlay():
     metas, _ = parse_rmrg_page(page, "ID", BASE_URL)
     assert metas[0].image is None
     assert metas[0].overlay == "Files/islam-2_TsUh.svg"
+
+
+def test_semantic_section_and_article_tags_are_parsed():
+    """Seen on the Bulgaria guide (October 2026): RMRG now renders sections as
+    <section> and metas as <article>, same classes. The parser keys on the
+    classes, not the tags."""
+    page = """
+<section class="category-section" id="architecture-section">
+  <div class="category-header"><h3 class="category-title">Architecture</h3></div>
+  <section class="subcategory-section" id="architecture-chimneys-section">
+    <h4 class="subcategory-title">Chimneys</h4>
+    <div class="meta-list">
+      <article id="architecture/chimneys/a-pointed-chimney" data-item-slug="a-pointed-chimney" class="meta-item ">
+        <div class="meta-image-wrapper">
+          <a href="https://maps.app.goo.gl/jY1ac4UcZRntrubv9" class="image-link">
+            <div class="image-with-overlay">
+              <div class="base-image"><img src="Files/a-pointed-chimney.webp" alt=""></div>
+              <div class="svg-overlay-container"><img src="Files/a-pointed-chimney.svg" class="svg-overlay"></div>
+            </div>
+          </a>
+        </div>
+        <div class="meta-content"><div class="meta-description ">Pointed chimneys.</div></div>
+      </article>
+    </div>
+  </section>
+</section>
+"""
+    metas, anomalies = parse_rmrg_page(page, "BG", "https://rmrg.me/bulgaria/")
+    assert anomalies == []
+    assert len(metas) == 1
+    meta = metas[0]
+    assert meta.id == "architecture/chimneys/a-pointed-chimney"
+    assert meta.category == "architecture"
+    assert meta.image == "Files/a-pointed-chimney.webp"
+    assert meta.overlay == "Files/a-pointed-chimney.svg"
 
 
 def test_a_titleless_section_without_metas_is_silently_skipped():

@@ -64,10 +64,17 @@ def prepare_overlay(svg_path: Path) -> Path | None:
     return None
 
 
-def title_from_slug(slug: str) -> str:
+def title_from_slug(slug: str, section_initials: str = "") -> str:
     """`water-plots1` -> "Water plots": the RMRG slugs are descriptive names
     chosen by the authors, shorter and more stable than a first sentence. The
-    trailing digits only disambiguate several photos of the same clue."""
+    trailing digits only disambiguate several photos of the same clue.
+
+    Some guides (Bulgaria, Switzerland) prefix the slug with the initial of its
+    section: `l-rose-valley` in Landscape. That initial is dropped when it is
+    one of `section_initials` and something word-sized remains after it."""
+    prefix, sep, rest = slug.partition("-")
+    if sep and len(prefix) == 1 and prefix in section_initials and len(rest) >= 3:
+        slug = rest
     text = " ".join(_TRAILING_DIGITS_RE.sub("", slug).replace("-", " ").replace("_", " ").split())
     return text[:1].upper() + text[1:]
 
@@ -106,8 +113,10 @@ def parse_rmrg_page(html: str, country: str, base_url: str) -> tuple[list[MetaRe
     metas: list[MetaRecord] = []
     anomalies: list[str] = []
 
-    for section in tree.css("div.category-section"):
-        items = section.css("div.meta-item")
+    # Keyed on the classes alone: RMRG moved from div to section/article tags
+    # (Bulgaria guide, October 2026), the classes stayed.
+    for section in tree.css(".category-section"):
+        items = section.css(".meta-item")
         if not items:
             # The interactive-map widget of the Indonesia guides is a
             # category-section without metas: nothing to extract, no anomaly.
@@ -141,7 +150,7 @@ def parse_rmrg_page(html: str, country: str, base_url: str) -> tuple[list[MetaRe
                 id=block_id,
                 country=country,
                 tier=TIER_REGIONAL,
-                title=title_from_slug(slug),
+                title=title_from_slug(slug, name[:1] + category[:1]),
                 description=description,
                 category=category,
                 source_url=f"{base_url}#{block_id}",
