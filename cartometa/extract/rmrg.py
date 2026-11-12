@@ -31,6 +31,11 @@ SECTION_CATEGORIES = {
 }
 
 _TRAILING_DIGITS_RE = re.compile(r"\d+$")
+# Georgia prefixes every slug with its section's initial (`l-racha`,
+# `a-svan-towers`). Other guides have a few legitimate one-letter heads
+# (`x-barns`, `u-bench-cycle-rickshaws`), so the prefix is only dropped when
+# the whole page uses it.
+_SECTION_PREFIX_RE = re.compile(r"^[a-z]-")
 
 GZIP_MAGIC = b"\x1f\x8b"
 
@@ -112,9 +117,15 @@ def parse_rmrg_page(html: str, country: str, base_url: str) -> tuple[list[MetaRe
     now = datetime.now(timezone.utc).isoformat()
     metas: list[MetaRecord] = []
     anomalies: list[str] = []
+    slugs = [
+        item.attributes.get("data-item-slug") or ""
+        for item in tree.css(".meta-item")
+        if "text-only" not in (item.attributes.get("class") or "").split()
+    ]
+    prefixed = bool(slugs) and all(_SECTION_PREFIX_RE.match(slug) for slug in slugs)
 
-    # Keyed on the classes alone: RMRG moved from div to section/article tags
-    # (Bulgaria guide, October 2026), the classes stayed.
+    # Class selectors only: the 2026-11 redesign moved sections to <section>
+    # and metas to <article>, older saves use <div> for both.
     for section in tree.css(".category-section"):
         items = section.css(".meta-item")
         if not items:
@@ -140,11 +151,13 @@ def parse_rmrg_page(html: str, country: str, base_url: str) -> tuple[list[MetaRe
                 # no slug, no image, no Maps link — not traceable, not metas.
                 anomalies.append(f"block {block_id}: text-only intro, skipped")
                 continue
-            description_node = item.css_first("div.meta-description")
+            description_node = item.css_first(".meta-description")
             if description_node is None:
                 anomalies.append(f"block {block_id}: description missing, skipped")
                 continue
             slug = item.attributes.get("data-item-slug") or block_id.rsplit("/", 1)[-1]
+            if prefixed:
+                slug = _SECTION_PREFIX_RE.sub("", slug)
             description = _clean_text(description_node)
             metas.append(MetaRecord(
                 id=block_id,

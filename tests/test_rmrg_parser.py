@@ -113,6 +113,55 @@ def test_section_initial_prefix_is_dropped_from_the_title():
     assert metas[0].title == "Water plots"
 
 
+def test_a_page_wide_one_letter_slug_prefix_is_dropped():
+    """Georgia writes `l-racha`, `a-svan-towers`: the section's initial."""
+    page = (
+        PAGE.replace('data-item-slug="water-plots1"', 'data-item-slug="l-water-plots1"')
+        .replace('data-item-slug="betel-farms"', 'data-item-slug="a-betel-farms"')
+        .replace('data-item-slug="wood-frame-houses"', 'data-item-slug="a-wood-frame-houses"')
+    )
+    metas, _ = parse_rmrg_page(page, "GE", BASE_URL)
+    assert [m.title for m in metas] == ["Water plots", "Betel farms", "Wood frame houses"]
+
+
+def test_an_occasional_one_letter_slug_head_is_kept():
+    """`x-barns` (Romania) is a name, not a prefix: only one slug of the page."""
+    page = PAGE.replace('data-item-slug="betel-farms"', 'data-item-slug="x-barns"')
+    metas, _ = parse_rmrg_page(page, "RO", BASE_URL)
+    assert metas[1].title == "X barns"
+
+
+def test_the_section_and_article_markup_of_the_2026_11_redesign_is_read():
+    page = """
+<section class="category-section" id="landscape-section">
+  <div class="category-header"><h3 class="category-title">Landscape</h3></div>
+  <article id="landscape/general/konya" data-item-slug="konya" data-title="Konya" class="meta-item ">
+    <div class="meta-image-wrapper"><a href="https://maps.app.goo.gl/ntUkcpd2haMsKaji9" class="image-link">
+      <div class="image-with-overlay">
+        <div class="base-image"><img src="Files/konya.webp" alt=""></div>
+        <div class="svg-overlay-container"><img src="Files/konya.svgz" class="svg-overlay"></div>
+      </div></a></div>
+    <div class="meta-content"><div class="meta-description ">The <strong>Konya plain</strong> is flat.</div></div>
+  </article>
+</section>
+<section class="category-section" id="agriculture-section">
+  <div class="category-header"><h3 class="category-title">Agriculture</h3></div>
+  <article id="agriculture/hops" data-item-slug="hops" class="meta-item ">
+    <div class="meta-content"><div class="meta-description">Hops.</div></div>
+  </article>
+</section>
+"""
+    metas, anomalies = parse_rmrg_page(page, "TR", "https://rmrg.me/turkey/")
+    assert [(m.id, m.category) for m in metas] == [
+        ("landscape/general/konya", "landscape"),
+        ("agriculture/hops", "vegetation"),
+    ]
+    assert metas[0].description == "The Konya plain is flat."
+    assert metas[0].image == "Files/konya.webp"
+    assert metas[0].overlay == "Files/konya.svgz"
+    assert anomalies == []
+
+
 def test_description_text_is_normalised():
     metas, _ = parse_rmrg_page(PAGE, "BD", BASE_URL)
     assert metas[0].description == "In the far south, roads run through water plots."
