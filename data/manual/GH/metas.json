@@ -1,0 +1,839 @@
+[
+  {
+    "id": "man-9ea1",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Gen 4 smallcam: gray car",
+    "description": "Part of the Ghana generation 4 coverage is now smallcam. One variant is a gray car: its front is only visible at lower speed, its back at higher speed. Smallcam keeps being released, so its extent will grow.",
+    "category": "car",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-9ea1.webp",
+    "maps_url": "https://maps.app.goo.gl/NjDmkMX1k9JcjU3V8",
+    "maps_latlon": [
+      6.450202,
+      -0.321613
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-759e",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Gen 4 smallcam: gray car with clenched plate",
+    "description": "The gray smallcam car sometimes shows a clenched licence plate. It mostly confirms the north, but it is often not visible because the car drives too fast.",
+    "category": "car",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-759e.webp",
+    "maps_url": "https://maps.app.goo.gl/MCoa3V4Pq46HYbV38",
+    "maps_latlon": [
+      10.4035921,
+      -2.3522911
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-3258",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Gen 4 smallcam: black car",
+    "description": "The other smallcam variant is a black car. The antenna seen at the back is not always visible, but it only exists on the black car. Some roads were driven several times and can show different car metas depending on the panorama.",
+    "category": "car",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-3258.webp",
+    "maps_url": "https://maps.app.goo.gl/4shVdTEdiJXb8Q1PA",
+    "maps_latlon": [
+      6.1705043,
+      0.6690609
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-12a1",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Gen 4 smallcam: black car with dirty mirrors",
+    "description": "The black smallcam car with dirty mirrors is found around the Keta Lagoon and the coast of the southeast.",
+    "category": "car",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-12a1.webp",
+    "maps_url": "https://maps.app.goo.gl/9DaNv92PA3aYnNMy9",
+    "maps_latlon": [
+      5.8242615,
+      0.7935448
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-ee4e",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Gen 4 smallcam: black car exposure level 2",
+    "description": "The frame of the black smallcam car has to be exposed at least this much. Every location in the southeast near Lome has it, so you can commit there, while the middle and northern clusters only sometimes have it. Combined with a flat landscape it points to the southeast.",
+    "category": "car",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-ee4e.webp",
+    "maps_url": "https://maps.app.goo.gl/XUhMFXvm9icmdKxf7",
+    "maps_latlon": [
+      6.0399368,
+      1.0070635
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-bca1",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Gen 4 smallcam: black car exposure level 3",
+    "description": "At level 3 the frame of the black car is fully visible and a decent part of the windshield shows, because the blur is shifted far to the right. Found along the Togo border north of Lake Volta, and rarely in urban Tamale.",
+    "category": "car",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-bca1.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-62ec",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Gen 4 smallcam: black car exposure level 4",
+    "description": "At level 4 a decent part of the hood of the black smallcam car is visible.",
+    "category": "car",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-62ec.webp",
+    "maps_url": "https://maps.app.goo.gl/hhmbuTVx2Wvyc4pe8",
+    "maps_latlon": [
+      8.0634446,
+      0.55062
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-aa23",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Gen 4 smallcam: black car with a dirty hood",
+    "description": "Level 4 exposure with a dirty hood is found on the roads around Salaga, Kete-Krachi and Dambai.",
+    "category": "car",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-aa23.webp",
+    "maps_url": "https://maps.app.goo.gl/MNaVvKNhKejmBT5c9",
+    "maps_latlon": [
+      8.5258767,
+      -0.514111
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-03d9",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Downtown Accra",
+    "description": "Downtown Accra is the most built-up area of the country and is completely flat, while Kumasi is always slightly hilly. Kumasi has no real downtown: buildings with more than four storeys are extremely rare there.",
+    "category": "landscape",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-03d9.webp",
+    "maps_url": "https://maps.app.goo.gl/imzNYaVh8wpvXKUT6",
+    "maps_latlon": [
+      5.5603005,
+      -0.2013983
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-8690",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Accra: flat, with distant ridges",
+    "description": "Accra is notably flatter than Kumasi, with at most slight hills. Distant ridges are unique to Accra and impossible to find in Kumasi: a hill as dominant as this one already means Accra.",
+    "category": "landscape",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-8690.webp",
+    "maps_url": "https://maps.app.goo.gl/APrHdMvGi9TUT1cH7",
+    "maps_latlon": [
+      5.56329,
+      -0.321096
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-cecf",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Tuk-tuks: never in Accra",
+    "description": "Tuk-tuks are banned in Accra. They can be found in Kumasi, and they are most common in Tamale, although Tamale has no generation 4 urban coverage other than the main road.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-cecf.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-a1db",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Accra street signs",
+    "description": "Accra uses this plain design: always blue with a bold white font, with no special details. Tema uses the same design, but street signs in Tema are very rare.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-a1db.webp",
+    "maps_url": "https://maps.app.goo.gl/mHxzhfzYukFcN2f56",
+    "maps_latlon": [
+      5.6811714,
+      -0.1927943
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-ce01",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Accra: the Akuapem ridge",
+    "description": "One ridge stands out on the northern edge of Accra and makes it easy to regionguess the city.",
+    "category": "landscape",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-ce01.webp",
+    "maps_url": "https://maps.app.goo.gl/WgibzcwafJoSVdx56",
+    "maps_latlon": [
+      5.8072295,
+      -0.1028836
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-b7aa",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Southwestern Accra",
+    "description": "Southwestern Accra is ever so slightly hilly, the soil has a light brown tint (never dark red) and coconut palms are common. It can look like Tema, but the slight hills, the coconut palms and the narrower roads between denser housing tell it apart.",
+    "category": "landscape",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-b7aa.webp",
+    "maps_url": "https://maps.app.goo.gl/A8mUdySDRaFpewfN6",
+    "maps_latlon": [
+      5.4908579,
+      -0.4121705
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-7734",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Accra: northwestern open cluster",
+    "description": "The most open area of Accra. Coconut palms are extremely common, sometimes in large plantations. The area is ever so slightly hilly with ridges in the distance, and the buildings are far more spread out than in other suburbs.",
+    "category": "landscape",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-7734.webp",
+    "maps_url": "https://maps.app.goo.gl/kiGQEmi9HqXo1Vxh6",
+    "maps_latlon": [
+      5.6570609,
+      -0.4531058
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-9def",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Northern Accra: prominent rocky hills",
+    "description": "These rocky but lush hills on the northwestern edge of Accra can be seen from far away most of the time.",
+    "category": "landscape",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-9def.webp",
+    "maps_url": "https://maps.app.goo.gl/qEAN8eqog23NGpnc6",
+    "maps_latlon": [
+      5.7877,
+      -0.388966
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-7276",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Accra: white truck",
+    "description": "This white generation 4 truck is unique to central and eastern Accra. It is often blurred, but it is easy to identify by its strongly bent antenna.",
+    "category": "car",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-7276.webp",
+    "maps_url": "https://maps.app.goo.gl/1M4U6sWEoxLRqcXX9",
+    "maps_latlon": [
+      5.535143,
+      -0.236523
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-9c9e",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Accra: exposed gray truck",
+    "description": "The exposed gray truck is found in western Accra, and also in Kumasi (see the Kumasi variant with holes in the truck bed). Its southern cluster can usually be identified by the Densu Delta visible in the distance.",
+    "category": "car",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-9c9e.webp",
+    "maps_url": "https://maps.app.goo.gl/GD3gVaxjsfbQrUUE6",
+    "maps_latlon": [
+      5.5278234,
+      -0.3338777
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-465e",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Accra: folded antenna",
+    "description": "A truck with a folded antenna is unique to these parts of Accra. The areas all look different from each other, which makes it a good car meta for close guesses.",
+    "category": "car",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-465e.webp",
+    "maps_url": "https://maps.app.goo.gl/Ez8KEci3zHCZzNww5",
+    "maps_latlon": [
+      5.6077571,
+      -0.5446533
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-6c48",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Rural Accra",
+    "description": "Around the edges of Accra, grassy rolling hills with the occasional coconut palm or cluster of palms are far more rural than the suburbs.",
+    "category": "landscape",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-6c48.webp",
+    "maps_url": "https://maps.app.goo.gl/2bFxM93ahrZy2S4t6",
+    "maps_latlon": [
+      5.723592,
+      -0.4734622
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-8157",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Tema",
+    "description": "Tema is completely flat and drier than Accra. Everything feels more spread out, the soil has a bright orange-brown tint, tall plants are rare and the roads are wide.",
+    "category": "landscape",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-8157.webp",
+    "maps_url": "https://maps.app.goo.gl/imwyN8FMGy1owN3N6",
+    "maps_latlon": [
+      5.7242317,
+      0.0616979
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-09f3",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Kumasi: always slightly hilly",
+    "description": "Kumasi is always slightly hilly. Unlike Accra, you will never see distant ridges and it is never completely flat.",
+    "category": "landscape",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-09f3.webp",
+    "maps_url": "https://maps.app.goo.gl/sMoqafZRevh1jM3H6",
+    "maps_latlon": [
+      6.7418906,
+      -1.6009804
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-be4e",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Kumasi: rainforest in the distance",
+    "description": "Dark green, lush rainforest is commonly seen in the distance around Kumasi, never in Accra. Forest is sometimes burnt to clear space for housing, and long grass then invades the cleared areas.",
+    "category": "vegetation",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-be4e.webp",
+    "maps_url": "https://maps.app.goo.gl/jh9FouMUjNxfM6Ms6",
+    "maps_latlon": [
+      6.6506321,
+      -1.577871
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-724f",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Kumasi: banana clusters",
+    "description": "Dense clusters of banana plants, and especially small plantations, are extremely abundant in Kumasi and rare in Accra. They are often found in front yards. Banana plants used as decoration along the walls of properties do not count.",
+    "category": "vegetation",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-724f.webp",
+    "maps_url": "https://maps.app.goo.gl/ngYFu1nKAYfdawbi6",
+    "maps_latlon": [
+      6.7597578,
+      -1.668736
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-7283",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Kumasi street signs",
+    "description": "Kumasi street signs vary in colour and mostly have a small arrow with numbers at the bottom. Rarer designs exist, but they never share the colour, design or font of the Accra signs.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-7283.webp",
+    "maps_url": "https://maps.app.goo.gl/9sG5MmhJFSDZAEsW8",
+    "maps_latlon": [
+      6.6629924,
+      -1.6380684
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-3b53",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Kumasi: exposed gray truck with holes",
+    "description": "The exposed gray truck of these parts of Kumasi has five small holes on either side of the truck bed, unlike the one in Accra. There are rare exceptions in the rest of Kumasi.",
+    "category": "car",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-3b53.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-5cd6",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Volta River Plains",
+    "description": "The Volta River Plains are slightly greener than the coastal plains of Greater Accra, with the same shrubs. African baobabs are a common sight, and a lone palm is decently common.",
+    "category": "landscape",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-5cd6.webp",
+    "maps_url": "https://maps.app.goo.gl/kJxkDyu5oRZJPaV1A",
+    "maps_latlon": [
+      6.0669407,
+      0.5467869
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-44db",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Northern Loop 1: Kumasi to Techiman",
+    "description": "The Northern Loop makes up half of balanced Ghana locations; use the driving direction to remove 50/50s. This first section is the trickiest: the landscape turns from lush jungle to savannah as you go north, the road is wide with no or very faded road lines, and it always runs through rolling hills.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-44db.webp",
+    "maps_url": "https://maps.app.goo.gl/LpZCX7rNGouoYdX47",
+    "maps_latlon": [
+      7.4986188,
+      -1.9624376
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-7843",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Northern Loop 2: tropical savanna",
+    "description": "Tropical savanna, driving north without hazy coverage, on the western branch of the Northern Loop towards Wa.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-7843.webp",
+    "maps_url": "https://maps.app.goo.gl/UjkoA8nozeWgP66CA",
+    "maps_latlon": [
+      9.5809514,
+      -2.4257533
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-41a9",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Northern Loop 3: hazy savanna around Wa",
+    "description": "Similar to the previous section but with slightly hazy coverage. The road is a little darker and long grass, often burnt, is abundant next to it.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-41a9.webp",
+    "maps_url": "https://maps.app.goo.gl/5SheWrm37zA2R5FRA",
+    "maps_latlon": [
+      10.401801,
+      -2.7020796
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-3636",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Northern Loop 4: unpaved east-west road",
+    "description": "The only unpaved, dry east-west road of the loop, with lots of long grass, along the northern border.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-3636.webp",
+    "maps_url": "https://maps.app.goo.gl/rVjtcWzWW2KWGM9o6",
+    "maps_latlon": [
+      10.9853153,
+      -2.5547501
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-9014",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Northern Loop 5: paved east-west road",
+    "description": "Same dryness and long grass as the neighbouring sections, but an east-west paved road means this section near Navrongo and Bolgatanga.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-9014.webp",
+    "maps_url": "https://maps.app.goo.gl/EJ5vnsCeTJAYp3sL9",
+    "maps_latlon": [
+      10.8503186,
+      -1.1408467
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-636a",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Northern Loop 6: dead gray bushes",
+    "description": "No road lines, the same long grass, and shrubs and trees next to the road that look dead and gray, under really sunny coverage. Use the angle and driving direction to confirm.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-636a.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-012c",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Northern Loop 7: Tamale to Yendi",
+    "description": "Zero clouds and a sunny road with excellent quality: wide, with shoulders and constant road lines on all sides.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-012c.webp",
+    "maps_url": "https://maps.app.goo.gl/eTjoZW5vCYeLayRw8",
+    "maps_latlon": [
+      9.4120085,
+      -0.2185735
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-7390",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Northern Loop 8: Yendi to Bimbila",
+    "description": "Exactly like the previous section, but with a different angle.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-7390.webp",
+    "maps_url": "https://maps.app.goo.gl/783SpFwDqaFfMgxn9",
+    "maps_latlon": [
+      9.0786534,
+      -0.007943
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-6041",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Northern Loop 9: dark red soil and haze",
+    "description": "A tricky section, but the dark red soil and hazy coverage give it away. The vegetation changes as in section 1, the other way around. Mostly unpaved, with some paved parts.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-6041.webp",
+    "maps_url": "https://maps.app.goo.gl/zabTdSPFU8F1Q7CM7",
+    "maps_latlon": [
+      8.3187808,
+      0.4760259
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-385c",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Northern Loop 10: ridges along the Togo border",
+    "description": "Good road quality, with north-south ridges often visible on either side. The truck drove south on this road, while all Accra-Kumasi roads were driven north.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-385c.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-fb13",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Northern Loop 11: road along straight ridges",
+    "description": "The road runs along straight ridges and has no road lines. Use the driving direction to avoid confusing it with the Accra-Kumasi roads.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-fb13.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-3bae",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Northern Loop 12: straight road to Tema",
+    "description": "A straight road that seems to go on forever, getting drier the closer you get to Tema.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-3bae.webp",
+    "maps_url": "https://maps.app.goo.gl/URQN6qAPmdWM65VH7",
+    "maps_latlon": [
+      5.9588414,
+      0.0526766
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-3d86",
+    "country": "GH",
+    "tier": "manual",
+    "title": "N6 section 1: divided rural road",
+    "description": "The N6 between Nsawam and Suhum is unique for being a divided road through rural land.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-3d86.webp",
+    "maps_url": "https://maps.app.goo.gl/MpBb32FEdFDT4beF9",
+    "maps_latlon": [
+      5.9366582,
+      -0.4053259
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-0bdc",
+    "country": "GH",
+    "tier": "manual",
+    "title": "N6 section 2: lightgray overcast",
+    "description": "Strong lightgray overcast, with a large ridge mainly visible to the northeast. Parts of this road have been overwritten by smallcam.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-0bdc.webp",
+    "maps_url": "https://maps.app.goo.gl/ffeQ8WzdPqTTJ6zt6",
+    "maps_latlon": [
+      6.3452143,
+      -0.4826744
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-f6a2",
+    "country": "GH",
+    "tier": "manual",
+    "title": "N6 offroads near Anyinam",
+    "description": "These four roads off the N6 are easy to recognise by the large ridge to the northeast, with really lush vegetation and overcast coverage. The southernmost one is paved.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-f6a2.webp",
+    "maps_url": "https://maps.app.goo.gl/LusoUpkiL4S4cuG6A",
+    "maps_latlon": [
+      6.4208204,
+      -0.5640556
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-82ef",
+    "country": "GH",
+    "tier": "manual",
+    "title": "Konongo haze",
+    "description": "The roads around Konongo have a distinct hazy coverage, with a yellow-orange sun and sky. All of them are paved.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-82ef.webp",
+    "maps_url": "https://maps.app.goo.gl/wdRNVbxofLaNtKyNA",
+    "maps_latlon": [
+      6.6309751,
+      -1.3222549
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-e6e7",
+    "country": "GH",
+    "tier": "manual",
+    "title": "N7 and N8 towards the coast",
+    "description": "These two main roads look the same: both were driven north with the same angle, have truck coverage and run through the lush part of Ghana.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-e6e7.webp",
+    "maps_url": "https://maps.app.goo.gl/ZiD9jUbFvxmhPZMr8",
+    "maps_latlon": [
+      5.945946,
+      -0.7363075
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-7e8b",
+    "country": "GH",
+    "tier": "manual",
+    "title": "N1 between Cape Coast and Kasoa",
+    "description": "A flat, lush, rural and busy main road: the only east-west road that fits all of these criteria.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1FvPgxysiqxvQupjk5snP1ZXz-XgOU4aSRw5VsqPB84o/edit",
+    "extracted_at": "2026-11-12T09:33:33.298473+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GH/images/man-7e8b.webp",
+    "maps_url": "https://maps.app.goo.gl/Lj3nGfKFA3Jr5iUs7",
+    "maps_latlon": [
+      5.3360554,
+      -0.8119632
+    ],
+    "overlay": null
+  }
+]
