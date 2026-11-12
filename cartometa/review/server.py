@@ -101,6 +101,15 @@ class Handler(SimpleHTTPRequestHandler):
             raise ValueError(f"body too large: {length} bytes")
         return self.rfile.read(length) if length else b""
 
+    def end_headers(self) -> None:
+        # The interface files change with the code, but their Last-Modified is old
+        # enough for Chrome to reuse them for days without asking: the reviewer
+        # kept seeing the previous layout. no-cache forces a revalidation, which
+        # stays a cheap 304 while the file is unchanged.
+        if self.directory == str(STATIC):
+            self.send_header("Cache-Control", "no-cache")
+        super().end_headers()
+
     def list_directory(self, path):
         # No directory listing: `input/` and `data/manual/` must expose only the
         # files asked for by name, never their full contents.

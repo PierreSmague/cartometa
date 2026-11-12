@@ -298,6 +298,15 @@ def test_a_file_under_input_is_served(paths, live_server, monkeypatch):
     assert body == b"contenu-image"
 
 
+def test_the_interface_files_are_revalidated_on_every_load(live_server):
+    """Without a Cache-Control, Chrome derives a freshness of days from the old
+    Last-Modified of index.html and keeps serving the previous layout after a
+    code change (seen on 2026-10-22 with the RMRG mini-map)."""
+    for route in ("/", "/app.js"):
+        with urllib.request.urlopen(live_server + route, timeout=5) as resp:
+            assert resp.headers["Cache-Control"] == "no-cache"
+
+
 def test_getting_pyproject_toml_outside_static_is_refused(live_server):
     """The reviewer had confirmed this file was served as-is before the restriction:
     this test keeps `ALLOWED_ROOT_PREFIXES` in place."""
