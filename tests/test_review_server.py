@@ -19,7 +19,7 @@ from cartometa.models import (
 )
 from cartometa.review import server
 from cartometa.review.pieces import PieceError
-from cartometa.review.store import CountryPaths, load_geo
+from cartometa.review.store import CountryPaths, load_geo, save_geo
 
 
 def _box(x0, y0, x1, y1):
@@ -107,6 +107,66 @@ def test_undo_restores_an_imported_proposal(paths):
     assert record.status == STATUS_PROPOSED
     assert record.pieces == [piece]
     assert record.geometry is None
+
+
+OLD = {"kind": "rect", "bounds": [15, 50, 16, 51]}
+NEW = {"kind": "rect", "bounds": [15.5, 50, 16.5, 51]}
+
+
+def _reproposal(paths):
+    """A validated meta with a newer computed footprint waiting next to it."""
+    server.apply_decision("aaaa", STATUS_TRACED, [OLD])
+    records = load_geo(paths)
+    records["aaaa"].proposal = {"pieces": [NEW]}
+    save_geo(paths, records)
+    return load_geo(paths)["aaaa"]
+
+
+def test_adopting_a_reproposal_replaces_the_footprint_and_clears_it(paths):
+    _reproposal(paths)
+
+    server.apply_decision("aaaa", STATUS_TRACED, [NEW])
+
+    record = load_geo(paths)["aaaa"]
+    assert record.status == STATUS_TRACED and record.proposal is None
+    assert shape(record.geometry).bounds == (15.5, 50.0, 16.5, 51.0)
+
+
+def test_rejecting_a_reproposal_keeps_the_meta_published(paths):
+    before = _reproposal(paths)
+
+    server.apply_decision("aaaa", STATUS_REJECTED, [])
+
+    record = load_geo(paths)["aaaa"]
+    # Still validated, with the footprint it had: only the proposal is gone.
+    assert record.status == STATUS_TRACED and record.proposal is None
+    assert record.geometry == before.geometry and record.pieces == [OLD]
+
+
+def test_a_second_rejection_does_reject_the_meta(paths):
+    _reproposal(paths)
+    server.apply_decision("aaaa", STATUS_REJECTED, [])
+
+    server.apply_decision("aaaa", STATUS_REJECTED, [])
+
+    assert load_geo(paths)["aaaa"].status == STATUS_REJECTED
+
+
+@pytest.mark.parametrize("decision", [
+    (STATUS_TRACED, [NEW]),      # A: adopted
+    (STATUS_REJECTED, []),       # R: dismissed
+])
+def test_undo_puts_a_reproposal_back_whatever_was_decided(paths, decision):
+    before = _reproposal(paths)
+    server.apply_decision("aaaa", *decision)
+
+    server.apply_undo("aaaa", {"status": STATUS_TRACED, "pieces": [OLD],
+                               "proposal": {"pieces": [NEW]}})
+
+    record = load_geo(paths)["aaaa"]
+    assert record.status == STATUS_TRACED
+    assert record.pieces == [OLD] and record.proposal == {"pieces": [NEW]}
+    assert shape(record.geometry).equals(shape(before.geometry))
 
 
 def test_undo_without_restore_erases_the_record(paths):

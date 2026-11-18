@@ -9,9 +9,11 @@ from cartometa.review.store import (
     UnknownMetaError,
     build_queue,
     clear_decision,
+    dismiss_proposal,
     load_geo,
     load_metas,
     restore_proposal,
+    restore_reproposal,
     same_pieces,
     save_geo,
     set_decision,
@@ -505,3 +507,88 @@ def test_same_pieces_compares_in_the_rounded_space():
     assert same_pieces(stored, generated)
     assert not same_pieces(stored, [{"kind": "polygon",
                                      "ring": [[2.2, 48.0], [3.0, 48.0], [3.0, 49.0]]}])
+
+
+OLD_PIECE = {"kind": "polygon", "ring": [[2.0, 48.0], [3.0, 48.0], [3.0, 49.0], [2.0, 49.0]]}
+NEW_PIECE = {"kind": "polygon", "ring": [[2.5, 48.0], [3.5, 48.0], [3.5, 49.0], [2.5, 49.0]]}
+
+
+def _with_reproposal(paths):
+    paths.carmeta_metas.parent.mkdir(parents=True, exist_ok=True)
+    paths.carmeta_metas.write_text(json.dumps([_meta(
+        "car-3fa2b1", origin="carmeta", tier="manual", category="car", image=None,
+        maps_url="https://www.google.com/maps/@?api=1&map_action=pano&pano=P",
+        maps_latlon=[48.5, 2.5],
+        carmeta={"canonical": "Blue 2024", "points": 13750, "zones": 45,
+                 "capture": 0.9, "gain": 0.42, "source_path": "Europe/x.json",
+                 "source_date": "2026-05-06",
+                 "baseline": {"type": "MultiPolygon", "coordinates": []}},
+    )]), "utf-8")
+    save_geo(paths, {
+        "aaaa": GeoRecord(id="aaaa", geometry=dict(CARRE), pieces=[OLD_PIECE]),
+        "car-3fa2b1": GeoRecord(id="car-3fa2b1", geometry=dict(CARRE), pieces=[OLD_PIECE],
+                                proposal={"pieces": [NEW_PIECE, {"kind": "clip"}]}),
+    })
+
+
+def test_a_validated_meta_with_a_proposal_enters_the_default_queue(paths):
+    _with_reproposal(paths)
+
+    queue = build_queue(paths)
+
+    by_id = {item["id"]: item for item in queue["items"]}
+    # The plain validated meta is still out; the re-proposal is in.
+    assert "aaaa" not in by_id
+    item = by_id["car-3fa2b1"]
+    assert item["status"] == STATUS_TRACED and item["reproposal"] is True
+    assert item["pieces"] == [NEW_PIECE, {"kind": "clip"}]
+    assert item["current_pieces"] == [OLD_PIECE]
+    # One decided meta is absent from the queue: the counter stays right.
+    assert queue["done"] == 1 and queue["total"] == 4
+
+
+def test_the_queue_carries_the_carmeta_figures_and_the_street_view_link(paths):
+    _with_reproposal(paths)
+
+    by_id = {item["id"]: item for item in build_queue(paths, include_all=True)["items"]}
+
+    car = by_id["car-3fa2b1"]
+    assert car["streetview"].startswith("https://www.google.com/maps/@?api=1")
+    assert car["carmeta"] == {"canonical": "Blue 2024", "points": 13750, "zones": 45,
+                              "capture": 0.9, "gain": 0.42,
+                              "source_path": "Europe/x.json", "source_date": "2026-05-06"}
+    assert car["latlon"] == [48.5, 2.5] and car["editable"] is False
+    other = by_id["aaaa"]
+    assert (other["reproposal"], other["current_pieces"], other["streetview"],
+            other["carmeta"]) == (False, None, None, None)
+    assert other["pieces"] == [OLD_PIECE]
+
+
+def test_dismissing_a_proposal_keeps_the_validated_footprint(paths):
+    _with_reproposal(paths)
+    before = load_geo(paths)["car-3fa2b1"]
+
+    dismiss_proposal(paths, "car-3fa2b1")
+
+    record = load_geo(paths)["car-3fa2b1"]
+    assert record.proposal is None
+    assert (record.status, record.geometry, record.pieces) == (
+        STATUS_TRACED, before.geometry, before.pieces)
+    assert "car-3fa2b1" not in {i["id"] for i in build_queue(paths)["items"]}
+    with pytest.raises(UnknownMetaError):
+        dismiss_proposal(paths, "zzzz")
+
+
+def test_restoring_a_reproposal_puts_both_footprints_back(paths):
+    _with_reproposal(paths)
+    set_decision(paths, "car-3fa2b1", STATUS_TRACED, dict(CARRE), [NEW_PIECE])
+    assert load_geo(paths)["car-3fa2b1"].proposal is None      # adoption erased it
+
+    restore_reproposal(paths, "car-3fa2b1", dict(CARRE), [OLD_PIECE],
+                       {"pieces": [NEW_PIECE, {"kind": "clip"}]})
+
+    record = load_geo(paths)["car-3fa2b1"]
+    assert record.status == STATUS_TRACED and record.pieces == [OLD_PIECE]
+    assert record.proposal == {"pieces": [NEW_PIECE, {"kind": "clip"}]}
+    with pytest.raises(UnknownMetaError):
+        restore_reproposal(paths, "zzzz", None, [], {"pieces": []})
