@@ -6,6 +6,7 @@ from pathlib import Path
 
 from cartometa.carmeta import github, mirror
 from cartometa.carmeta.analysis import unused_paths
+from cartometa.carmeta.arbitrate import ArbitrationError, run_arbitrate
 from cartometa.carmeta.importer import (
     SKIPPED_REJECTED,
     SKIPPED_VALIDATED,
@@ -15,6 +16,7 @@ from cartometa.carmeta.importer import (
     run_import,
 )
 from cartometa.carmeta.paths import CarmetaPaths
+from cartometa.carmeta.prune import run_prune
 from cartometa.carmeta.rules import RulesError, load_rules
 from cartometa.carmeta.sync import SyncBusy, load_analyses, run_sync
 from cartometa.carmeta.verdicts import (
@@ -123,6 +125,22 @@ def cmd_import(args, paths: CarmetaPaths) -> None:
     print("\n".join(import_lines(plan, args.dry_run)))
 
 
+def cmd_arbitrate(args, paths: CarmetaPaths) -> None:
+    try:
+        run_arbitrate(paths, input, print)
+    except ArbitrationError as exc:
+        _fail(str(exc))
+
+
+def cmd_prune(args, paths: CarmetaPaths) -> None:
+    rules = load_rules(paths.rules)
+    try:
+        run_prune(paths.data, args.countries or None, rules, input, print,
+                  assume_yes=args.yes)
+    except CarmetaImportError as exc:
+        _fail(str(exc))
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="cartometa-carmeta",
@@ -149,6 +167,19 @@ def build_parser() -> argparse.ArgumentParser:
     importer.add_argument("--dry-run", action="store_true",
                           help="affiche ce qui serait fait sans rien écrire")
     importer.set_defaults(run=cmd_import)
+
+    arbitrate = commands.add_parser(
+        "arbitrate", help="tranche les cas limites du filtre, une fois pour toutes")
+    arbitrate.set_defaults(run=cmd_arbitrate)
+
+    prune = commands.add_parser(
+        "prune", help="supprime, après confirmation, les metas validées dont le "
+                      "tag a disparu")
+    prune.add_argument("countries", nargs="*", metavar="CC",
+                       help="codes pays ; par défaut, tous les pays analysés")
+    prune.add_argument("--yes", action="store_true",
+                       help="supprime sans demander confirmation")
+    prune.set_defaults(run=cmd_prune)
 
     status = commands.add_parser("status", help="résumé de l'analyse en cache")
     status.set_defaults(run=cmd_status)
