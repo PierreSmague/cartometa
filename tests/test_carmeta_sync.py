@@ -42,6 +42,24 @@ def fake():
     return FakeGithub({MX: _aa(), BB: _bb(), "README.md": b"# carmeta"})
 
 
+@pytest.fixture(autouse=True)
+def notifications(monkeypatch):
+    """No test may pop a real notification; the calls are recorded instead."""
+    sent = []
+    monkeypatch.setattr(cli, "notify", lambda title, body: sent.append((title, body)))
+    return sent
+
+
+def _cli(paths, *args, fetch):
+    cli.main(["--data-dir", str(paths.data), "--logs-dir", str(paths.data.parent / "logs"),
+              *args], fetch=fetch)
+
+
+def _log(paths):
+    log = paths.data.parent / "logs" / "carmeta-sync.log"
+    return log.read_text("utf-8").splitlines() if log.exists() else []
+
+
 def _snapshot(root):
     return {str(p.relative_to(root)): p.read_bytes()
             for p in sorted(root.rglob("*")) if p.is_file()}
@@ -202,10 +220,10 @@ def test_a_stale_lock_is_taken_over(paths, fake):
 
 
 def test_the_command_is_silent_when_nothing_changed(paths, fake, capsys):
-    cli.main(["--data-dir", str(paths.data), "sync"], fetch=fake)
+    _cli(paths, "sync", fetch=fake)
     assert "2 nouveau(x)" in capsys.readouterr().out
 
-    cli.main(["--data-dir", str(paths.data), "sync"], fetch=fake)
+    _cli(paths, "sync", fetch=fake)
     assert capsys.readouterr().out == ""
 
 
@@ -214,7 +232,7 @@ def test_a_network_failure_exits_with_code_one(paths, capsys):
         raise github.GithubError("api.github.com: unreachable")
 
     with pytest.raises(SystemExit) as exit_info:
-        cli.main(["--data-dir", str(paths.data), "sync"], fetch=broken)
+        _cli(paths, "sync", fetch=broken)
 
     assert exit_info.value.code == 1
     assert "unreachable" in capsys.readouterr().err
@@ -225,18 +243,18 @@ def test_a_held_lock_is_not_a_failure(paths, fake, capsys):
     paths.lock.parent.mkdir(parents=True)
     paths.lock.write_text("123 now\n")
 
-    cli.main(["--data-dir", str(paths.data), "sync"], fetch=fake)
+    _cli(paths, "sync", fetch=fake)
 
     assert "another sync" in capsys.readouterr().out
 
 
 def test_status_summarises_the_cached_analysis(paths, fake, capsys):
     save_rules(paths.rules, _rules())
-    cli.main(["--data-dir", str(paths.data), "status"], fetch=fake)
+    _cli(paths, "status", fetch=fake)
     assert "Aucune analyse" in capsys.readouterr().out
 
     run_sync(paths, _rules(), fake)
-    cli.main(["--data-dir", str(paths.data), "status"], fetch=fake)
+    _cli(paths, "status", fetch=fake)
 
     out = capsys.readouterr().out
     assert "AA    1 retenus" in out and "Total : 2 retenus" in out
@@ -251,3 +269,87 @@ def test_a_neighbour_with_a_handful_of_points_gets_no_analysis(paths, fake):
 
     assert result.analysed == ["AA"]
     assert [p.name for p in paths.analysis_dir.iterdir()] == ["AA.json"]
+
+
+def test_a_useful_run_writes_the_report_a_log_line_and_notifies(paths, fake, capsys,
+                                                               notifications):
+    save_rules(paths.rules, _rules())
+
+    _cli(paths, "sync", fetch=fake)
+
+    out = capsys.readouterr().out
+    assert "2 nouveau(x), 0 modifié(s), 0 supprimé(s) - 2 meta(s) à importer" in out
+    assert paths.report.read_text("utf-8").startswith("<!doctype html>")
+    (line,) = _log(paths)
+    assert line.endswith("2 nouveau(x), 0 modifié(s), 0 supprimé(s) - 2 meta(s) à importer, "
+                         "0 cas en attente, 0 empreinte(s) validée(s) qui ont bougé, "
+                         "0 tag(s) disparu(s)")
+    assert notifications == [("carmeta", "2 nouveau(x), 0 modifié(s), 0 supprimé(s). "
+                              "2 meta(s) à importer, 0 cas en attente, 0 empreinte(s) "
+                              "validée(s) qui ont bougé, 0 tag(s) disparu(s)")]
+
+
+def test_a_run_with_nothing_new_leaves_no_trace_at_all(paths, fake, tmp_path, notifications):
+    save_rules(paths.rules, _rules())
+    _cli(paths, "sync", fetch=fake)
+    before = _snapshot(tmp_path)
+    notifications.clear()
+
+    _cli(paths, "sync", fetch=fake)
+
+    assert _snapshot(tmp_path) == before
+    assert notifications == []
+
+
+def test_a_failure_is_logged(paths):
+    def broken(url, headers):
+        raise github.GithubError("api.github.com: unreachable")
+
+    with pytest.raises(SystemExit):
+        _cli(paths, "sync", fetch=broken)
+
+    (line,) = _log(paths)
+    assert "ERREUR api.github.com: unreachable" in line
+
+
+def test_a_notification_that_fails_does_not_fail_the_run(paths, fake, monkeypatch):
+    from cartometa.carmeta import notify as notify_module
+
+    def no_desktop(*args, **kwargs):
+        raise OSError("no desktop session")
+
+    monkeypatch.setattr(notify_module.subprocess, "run", no_desktop)
+    monkeypatch.setattr(cli, "notify", notify_module.notify)
+    save_rules(paths.rules, _rules())
+
+    _cli(paths, "sync", fetch=fake)                  # no exception, exit code 0
+
+    assert len(_log(paths)) == 1
+
+
+def test_the_notification_never_puts_its_text_in_a_shell(monkeypatch):
+    from cartometa.carmeta import notify as notify_module
+    calls = []
+
+    class Done:
+        returncode = 0
+
+    def run(command, **kwargs):
+        calls.append((command, kwargs))
+        return Done()
+
+    monkeypatch.setattr(notify_module.subprocess, "run", run)
+    hostile = 'x" & do shell script "rm -rf ~'
+
+    monkeypatch.setattr(notify_module.sys, "platform", "darwin")
+    assert notify_module.notify("carmeta", hostile) is True
+    command, kwargs = calls[-1]
+    assert command[:2] == ["osascript", "-e"] and "shell" not in kwargs
+    # Quoted as one AppleScript string: the quote is escaped, not closing it.
+    assert '"x\\" & do shell script \\"rm -rf ~"' in command[2]
+
+    monkeypatch.setattr(notify_module.sys, "platform", "win32")
+    notify_module.notify("carmeta", hostile)
+    command, kwargs = calls[-1]
+    assert hostile not in " ".join(command)
+    assert kwargs["env"]["CARMETA_BODY"] == hostile

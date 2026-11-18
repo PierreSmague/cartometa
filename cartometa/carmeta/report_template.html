@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>carmeta — rapport de synchronisation</title>
+<style>
+/* Self-contained on purpose: system fonts, no external request. The report is
+   opened from the file system, possibly offline. */
+:root {
+  --bg: #f5f6f9; --surface: #ffffff; --fg: #1a2130; --muted: #5b6677; --line: #dde2ea;
+  --zone: #2254c7; --elim: #f1bd8f; --cov: #c6ccd6; --void: #eef0f4;
+  --keep: #1c7f55; --arb: #a86a12; --drop: #737b88; --warn: #b00020;
+  --keep-bg: #e2f3ea; --arb-bg: #f8ecd6; --drop-bg: #e9ecf0;
+}
+@media (prefers-color-scheme: dark) { :root {
+  --bg: #11141a; --surface: #191e27; --fg: #e6e9ef; --muted: #97a1b2; --line: #2a323f;
+  --zone: #6f9cff; --elim: #8c5c36; --cov: #3b4452; --void: #151920;
+  --keep: #54c891; --arb: #e2aa50; --drop: #8a93a2; --warn: #ff7b8e;
+  --keep-bg: #173326; --arb-bg: #3a2c12; --drop-bg: #232a35; color-scheme: dark; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg);
+       font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 28px 16px 56px;
+        display: flex; flex-direction: column; gap: 28px; }
+h1, h2, h3 { margin: 0; font-weight: 600; text-wrap: balance; }
+h1 { font-size: 26px; }
+h2 { font-size: 19px; }
+h3 { font-size: 14px; }
+p { margin: 0; }
+a { color: var(--zone); }
+.muted { color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.chip { background: var(--surface); border: 1px solid var(--line); border-radius: 999px;
+        padding: 4px 12px; font-variant-numeric: tabular-nums; }
+.chip b { font-weight: 600; }
+.box { background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+       padding: 14px 16px; }
+.box.warning { border-color: var(--warn); color: var(--warn); }
+.box ul { margin: 6px 0 0; padding-left: 20px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+            position: sticky; top: 0; background: var(--bg); padding: 8px 0; z-index: 2; }
+button, select { font: inherit; color: inherit; background: var(--surface);
+                 border: 1px solid var(--line); border-radius: 6px; padding: 5px 12px; }
+button { cursor: pointer; }
+button[aria-pressed="true"] { border-color: var(--zone); color: var(--zone); font-weight: 600; }
+.country { display: flex; flex-direction: column; gap: 10px; }
+.country > header { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline;
+                    border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+.sources { font-size: 13px; color: var(--muted); }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+        padding: 10px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.map { background: var(--void); border-radius: 4px; height: 150px;
+       display: flex; align-items: center; justify-content: center; overflow: hidden; }
+canvas { image-rendering: pixelated; max-width: 100%; max-height: 100%; display: block; }
+.card .tag { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.card .nums { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.pill { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 12px;
+        font-weight: 600; }
+.pill.keep { background: var(--keep-bg); color: var(--keep); }
+.pill.arb { background: var(--arb-bg); color: var(--arb); }
+.pill.drop { background: var(--drop-bg); color: var(--drop); }
+.card .act { font-size: 12px; font-weight: 600; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 5px 10px 5px 0; border-bottom: 1px solid var(--line);
+         vertical-align: top; }
+th { color: var(--muted); font-weight: 500; }
+.scroll { overflow-x: auto; }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>carmeta — rapport de synchronisation</h1>
+    <p class="muted" id="when"></p>
+    <div class="chips" id="chips"></div>
+  </header>
+
+  <div class="box warning" id="warnings" hidden></div>
+
+  <section class="box" id="changes" hidden>
+    <h2>Ce qui a changé dans le repo</h2>
+    <ul id="changes-list"></ul>
+  </section>
+
+  <section>
+    <div class="controls" id="controls">
+      <button type="button" data-filter="import" aria-pressed="true">À importer</button>
+      <button type="button" data-filter="arb" aria-pressed="false">En attente d'arbitrage</button>
+      <button type="button" data-filter="keep" aria-pressed="false">Retenus</button>
+      <button type="button" data-filter="all" aria-pressed="false">Tout</button>
+      <select id="country-filter" aria-label="Pays"><option value="">Tous les pays</option></select>
+      <span class="muted" id="shown"></span>
+    </div>
+    <p class="legend">
+      <span><i class="sw" style="background: var(--zone)"></i> zone du tag</span>
+      <span><i class="sw" style="background: var(--elim)"></i> partie du pays éliminée</span>
+      <span><i class="sw" style="background: var(--cov)"></i> couverture du fichier</span>
+    </p>
+    <div id="countries" style="display: flex; flex-direction: column; gap: 28px; margin-top: 16px"></div>
+    <p class="muted" id="empty" hidden>Rien à afficher pour ce filtre.</p>
+  </section>
+
+  <section class="box" id="vanished" hidden>
+    <h2>Tags disparus</h2>
+    <p class="muted">Une meta validée n'est jamais supprimée d'office :
+      <code>cartometa-carmeta prune</code> le fait après confirmation.</p>
+    <div class="scroll"><table>
+      <thead><tr><th>Pays</th><th>Meta</th><th>Tag</th><th>Sort</th><th>Motif</th></tr></thead>
+      <tbody id="vanished-rows"></tbody>
+    </table></div>
+  </section>
+
+  <section class="box" id="descriptors" hidden>
+    <h2>Descripteurs inconnus</h2>
+    <p class="muted">À trancher avec <code>cartometa-carmeta arbitrate</code>.</p>
+    <ul id="descriptor-list"></ul>
+  </section>
+
+  <section class="box" id="unused" hidden>
+    <h2>Fichiers qui ne servent aucun pays</h2>
+    <ul id="unused-list"></ul>
+  </section>
+</div>
+
+<script type="application/json" id="data">__DATA__</script>
+<script>
+const DATA = JSON.parse(document.getElementById('data').textContent);
+const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+function el(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text != null) node.textContent = text;   // never innerHTML: tags come from third-party files
+  return node;
+}
+const percent = (value) => (value == null ? '–' : `${Math.round(value * 100)} %`);
+const count = (value) => value.toLocaleString('fr-FR');
+
+// --- Maps -----------------------------------------------------------------
+// `cov` is a bitmap of the grid's cells (most significant bit first); a row's
+// `m` holds two bits per *covered* cell: 1 zone, 2 eliminated.
+const coverage = new Map();
+function coveredCells(grid) {
+  if (!coverage.has(grid)) {
+    const bytes = atob(grid.cov);
+    const cells = [];
+    for (let i = 0; i < grid.W * grid.H; i += 1) {
+      if (bytes.charCodeAt(i >> 3) & (0x80 >> (i & 7))) cells.push(i);
+    }
+    coverage.set(grid, cells);
+  }
+  return coverage.get(grid);
+}
+function rgb(color) {
+  const probe = document.createElement('canvas').getContext('2d');
+  probe.fillStyle = color;
+  const hex = probe.fillStyle;
+  return [1, 3, 5].map((at) => parseInt(hex.slice(at, at + 2), 16));
+}
+let palette = null;
+function draw(canvas) {
+  const row = canvas.row;
+  const grid = DATA.grids[row.g];
+  palette = palette || [rgb(css('--cov')), rgb(css('--zone')), rgb(css('--elim'))];
+  canvas.width = grid.W;
+  canvas.height = grid.H;
+  const scale = Math.max(1, Math.floor(Math.min(210 / grid.W, 150 / grid.H)));
+  canvas.style.width = `${grid.W * scale}px`;
+  const context = canvas.getContext('2d');
+  const image = context.createImageData(grid.W, grid.H);
+  const states = atob(row.m);
+  coveredCells(grid).forEach((cell, position) => {
+    const state = (states.charCodeAt(position >> 2) >> ((position & 3) * 2)) & 3;
+    const x = cell % grid.W;
+    const y = grid.H - 1 - Math.floor(cell / grid.W);   // row 0 is the south
+    const [r, g, b] = palette[state] || palette[0];
+    image.data.set([r, g, b, 255], (y * grid.W + x) * 4);
+  });
+  context.putImageData(image, 0, 0);
+}
+const lazy = 'IntersectionObserver' in window
+  ? new IntersectionObserver((entries) => entries.forEach((entry) => {
+    if (!entry.isIntersecting) return;
+    draw(entry.target);
+    lazy.unobserve(entry.target);
+  }), { rootMargin: '300px' })
+  : null;
+
+// --- Cards ----------------------------------------------------------------
+const VERDICT_CLASS = { 'retenu': 'keep', 'arbitrage': 'arb', 'écarté': 'drop' };
+const TO_IMPORT = new Set(['écrite', 'réécrite', 're-proposée', 'texte mis à jour']);
+
+function card(row) {
+  const node = el('article', 'card');
+  const map = el('div', 'map');
+  const canvas = document.createElement('canvas');
+  canvas.row = row;
+  map.appendChild(canvas);
+  if (lazy) lazy.observe(canvas); else draw(canvas);
+  node.appendChild(map);
+  node.appendChild(el('h3', null, row.title));
+  node.appendChild(el('span', 'tag', row.t));
+  node.appendChild(el('span', 'nums',
+    `${count(row.n)} points · ${row.z} zone${row.z > 1 ? 's' : ''} · `
+    + `${percent(row.cap)} en zones · gain ${percent(row.gain)}`));
+  const verdict = el('span', null);
+  verdict.appendChild(el('span', `pill ${VERDICT_CLASS[row.v] || 'drop'}`, row.v));
+  if (row.why) verdict.appendChild(el('span', 'tag', ` ${row.why}`));
+  node.appendChild(verdict);
+  if (row.act) node.appendChild(el('span', 'act', row.det ? `${row.act} (${row.det})` : row.act));
+  const link = el('a', null, 'Street View');
+  link.href = row.sv;
+  link.target = '_blank';
+  link.rel = 'noopener';
+  node.appendChild(link);
+  return node;
+}
+
+const FILTERS = {
+  import: (row) => TO_IMPORT.has(row.act),
+  arb: (row) => row.v === 'arbitrage',
+  keep: (row) => row.v === 'retenu',
+  all: () => true,
+};
+let filter = 'import';
+let country = '';
+
+function render() {
+  const host = document.getElementById('countries');
+  host.replaceChildren();
+  let shown = 0;
+  for (const [code, counts] of Object.entries(DATA.countries)) {
+    if (country && code !== country) continue;
+    const rows = DATA.rows.filter((row) => row.cc === code && FILTERS[filter](row));
+    if (!rows.length) continue;
+    shown += rows.length;
+    const section = el('section', 'country');
+    const head = el('header');
+    head.appendChild(el('h2', null, code));
+    head.appendChild(el('span', 'muted',
+      `${counts['retenu']} retenus · ${counts['arbitrage']} en arbitrage · `
+      + `${counts['écarté']} écartés · ${counts.import} à importer`));
+    section.appendChild(head);
+    const sources = Object.entries(DATA.grids)
+      .filter(([key]) => key.startsWith(`${code}|`))
+      .map(([, grid]) => `${grid.file} (${grid.date}, ${count(grid.pts)} points, `
+        + `R = ${grid.R} km)`);
+    section.appendChild(el('p', 'sources', sources.join(' · ')));
+    const cards = el('div', 'cards');
+    rows.sort((a, b) => b.n - a.n).forEach((row) => cards.appendChild(card(row)));
+    section.appendChild(cards);
+    host.appendChild(section);
+  }
+  document.getElementById('shown').textContent = `${shown} tag${shown > 1 ? 's' : ''}`;
+  document.getElementById('empty').hidden = shown > 0;
+}
+
+// --- Static sections ------------------------------------------------------
+function fillList(sectionId, listId, items) {
+  if (!items.length) return;
+  const list = document.getElementById(listId);
+  items.forEach((item) => list.appendChild(el('li', null, item)));
+  document.getElementById(sectionId).hidden = false;
+}
+
+document.getElementById('when').textContent =
+  `Généré le ${DATA.generated_at} · dernier passage complet : ${DATA.checked_at || 'jamais'}`;
+
+const totals = { import: 0, moved: 0, vanished: 0, 'retenu': 0 };
+Object.values(DATA.countries).forEach((counts) => {
+  Object.keys(totals).forEach((key) => { totals[key] += counts[key]; });
+});
+[[totals.import, 'à importer'], [DATA.pending, 'cas en attente'],
+  [totals.moved, 'empreintes validées qui ont bougé'], [totals.vanished, 'tags disparus'],
+  [totals['retenu'], 'tags retenus'], [Object.keys(DATA.countries).length, 'pays'],
+].forEach(([value, label]) => {
+  const chip = el('span', 'chip');
+  chip.appendChild(el('b', null, count(value)));
+  chip.appendChild(document.createTextNode(` ${label}`));
+  document.getElementById('chips').appendChild(chip);
+});
+
+if (DATA.warnings.length) {
+  const box = document.getElementById('warnings');
+  DATA.warnings.forEach((warning) => box.appendChild(el('p', null, warning)));
+  box.hidden = false;
+}
+if (DATA.changes) {
+  const labels = { new: 'nouveau', modified: 'modifié', deleted: 'supprimé',
+    postponed: 'reporté au prochain passage' };
+  const items = [];
+  Object.entries(labels).forEach(([key, label]) => {
+    (DATA.changes[key] || []).forEach((path) => items.push(`${label} : ${path}`));
+  });
+  fillList('changes', 'changes-list', items.length ? items
+    : ['Aucun fichier modifié : analyse refaite à la demande.']);
+}
+if (DATA.vanished.length) {
+  const body = document.getElementById('vanished-rows');
+  DATA.vanished.forEach((entry) => {
+    const line = el('tr');
+    [entry.cc, entry.title, entry.tag, entry.kind, entry.why]
+      .forEach((value) => line.appendChild(el('td', null, value)));
+    body.appendChild(line);
+  });
+  document.getElementById('vanished').hidden = false;
+}
+fillList('descriptors', 'descriptor-list',
+  DATA.descriptors.map((entry) => `${entry.key} — ${entry.tags.join(', ')}`));
+fillList('unused', 'unused-list', DATA.unused);
+
+const select = document.getElementById('country-filter');
+Object.keys(DATA.countries).forEach((code) => {
+  const option = el('option', null, code);
+  option.value = code;
+  select.appendChild(option);
+});
+select.addEventListener('change', () => { country = select.value; render(); });
+document.querySelectorAll('#controls button').forEach((button) => {
+  button.addEventListener('click', () => {
+    filter = button.dataset.filter;
+    document.querySelectorAll('#controls button').forEach((other) => {
+      other.setAttribute('aria-pressed', String(other === button));
+    });
+    render();
+  });
+});
+// Nothing to import (the usual state between two changes of the repository):
+// open on what waits for a decision, or on everything.
+if (!totals.import) {
+  const fallback = DATA.pending ? 'arb' : 'all';
+  document.querySelector(`#controls button[data-filter="${fallback}"]`).click();
+} else {
+  render();
+}
+</script>
+</body>
+</html>

@@ -59,7 +59,8 @@ def _analyse(data, rows, country="AA", rules=None, path="Zone/Aa/Aa 1.json", sha
         "rules_fingerprint": analysis_fingerprint(rules or _rules()),
         "sources": [{"path": path, "sha": sha, "date": "2026-05-06T13:05:16Z",
                      "role": "primary", "points": 150000, "families": ["car_year"],
-                     "grid": {}}],
+                     "grid": {"s": 1.5, "W": 4, "H": 2, "D": 40.0, "R": 4.0,
+                              "delta": 1.0, "link": 3.0, "cov": "8A=="}}],
         "rows": rows,
     }), "utf-8")
 
