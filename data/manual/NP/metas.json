@@ -1,0 +1,2380 @@
+[
+  {
+    "id": "man-9d0c",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Sudurpashchim river valleys",
+    "description": "The north-west of Sudurpashchim has deep V-shaped valleys cut by rivers: high valley floors, steep cliffs, sparse vegetation. The narrow floodplains are farmed (rice), and the fields are often divided by low walls of piled stones.",
+    "category": "landscape",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-9d0c.webp",
+    "maps_url": "https://maps.app.goo.gl/jy8igdiBvJu2ywTv6",
+    "maps_latlon": [
+      29.798279,
+      80.442974
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-6047",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Dang Valley",
+    "description": "Nepal's largest inner valley, seat of the Lumbini provincial capital. Mostly dry fields with high mountains to the north. Coverage is dry season, so flowering rapeseed is very common. Dang also has its own architecture (mud-strip eaves).",
+    "category": "landscape",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-6047.webp",
+    "maps_url": "https://maps.app.goo.gl/QtCzb6abrKfCt5Lk7",
+    "maps_latlon": [
+      28.0956629,
+      82.4309205
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-2741",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Rapti Valley south of Dang",
+    "description": "The Rapti valley (Deukhuri), south of Dang, looks like the Dang Valley, but only a low Siwalik ridge rises to its north, separating it from Dang.",
+    "category": "landscape",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-2741.webp",
+    "maps_url": "https://maps.app.goo.gl/tRc8wfYWL8SHQu4z8",
+    "maps_latlon": [
+      27.887103,
+      82.4123539
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-97e3",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Lumbini Plain: open fields",
+    "description": "The plain of south-east Lumbini (Kapilbastu, Rupandehi, Parasi) is more open than the rest of the Terai: fields are larger and the strips of bamboo, eucalyptus and other trees between them are further apart, so the view reaches further. With the local modern architecture it gives a distinct feel. On clear days the east-west mountain wall is visible to the north. Some open areas also exist elsewhere, mainly on the alluvial fans of Madhesh.",
+    "category": "landscape",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-97e3.webp",
+    "maps_url": "https://maps.app.goo.gl/JxYSNtrFwfTQmBWf9",
+    "maps_latlon": [
+      27.5698502,
+      83.2654542
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-fef6",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Far-Western Plain",
+    "description": "Less developed than the rest of the Terai, with more forest. Vegetation is mixed rather than in single-species clumps: it gathers around houses and lines roads and field banks (see the living hedges), with many sal trees, few isolated bamboo clumps and few mango trees. The mountains to the north run north-west to south-east, which also helps.",
+    "category": "landscape",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-fef6.webp",
+    "maps_url": "https://maps.app.goo.gl/ZR9V8PVUJmhrHJyK9",
+    "maps_latlon": [
+      28.64145,
+      81.023162
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-1120",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Madhesh-Koshi Plain",
+    "description": "The largest and longest-farmed part of the Terai. Trees in the fields grow in clumps or as single trees. In Koshi the vegetation also clusters around houses and along roads, which can resemble the Far-Western Plain.",
+    "category": "landscape",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-1120.webp",
+    "maps_url": "https://maps.app.goo.gl/gbtntVmiS7x8muYS8",
+    "maps_latlon": [
+      26.586819,
+      87.65763
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-4f16",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Flowers around houses",
+    "description": "Houses decorated with flowers and ornamental plants. Koshi is the Terai province that does it most, above all in the far south-east (Jhapa); it is also common in the rest of Koshi, on the Far-Western and Lumbini plains and in the hills east of Kathmandu, and only occasional in Madhesh and around Banke and Bardiya.",
+    "category": "landscape",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-4f16.webp",
+    "maps_url": "https://maps.app.goo.gl/9RMd7yV8GU5b7KoY7",
+    "maps_latlon": [
+      26.6247766,
+      87.7355634
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-9d38",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Mahottari dry fields and eucalyptus",
+    "description": "Northern Mahottari has a large area of dry fields: the coverage is early rainy season, yet it looks very dry, with many eucalyptus groves. If eucalyptus makes up more than half of the vegetation in a dry, mostly unirrigated landscape, think of this area. Eucalyptus is also common in Banke, central-eastern Madhesh and parts of Koshi.",
+    "category": "landscape",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-9d38.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-5702",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Annapurna range on the horizon",
+    "description": "The Annapurna range sits deep inside Nepal and is very high, and the hills up to about 80 km south of it have plenty of elevated coverage. From there, the snowy peaks are often visible across the northern horizon.",
+    "category": "landscape",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-5702.webp",
+    "maps_url": "https://maps.app.goo.gl/XP7KAfKHaV2B8Ezu6",
+    "maps_latlon": [
+      28.175074,
+      84.431679
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-3e7b",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Kathmandu Valley",
+    "description": "The capital fills the Kathmandu Valley: by far the densest area of Nepal, covered with modern multi-storey apartment blocks and commercial buildings.",
+    "category": "landscape",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-3e7b.webp",
+    "maps_url": "https://maps.app.goo.gl/teaziS78HSK7pFXu5",
+    "maps_latlon": [
+      27.6858979,
+      85.3811417
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-2bdc",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Bagmati-Gandaki hill valleys",
+    "description": "Between Gandaki and Bagmati lie lower, gentler hills with many habitable, farmed valleys. Pulled by Pokhara and Kathmandu, the area is fairly modern, with many brick houses and multi-storey homes. Being low, sal trees are common. Hard to recognise without the vibe.",
+    "category": "landscape",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-2bdc.webp",
+    "maps_url": "https://maps.app.goo.gl/RLRqbAHgJiXRmcUs5",
+    "maps_latlon": [
+      28.0446589,
+      84.6197513
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-6145",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Kavrepalanchok hills",
+    "description": "East of Kathmandu, Kavrepalanchok is hilly and fairly populated: lush green hills dotted with houses, many terraces, and soil that is often red.",
+    "category": "landscape",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-6145.webp",
+    "maps_url": "https://maps.app.goo.gl/KJYjMxmqpMbiMVwa6",
+    "maps_latlon": [
+      27.7667919,
+      85.5323496
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-c642",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Mahabharat range south of Kathmandu",
+    "description": "Lush and humid like Kavrepalanchok, sometimes with red soil, but far more rugged, with deep valleys. Unpaved mountain tracks are full of gravel. High and often in clouds; in the rainy season it is almost as wet-looking as Pokhara. Forested, with chir pine and other conifers common.",
+    "category": "landscape",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-c642.webp",
+    "maps_url": "https://maps.app.goo.gl/tEgBuBbtgd2QLi7c6",
+    "maps_latlon": [
+      27.5276413,
+      85.3055591
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-c325",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Pokhara Valley",
+    "description": "Surrounded by mountains, with the Annapurnas to the north. The wettest place in Nepal (up to 3400 mm a year) and mostly covered in the rainy season: very lush green slopes, dense vegetation, rice fields in the valley and terraced gorges around it. A very green, very humid mountain landscape is a strong hint for Pokhara.",
+    "category": "landscape",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-c325.webp",
+    "maps_url": "https://maps.app.goo.gl/NSAfwp9DvmR5Vhp3A",
+    "maps_latlon": [
+      28.2967527,
+      83.9968932
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-f529",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Dun valley of southern Bagmati",
+    "description": "A long, open valley oriented WNW-ESE between the Siwalik hills and the middle hills. Humid and gently rolling, with many rice fields and kans grass; sal trees on the hills.",
+    "category": "landscape",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-f529.webp",
+    "maps_url": "https://maps.app.goo.gl/fLF4uo91e9aFkFzG8",
+    "maps_latlon": [
+      26.997075,
+      86.253764
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-b869",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Nuwakot white sandy soil",
+    "description": "North-east of Kathmandu, Nuwakot has whitish rocks and silty, sandy soil, with exposed limestone cliffs. Some roads here have the grey car with roof rack.",
+    "category": "landscape",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-b869.webp",
+    "maps_url": "https://maps.app.goo.gl/7Ev7pzLKrYf3uPXdA",
+    "maps_latlon": [
+      27.791274,
+      85.182761
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-572e",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Bara and Parsa yellow soil",
+    "description": "In western Madhesh, Bara and Parsa often have a recognisable brownish-yellow soil, the same material as the local clay walls.",
+    "category": "landscape",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-572e.webp",
+    "maps_url": "https://maps.app.goo.gl/L8unyuDsK7c2tmPx7",
+    "maps_latlon": [
+      27.121573,
+      84.92857
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-568b",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Siwalik hills north of Madhesh",
+    "description": "From the Far-Western, Lumbini or Koshi plains, the first thing you see to the north is the steep middle-hill wall. In Madhesh, it is instead a lower Siwalik ridge that separates the Terai from the Dun valley.",
+    "category": "landscape",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-568b.webp",
+    "maps_url": "https://maps.app.goo.gl/UaaAn45FtCwaDXmz7",
+    "maps_latlon": [
+      26.780226,
+      86.482526
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-e967",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Koshi foothills",
+    "description": "The foothills north of the Koshi plain are very humid, and roads often carry a lot of gravel. Covered by the grey car with tail light. To the south lies the dense Char Kose Jhadi forest, crossed by several small roads.",
+    "category": "landscape",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-e967.webp",
+    "maps_url": "https://maps.app.goo.gl/JS4sKKToyBHeTfXo6",
+    "maps_latlon": [
+      26.7629341,
+      87.3748046
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-96a3",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Parallel altocumulus in the north-west",
+    "description": "Parallel bands of altocumulus clouds often float in the high, deep-blue sky over the high mountains of north-western Sudurpashchim.",
+    "category": "landscape",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-96a3.webp",
+    "maps_url": "https://maps.app.goo.gl/B9BZ7AQr2tFgsPiY6",
+    "maps_latlon": [
+      29.5108119,
+      80.4079723
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-4d39",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Ornamental bamboo in the Koshi hills",
+    "description": "In the Koshi hills, small decorative clumps of young bamboo often line the road. Bamboo in general is found across the Terai and the central and eastern hills, less in the western hills.",
+    "category": "vegetation",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-4d39.webp",
+    "maps_url": "https://maps.app.goo.gl/E2JSAnbGxuJsV24L9",
+    "maps_latlon": [
+      26.9960381,
+      87.2872059
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-6708",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Bamboo islands in the fields",
+    "description": "Bamboo clumps standing like islands in the middle of the fields are mostly found in Madhesh and Koshi.",
+    "category": "vegetation",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-6708.webp",
+    "maps_url": "https://maps.app.goo.gl/v5bxBhCYVUGN5YJN6",
+    "maps_latlon": [
+      26.6006622,
+      87.0868696
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-21fc",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Sal forest",
+    "description": "The signature tree of the tropical belt below 1000 m: straight, tall trunks with foliage hugging the trunk, so single trees look slim. Usually in forests along the foot of the hills and in the low hills, mostly in the south of the hill belt, except along the low Gandaki-Bagmati middle hills where it is also widespread.",
+    "category": "vegetation",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-21fc.webp",
+    "maps_url": "https://maps.app.goo.gl/bmVvt3jbwensguCW7",
+    "maps_latlon": [
+      28.0225963,
+      84.3851185
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-a77d",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Scattered sal trees in fields",
+    "description": "Sal trees scattered among fields, or thin sal woods next to fields and houses, point strongly to the Far-Western Plain, less often to Lumbini.",
+    "category": "vegetation",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-a77d.webp",
+    "maps_url": "https://maps.app.goo.gl/frCBp5JXKiZsACqg6",
+    "maps_latlon": [
+      28.7356817,
+      80.5784653
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-37e0",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Lantana",
+    "description": "An invasive shrub recognisable by its orange flower clusters and oval leaves. In the wild it is limited to the mountain roads of Achham (eastern Sudurpashchim), the narrow valleys of southern Karnali, the Dang valley, and the Bagmati and Koshi hills. The western range is dry, the eastern one wet. Around Achham it lines winding roads below steep, dry terraced slopes.",
+    "category": "vegetation",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-37e0.webp",
+    "maps_url": "https://maps.app.goo.gl/ydJz1MGdkNNGTQRh9",
+    "maps_latlon": [
+      28.1599512,
+      82.15239
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-91bf",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Nepalese firethorn",
+    "description": "A shrub with thin, messy, outward-spreading branches and small oval leaves along them. Mostly in the dry western hills, with some in northern Bagmati and the Koshi hills.",
+    "category": "vegetation",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-91bf.webp",
+    "maps_url": "https://maps.app.goo.gl/3GbhN7YhMKsaDpvE8",
+    "maps_latlon": [
+      28.430506,
+      82.299747
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-b9d1",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Blue pine",
+    "description": "Pinus wallichiana grows above 2000 m in central and eastern Nepal, higher than chir pine. Its crown is more conical and darker, with drooping, messy needles rather than tufts. Within coverage: the high hills of eastern Bagmati, extending into north-western Koshi. A similar introduced pine is used for reforestation east of the Kathmandu Valley.",
+    "category": "vegetation",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-b9d1.webp",
+    "maps_url": "https://maps.app.goo.gl/4wS9Lvfh5Vnj5dRv8",
+    "maps_latlon": [
+      27.6301115,
+      85.9686584
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-e0f3",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Agave",
+    "description": "An introduced plant, grown almost only in the hills of Sudurpashchim and Lumbini. Rare.",
+    "category": "vegetation",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-e0f3.webp",
+    "maps_url": "https://maps.app.goo.gl/CdY5L4qaa3BScBm97",
+    "maps_latlon": [
+      29.516802,
+      80.383509
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-6fd5",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Palmyra palm",
+    "description": "Fan palms mostly seen in Madhesh, with very few in Koshi and Lumbini.",
+    "category": "vegetation",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-6fd5.webp",
+    "maps_url": "https://maps.app.goo.gl/9jgj3m2uZ3LzH1A1A",
+    "maps_latlon": [
+      27.0085149,
+      85.1404983
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-6be9",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Taro rows",
+    "description": "Taro has long heart-shaped leaves growing in clusters. Rows of taro are mostly found in Madhesh and Koshi, sometimes elsewhere in the Terai.",
+    "category": "vegetation",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-6be9.webp",
+    "maps_url": "https://maps.app.goo.gl/czGvM79vFyWPguEGA",
+    "maps_latlon": [
+      26.7962604,
+      85.866109
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-e673",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Green-topped brown-stemmed bushes",
+    "description": "An unidentified bush: green foliage on top, brown stems below. Found in the dry hills of Sudurpashchim, Karnali and Lumbini, rarer in Bagmati.",
+    "category": "vegetation",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-e673.webp",
+    "maps_url": "https://maps.app.goo.gl/5JYSSfXFR9Eu3Yip6",
+    "maps_latlon": [
+      29.349322,
+      80.605782
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-13d1",
+    "country": "NP",
+    "tier": "manual",
+    "title": "High-altitude oak and fir forest",
+    "description": "Above about 2000 m the vegetation is dominated by oak and fir, with messy crowns, twisted branches and dark colours.",
+    "category": "vegetation",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-13d1.webp",
+    "maps_url": "https://maps.app.goo.gl/jqTpWVbLSsTcD5289",
+    "maps_latlon": [
+      29.5000523,
+      80.6499876
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-a4eb",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Spreading-branched tree of the Koshi plain",
+    "description": "An unidentified tree with branches spreading outwards, common on the Koshi plain and in parts of Madhesh.",
+    "category": "vegetation",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-a4eb.webp",
+    "maps_url": "https://maps.app.goo.gl/MZbvqJE4TyTS9n6k7",
+    "maps_latlon": [
+      26.5741872,
+      87.9386714
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-c8a3",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Sugarcane",
+    "description": "Mostly central Madhesh, then the western Far-Western Plain; scattered elsewhere in the Terai. Rarely seen growing in dry-season coverage, since the harvest is over.",
+    "category": "vegetation",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-c8a3.webp",
+    "maps_url": "https://maps.app.goo.gl/te9uS8dTgjFP4QTB7",
+    "maps_latlon": [
+      26.927267,
+      85.77356
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-0c92",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Bananas in eastern Gandaki",
+    "description": "Bananas grow all over covered Nepal, hills and plains. But a gentle, low hilly valley with lots of bananas along the road points to eastern Gandaki.",
+    "category": "vegetation",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-0c92.webp",
+    "maps_url": "https://maps.app.goo.gl/oowBwcvZMsV5yN8p7",
+    "maps_latlon": [
+      28.0921155,
+      84.2356097
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-561b",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Sudurpashchim steep terraces",
+    "description": "The central hills of Sudurpashchim often show terraces built on very steep slopes.",
+    "category": "vegetation",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-561b.webp",
+    "maps_url": "https://maps.app.goo.gl/7zAoUhLm3Df2JcEs5",
+    "maps_latlon": [
+      29.571554,
+      80.706304
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-97e8",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Hay stacks on poles",
+    "description": "Hay piled on a wooden pole is common near terraces in the Sudurpashchim hills. The hay does not reach the bottom of the pole, so it looks like a shawarma on a skewer.",
+    "category": "vegetation",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-97e8.webp",
+    "maps_url": "https://maps.app.goo.gl/Zy2axBPDf2HUG4Jo6",
+    "maps_latlon": [
+      29.313971,
+      80.699784
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-6cda",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Coconut palms",
+    "description": "Coconut palms usually stand alone, planted, in Madhesh and Koshi.",
+    "category": "vegetation",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-6cda.webp",
+    "maps_url": "https://maps.app.goo.gl/vAASEbPADbpxu97a9",
+    "maps_latlon": [
+      26.773886,
+      86.233284
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-9000",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Greenhouses around Kathmandu",
+    "description": "The hills around the Kathmandu Valley sometimes use plastic greenhouses to keep crops warm.",
+    "category": "vegetation",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-9000.webp",
+    "maps_url": "https://maps.app.goo.gl/nnSZsxP4bZU5cfWA6",
+    "maps_latlon": [
+      27.6618134,
+      85.4807373
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-9f99",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Courtyard pergolas",
+    "description": "Small vine pergolas in house courtyards are mostly in Madhesh and Koshi; elsewhere climbing plants grow on fences or roofs instead.",
+    "category": "vegetation",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-9f99.webp",
+    "maps_url": "https://maps.app.goo.gl/HnhgBL2vgcw9FPM56",
+    "maps_latlon": [
+      26.937269,
+      85.288996
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-8736",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Bamboo slat fences",
+    "description": "Neat fences of large bamboo slats joined edge to edge, without crossing strips. Central to eastern Madhesh and western Koshi, especially Mahottari.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-8736.webp",
+    "maps_url": "https://maps.app.goo.gl/gtPVtC87WziPHtxa7",
+    "maps_latlon": [
+      26.8266773,
+      85.9077442
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-e920",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Woven bamboo fences",
+    "description": "Tidy fences of interwoven bamboo strips. Central and eastern Madhesh and western Koshi, more common the closer you get to Saptari.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-e920.webp",
+    "maps_url": "https://maps.app.goo.gl/ApF5aWUVFT4vpsaz8",
+    "maps_latlon": [
+      26.572932,
+      86.551925
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-658f",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Square-grid bamboo fences",
+    "description": "Bamboo strips crossing at right angles into a square grid: the dominant type in eastern Madhesh and western Koshi, especially Saptari, Siraha and Sunsari. A few in central Madhesh, where the horizontal strips are usually further apart, giving rectangles.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-658f.webp",
+    "maps_url": "https://maps.app.goo.gl/1KbUhAYUJcXf1Fjz8",
+    "maps_latlon": [
+      26.757559,
+      86.43345
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-9aa8",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Star-pattern bamboo walls",
+    "description": "Bamboo grids with added diagonals (a star pattern), almost only in Saptari, Siraha and Sunsari, usually as house walls.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-9aa8.webp",
+    "maps_url": "https://maps.app.goo.gl/HrC6AnPDzpSP17oV9",
+    "maps_latlon": [
+      26.483222,
+      86.724097
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-d871",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Bamboo-mat walled houses",
+    "description": "Houses (not sheds) with bamboo-mat walls are found in Madhesh east of Mahottari and in western Koshi. Same for houses with clay on the lower part or edges and bamboo mat deliberately left visible.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-d871.webp",
+    "maps_url": "https://maps.app.goo.gl/gimWKAJ2Q4Fhb6L97",
+    "maps_latlon": [
+      26.7397631,
+      86.0235484
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-43b5",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Far-West living hedges",
+    "description": "Country lanes of the Far-Western Plain are lined with dense, mixed living hedges around houses and roads; they set the tone of the region. Decorative hedges also exist in north-west Lumbini and Koshi, but rarely as lush. Rows of pink morning glory and giant reed play the same role, more in the east of the Far-Western Plain.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-43b5.webp",
+    "maps_url": "https://maps.app.goo.gl/6ip5Hv6dvjATHZd66",
+    "maps_latlon": [
+      28.7332354,
+      80.6507905
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-da70",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Far-West single-room gable houses",
+    "description": "Apart from modern flat-roofed concrete houses, most traditional houses in southern Sudurpashchim are single-storey, single-room, with a gable roof; much rarer in other provinces. Materials vary: yellow clay, tiles, mostly blue corrugated metal, thatch, stone.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-da70.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-3d19",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Central Madhesh two-storey houses",
+    "description": "Two-storey houses with a low hip roof are specific to Sarlahi, Mahottari and Rautahat. Walls are wooden boards or clay; roofs are grey cement tiles, round tiles or grey corrugated sheets.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": null,
+    "maps_url": "https://maps.app.goo.gl/Hi4WDK38anjfK7a2A",
+    "maps_latlon": [
+      26.9970388,
+      85.6608029
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-7b74",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Dun valley two-storey stilt houses",
+    "description": "The Dun valleys from southern Madhesh into Koshi have many traditional stilt houses: two storeys, hip-and-gable roof, wooden walls. Around Hetauda they have metal roofs and large gables; in the Koshi foothills metal or Far-West tile roofs with Koshi features; in the central valleys mostly grey square tiles.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": null,
+    "maps_url": "https://maps.app.goo.gl/mBUE2BcAiKd47bS7A",
+    "maps_latlon": [
+      26.9970388,
+      85.6608029
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-89b8",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Sikkim frame houses",
+    "description": "Only in Koshi, mostly in the southern foothills: walls divided into squares by a frame of horizontal and vertical beams, named after Sikkim where they were first noticed. Modern brick houses sometimes imitate the pattern.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-89b8.webp",
+    "maps_url": "https://maps.app.goo.gl/2CZQV9otv16rbFNB8",
+    "maps_latlon": [
+      26.7407131,
+      87.5390744
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-4a15",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Yellow clay walls",
+    "description": "Yellow clay walls exist across the Terai but only dominate in Bara and Parsa (western Madhesh), where some villages are almost entirely clay houses.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-4a15.webp",
+    "maps_url": "https://maps.app.goo.gl/pn87gLXewKsaXsWR7",
+    "maps_latlon": [
+      27.1399652,
+      84.7261041
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-82d3",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Siraha metal ridge caps",
+    "description": "Corrugated roofs usually have grey tiles over the ridge, but in Siraha the ridge is capped with sheet metal, very often blue. Specific to Siraha and the neighbouring part of Saptari.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": null,
+    "maps_url": "https://maps.app.goo.gl/dGSGfy2iwRt4i3PW7",
+    "maps_latlon": [
+      26.803805,
+      86.2008575
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-9e27",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Buddhist reliefs of the Lumbini Plain",
+    "description": "The birthplace of the Buddha: houses on the Lumbini plain are decorated with green, pink and yellow reliefs of lotuses, vines and other Buddhist symbols, and gates carry similar coloured metal ornaments. Similar reliefs appear in the northern Lumbini hills, Nawalpur or even near Pokhara, but those areas are dry-season or hilly, so easy to tell apart. Swastikas, five-colour flags and golden door ornaments are found all over Nepal; these colourful reliefs are not.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-9e27.webp",
+    "maps_url": "https://maps.app.goo.gl/G82LnrCbDCSPrGeE8",
+    "maps_latlon": [
+      27.6713649,
+      83.2368574
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-fab6",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Lumbini matchbox houses",
+    "description": "Few traditional buildings remain on the Lumbini plain: most houses are modern single-storey flat-roofed red-brick and concrete boxes, sometimes painted. Common near towns everywhere, but rural houses here are much more modern than in other provinces. Scattered flat concrete houses in wide open rice fields point to the Lumbini plain.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-fab6.webp",
+    "maps_url": "https://maps.app.goo.gl/Z4iArWcMBbiGxoSw6",
+    "maps_latlon": [
+      27.549018,
+      83.197912
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-9251",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Madhesh eave brick holes",
+    "description": "Flat-roofed brick houses in Madhesh, especially red brick, often have decorative holes between the bricks of the parapet: mostly triangles and arrows, also rectangles and crosses. Railing-style parapets do not count.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-9251.webp",
+    "maps_url": "https://maps.app.goo.gl/w1CU4gM6JsaWWyDm8",
+    "maps_latlon": [
+      26.7224908,
+      86.3017255
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-e762",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Koshi red-blue and emerald metal roofs",
+    "description": "Houses in Koshi, especially on the southern plain, love blue and red metal roofs; emerald green is common too. Usually seen together with hip roofs and other Koshi features.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-e762.webp",
+    "maps_url": "https://maps.app.goo.gl/kepEdDu5G7K53AtK8",
+    "maps_latlon": [
+      26.601203,
+      87.528627
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-4d32",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Blue clay houses of central Madhesh",
+    "description": "Sarlahi, Rautahat and Mahottari have many traditional houses painted blue, cyan or green, often with other traditional patterns, mostly clay-walled. Scattered blue walls exist in neighbouring provinces but are rare.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-4d32.webp",
+    "maps_url": "https://maps.app.goo.gl/kjQ9ZZ5otAVE9Ah87",
+    "maps_latlon": [
+      26.6859837,
+      85.7827374
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-d853",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Mud bricks of Bardiya and Banke",
+    "description": "Many houses in Bardiya and Banke (western Lumbini) are built of mud bricks: less regular than red bricks and without cement joints. Sometimes also on the Lumbini plain and in central Madhesh; in the hills, very common around the Kathmandu Valley.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-d853.webp",
+    "maps_url": "https://maps.app.goo.gl/nfis9XENgBi5kq6q9",
+    "maps_latlon": [
+      28.3134308,
+      81.3923719
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-c402",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Madhesh thatched hip roofs",
+    "description": "Clay houses with thatched hip roofs are almost unique to Madhesh, especially the west and centre. Other provinces have thatch, but not as a hip roof, or with thatch walls too. Thatch with parallel bamboo rings laid on top points to western Madhesh.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-c402.webp",
+    "maps_url": "https://maps.app.goo.gl/KYGsTtBMjRuwJVYN9",
+    "maps_latlon": [
+      27.0550797,
+      84.7765961
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-f524",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Rupandehi clay cube birdhouses",
+    "description": "Small clay cube birdhouses placed on rooftops are unique to Rupandehi.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-f524.webp",
+    "maps_url": "https://maps.app.goo.gl/1r4xkpsNbnzPpnWWA",
+    "maps_latlon": [
+      27.5375525,
+      83.3363973
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-d4d0",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Madhesh birdhouses on poles",
+    "description": "Madhesh birdhouses are larger than the Lumbini ones and usually stand alone on a platform on top of a post. In the west they can have a pointed thatch top like a granary.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-d4d0.webp",
+    "maps_url": "https://maps.app.goo.gl/dynLtKjqTVfpD7qQA",
+    "maps_latlon": [
+      26.956889,
+      85.303179
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-bd7b",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Lumbini thatch bundles",
+    "description": "Thatch stores on the Lumbini plain look like ordinary haystacks with a pointed cylindrical top, but tied tight at the bottom.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-bd7b.webp",
+    "maps_url": "https://maps.app.goo.gl/iWpV51azaAoNTDuQ6",
+    "maps_latlon": [
+      27.5452409,
+      83.2159473
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-a546",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Madhesh low hip roofs",
+    "description": "Low-pitched hip roofs are the norm for houses in Madhesh and almost absent elsewhere. Western Madhesh mostly uses grey cement tiles, round tiles or grey corrugated sheets; the east more metal and Far-West tiles. Compound roofs made of several hips are common too.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-a546.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-9ad8",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Siraha flat metal hip roofs",
+    "description": "Gently sloping metal hip roofs, mostly blue, sometimes silver, are found in Siraha and neighbouring districts. The metal covering the ridge lies flat on the roof at its ends.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-9ad8.webp",
+    "maps_url": "https://maps.app.goo.gl/RmGSUTvYWtqMtZRb7",
+    "maps_latlon": [
+      26.7235302,
+      86.2233611
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-2d33",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Saptari steep metal hip roofs",
+    "description": "Saptari, the easternmost district of Madhesh, has its own hip roofs: steeper slopes, ridge ends slightly extended and turned up rather than lying flat, usually a short ridge, and sometimes horizontal bamboo walls. Also in Sunsari, but less often than the bumped roofs.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-2d33.webp",
+    "maps_url": "https://maps.app.goo.gl/y6bVH3f392PETW7LA",
+    "maps_latlon": [
+      26.5614974,
+      86.7743863
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-1011",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Koshi porch roofs: hipped (Jhapa)",
+    "description": "Many self-built rural houses in Koshi have a porch. If the porch roof is hipped, with edges folding inwards, it is most likely around Jhapa in the east.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-1011.webp",
+    "maps_url": "https://maps.app.goo.gl/MK9a7vwnBmmNqVqK8",
+    "maps_latlon": [
+      26.5321806,
+      87.974278
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-8152",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Koshi porch roofs: gabled (Sunsari, Morang)",
+    "description": "If the porch roof is gabled, its edges parallel to the porch and the wall, the house is most likely in the central-western Koshi plain: Sunsari and Morang.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-8152.webp",
+    "maps_url": "https://maps.app.goo.gl/RxJyVrSxqeMD5Nzs9",
+    "maps_latlon": [
+      26.5728742,
+      87.678134
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-e76a",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Magar hill houses",
+    "description": "The most common traditional hill house, named after the Magar areas where it is most typical: three storeys of brick and earth, hip-and-gable roof with a small window in the gable, wooden doors and windows set in the wall, sometimes held by two beams like a bold 'I', sometimes a wooden balcony. Most complete and brightly painted in northern Lumbini; western and eastern variants are simpler.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-e76a.webp",
+    "maps_url": "https://maps.app.goo.gl/U7HAKLKmWvcid7h96",
+    "maps_latlon": [
+      28.1770736,
+      82.9104116
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-d830",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Pokhara grey faux-stone walls",
+    "description": "Neat grey imitation stone-brick walls, mostly on multi-storey villas in and around Pokhara: a way to tell Pokhara rainy coverage from Kathmandu. Grey faux polygonal stone walls are common too. Real stone houses exist in remote hills everywhere except central Koshi.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-d830.webp",
+    "maps_url": "https://maps.app.goo.gl/nwCpzhta6JVsBVtv7",
+    "maps_latlon": [
+      28.2143719,
+      83.9995599
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-d5a8",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Pokhara low stone walls",
+    "description": "Low dry-stone walls often border houses and fields around Pokhara.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-d5a8.webp",
+    "maps_url": "https://maps.app.goo.gl/xLSjjcdDcfDpU61L6",
+    "maps_latlon": [
+      28.138041,
+      84.08075
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-54b5",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Patterned wall cladding of Gandaki",
+    "description": "Modern houses in Gandaki are often clad with patterned tiles, imitating stacked bricks or repeating geometric motifs, black and white being the most popular. Also in Bagmati, eastern Lumbini and big towns elsewhere, less often.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-54b5.webp",
+    "maps_url": "https://maps.app.goo.gl/kybBjnqaHM96hbim7",
+    "maps_latlon": [
+      28.0419841,
+      83.6701813
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-4df3",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Nawalpur double gable roofs",
+    "description": "Single-storey houses with a gable roof extended by a front lean-to, forming a double gable, are found in the western plains and central hills, and are especially common in Nawalpur, which also has many plain concrete gable houses.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-4df3.webp",
+    "maps_url": "https://maps.app.goo.gl/4exbrc53m1k3FSto6",
+    "maps_latlon": [
+      27.632077,
+      84.1213765
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-8c02",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Thin slate roofs (Gandaki, Lumbini)",
+    "description": "Natural slate roofs are found in the hills west of Kathmandu. The Gandaki-Lumbini variant has darker, thinner, neatly laid slabs; the ridge may lack flat slabs but usually has two rows of wide slanted ones on each side. Also rarely in parts of Bagmati and Koshi.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-8c02.webp",
+    "maps_url": "https://maps.app.goo.gl/pgzBbf6dr7FUefBb7",
+    "maps_latlon": [
+      28.259197,
+      82.708407
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-1a3e",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Thin diamond slate roofs (west Bagmati)",
+    "description": "Thin, neatly laid dark grey diamond-shaped slates: common in, and almost only in, western Bagmati.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-1a3e.webp",
+    "maps_url": "https://maps.app.goo.gl/3YDbajFx65c1brMk6",
+    "maps_latlon": [
+      27.8964191,
+      84.9052581
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-8fc9",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Thick diamond slate roofs (Achham, Dailekh)",
+    "description": "Thick, slightly messy light grey diamond-shaped slates are only found around Achham (Sudurpashchim) and Dailekh (Karnali).",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-8fc9.webp",
+    "maps_url": "https://maps.app.goo.gl/9CNHwHhUVyNuNLAh9",
+    "maps_latlon": [
+      29.208497,
+      81.19927
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-91a4",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Western hill houses",
+    "description": "Traditional houses in the western hills are rough: irregular stone walls, messy slate or metal roofs, plain or red-and-white colours, windows sometimes blue.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-91a4.webp",
+    "maps_url": "https://maps.app.goo.gl/PT8s5dY78Gw57nQi9",
+    "maps_latlon": [
+      29.192126,
+      81.06042
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-7083",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Koshi metal-walled houses",
+    "description": "Some houses in Koshi have sheet-metal walls, like in Bangladesh.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-7083.webp",
+    "maps_url": "https://maps.app.goo.gl/hvivmK8SkMWrdmmg9",
+    "maps_latlon": [
+      26.57221,
+      87.82713
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-1107",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Prayer flags",
+    "description": "With Tibetan Buddhism, prayer flags are widespread near the high north, which has little coverage. In the middle hills they are mostly found around Kathmandu, a little in the east, and very rarely in the west, except near high passes.",
+    "category": "culture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-1107.webp",
+    "maps_url": "https://maps.app.goo.gl/XrNZYEK2JjiV9rRK9",
+    "maps_latlon": [
+      27.7301349,
+      85.5225008
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-823c",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Bagmati metal gables",
+    "description": "Traditional hill houses in Bagmati, especially central and eastern, sometimes close the gable triangle under the eaves with metal sheets. Also in the Koshi hills, rarely in Gandaki. Plain gable houses can have similar metal gables. Some traditional-shaped houses with walls mostly or entirely of metal are found in remote hills of Bagmati and Koshi.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-823c.webp",
+    "maps_url": "https://maps.app.goo.gl/JACvFHBDLMbgvPrN6",
+    "maps_latlon": [
+      27.480215,
+      86.085917
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-6748",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Newar architecture",
+    "description": "The style of the Newar, the native people of the Kathmandu Valley: finely carved wooden windows and woodwork and red brick walls, mostly in the old quarters of the valley's towns.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-6748.webp",
+    "maps_url": "https://maps.app.goo.gl/tvuC5vNRG4Ehb1xk7",
+    "maps_latlon": [
+      27.670623,
+      85.4291503
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-40a8",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Newar-style houses of Bagmati",
+    "description": "Beyond the classic Newar buildings, parts of Bagmati have houses inheriting the style: red or mud brick walls, hip-and-gable roofs and wooden struts under the eaves, often with carved woodwork.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-40a8.webp",
+    "maps_url": "https://maps.app.goo.gl/VoU1JCJSTmNEWgU29",
+    "maps_latlon": [
+      27.6143388,
+      85.6113296
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-2068",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Big gables with off-centre attic windows",
+    "description": "Some traditional Bagmati houses have a large gable, sometimes with the attic window pushed to one side, more often on Newar-style houses. Western houses can do this too, but with smaller gables.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-2068.webp",
+    "maps_url": "https://maps.app.goo.gl/qPfbhut5LfPcEWRg8",
+    "maps_latlon": [
+      27.6203538,
+      85.6267531
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-b071",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Multiple eaves",
+    "description": "Two or three tiers of eaves sheltering the balcony and wrapping around the walls: a Magar feature, now mostly seen on old houses along the Gandaki-Bagmati band.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-b071.webp",
+    "maps_url": "https://maps.app.goo.gl/tVxDMC9aFqbYvgG8A",
+    "maps_latlon": [
+      27.8890566,
+      84.8141324
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-75b3",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Trapezoid street-facing houses",
+    "description": "Multi-storey houses with a trapezoid side profile, door and balcony facing the street, are common near settlements along the Gandaki-Bagmati band. Also in the Lumbini hills and Karnali, less often.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-75b3.webp",
+    "maps_url": "https://maps.app.goo.gl/C8RgD5m77AQqpKPz8",
+    "maps_latlon": [
+      27.969879,
+      84.441186
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-f758",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Koshi sawtooth eave trims",
+    "description": "Sawtooth metal trims under the eaves are a Koshi feature, mostly seen on the southern plain because the northern hills have few roads. Usually together with other Koshi features such as red-blue metal roofs.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-f758.webp",
+    "maps_url": "https://maps.app.goo.gl/Wxdf4MEHfVG3ygab8",
+    "maps_latlon": [
+      26.815797,
+      87.26558
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-a2fd",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Sikkim-style metal houses",
+    "description": "Houses with lots of corrugated metal walls and a triangular attic that looks rather stylish are common in the eastern Koshi hills. Houses in the Koshi hills also seem to love blue building parts.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-a2fd.webp",
+    "maps_url": "https://maps.app.goo.gl/BbLAF3zbw2tMPmGZ7",
+    "maps_latlon": [
+      27.096645,
+      87.787966
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-69bc",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Gulmi arched attic windows",
+    "description": "Traditional hill houses in Gulmi (Lumbini) sometimes have arched attic windows.",
+    "category": "architecture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-69bc.webp",
+    "maps_url": "https://maps.app.goo.gl/yxNMVDn2zU6FTS3V7",
+    "maps_latlon": [
+      28.0438815,
+      83.3629476
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-a434",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Rainy-season coverage",
+    "description": "63% of coverage. The rainy season runs from May to October: lush fields and green hills. Every province except Karnali has rainy coverage. The southern Far-Western Plain, the west of the south-east Lumbini plain, the east of the south-west Lumbini plain, Pokhara city, central Kathmandu, Madhesh and the southern Koshi Terai are almost only rainy-season coverage.",
+    "category": "car",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-a434.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-342e",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Dry-season coverage",
+    "description": "37% of coverage. The dry season runs from November to April: fallow fields and yellowed hills. Every province except Madhesh has dry coverage. The hills west of Pokhara, the Pokhara-Kathmandu hills, the west of the south-west Lumbini plain and the west of the southern Gandaki plain are almost only dry-season coverage.",
+    "category": "car",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-342e.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-5d82",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Small blur, no car visible",
+    "description": "12.5% of coverage, the most common after the big blur: a small rectangular blur and no car visible while moving (it may show a little when the blur is opaque). When visible the car is grey. Western Tulsipur valley, northern Lumbini and adjacent Gandaki hills, western Pokhara, the Kathmandu Valley, sparse roads around the Bagmati fan, north-west of Janakpur, parts of Koshi. A black mirror sometimes shows in the Gandaki-Lumbini area, the bonnet edge in the Bagmati-Madhesh area.",
+    "category": "car",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-5d82.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-2133",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Grey car with tail light and long antenna",
+    "description": "0.4% of coverage: rounded rear, red tail light, black roof-rack rails and two small black parts on the sides, and above all a thick ribbed central antenna. North-west of the Kathmandu Valley and further north around Betrawati Bazaar.",
+    "category": "car",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-2133.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-95d8",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Grey car with short antenna",
+    "description": "0.3% of coverage: rounded grey rear with a short antenna slightly to the right. Near the H01 exit from the hills south of Hetauda, and a few roads in the west of the Kathmandu Valley.",
+    "category": "car",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-95d8.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-8640",
+    "country": "NP",
+    "tier": "manual",
+    "title": "No car, short antenna",
+    "description": "0.2% of coverage: the car is hidden, only a short stub of antenna shows. A few roads in Sudurpashchim, the Rapti valley of Lumbini and east of Kathmandu.",
+    "category": "car",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-8640.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-2e0f",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Grey car with roof rack",
+    "description": "0.2% of coverage: the rear-right roof-rack rail shows and runs to the very back of the car; car and rail grey, joints black. Some roads in the hills north-west of Kathmandu and a few roads north and east of Kathmandu.",
+    "category": "car",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-2e0f.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-2015",
+    "country": "NP",
+    "tier": "manual",
+    "title": "White car with roof rack",
+    "description": "3.6% of coverage: the rear-right roof-rack rail shows but stops before the back, and the car is white. All taken in November-December (dry season). West of the south-west Lumbini plain, and some roads in central, eastern and small southern valleys of the Karnali hills. Karnali's only special car.",
+    "category": "car",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-2015.webp",
+    "maps_url": "https://maps.app.goo.gl/CCDoLU1YWXw7qV5j6",
+    "maps_latlon": [
+      28.4158756,
+      81.3715149
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-95ce",
+    "country": "NP",
+    "tier": "manual",
+    "title": "White square car with spoiler",
+    "description": "5.7% of coverage: square white rear (actually a white spoiler) and a slightly visible squarish white front. Mostly older coverage, much of it replaced. Remaining: north-central south-east Lumbini plain, the H10 south-west of Pokhara, north-east of Birgunj, the foothills around Mirchaiya, the foothills north of Biratnagar, the Kathmandu Valley and a few spots in Bagmati such as along the H04.",
+    "category": "car",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-95ce.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-da80",
+    "country": "NP",
+    "tier": "manual",
+    "title": "White round car",
+    "description": "2.8% of coverage, also an older car: rounder front and rear than the square white car. North of Janakpur, some roads west and south-east of Mirchaiya, around Katari to the north-east, east of Lahan, and a few spots in Bagmati.",
+    "category": "car",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-da80.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-5e00",
+    "country": "NP",
+    "tier": "manual",
+    "title": "White round car with orange mirror",
+    "description": "0.7% of coverage: the same white round car with the orange right mirror showing. Some roads south-west of Lahan and a few nearby.",
+    "category": "car",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-5e00.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-8f4c",
+    "country": "NP",
+    "tier": "manual",
+    "title": "White car with red handprint",
+    "description": "0.1% of coverage: a rounded white front with a red handprint and a swastika. Only a handful of roads north-west of Kathmandu.",
+    "category": "car",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-8f4c.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-ac2d",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Blue car quarter",
+    "description": "0.04% of coverage: an odd blur leaving the rear-right quarter of a blue roof visible. Only one road south-west of Rolpa airport.",
+    "category": "car",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-ac2d.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-704b",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Orange car with roof rack",
+    "description": "0.9% of coverage, one of the hardest: sometimes a small part of the orange rear-right and a black roof-rack rail show, sometimes nothing at all, like the no-car small blur. Hills west of Rampur (north-east Lumbini) and a short road down from the hills in southern Gandaki.",
+    "category": "car",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-704b.webp",
+    "maps_url": "https://maps.app.goo.gl/yxJSYkEjmTSZY6h77",
+    "maps_latlon": [
+      27.8314111,
+      83.649059
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-bf43",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Red car, no antenna",
+    "description": "0.2% of coverage: dark red front and a rectangular boot spoiler visible. Only central Kathmandu.",
+    "category": "car",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-bf43.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-b1a3",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Open boot",
+    "description": "On two roads near Kathmandu, the driver forgot to close the boot lid.",
+    "category": "car",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-b1a3.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-8940",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Symmetric A pole tops",
+    "description": "Symmetric pole tops with a small round-topped A-shaped metal piece are found in Bagmati and Madhesh south-west of Kathmandu, apparently matching the former Narayani zone (from realBeelzbuub's pole guide).",
+    "category": "infrastructure",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-8940.webp",
+    "maps_url": "https://maps.app.goo.gl/jYjzja9PFKN9PEpy7",
+    "maps_latlon": [
+      27.148687,
+      84.846636
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-2f9a",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Prithvi Highway, Gandaki section",
+    "description": "The western part of this highway, in Gandaki, is a rare dual carriageway in the hills, but most of it is poorly paved or still under construction.",
+    "category": "infrastructure",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-2f9a.webp",
+    "maps_url": "https://maps.app.goo.gl/LRTDwdw2TyGyP9W86",
+    "maps_latlon": [
+      28.008828,
+      84.136521
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-7b92",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Prithvi Highway, Bagmati section",
+    "description": "The eastern part, in Bagmati, carries heavy traffic and feels industrial: sand and dirt along the road from countless heavy trucks.",
+    "category": "infrastructure",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-7b92.webp",
+    "maps_url": "https://maps.app.goo.gl/eMEEiEWP8T3ncH958",
+    "maps_latlon": [
+      27.7735357,
+      85.0282866
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-8317",
+    "country": "NP",
+    "tier": "manual",
+    "title": "H01 through the Rapti valley of Dang",
+    "description": "The H01 crosses the Rapti valley in southern Dang: gently undulating, fully marked, with large sal forests on both sides. Orange car coverage; the big-blur parts are harder to recognise.",
+    "category": "infrastructure",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-8317.webp",
+    "maps_url": "https://maps.app.goo.gl/a7yTc4MVNvc5jD94A",
+    "maps_latlon": [
+      27.9419366,
+      82.3038009
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-c5f9",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Kapilbastu-Gulmi road",
+    "description": "The road from Kapilbastu to Gulmi has rainy-season coverage, rare in the Lumbini hills. It looks soaked, with fog on the hilltops, as if it just rained. Easy to confuse with Bagmati or Gandaki rainy coverage, but its feel becomes recognisable.",
+    "category": "infrastructure",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-c5f9.webp",
+    "maps_url": "https://maps.app.goo.gl/YTAu5JWAGVVJHh5n9",
+    "maps_latlon": [
+      27.934532,
+      83.1662333
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-c4a7",
+    "country": "NP",
+    "tier": "manual",
+    "title": "H01 in western Madhesh",
+    "description": "The H01 runs along the north of the Terai with a line of high-voltage pylons always within a few kilometres. In western Madhesh the pylons are closest to the road, with large forests on both sides.",
+    "category": "infrastructure",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-c4a7.webp",
+    "maps_url": "https://maps.app.goo.gl/2opKKjRpiB2uU1TU9",
+    "maps_latlon": [
+      27.021096,
+      85.721185
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-57d0",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Road to Dhorpatan",
+    "description": "The road north-west from Lumbini to the Dhorpatan hunting reserve runs in a narrow NW-SE rift valley. Paved, mostly with a white centre line. It climbs from 700 m to a 3215 m pass, the highest car coverage in Nepal, so besides the high mountains the road visibly slopes down to the south-east.",
+    "category": "infrastructure",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-57d0.webp",
+    "maps_url": "https://maps.app.goo.gl/qeEshkpZYBPNgmzY8",
+    "maps_latlon": [
+      28.445234,
+      82.933589
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-85d6",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Mid-Hill Highway in Karnali",
+    "description": "In western Karnali up to the Sudurpashchim border, the Mid-Hill Highway winds through dry western hills. Its good surface and continuous yellow outer and white inner lines are very rare on western roads. The camera is often overexposed.",
+    "category": "infrastructure",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-85d6.webp",
+    "maps_url": "https://maps.app.goo.gl/sTcFopYFCkssk9zJ9",
+    "maps_latlon": [
+      28.9647322,
+      81.4751294
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-2712",
+    "country": "NP",
+    "tier": "manual",
+    "title": "H01 Nawalpur-Parasi",
+    "description": "The H01 from Nawalpur through Parasi to Butwal is very wide but in terrible condition: a dual carriageway with long unpaved sandy stretches and dust everywhere.",
+    "category": "infrastructure",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-2712.webp",
+    "maps_url": "https://maps.app.goo.gl/QmzRF2wSy5hygvze8",
+    "maps_latlon": [
+      27.602578,
+      83.912989
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-0fd1",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Araniko Highway",
+    "description": "The road from north-east Bagmati to the Kodari border crossing into Tibet runs in a deep gorge with cliffs on both sides. Poor surface, but always one or more lines of metal poles along it, and quite a few houses.",
+    "category": "infrastructure",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-0fd1.webp",
+    "maps_url": "https://maps.app.goo.gl/z5HoFSgMPHQTRg2d8",
+    "maps_latlon": [
+      27.8764979,
+      85.8987007
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-8680",
+    "country": "NP",
+    "tier": "manual",
+    "title": "H01 Bagmati section",
+    "description": "On the H01 the car stopped at the Chitwan border after entering Bagmati. Built along the Dun valley, well marked, shot with a low sun lighting half the sky. Dry-season no-car small blur.",
+    "category": "infrastructure",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-8680.webp",
+    "maps_url": "https://maps.app.goo.gl/t1KqSeNVn44whzZM8",
+    "maps_latlon": [
+      27.5668078,
+      84.7317374
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-6850",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Devasthal cliff",
+    "description": "Devasthal, 'abode of the gods', is a peak in Salyan (Karnali) recognisable by its almost vertical bare cliff facing the valley.",
+    "category": "landscape",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-6850.webp",
+    "maps_url": "https://maps.app.goo.gl/UuY9TLnUMsj9Ajj97",
+    "maps_latlon": [
+      28.527895,
+      82.011522
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-3e58",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Bhimdatta red cliff",
+    "description": "North of Bhimdatta, the westernmost city of Sudurpashchim, a clearly visible red bare cliff scars the hillside.",
+    "category": "landscape",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-3e58.webp",
+    "maps_url": "https://maps.app.goo.gl/UdMad7joma61xi3CA",
+    "maps_latlon": [
+      28.9814847,
+      80.1912017
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-c454",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Dhankuta ridge",
+    "description": "Dhankuta, a large hill town in Koshi, sits on the south slope of a high ridge. From the southern roads the big ridge dominates the north; from the northern slope roads, the land drops steeply to the south.",
+    "category": "landscape",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-c454.webp",
+    "maps_url": "https://maps.app.goo.gl/W8VLysP2k3s62RqJA",
+    "maps_latlon": [
+      26.96591,
+      87.348249
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-f8f5",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Pyuthan valley sunset",
+    "description": "Pyuthan lies in a wide valley with some sunset coverage and glowing clouds nearby.",
+    "category": "landscape",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-f8f5.webp",
+    "maps_url": "https://maps.app.goo.gl/MZ53FKoZVDH19DDRA",
+    "maps_latlon": [
+      28.1113891,
+      82.8575099
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-4d10",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Lumbini monastic zone",
+    "description": "In the south of the Lumbini plain, the birthplace of the Buddha is also a 'museum' of monasteries built by Buddhists from many countries.",
+    "category": "culture",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-4d10.webp",
+    "maps_url": "https://maps.app.goo.gl/UiE7ikrmTy6mzstz5",
+    "maps_latlon": [
+      27.48454,
+      83.271511
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-396d",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Koshi river embankment path",
+    "description": "A recognisable path runs on the embankment on the east bank of the Koshi, with an iron fence on its west side and usually dense vegetation on both sides.",
+    "category": "infrastructure",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-396d.webp",
+    "maps_url": "https://maps.app.goo.gl/rAcvJZK5CqhAfUbe8",
+    "maps_latlon": [
+      26.673572,
+      87.073634
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-cec9",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Foggy cliff road in Pyuthan",
+    "description": "A recognisable dirt road along a cliff in southern Pyuthan, in bright fog all the way. Blue car with long antenna.",
+    "category": "infrastructure",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-cec9.webp",
+    "maps_url": "https://maps.app.goo.gl/bX9Scn317vDULjfL9",
+    "maps_latlon": [
+      27.9876701,
+      82.9027109
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-b51b",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Foggy dirt road in Koshi",
+    "description": "Koshi also has a foggy hill road: wide, cut into the cliff, unpaved yellow-brown dirt with piles of sand, apparently under construction. The south-west part has no fog but is still recognisable. Small-blur coverage.",
+    "category": "infrastructure",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-b51b.webp",
+    "maps_url": "https://maps.app.goo.gl/N28z8tVw6PasaZjf9",
+    "maps_latlon": [
+      26.9669625,
+      87.6852767
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-2753",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Overexposed Hetauda",
+    "description": "Hetauda's coverage is badly overexposed: don't browse it for fun, it hurts the eyes.",
+    "category": "car",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-2753.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-3cba",
+    "country": "NP",
+    "tier": "manual",
+    "title": "White and yellow pole paint",
+    "description": "In Siraha, Saptari and Dhanusha (eastern Madhesh), pole bases are often painted white or yellow with lines of words, maybe adverts. At least 80% of these in the Terai are in these three districts, and almost all the rest in Madhesh (from Superflo777).",
+    "category": "infrastructure",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-3cba.webp",
+    "maps_url": "https://maps.app.goo.gl/Mr5kXNosVsAFyUH47",
+    "maps_latlon": [
+      26.6335062,
+      86.573267
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-01af",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Green pole paint",
+    "description": "Pole bases painted green are only found around Kathmandu.",
+    "category": "infrastructure",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-01af.webp",
+    "maps_url": "https://maps.app.goo.gl/ytx7zmhLgiMoXMTB8",
+    "maps_latlon": [
+      27.6735574,
+      85.3093915
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-1baf",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Blue, red and white pole paint",
+    "description": "Very rare red, blue and white pole bases, only around Motipur in Banganga, on the Lumbini plain (from Superflo777).",
+    "category": "infrastructure",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-1baf.webp",
+    "maps_url": "https://maps.app.goo.gl/NzvsEkuhXiea1bMM7",
+    "maps_latlon": [
+      27.6932376,
+      83.1249904
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-b26f",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Pokhara bus shelters",
+    "description": "Bus stops in Pokhara usually have a curved blue roof parallel to the road.",
+    "category": "infrastructure",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-b26f.webp",
+    "maps_url": "https://maps.app.goo.gl/HwmWiuw1YWHuhoQ79",
+    "maps_latlon": [
+      28.122785,
+      84.042748
+    ],
+    "overlay": null
+  },
+  {
+    "id": "man-bf1c",
+    "country": "NP",
+    "tier": "manual",
+    "title": "Lumbini bus shelters",
+    "description": "Lumbini province has similar shelters, but with a more strongly curved roof set perpendicular to the road.",
+    "category": "infrastructure",
+    "source_url": "https://www.yuque.com/chaofun/tuxun/nepal_minecarbth_mrpotota",
+    "extracted_at": "2026-11-18T08:21:18.506390+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NP/images/man-bf1c.webp",
+    "maps_url": "https://maps.app.goo.gl/aUxuSxxnkRFFCBsK8",
+    "maps_latlon": [
+      27.6712561,
+      83.174791
+    ],
+    "overlay": null
+  }
+]
