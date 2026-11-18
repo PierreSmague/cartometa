@@ -793,3 +793,13 @@ non cochées ci-dessus :
   carmeta — fond de la couleur de la voiture, blanc à défaut, texte blanc ou
   noir si la voiture est blanche ou grise. Remplace la pastille CSS comme
   illustration principale ; celle-ci reste le repli des builds sans images.
+
+- **Acceptation en lot** (demande du mainteneur) : `cartometa-carmeta accept`
+  valide les propositions telles que calculées. 643 metas carmeta validées,
+  1 rejetée par le mainteneur (Australie).
+- **Option du site** : « Enable advanced car metas », décochée par défaut et
+  mémorisée ; le build marque ces metas `advanced`.
+- **Sources** : carmeta crédité dans le pied de page du site, `LICENSE-DATA`
+  et le README, en plus de la page de licence.
+- **Bug corrigé** : la tuile de repli du viewer réutilisait la classe
+  `.pastille` des boutons de filtre ; elle s'appelle maintenant `.tuile`.

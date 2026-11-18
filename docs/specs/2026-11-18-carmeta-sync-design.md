@@ -31,7 +31,7 @@ Ordre de grandeur au 2026-11-15 : 45 fichiers, 43 pays, 4,3 M de points,
 
 | Sujet | Décision |
 |---|---|
-| Validation | Tout passe par la revue manuelle. Le filtre réduit ce qui y arrive ; l'arbitrage porte sur le filtre, pas sur la revue. |
+| Validation | La revue manuelle reste la voie normale. Le filtre réduit ce qui y arrive ; l'arbitrage porte sur le filtre, pas sur la revue. Depuis le 2026-11-18, `cartometa-carmeta accept` valide en lot les propositions telles que calculées, quand le mainteneur fait confiance au lot (premier import : Mexique revu à la main, le reste accepté). |
 | Familles gardées | voiture × année, copyright, `Antenna`, `BL`/`Brakelight`, flous, `Exposed`, `Snow`, `Smallcam` seul. |
 | Familles écartées | année, mois, année-mois, météo, codes pays, subdivisions, climats Köppen, `Part n`/`Pn`, séparateurs, `Gen 4`/`Normal Gen 4`, tous les `No …` sauf `No Car <année>`. |
 | Granularité | Seul le niveau le plus fin : un tag couvert par des tags voiture × année plus fins est écarté. |
@@ -45,7 +45,7 @@ Ordre de grandeur au 2026-11-15 : 45 fichiers, 43 pays, 4,3 M de points,
 | Fichier source | Par pays et par famille : le fichier le plus récent qui contient la famille. |
 | Mise à jour | Une meta validée n'est re-proposée que si la nouvelle empreinte recouvre l'ancienne à moins de 80 %. Un rejet est définitif. |
 | Exécution | Tâche planifiée locale, macOS et Windows. Elle n'écrit que le rapport et la liste d'arbitrage, hors git. L'import est lancé à la main. |
-| Publication | Inchangée : `cartometa-build` puis `wrangler`, à la main, après la revue. |
+| Publication | Inchangée : `cartometa-build` puis `wrangler`, à la main, après la revue. Sur le site, les metas carmeta sont derrière une option « Enable advanced car metas », décochée par défaut (décision du 2026-11-18) : elles ne doivent ni ouvrir les résultats ni les noyer. |
 
 ## 3. Hors périmètre
 

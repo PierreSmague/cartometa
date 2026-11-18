@@ -34,7 +34,7 @@ cartometa-build → wrangler   unchanged
 | 2. See where things stand | `uv run cartometa-carmeta status` | nothing |
 | 3. Settle the borderline cases | `uv run cartometa-carmeta arbitrate` | `data/carmeta/rules.json` |
 | 4. Write the proposals | `uv run cartometa-carmeta import [CC …]` | `data/carmeta/`, `data/geo/` |
-| 5. Accept or reject | `uv run cartometa-review <CC>` | `data/geo/` |
+| 5. Accept or reject | `uv run cartometa-review <CC>`, or `uv run cartometa-carmeta accept [CC …]` | `data/geo/` |
 | 6. Publish | `uv run cartometa-build`, then `wrangler` | `dist/` |
 
 `sync` is the only step that runs on its own. When the repository has not
@@ -54,6 +54,14 @@ well under a minute.
 
 `import` refuses to run while `cartometa-review` is open (both write
 `data/geo/`), and `import --dry-run` shows what it would do without writing.
+
+`accept` is the shortcut for a batch you trust: it validates every pending
+carmeta proposal exactly as `A` would — pieces resolved against Natural Earth,
+clipped to the borders — and adopts every pending re-proposal, without opening
+any of them. Rejected metas stay rejected, and proposals that did not come
+from carmeta are left in the review queue. Review a country or two first; a
+meta validated this way can still be reopened with `cartometa-review <CC>
+--all` and retouched or rejected.
 
 ## What the filter keeps
 
@@ -164,6 +172,18 @@ powershell -ExecutionPolicy Bypass -File scripts\install-carmeta-sync.ps1 -Unins
 Both find `uv` in your `PATH` at install time and run the command from the
 repository they were installed from. The notification is best-effort; the
 report and `logs/carmeta-sync.log` are the reliable trace.
+
+## The "advanced car metas" option
+
+On the site the metas that come from carmeta are **hidden by default**. They
+are several hundred narrow footprints, and being the most specific they would
+open nearly every result list. A checkbox under the filters, *Enable advanced
+car metas*, shows them; the choice is remembered in the browser. When the only
+metas covering a point are advanced ones, the page says so instead of claiming
+the point is empty.
+
+They are ordinary `car` metas in every other respect: the *Car meta* category
+filter, the search and the pins apply to them once the option is on.
 
 ## What a car meta looks like on the site
 
