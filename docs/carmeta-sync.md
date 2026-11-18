@@ -165,6 +165,14 @@ Both find `uv` in your `PATH` at install time and run the command from the
 repository they were installed from. The notification is best-effort; the
 report and `logs/carmeta-sync.log` are the reliable trace.
 
+## What a car meta looks like on the site
+
+There is no screenshot. The build draws each car meta a **tile**: its title on
+a flat background in the colour the tag has on the carmeta maps — the colour
+of the car — with the year on its own line. The text is white, or black when
+the car is white or gray; a tag with no colour gets a white tile. The blow-up
+adds a "Street View example" link to one representative panorama.
+
 ## Licence
 
 carmeta is published under CC BY-NC 4.0, compatible with the CC BY-NC-SA of

@@ -457,9 +457,12 @@ function visibles() {
 const COULEUR_HEX = /^#[0-9a-f]{6}$/i;
 
 function texteSur(couleur) {
-  // Dark text on a light tile, light text on a dark one (perceived luminance).
+  // Same rule as the tiles the build draws (`tile_text_colour`): white text, or
+  // black when the car is white or gray — or the tint too pale for white to read.
   const [r, g, b] = [1, 3, 5].map((i) => parseInt(couleur.slice(i, i + 2), 16));
-  return (0.299 * r + 0.587 * g + 0.114 * b) > 150 ? '#1c1c1a' : '#ffffff';
+  const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+  const sansTeinte = Math.max(r, g, b) - Math.min(r, g, b) <= 24;
+  return (sansTeinte && luminance >= 80) || luminance >= 170 ? '#000000' : '#ffffff';
 }
 
 function creerCarte(meta) {
@@ -478,9 +481,10 @@ function creerCarte(meta) {
     image.alt = '';
     bloc.appendChild(image);
   } else {
-    // No image: a tile of the thumbnail's size keeps the grid aligned. carmeta metas
-    // never have one — their illustration is a Street View link — and carry the
-    // colour their tag has in the carmeta maps, which is how players know them.
+    // No image: a tile of the thumbnail's size keeps the grid aligned. The build
+    // draws carmeta metas a real one (title on the colour of the car); this is what
+    // stands in for it in a build made without images, and for any other meta that
+    // has none — white, then.
     const pastille = document.createElement('div');
     pastille.className = 'pastille';
     if (COULEUR_HEX.test(meta.color || '')) {

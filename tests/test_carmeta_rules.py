@@ -47,8 +47,10 @@ def test_saving_then_loading_is_byte_stable(tmp_path):
 def test_the_versioned_rules_file_loads_and_is_canonical(tmp_path):
     rules = load_rules(VERSIONED)
 
+    # Only what arbitration never changes is asserted: statuses and decisions
+    # in this file are the maintainer's, and move.
     assert rules.lexicon["Blue"].label == "Blue car"
-    assert rules.lexicon["Ford"].status == "pending"
+    assert rules.lexicon["Blue"].status == "accepted"
     # `Alberta Car` of the specification's annex, through the normaliser.
     assert "Alberta" in rules.lexicon and "Alberta Car" not in rules.lexicon
     copy = tmp_path / "rules.json"

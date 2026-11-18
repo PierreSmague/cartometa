@@ -13,7 +13,7 @@ from cartometa.build.assets import write_hashed
 from cartometa.build.dataset import build_dataset
 from cartometa.build.geometry import DEFAULT_TOLERANCE
 from cartometa.build.image_cache import ImageCache
-from cartometa.build.images import MissingImageError, render_image_pair
+from cartometa.build.images import MissingImageError, render_image_pair, render_tile_pair
 from cartometa.geo.reference import country_geometry
 
 # Cloudflare Pages refuses a deployment beyond 20,000 files. We warn well ahead
@@ -298,7 +298,18 @@ def build_site(
             # Popped BEFORE the skip: neither working path may ever reach the
             # published JSON, images or not.
             trace = meta.pop("overlay_source", None)
-            if skip_images or not source:
+            tuile = meta.pop("tile_source", False)
+            if skip_images:
+                continue
+            if not source:
+                if tuile:
+                    # No screenshot to encode: the title on the car's colour.
+                    noms = render_tile_pair(
+                        meta["title"], meta.get("color"),
+                        out_dir / IMAGE_BASE / pays, identifiant.replace("/", "-"),
+                    )
+                    meta["thumb"] = f"{pays}/{noms['thumb']}"
+                    meta["full"] = f"{pays}/{noms['full']}"
                 continue
             try:
                 # RMRG ids are paths ("agriculture/dung-piles"): used raw as a

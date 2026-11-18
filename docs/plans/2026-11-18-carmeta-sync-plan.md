@@ -781,3 +781,15 @@ non cochées ci-dessus :
   identiques au prototype, 8 de même verdict avec des chiffres différents
   (expliqués dans `tests/test_carmeta_expected.py`), 4 lignes nouvelles de la
   famille `car`. Analyse complète en 35 secondes.
+
+### Suite du 2026-11-18, après la revue du Mexique
+
+- Mexique : les 29 empreintes validées par le mainteneur, réglages de
+  `footprint.py` inchangés.
+- Arbitrage : les 36 cas acceptés (23 décisions `keep`, 13 descripteurs avec
+  leur libellé anglais dans `rules.json`).
+- Import des 42 autres pays : 615 propositions, 644 metas carmeta au total.
+- **Tuiles** (demande du mainteneur) : le build dessine l'image des metas
+  carmeta — fond de la couleur de la voiture, blanc à défaut, texte blanc ou
+  noir si la voiture est blanche ou grise. Remplace la pastille CSS comme
+  illustration principale ; celle-ci reste le repli des builds sans images.

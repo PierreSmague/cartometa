@@ -39,7 +39,7 @@ Ordre de grandeur au 2026-11-15 : 45 fichiers, 43 pays, 4,3 M de points,
 | Discriminance | Pas un seuil de surface. Le tag doit sélectionner des zones distinctes ou éliminer une zone ; disséminé partout = sans intérêt. Mesuré par le **gain régional** (§9). |
 | Seuils | Gain ≥ 20 % : retenu. 10–20 % : arbitrage. < 10 % : écarté. Moins de 35 % des points en zones : écarté. |
 | Arbitrage | Liste à trancher avant import ; décision mémorisée dans un fichier de règles versionné. |
-| Illustration | Pas d'image. Un lien Street View vers un point représentatif. |
+| Illustration | Pas de capture. Une **tuile** générée au build : fond uni de la couleur de la voiture (blanc à défaut), titre en blanc — en noir si la voiture est blanche ou grise (décision du 2026-11-18, après la revue du Mexique). Plus un lien Street View vers un point représentatif. |
 | Texte | Titre normalisé en anglais, description générée d'une phrase. |
 | Tracé | Union des zones, trous entre routes comblés, découpée aux frontières. |
 | Fichier source | Par pays et par famille : le fichier le plus récent qui contient la famille. |
@@ -49,7 +49,7 @@ Ordre de grandeur au 2026-11-15 : 45 fichiers, 43 pays, 4,3 M de points,
 
 ## 3. Hors périmètre
 
-- Images hébergées, captures automatiques, API Street View Static.
+- Captures automatiques, API Street View Static (la tuile du §15 n'est pas une capture).
 - Publication ou deploy automatiques ; GitHub Actions.
 - Croisement de familles (copyright × voiture, voiture × mois).
 - Détection automatique de doublons avec les car metas manuelles existantes
@@ -472,11 +472,13 @@ Changements dans `cartometa/review/` :
 
 - `cartometa/build/dataset.py` publie `maps_url` pour les metas qui en ont un
   (champ `streetview`), et la couleur du tag quand le JSON carmeta en donne une.
-- `viewer/app.js` : une meta sans image affiche à la place de la vignette une
-  pastille à la couleur du tag avec son titre ; la loupe affiche un lien
-  « Street View example ». Le viewer gère déjà l'absence d'image sans planter.
-- Le bouton « Add to Anki » suppose une image au recto : à masquer pour ces
-  metas, ou à vérifier.
+- `cartometa/build/images.py` dessine pour chaque meta carmeta une tuile
+  (vignette et pleine taille, WebP) : le titre sur la couleur de la voiture,
+  l'année sur sa propre ligne. C'est une vraie image : galerie, loupe, cartes
+  Anki et userscript la consomment sans cas particulier.
+- `viewer/app.js` : la loupe affiche un lien « Street View example ». Une meta
+  sans aucune image (build fait avec `--skip-images`, meta manuelle sans
+  capture) garde une pastille de même taille dessinée par la page.
 - Rien d'une meta `proposé` n'est publié (déjà vrai).
 
 ## 16. Tâche planifiée et rapport

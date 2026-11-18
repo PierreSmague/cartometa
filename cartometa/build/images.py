@@ -5,7 +5,7 @@ from io import BytesIO
 from pathlib import Path
 
 import resvg_py
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 
 from cartometa.build.assets import write_hashed
 from cartometa.build.image_cache import ImageCache, cle_de
@@ -112,4 +112,98 @@ def render_image_pair(
     return {
         "thumb": write_hashed(out_dir, f"{stem}.t", ".webp", vignette),
         "full": write_hashed(out_dir, f"{stem}.f", ".webp", pleine),
+    }
+
+
+# --- Tiles: the image of a meta that has none --------------------------------
+#
+# carmeta metas come with no screenshot. Their image is a flat tile in the
+# colour their tag has on the carmeta maps — the colour of the car, which is how
+# players know these coverages — carrying the title. A real image rather than a
+# styled block in the page: the gallery, the blow-up, the Anki cards and the
+# userscript all consume `thumb`/`full` and need no special case.
+TILE_RATIO = 2            # width / height, the gallery's 16:8 box
+TILE_FALLBACK = "#ffffff"
+TILE_DARK_TEXT = "#000000"
+TILE_LIGHT_TEXT = "#ffffff"
+# Share of the width the text may occupy, and text sizes as shares of the width.
+TILE_TEXT_WIDTH = 0.86
+TILE_LABEL_SIZE = 0.082
+TILE_YEAR_SIZE = 0.15
+TILE_SINGLE_SIZE = 0.105
+# A title reads "<what> · <year>": the year gets its own, larger line.
+_SEPARATOR = " · "
+
+
+def _channels(colour: str) -> tuple[int, int, int]:
+    return tuple(int(colour[i:i + 2], 16) for i in (1, 3, 5))
+
+
+def tile_text_colour(colour: str) -> str:
+    """White text, or dark text when the car is white or gray.
+
+    "Gray" is any colour without hue that is not close to black: a black car
+    keeps white text. Very light tints (pale green, pale blue) get dark text
+    too — white on them would simply not be readable.
+    """
+    red, green, blue = _channels(colour)
+    luminance = 0.299 * red + 0.587 * green + 0.114 * blue
+    achromatic = max(red, green, blue) - min(red, green, blue) <= 24
+    if (achromatic and luminance >= 80) or luminance >= 170:
+        return TILE_DARK_TEXT
+    return TILE_LIGHT_TEXT
+
+
+def _wrapped(draw: ImageDraw.ImageDraw, text: str, font, max_width: float) -> list[str]:
+    lines: list[str] = []
+    for word in text.split():
+        candidate = f"{lines[-1]} {word}" if lines else word
+        if lines and draw.textlength(candidate, font=font) <= max_width:
+            lines[-1] = candidate
+        elif not lines and draw.textlength(candidate, font=font) <= max_width:
+            lines.append(candidate)
+        else:
+            lines.append(word)
+    return lines or [""]
+
+
+def _tile(title: str, colour: str, width: int) -> bytes:
+    height = width // TILE_RATIO
+    image = Image.new("RGB", (width, height), colour)
+    draw = ImageDraw.Draw(image)
+    ink = tile_text_colour(colour)
+    label, _, year = title.partition(_SEPARATOR)
+    # Pillow's bundled font: no font file to ship, the same glyphs on every machine.
+    if year:
+        blocks = [(ImageFont.load_default(size=width * TILE_LABEL_SIZE), label),
+                  (ImageFont.load_default(size=width * TILE_YEAR_SIZE), year)]
+    else:
+        blocks = [(ImageFont.load_default(size=width * TILE_SINGLE_SIZE), label)]
+    rows = []        # (text, font, line height)
+    for font, text in blocks:
+        ascent, descent = font.getmetrics()
+        for line in _wrapped(draw, text, font, width * TILE_TEXT_WIDTH):
+            rows.append((line, font, (ascent + descent) * 1.08))
+    y = (height - sum(row[2] for row in rows)) / 2
+    for line, font, line_height in rows:
+        draw.text((width / 2, y + line_height / 2), line, font=font, fill=ink, anchor="mm")
+        y += line_height
+    if colour.lower() == TILE_FALLBACK:
+        # A white tile on a white page has no edge of its own.
+        draw.rectangle((0, 0, width - 1, height - 1), outline="#e7e7e3",
+                       width=max(1, width // 300))
+    buffer = io.BytesIO()
+    image.save(buffer, "WEBP", quality=QUALITY, method=4)
+    return buffer.getvalue()
+
+
+def render_tile_pair(title: str, colour: str | None, out_dir: Path, stem: str) -> dict[str, str]:
+    """Thumbnail and full size of a meta with no image: its title on its colour.
+
+    `colour` is `#rrggbb`, or None — a white tile then, as for a white car.
+    """
+    colour = colour or TILE_FALLBACK
+    return {
+        "thumb": write_hashed(out_dir, f"{stem}.t", ".webp", _tile(title, colour, THUMB_WIDTH)),
+        "full": write_hashed(out_dir, f"{stem}.f", ".webp", _tile(title, colour, FULL_WIDTH)),
     }

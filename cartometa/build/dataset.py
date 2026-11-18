@@ -241,10 +241,13 @@ def build_dataset(
                 # RMRG only: the guide's region mini-map (SVG), baked into the
                 # published images by the site build. None everywhere else.
                 "overlay_source": meta.get("overlay"),
+                # carmeta metas have no screenshot: the site build draws them a
+                # tile instead. A working flag like the two above, never published.
+                "tile_source": meta.get("origin") == ORIGIN_CARMETA,
             }
-            # carmeta metas have no image: one Street View link to a
-            # representative panorama stands in for it, and the tag's colour
-            # tints the tile shown instead of a thumbnail. Absent rather than
+            # carmeta metas have no screenshot: one Street View link to a
+            # representative panorama stands in for it, and the tag's colour —
+            # the colour of the car — fills the tile drawn as their image. Absent rather than
             # null on every other meta: the published JSON of the thousands of
             # metas that have neither does not grow.
             if meta.get("maps_url") and meta.get("origin") == ORIGIN_CARMETA:
