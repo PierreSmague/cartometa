@@ -452,6 +452,16 @@ function visibles() {
   });
 }
 
+// The build only publishes `#rrggbb`, but the value ends up in a style: checked
+// here too rather than trusted.
+const COULEUR_HEX = /^#[0-9a-f]{6}$/i;
+
+function texteSur(couleur) {
+  // Dark text on a light tile, light text on a dark one (perceived luminance).
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(couleur.slice(i, i + 2), 16));
+  return (0.299 * r + 0.587 * g + 0.114 * b) > 150 ? '#1c1c1a' : '#ffffff';
+}
+
 function creerCarte(meta) {
   const bloc = document.createElement('article');
   bloc.className = 'carte-meta';
@@ -467,6 +477,18 @@ function creerCarte(meta) {
     image.src = urlImage(meta.thumb);
     image.alt = '';
     bloc.appendChild(image);
+  } else {
+    // No image: a tile of the thumbnail's size keeps the grid aligned. carmeta metas
+    // never have one — their illustration is a Street View link — and carry the
+    // colour their tag has in the carmeta maps, which is how players know them.
+    const pastille = document.createElement('div');
+    pastille.className = 'pastille';
+    if (COULEUR_HEX.test(meta.color || '')) {
+      pastille.style.background = meta.color;
+      pastille.style.color = texteSur(meta.color);
+    }
+    pastille.textContent = meta.title;
+    bloc.appendChild(pastille);
   }
   const legende = document.createElement('p');
   const code = document.createElement('span');
@@ -745,6 +767,15 @@ function ouvrirLoupe(meta) {
     texte.appendChild(lien);
   } else {
     texte.textContent = meta.title;
+  }
+  if (meta.streetview) {
+    // carmeta metas: one panorama where the clue can be seen, in place of a photo.
+    const exemple = document.createElement('a');
+    exemple.href = meta.streetview;
+    exemple.target = '_blank';
+    exemple.rel = 'noopener';
+    exemple.textContent = 'Street View example';
+    texte.append(' · ', exemple);
   }
   const description = document.getElementById('loupe-description');
   // textContent for the same reason as the cards: descriptions come from third-party
