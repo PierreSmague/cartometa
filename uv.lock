@@ -7,6 +7,7 @@ name = "cartometa"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "numpy" },
     { name = "pillow" },
     { name = "resvg-py" },
     { name = "selectolax" },
@@ -21,6 +22,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "numpy", specifier = ">=2.5.1" },
     { name = "pillow", specifier = ">=12.3.0" },
     { name = "resvg-py", specifier = ">=0.3.4" },
     { name = "selectolax", specifier = ">=0.4.11" },

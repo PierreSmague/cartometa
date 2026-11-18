@@ -14,7 +14,13 @@ from shapely.validation import make_valid
 
 from cartometa.build.geometry import DEFAULT_TOLERANCE, part_bboxes, simplify_geometry
 from cartometa.extract.categories import CATEGORIES
-from cartometa.models import DIFFICULTIES, STATUS_TRACED, STATUS_PROPOSED, STATUSES
+from cartometa.models import (
+    DIFFICULTIES,
+    ORIGIN_CARMETA,
+    STATUS_PROPOSED,
+    STATUS_TRACED,
+    STATUSES,
+)
 from cartometa.review.store import CountryPaths, load_geo, load_metas
 
 EXPORTABLE = (STATUS_TRACED,)
@@ -302,7 +308,25 @@ def build_dataset(
                 # RMRG only: the guide's region mini-map (SVG), baked into the
                 # published images by the site build. None everywhere else.
                 "overlay_source": meta.get("overlay"),
+                # carmeta metas have no screenshot: the site build draws them a
+                # tile instead. A working flag like the two above, never published.
+                "tile_source": meta.get("origin") == ORIGIN_CARMETA,
             }
+            # carmeta metas have no screenshot: one Street View link to a
+            # representative panorama stands in for it, and the tag's colour —
+            # the colour of the car — fills the tile drawn as their image. Absent rather than
+            # null on every other meta: the published JSON of the thousands of
+            # metas that have neither does not grow.
+            if meta.get("maps_url") and meta.get("origin") == ORIGIN_CARMETA:
+                entree_pays["metas"][identifiant]["streetview"] = meta["maps_url"]
+            if meta.get("origin") == ORIGIN_CARMETA:
+                # Hundreds of narrow, computed footprints: the site keeps them
+                # behind an "advanced car metas" option, off by default, so they
+                # neither open the results nor drown the hand-made metas.
+                entree_pays["metas"][identifiant]["advanced"] = True
+            couleur = (meta.get("carmeta") or {}).get("color")
+            if couleur:
+                entree_pays["metas"][identifiant]["color"] = couleur
         if entree_pays["geometries"] and outline_de is not None:
             # Country silhouette, background of the Anki cards' mini-map.
             # Injected rather than imported: the Natural Earth dataset comes over
@@ -317,15 +341,16 @@ def build_dataset(
     # something else: data/manual/ is versioned precisely because those entries
     # are irreplaceable, so its text exists nowhere any more. Publishing without
     # it would silently endorse the loss.
-    perdues = [(pays, i) for pays, i in jeu.orphans if i.startswith("man-")]
+    # Same for a `car-*` orphan: data/carmeta/ is versioned too.
+    perdues = [(pays, i) for pays, i in jeu.orphans if i.startswith(("man-", "car-"))]
     if perdues:
         details = "\n".join(f"  - {pays} : {i}" for pays, i in perdues)
         raise SystemExit(
-            f"{len(perdues)} manual footprint(s) with no meta text:\n{details}\n"
-            f"The text of a manual meta lives in data/manual/<CC>/metas.json and is "
-            f"versioned: if it is missing, it was deleted or renamed. Restore it "
-            f"from git, or remove the footprint from the geojson if the deletion "
-            f"was intended."
+            f"{len(perdues)} versioned footprint(s) with no meta text:\n{details}\n"
+            f"The text of a manual meta lives in data/manual/<CC>/metas.json, that of "
+            f"a carmeta meta in data/carmeta/<CC>.json, and both are versioned: if it "
+            f"is missing, it was deleted or renamed. Restore it from git, or remove "
+            f"the footprint from the geojson if the deletion was intended."
         )
     # Sorted by increasing area: the viewer shows from most specific to most
     # general without having to sort anything itself.

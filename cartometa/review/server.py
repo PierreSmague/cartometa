@@ -26,7 +26,10 @@ from cartometa.review.store import (
     UnknownMetaError,
     build_queue,
     clear_decision,
+    dismiss_proposal,
+    load_geo,
     restore_proposal,
+    restore_reproposal,
     set_decision,
 )
 
@@ -61,6 +64,14 @@ def apply_decision(meta_id: str, status: str, pieces: list) -> None:
     Natural Earth, then united. Nothing is written if the resolution fails.
     """
     if status == STATUS_REJECTED:
+        record = load_geo(paths()).get(meta_id)
+        if (record is not None and record.status == STATUS_TRACED
+                and record.proposal is not None):
+            # `R` on a re-proposal refuses the NEW footprint, not the meta. The
+            # guard is here and not in the browser: no client mistake may
+            # unpublish a validated meta.
+            dismiss_proposal(paths(), meta_id)
+            return
         set_decision(paths(), meta_id, STATUS_REJECTED, None, [])
         return
     if status == STATUS_TRACED:
@@ -82,6 +93,14 @@ def apply_undo(meta_id: str, restore: dict | None) -> None:
     """
     if isinstance(restore, dict) and restore.get("status") == STATUS_PROPOSED:
         restore_proposal(paths(), meta_id, restore.get("pieces") or [])
+    elif (isinstance(restore, dict) and restore.get("status") == STATUS_TRACED
+            and isinstance(restore.get("proposal"), dict)):
+        # A re-proposal: back to the validated footprint *and* its pending
+        # proposal. The geometry is rebuilt from the pieces like any validation,
+        # never taken from the browser.
+        pieces = restore.get("pieces") or []
+        geometry = resolve_pieces(pieces, paths().country, paths().cache)
+        restore_reproposal(paths(), meta_id, mapping(geometry), pieces, restore["proposal"])
     else:
         clear_decision(paths(), meta_id)
 

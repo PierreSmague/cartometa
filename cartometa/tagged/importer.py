@@ -17,7 +17,13 @@ from cartometa.models import (
     GeoRecord,
 )
 from cartometa.review.server import DEFAULT_PORT as REVIEW_PORT
-from cartometa.review.store import CountryPaths, load_geo, read_json_list, save_geo
+from cartometa.review.store import (
+    CountryPaths,
+    load_geo,
+    read_json_list,
+    same_pieces,
+    save_geo,
+)
 from cartometa.tagged.countries import CountryIndex
 from cartometa.tagged.geometry import corridor_geometry, geometry_to_pieces, zone_geometry
 
@@ -189,7 +195,7 @@ def import_tagged(
                                status=STATUS_PROPOSED)
             if existing is None:
                 action = "écrite"
-            elif metas.get(pid) == meta and _same_pieces(existing.pieces, pieces):
+            elif metas.get(pid) == meta and same_pieces(existing.pieces, pieces):
                 action = "inchangée"
             else:
                 action = "réécrite"
@@ -204,18 +210,3 @@ def import_tagged(
                               [metas[k] for k in sorted(metas)])
             save_geo(paths, records)
     return report
-
-
-def _same_pieces(stored: list[dict], generated: list[dict]) -> bool:
-    """Stored pieces went through save_geo's 5-decimal rounding: compare in
-    that space, not raw floats against rounded ones."""
-    def _round(value):
-        if isinstance(value, float):
-            return round(value, 5)
-        if isinstance(value, list):
-            return [_round(v) for v in value]
-        if isinstance(value, dict):
-            return {k: _round(v) for k, v in value.items()}
-        return value
-
-    return _round(stored) == _round(generated)

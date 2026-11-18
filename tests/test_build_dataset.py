@@ -3,6 +3,7 @@ import re
 from pathlib import Path
 
 import pytest
+from shapely.geometry import shape
 
 from cartometa.extract.categories import CATEGORIES
 from cartometa.build.dataset import (
@@ -727,3 +728,143 @@ def test_the_front_end_difficulty_values_match_the_build_ones():
     valeurs = re.findall(r'data-difficulte="([^"]*)"', html)
 
     assert valeurs == ["", *DIFFICULTIES]
+
+
+def _carmeta_meta(meta_id: str, **carmeta) -> dict:
+    return {
+        "id": meta_id, "country": "MX", "tier": "manual", "origin": "carmeta",
+        "category": "car", "title": "Blue car · 2024", "description": "generated",
+        "description_origin": "generated",
+        "source_url": "https://github.com/iggedi-ig-ig/carmeta", "image": None,
+        "maps_url": "https://www.google.com/maps/@?api=1&map_action=pano&pano=P",
+        "maps_latlon": [19.4, -99.1],
+        "carmeta": {"canonical": "Blue 2024", "points": 13750,
+                    "baseline": {"type": "MultiPolygon", "coordinates": []}, **carmeta},
+    }
+
+
+def _ecrire_carmeta(data_dir: Path, metas: list[dict], features: list[dict]) -> None:
+    (data_dir / "carmeta").mkdir(parents=True, exist_ok=True)
+    (data_dir / "geo").mkdir(parents=True, exist_ok=True)
+    (data_dir / "carmeta" / "MX.json").write_text(json.dumps(metas), "utf-8")
+    (data_dir / "geo" / "MX.geojson").write_text(json.dumps({
+        "type": "FeatureCollection", "features": features}), "utf-8")
+
+
+def _feature(meta_id: str, statut: str, cote: float = 2.0, **properties) -> dict:
+    return {"type": "Feature",
+            "properties": {"id": meta_id, "status": statut, "pieces": [], **properties},
+            "geometry": _carre(0.0, 0.0, cote) if statut == "validé" else None}
+
+
+def test_a_validated_carmeta_meta_is_published_with_its_link_and_colour(tmp_path):
+    data_dir = tmp_path / "data"
+    _ecrire_carmeta(data_dir,
+                    [_carmeta_meta("car-aaaaaa", color="#3366cc"), _carmeta_meta("car-bbbbbb")],
+                    [_feature("car-aaaaaa", "validé"), _feature("car-bbbbbb", "validé", 3.0)])
+
+    metas = build_dataset(data_dir, ["MX"]).countries["MX"]["metas"]
+
+    assert metas["car-aaaaaa"]["streetview"] == \
+        "https://www.google.com/maps/@?api=1&map_action=pano&pano=P"
+    assert metas["car-aaaaaa"]["color"] == "#3366cc"
+    assert metas["car-aaaaaa"]["category"] == "car"
+    assert metas["car-aaaaaa"]["image_source"] is None
+    # No colour in the carmeta file: no key, and the viewer falls back on a neutral tile.
+    assert "color" not in metas["car-bbbbbb"]
+    # The baseline is the import's business, never the site's.
+    assert "carmeta" not in metas["car-aaaaaa"] and "baseline" not in json.dumps(metas)
+
+
+def test_a_proposed_carmeta_meta_is_not_published(tmp_path):
+    data_dir = tmp_path / "data"
+    _ecrire_carmeta(data_dir,
+                    [_carmeta_meta("car-aaaaaa"), _carmeta_meta("car-bbbbbb")],
+                    [_feature("car-aaaaaa", "validé"),
+                     {"type": "Feature", "geometry": None,
+                      "properties": {"id": "car-bbbbbb", "status": "proposé", "pieces": [
+                          {"kind": "polygon", "ring": [[0, 0], [1, 0], [1, 1]]}]}}])
+
+    jeu = build_dataset(data_dir, ["MX"])
+
+    assert list(jeu.countries["MX"]["metas"]) == ["car-aaaaaa"]
+    assert jeu.legacy_statuses == 0
+
+
+def test_a_pending_proposal_never_reaches_the_site(tmp_path):
+    data_dir = tmp_path / "data"
+    newer = {"pieces": [{"kind": "polygon", "ring": [[50, 50], [59, 50], [59, 59]]}]}
+    _ecrire_carmeta(data_dir, [_carmeta_meta("car-aaaaaa")],
+                    [_feature("car-aaaaaa", "validé", 2.0, proposal=newer)])
+
+    jeu = build_dataset(data_dir, ["MX"])
+
+    # Published with the footprint the maintainer validated, the 2° square…
+    (geometrie,) = jeu.countries["MX"]["geometries"].values()
+    assert shape(geometrie).bounds == (0.0, 0.0, 2.0, 2.0)
+    # …and nothing of the waiting one, anywhere in the output.
+    published = json.dumps(jeu.countries) + json.dumps(jeu.index)
+    assert "proposal" not in published and "59" not in published
+
+
+def test_other_metas_gain_no_key(tmp_path):
+    data_dir = tmp_path / "data"
+    _ecrire_pays_un_meta(data_dir, maps_url="https://maps.app.goo.gl/abc")
+
+    meta = build_dataset(data_dir, ["PL"]).countries["PL"]["metas"]["pl1"]
+
+    # A Plonk It meta's Maps link locates its photo; it is not an illustration.
+    assert "streetview" not in meta and "color" not in meta
+
+
+def test_a_carmeta_footprint_with_no_text_stops_the_build(tmp_path):
+    data_dir = tmp_path / "data"
+    _ecrire_carmeta(data_dir, [_carmeta_meta("car-aaaaaa")],
+                    [_feature("car-aaaaaa", "validé"), _feature("car-perdue", "validé")])
+
+    with pytest.raises(SystemExit, match=r"car-perdue"):
+        build_dataset(data_dir, ["MX"])
+
+
+def test_carmeta_metas_are_flagged_advanced_and_nothing_else_is(tmp_path):
+    data_dir = tmp_path / "data"
+    _ecrire_carmeta(data_dir, [_carmeta_meta("car-aaaaaa")], [_feature("car-aaaaaa", "validé")])
+    _ecrire_pays_un_meta(data_dir, category="car")       # a hand-made car meta
+
+    jeu = build_dataset(data_dir, ["MX", "PL"])
+
+    # What the site's "Enable advanced car metas" option filters on.
+    assert jeu.countries["MX"]["metas"]["car-aaaaaa"]["advanced"] is True
+    assert jeu.countries["MX"]["metas"]["car-aaaaaa"]["category"] == "car"
+    assert "advanced" not in jeu.countries["PL"]["metas"]["pl1"]
+
+
+def test_the_advanced_car_metas_option_is_wired_end_to_end():
+    """The build flags, the page offers the checkbox, the script filters on both.
+
+    Nothing runs the viewer's JavaScript in these tests; a renamed id or key would
+    silently show every carmeta meta — or none, ever.
+    """
+    viewer = Path(__file__).resolve().parents[1] / "viewer"
+    html = (viewer / "index.html").read_text("utf-8")
+    script = (viewer / "app.js").read_text("utf-8")
+
+    assert 'id="car-avancees" type="checkbox"' in html
+    assert "Enable advanced car metas" in html
+    # Off by default: the template must not ship the box checked.
+    assert not re.search(r'id="car-avancees"[^>]*\bchecked\b', html)
+    assert "getElementById('car-avancees')" in script
+    assert "meta.advanced && !etat.carAvancees" in script
+    assert "https://github.com/iggedi-ig-ig/carmeta" in html
+
+
+def test_the_fallback_tile_does_not_borrow_the_filter_pills_class():
+    """`.pastille` styles the filter pills. The tile of an imageless meta once
+    reused the name, which would have reshaped every pill."""
+    viewer = Path(__file__).resolve().parents[1] / "viewer"
+    styles = (viewer / "style.css").read_text("utf-8")
+    script = (viewer / "app.js").read_text("utf-8")
+
+    assert len(re.findall(r"^\.pastille \{", styles, re.M)) == 1
+    assert re.search(r"^\.tuile \{", styles, re.M)
+    assert "className = 'tuile'" in script and "className = 'pastille'" not in script

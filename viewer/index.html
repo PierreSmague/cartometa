@@ -113,6 +113,14 @@
             <button id="epingles-vider" class="pastille" type="button">Clear pins</button>
           </span>
         </div>
+        <!-- The car metas computed from carmeta (which Google car, which year, which
+             copyright): several hundred narrow footprints that would otherwise open
+             every result list. Off by default; the choice is remembered. -->
+        <div id="options" class="ligne-pastilles">
+          <label class="option" title="Coverage by Google car, year and copyright, computed from the carmeta project">
+            <input id="car-avancees" type="checkbox"> Enable advanced car metas
+          </label>
+        </div>
       </div>
       <div id="accueil">
         <h1>Click anywhere on the map</h1>
@@ -149,6 +157,8 @@
 
   <footer id="pied">
     Text and images © 2021-2026 Plonk It, CC BY-NC-SA 4.0 ·
+    Advanced car metas from
+    <a href="https://github.com/iggedi-ig-ig/carmeta" rel="noopener">carmeta</a>, CC BY-NC 4.0 ·
     Imagery © Google · Basemap © OpenStreetMap ·
     <a href="licence.html">licence and attribution</a>
   </footer>

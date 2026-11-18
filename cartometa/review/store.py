@@ -31,10 +31,13 @@ class UnknownMetaError(ValueError):
 class CountryPaths:
     """A country's paths, in one single place.
 
-    Three sources of metas coexist: the Plonk It and RMRG imports, gitignored
-    because they are regenerable, and manual entry, versioned because it is
-    irreplaceable. Gathering them here saves every caller from reinventing the
-    convention.
+    Several sources of metas coexist: the Plonk It, RMRG and tagged imports,
+    gitignored because they are regenerable; manual entry, versioned because it
+    is irreplaceable; and the carmeta metas, versioned too although their texts
+    are generated — they carry the footprint baseline the next import compares
+    against, which cannot be rebuilt, and gitignored texts would be lost
+    between two machines while their validated footprints are not. Gathering
+    them here saves every caller from reinventing the convention.
     """
 
     data: Path
@@ -51,6 +54,10 @@ class CountryPaths:
     @property
     def tagged_metas(self) -> Path:
         return self.data / "metas" / f"{self.country}-tagged.json"
+
+    @property
+    def carmeta_metas(self) -> Path:
+        return self.data / "carmeta" / f"{self.country}.json"
 
     @property
     def manual_dir(self) -> Path:
@@ -85,11 +92,12 @@ def read_json_list(path: Path) -> list[dict]:
 
 
 def load_metas(paths: CountryPaths) -> list[dict]:
-    """Imported metas (Plonk It, RMRG, tagged imports) then manual ones, in that order."""
+    """Imported metas (Plonk It, RMRG, tagged, carmeta) then manual ones, in that order."""
     return (
         read_json_list(paths.imported_metas)
         + read_json_list(paths.rmrg_metas)
         + read_json_list(paths.tagged_metas)
+        + read_json_list(paths.carmeta_metas)
         + read_json_list(paths.manual_metas)
     )
 
@@ -174,7 +182,23 @@ def _feature_arrondie(feature: dict) -> dict:
     feature["properties"]["pieces"] = [
         _piece_arrondie(p) for p in feature["properties"]["pieces"]
     ]
+    proposal = feature["properties"].get("proposal")
+    if proposal is not None:
+        feature["properties"]["proposal"] = {
+            **proposal,
+            "pieces": [_piece_arrondie(p) for p in proposal.get("pieces", [])],
+        }
     return feature
+
+
+def same_pieces(stored: list[dict], generated: list[dict]) -> bool:
+    """Are freshly generated pieces the ones already on disk?
+
+    Stored pieces went through save_geo's 5-decimal rounding: compare in that
+    space, not raw floats against rounded ones. What lets an import say
+    "unchanged" and write nothing.
+    """
+    return _arrondi_coords(stored) == _arrondi_coords(generated)
 
 
 def _geometry_is_derivable(record: GeoRecord) -> bool:
@@ -260,10 +284,18 @@ def build_queue(
     for meta in metas:
         record = geo.get(meta["id"])
         # A decided meta leaves the queue; a *proposed* one (imported footprint
-        # awaiting yes/no) stays in it, pieces preloaded.
-        if record is not None and record.status in STATUSES and not include_all:
+        # awaiting yes/no) stays in it, pieces preloaded. So does a validated
+        # meta carrying a `proposal`: a newer computed footprint is waiting for
+        # a yes or a no next to the published one.
+        reproposal = (
+            record is not None and record.status == STATUS_TRACED
+            and record.proposal is not None
+        )
+        if (record is not None and record.status in STATUSES
+                and not include_all and not reproposal):
             continue
         queued_ids.add(meta["id"])
+        carmeta = meta.get("carmeta")
         items.append({
             "id": meta["id"],
             "title": meta["title"],
@@ -280,7 +312,19 @@ def build_queue(
             "latlon": meta.get("maps_latlon"),
             "source_url": meta.get("source_url", ""),
             "status": record.status if record is not None else None,
-            "pieces": record.pieces if record is not None else [],
+            # For a re-proposal the sketch is preloaded with the NEW footprint —
+            # the one `A` would adopt — and the published one comes alongside,
+            # to be drawn underneath and restored on undo.
+            "pieces": (record.proposal.get("pieces", []) if reproposal
+                       else record.pieces if record is not None else []),
+            "reproposal": reproposal,
+            "current_pieces": record.pieces if reproposal else None,
+            # carmeta has no image: one Street View link is the illustration.
+            "streetview": meta.get("maps_url"),
+            # The figures behind a computed footprint, without its baseline
+            # (a geometry the interface has no use for).
+            "carmeta": ({k: v for k, v in carmeta.items() if k != "baseline"}
+                        if isinstance(carmeta, dict) else None),
         })
     # `done` counts the metas already decided but ABSENT from the returned queue,
     # not simply `len(geo)`: by default the two coincide (a decided meta is always
@@ -340,5 +384,39 @@ def restore_proposal(paths: CountryPaths, meta_id: str, pieces: list[dict]) -> N
     records = load_geo(paths)
     records[meta_id] = GeoRecord(
         id=meta_id, geometry=None, pieces=list(pieces), status=STATUS_PROPOSED
+    )
+    save_geo(paths, records)
+
+
+def dismiss_proposal(paths: CountryPaths, meta_id: str) -> None:
+    """Refuse a re-proposal: the validated footprint stays exactly as it is.
+
+    Only the `proposal` goes. The import does not bring it back as long as the
+    computed footprint does not move again: its baseline was updated when the
+    proposal was written.
+    """
+    records = load_geo(paths)
+    if meta_id not in records:
+        raise UnknownMetaError(f"no decision to keep for {meta_id!r}")
+    records[meta_id].proposal = None
+    save_geo(paths, records)
+
+
+def restore_reproposal(
+    paths: CountryPaths, meta_id: str, geometry: dict | None,
+    pieces: list[dict], proposal: dict,
+) -> None:
+    """Put a validated meta and its pending proposal back after an undo.
+
+    Adopting a proposal overwrote the validated footprint, dismissing it erased
+    the proposal: either way the state before only exists in what the client
+    loaded with the queue, which it sends back.
+    """
+    if meta_id not in {meta["id"] for meta in load_metas(paths)}:
+        raise UnknownMetaError(f"unknown meta: {meta_id!r}")
+    records = load_geo(paths)
+    records[meta_id] = GeoRecord(
+        id=meta_id, geometry=geometry, pieces=list(pieces), status=STATUS_TRACED,
+        proposal={"pieces": list(proposal.get("pieces") or [])},
     )
     save_geo(paths, records)

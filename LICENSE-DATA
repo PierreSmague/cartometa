@@ -9,6 +9,13 @@ Texts and images are © 2021-2026 Plonk It (https://www.plonkit.net) and are
 reused under that same licence. They have been modified: restructured, and
 paired with geographic areas that are absent from the source.
 
+The "advanced car metas" — which Google car, which year, which copyright — are
+computed from the tagged Street View locations published by the carmeta
+project (https://github.com/iggedi-ig-ig/carmeta) under the Creative Commons
+Attribution-NonCommercial 4.0 International licence (CC BY-NC 4.0). Their
+areas are derived from those locations; each links back to carmeta as its
+source.
+
 The underlying Street View imagery remains © Google and is covered neither by
 Plonk It's licence nor by this one.
 

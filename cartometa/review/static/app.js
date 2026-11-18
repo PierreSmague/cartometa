@@ -32,6 +32,12 @@ let history = [];
 
 const current = () => queue[index];
 
+// The published footprint of a re-proposal, drawn under the sketch: dashed and
+// orange so it cannot be mistaken for the new one, which is what `A` saves.
+const PUBLISHED = {
+  color: '#d9730d', weight: 2, dashArray: '6 4', fillOpacity: 0.08, interactive: false,
+};
+
 function showError(message) {
   const el = document.getElementById('error');
   el.textContent = message;
@@ -73,6 +79,9 @@ function render() {
     document.getElementById('overlay').removeAttribute('src');
     document.getElementById('overlay').hidden = true;
     document.getElementById('sketch-row').hidden = true;
+    document.getElementById('carmeta-banner').hidden = true;
+    document.getElementById('reproposal-legend').hidden = true;
+    document.getElementById('streetview-link').hidden = true;
     return;
   }
   document.getElementById('progress').textContent = `${done + index} / ${total}`;
@@ -81,7 +90,18 @@ function render() {
   sketch.reset(item.pieces);
   frame(item);
   loadPiecesGeometry(item);
+  loadPublishedFootprint(item);
   refresh();
+}
+
+function carmetaLine(figures) {
+  // What stands behind a computed footprint. The share in zones matters most: it
+  // is the line that says "only 40 % of the points are inside what is traced".
+  const percent = (value) => `${Math.round(value * 100)} %`;
+  const file = (figures.source_path || '').split('/').pop();
+  return `${figures.points.toLocaleString('en-US')} points · ${figures.zones} zone`
+    + `${figures.zones > 1 ? 's' : ''} · ${percent(figures.capture)} of the points in zones`
+    + ` · gain ${percent(figures.gain)} · ${file} (${figures.source_date})`;
 }
 
 function showMeta(item) {
@@ -92,7 +112,16 @@ function showMeta(item) {
   document.getElementById('context').textContent =
     `${item.category} — ${item.tier}`
     + `${item.difficulty ? ` — ${item.difficulty}` : ''}`
-    + `${item.status ? ` — ${item.status}` : ''}`;
+    + `${item.status ? ` — ${item.status}` : ''}`
+    + `${item.reproposal ? ' — new footprint proposed' : ''}`;
+  const banner = document.getElementById('carmeta-banner');
+  banner.textContent = item.carmeta ? carmetaLine(item.carmeta) : '';
+  banner.hidden = !item.carmeta;
+  document.getElementById('reproposal-legend').hidden = !item.reproposal;
+  // carmeta metas have no image: the Street View link is their only illustration.
+  const streetview = document.getElementById('streetview-link');
+  streetview.hidden = !item.streetview;
+  if (item.streetview) streetview.href = item.streetview;
   if (item.image) document.getElementById('image').src = item.image;
   else document.getElementById('image').removeAttribute('src');
   const overlay = document.getElementById('overlay');
@@ -169,10 +198,28 @@ async function loadPiecesGeometry(item) {
   draw();
 }
 
+async function loadPublishedFootprint(item) {
+  // A re-proposal shows two footprints: the published one is resolved by the
+  // server from its pieces (it may be clipped to the borders), once per item.
+  if (!item.reproposal || item.publishedGeometry) return;
+  try {
+    const data = await postJSON('/api/resolve', { pieces: item.current_pieces });
+    item.publishedGeometry = data.geometry;
+  } catch (err) {
+    if (current() !== item) return;
+    showError(`Cannot show the published footprint: ${err.message}`);
+    return;
+  }
+  if (current() === item) draw();
+}
+
 function draw() {
   const item = current();
   layers.clearLayers();
   if (!item) return;
+  if (item.reproposal && item.publishedGeometry) {
+    L.geoJSON(item.publishedGeometry, PUBLISHED).addTo(layers);
+  }
   sketch.render();
   if (item.latlon) {
     // Ground truth: it does not move, it is the target.
@@ -243,6 +290,13 @@ async function undo() {
     const payload = { id: last.id };
     if (item && item.status === 'proposé') {
       payload.restore = { status: item.status, pieces: item.pieces };
+    } else if (item && item.reproposal) {
+      // Adopted or dismissed, the state before held two footprints: the
+      // published one and the proposal. Both go back.
+      payload.restore = {
+        status: item.status, pieces: item.current_pieces,
+        proposal: { pieces: item.pieces },
+      };
     }
     await postJSON('/api/undo', payload);
     clearError();
@@ -335,6 +389,12 @@ function onManualCreated(meta) {
 function editCurrent() {
   const item = current();
   if (!item || busy) return;
+  if (item.carmeta) {
+    showError(`${item.id} cannot be edited here: its texts are generated from the `
+      + `lexicon of data/carmeta/rules.json. Correct the label there, then run `
+      + `cartometa-carmeta import.`);
+    return;
+  }
   if (!item.editable) {
     // Said before the form opens, not after a refused save: the texts of an
     // imported meta live in a file the next import rewrites wholesale.

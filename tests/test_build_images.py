@@ -6,6 +6,8 @@ from cartometa.build.images import (
     THUMB_WIDTH,
     MissingImageError,
     render_image_pair,
+    render_tile_pair,
+    tile_text_colour,
 )
 
 
@@ -169,3 +171,69 @@ def test_a_missing_overlay_raises_an_explicit_error(tmp_path):
         render_image_pair(
             source, tmp_path / "out", "a", overlay=tmp_path / "absent.svg"
         )
+
+
+def _corner_and_ink(chemin):
+    """(background colour at a corner, darkest and lightest pixel of the tile)."""
+    with Image.open(chemin) as image:
+        image = image.convert("RGB")
+        pixels = list(image.get_flattened_data())
+        return image.getpixel((8, 8)), min(pixels, key=sum), max(pixels, key=sum), image.size
+
+
+def test_a_tile_is_the_title_on_the_colour_of_the_car(tmp_path):
+    noms = render_tile_pair("Blue car, unexposed · 2024", "#0000ff", tmp_path, "car-ccda5f")
+
+    fond, _, clair, taille = _corner_and_ink(tmp_path / noms["thumb"])
+    assert taille == (THUMB_WIDTH, THUMB_WIDTH // 2)          # the gallery's 16:8 box
+    assert fond[2] > 240 and fond[0] < 15 and fond[1] < 15    # blue, through WebP
+    assert min(clair) > 235                                   # white text was drawn
+    with Image.open(tmp_path / noms["full"]) as pleine:
+        assert pleine.size == (FULL_WIDTH, FULL_WIDTH // 2) and pleine.format == "WEBP"
+    assert noms["thumb"] != noms["full"] and noms["thumb"].startswith("car-ccda5f.t.")
+
+
+def test_a_tile_without_a_colour_is_white_with_black_text(tmp_path):
+    noms = render_tile_pair("©2025 copyright", None, tmp_path, "car-aaaaaa")
+
+    with Image.open(tmp_path / noms["thumb"]) as image:
+        image = image.convert("RGB")
+        assert min(image.getpixel((40, 40))) > 245
+        assert max(min(image.get_flattened_data(), key=sum)) < 30
+
+
+@pytest.mark.parametrize("couleur, attendu", [
+    ("#0000ff", "#ffffff"),      # blue car
+    ("#000000", "#ffffff"),      # black car
+    ("#2b2b32", "#ffffff"),      # near black: not "gray"
+    ("#ff0000", "#ffffff"),
+    ("#000080", "#ffffff"),
+    ("#ffffff", "#000000"),      # white car
+    ("#646464", "#000000"),      # gray car, the shade carmeta uses most
+    ("#787878", "#000000"),
+    ("#c8c8c8", "#000000"),
+    ("#80ff80", "#000000"),      # too pale for white to read
+    ("#ffa500", "#000000"),
+])
+def test_the_text_is_white_unless_the_car_is_white_or_gray(couleur, attendu):
+    assert tile_text_colour(couleur) == attendu
+
+
+def test_a_long_title_is_wrapped_inside_the_tile(tmp_path):
+    noms = render_tile_pair("Blue car, slightly exposed, no antenna · 2024", "#000080",
+                            tmp_path, "car-bbbbbb")
+
+    with Image.open(tmp_path / noms["thumb"]) as image:
+        image = image.convert("RGB")
+        marge = int(image.width * 0.04)
+        # Nothing but background in the side margins: the text did not run off.
+        for x in (2, marge, image.width - marge, image.width - 3):
+            colonne = [image.getpixel((x, y)) for y in range(0, image.height, 3)]
+            assert all(max(pixel[:2]) < 40 for pixel in colonne)
+
+
+def test_two_renders_of_a_tile_give_the_same_file(tmp_path):
+    premier = render_tile_pair("Gray car · 2025", "#646464", tmp_path / "a", "car-cccccc")
+    second = render_tile_pair("Gray car · 2025", "#646464", tmp_path / "b", "car-cccccc")
+
+    assert premier == second

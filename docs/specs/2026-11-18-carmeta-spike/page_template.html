@@ -1,0 +1,270 @@
+<title>Filtre carmeta</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap">
+<style>
+/* Layout: one reading column for the rules, then a gallery of small maps, then a filterable table with a map panel. */
+:root {
+  --bg: #f5f6f9; --surface: #ffffff; --fg: #1a2130; --muted: #5b6677; --line: #dde2ea;
+  --zone: #2254c7; --elim: #f1bd8f; --cov: #c6ccd6; --void: #eef0f4;
+  --keep: #1c7f55; --arb: #a86a12; --drop: #737b88;
+  --keep-bg: #e2f3ea; --arb-bg: #f8ecd6; --drop-bg: #e9ecf0;
+  --font-text: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-head: "Space Grotesk", Inter, system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11141a; --surface: #191e27; --fg: #e6e9ef; --muted: #97a1b2; --line: #2a323f;
+  --zone: #6f9cff; --elim: #8c5c36; --cov: #3b4452; --void: #151920;
+  --keep: #54c891; --arb: #e2aa50; --drop: #8a93a2;
+  --keep-bg: #173326; --arb-bg: #3a2c12; --drop-bg: #232a35; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11141a; --surface: #191e27; --fg: #e6e9ef; --muted: #97a1b2; --line: #2a323f;
+  --zone: #6f9cff; --elim: #8c5c36; --cov: #3b4452; --void: #151920;
+  --keep: #54c891; --arb: #e2aa50; --drop: #8a93a2;
+  --keep-bg: #173326; --arb-bg: #3a2c12; --drop-bg: #232a35; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-text); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-block: 28px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 36px; }
+h1, h2, h3 { font-family: var(--font-head); font-weight: 600; text-wrap: balance; margin: 0; }
+h1 { font-size: 30px; letter-spacing: -0.01em; }
+h2 { font-size: 21px; }
+h3 { font-size: 15px; font-family: var(--font-text); }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 66ch; }
+.intro { display: flex; flex-direction: column; gap: 14px; }
+.rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.rule { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.rule p { color: var(--muted); font-size: 14px; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.sw { width: 13px; height: 13px; border-radius: 3px; display: inline-block; }
+.sw.zone { background: var(--zone); } .sw.elim { background: var(--elim); } .sw.cov { background: var(--cov); }
+.counts { display: flex; flex-wrap: wrap; gap: 10px; }
+.count { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; min-width: 150px; flex: 1 1 150px; }
+.count b { font-family: var(--font-head); font-size: 24px; font-variant-numeric: tabular-nums; display: block; }
+.count span { font-size: 13px; color: var(--muted); }
+section { display: flex; flex-direction: column; gap: 16px; }
+.group { display: flex; flex-direction: column; gap: 10px; }
+.group > p { color: var(--muted); font-size: 14px; max-width: 70ch; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.card .name { font-weight: 600; overflow-wrap: anywhere; }
+.card .nums { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.mapbox { background: var(--void); border-radius: 5px; display: flex; align-items: center; justify-content: center; aspect-ratio: 1 / 1; overflow: hidden; }
+canvas { image-rendering: pixelated; max-width: 100%; max-height: 100%; display: block; }
+.pill { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.pill.retenu { color: var(--keep); background: var(--keep-bg); }
+.pill.arbitrage { color: var(--arb); background: var(--arb-bg); }
+.pill.ecarte { color: var(--drop); background: var(--drop-bg); }
+a { color: var(--zone); }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
+select, button.chip { font: inherit; color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; }
+button.chip { cursor: pointer; }
+button.chip[aria-pressed="true"] { border-color: var(--zone); color: var(--zone); font-weight: 600; }
+select:focus-visible, button:focus-visible, a:focus-visible, tr:focus-visible { outline: 2px solid var(--zone); outline-offset: 2px; }
+.browser { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; align-items: start; }
+.tablewrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; min-width: 0; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+th, td { padding: 7px 10px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; position: sticky; top: 0; background: var(--surface); }
+th:first-child, td:first-child { text-align: left; white-space: normal; min-width: 150px; }
+td.v, th.v { text-align: left; }
+tbody tr { cursor: pointer; }
+tbody tr:hover, tbody tr.sel { background: var(--void); }
+tbody tr:last-child td { border-bottom: 0; }
+.why { color: var(--muted); font-size: 12px; margin-left: 6px; }
+.panel { position: sticky; top: calc(12px + env(safe-area-inset-top, 0px)); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.panel .src { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.note { font-size: 13px; color: var(--muted); max-width: 75ch; }
+@media (max-width: 780px) { .browser { grid-template-columns: minmax(0, 1fr); } .panel { position: static; order: -1; } .panel .mapbox { max-width: 320px; } h1 { font-size: 25px; } }
+</style>
+
+<div class="wrap">
+  <div class="intro">
+    <h1>Filtre carmeta</h1>
+    <p class="lede">Quels tags du repo carmeta méritent d'arriver en revue ? Cette page applique un critère de discriminance aux 45 fichiers actuels et montre le résultat sur de vraies cartes, pour régler les seuils avant d'écrire la spec.</p>
+    <div class="rules">
+      <div class="rule"><h3>1. Une zone, c'est 30 points qui se suivent</h3><p>Les points d'un tag sont chaînés quand ils sont voisins (écart d'environ trois fois l'espacement des points du fichier). Une chaîne de moins de 30 points est ignorée.</p></div>
+      <div class="rule"><h3>2. Le tag doit éliminer une partie du pays</h3><p>Le gain mesure la part du pays qu'on écarte en voyant le tag, à l'échelle régionale (rayon de 10 % de la taille du pays). Présent partout ou disséminé : gain proche de 0.</p></div>
+      <div class="rule"><h3>3. Seuils proposés</h3><p>Gain d'au moins 20 % : retenu pour la revue. Entre 10 et 20 % : arbitrage. Sous 10 % : écarté. Moins de 35 % des points dans des zones : écarté aussi.</p></div>
+    </div>
+    <div class="legend">
+      <span><i class="sw zone"></i>zone du tag (ce qui serait tracé)</span>
+      <span><i class="sw elim"></i>partie du pays éliminée par le tag</span>
+      <span><i class="sw cov"></i>couverture où le tag reste possible</span>
+    </div>
+  </div>
+
+  <div class="counts" id="counts"></div>
+
+  <section>
+    <h2>Exemples par verdict</h2>
+    <div id="groups"></div>
+  </section>
+
+  <section>
+    <h2>Tous les tags candidats</h2>
+    <div class="controls">
+      <label for="country">Pays</label>
+      <select id="country"></select>
+      <div class="controls" id="chips" role="group" aria-label="Verdict"></div>
+    </div>
+    <div class="browser">
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Tag</th><th>Points</th><th>Part</th><th>Zones</th><th title="Part des points du tag qui tombent dans une zone">En zones</th><th title="Part de la couverture du pays occupée par les zones">Étendue</th><th>Gain</th><th class="v">Verdict</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <aside class="panel" id="panel"></aside>
+    </div>
+    <p class="note">Familles retenues : voiture × année, copyright, Antenna, BL, flous, Exposed, Snow, Smallcam seul. Les tags d'année, de mois, de météo, de pays, de climat et les « No … » ne figurent pas ici. Quand le fichier le plus récent d'un pays ne contient pas une famille, elle est prise dans le fichier précédent. Analyse exploratoire : les chiffres exacts changeront un peu avec l'implémentation finale.</p>
+  </section>
+</div>
+
+<script type="application/json" id="data">__DATA__</script>
+<script>
+const DATA = JSON.parse(document.getElementById('data').textContent);
+const GRIDS = DATA.grids, ROWS = DATA.rows;
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const pct = v => v == null ? '–' : Math.round(v * 100) + ' %';
+const vclass = v => v === 'écarté' ? 'ecarte' : v;
+const canvases = [];
+
+function hex(c) { const n = parseInt(c.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+function decode(m, n) {
+  const st = new Uint8Array(n);
+  if (!m) return st;
+  const b = atob(m);
+  for (let i = 0; i < n; i++) st[i] = (b.charCodeAt(i >> 2) >> ((i & 3) * 2)) & 3;
+  return st;
+}
+function draw(canvas) {
+  const row = canvas.row, g = GRIDS[row.g];
+  canvas.width = g.W; canvas.height = g.H;
+  const scale = Math.max(1, Math.floor(260 / Math.max(g.W, g.H)));
+  canvas.style.width = g.W * scale + 'px';
+  const ctx = canvas.getContext('2d'), img = ctx.createImageData(g.W, g.H);
+  const cols = [hex(css('--cov')), hex(css('--zone')), hex(css('--elim'))];
+  const st = decode(row.m, g.cov.length);
+  for (let i = 0; i < g.cov.length; i++) {
+    const f = g.cov[i], y = g.H - 1 - Math.floor(f / g.W), x = f % g.W, o = (y * g.W + x) * 4, c = cols[st[i]] || cols[0];
+    img.data[o] = c[0]; img.data[o + 1] = c[1]; img.data[o + 2] = c[2]; img.data[o + 3] = 255;
+  }
+  ctx.putImageData(img, 0, 0);
+}
+function mapFor(row) {
+  const box = document.createElement('div'); box.className = 'mapbox';
+  const c = document.createElement('canvas'); c.row = row; box.appendChild(c);
+  c.setAttribute('role', 'img'); c.setAttribute('aria-label', `Carte du tag ${row.t} (${row.cc})`);
+  canvases.push(c); draw(c);
+  return box;
+}
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+function pill(row) { return el('span', 'pill ' + vclass(row.v), row.v); }
+function svLink(row) {
+  if (!row.pano) return null;
+  const a = el('a', null, 'Voir un exemple dans Street View');
+  a.href = `https://www.google.com/maps/@?api=1&map_action=pano&pano=${encodeURIComponent(row.pano)}&viewpoint=${row.lat},${row.lng}&heading=${row.hd || 0}&pitch=-35`;
+  a.target = '_blank'; a.rel = 'noopener';
+  return a;
+}
+function nums(row) {
+  return `${row.n.toLocaleString('fr-FR')} points (${pct(row.sh)}) · ${row.z} zone${row.z > 1 ? 's' : ''} · ${pct(row.cap)} en zones · gain ${pct(row.g10)}`;
+}
+function card(row) {
+  const c = el('div', 'card');
+  c.appendChild(mapFor(row));
+  const head = el('div', 'name', `${row.cc} · ${row.t} `);
+  c.appendChild(head);
+  const p = el('div'); p.appendChild(pill(row)); if (row.why) p.appendChild(el('span', 'why', row.why)); c.appendChild(p);
+  c.appendChild(el('div', 'nums', nums(row)));
+  const a = svLink(row); if (a) { const d = el('div', 'nums'); d.appendChild(a); c.appendChild(d); }
+  return c;
+}
+
+// summary counts
+const counts = { retenu: 0, limite: 0, isoles: 0, nondisc: 0, autres: 0 };
+for (const r of ROWS) {
+  if (r.v === 'retenu') counts.retenu++;
+  else if (r.why === 'discriminance limite') counts.limite++;
+  else if (r.why === 'points surtout isolés') counts.isoles++;
+  else if (r.why === 'non discriminant') counts.nondisc++;
+  else counts.autres++;
+}
+const countsEl = document.getElementById('counts');
+[[counts.retenu, 'retenus pour la revue'], [counts.limite, 'en arbitrage : discriminance limite'], [counts.isoles, 'écartés : points surtout isolés'],
+ [counts.nondisc, 'écartés : non discriminants'], [counts.autres, 'écartés : trop peu de points, aucune zone ou déjà couverts par un tag plus fin']]
+  .forEach(([n, label]) => { const d = el('div', 'count'); d.appendChild(el('b', null, n)); d.appendChild(el('span', null, label)); countsEl.appendChild(d); });
+
+// example groups
+const GROUPS = [
+  ['Retenu : le tag sélectionne des zones distinctes', 'Peu étendu, bien regroupé. Le voir situe tout de suite dans le pays.',
+   ['MX|Black Striped 2024', 'MX|Gray 2025', 'NL|Black 2025', 'ZA|©2023']],
+  ['Retenu : le tag élimine une zone', 'Étendu, mais absent d\'une partie nette du pays.',
+   ['CR|©2026', 'LU|Blue 2023', 'SK|Antenna', 'BG|©2024']],
+  ['Arbitrage : discriminance limite', 'Gain entre 10 et 20 %. Ces cas te seraient soumis avant la revue.',
+   ['LU|Blue 2024', 'CR|©2025', 'ES|Blue 2025', 'FI|Smallcam 2025']],
+  ['Écarté : non discriminant', 'Présent presque partout, ou disséminé dans tout le pays.',
+   ['ZA|©2025', 'ZA|Smallcam', 'DE|Blue Car 2023', 'US|Brakelight']],
+  ['Écarté : points surtout isolés', 'Il existe une vraie zone, mais moins de 35 % des points du tag y tombent : le reste est éparpillé ailleurs.',
+   ['MX|Blue Unexposed 2019', 'NL|Blue 2020', 'TH|Blue 2019', 'TR|Snow']],
+];
+const byKey = new Map(ROWS.map(r => [r.cc + '|' + r.t, r]));
+const groupsEl = document.getElementById('groups');
+groupsEl.style.display = 'flex'; groupsEl.style.flexDirection = 'column'; groupsEl.style.gap = '26px';
+for (const [title, text, keys] of GROUPS) {
+  const g = el('div', 'group'); g.appendChild(el('h3', null, title)); g.appendChild(el('p', null, text));
+  const cards = el('div', 'cards');
+  keys.map(k => byKey.get(k)).filter(Boolean).forEach(r => cards.appendChild(card(r)));
+  g.appendChild(cards); groupsEl.appendChild(g);
+}
+
+// browser
+const sel = document.getElementById('country'), rowsEl = document.getElementById('rows'), panel = document.getElementById('panel'), chips = document.getElementById('chips');
+const NAMES = new Intl.DisplayNames(['fr'], { type: 'region' });
+const ccs = [...new Set(ROWS.map(r => r.cc))].sort((a, b) => NAMES.of(a).localeCompare(NAMES.of(b), 'fr'));
+ccs.forEach(cc => { const o = el('option', null, `${NAMES.of(cc)} (${cc})`); o.value = cc; sel.appendChild(o); });
+let filter = 'tous', current = null, panelCanvas = null;
+[['tous', 'Tous'], ['retenu', 'Retenus'], ['arbitrage', 'Arbitrage'], ['écarté', 'Écartés']].forEach(([v, label]) => {
+  const b = el('button', 'chip', label); b.type = 'button'; b.id = 'chip-' + vclass(v); b.setAttribute('aria-pressed', v === filter);
+  b.addEventListener('click', () => { filter = v; [...chips.children].forEach(c => c.setAttribute('aria-pressed', c === b)); renderRows(); });
+  chips.appendChild(b);
+});
+function showPanel(row) {
+  current = row;
+  if (panelCanvas) { const i = canvases.indexOf(panelCanvas); if (i >= 0) canvases.splice(i, 1); }
+  panel.replaceChildren();
+  const g = GRIDS[row.g];
+  const box = mapFor(row); panelCanvas = box.firstChild; panel.appendChild(box);
+  panel.appendChild(el('div', 'name', `${row.cc} · ${row.t}`));
+  const p = el('div'); p.appendChild(pill(row)); if (row.why) p.appendChild(el('span', 'why', row.why)); panel.appendChild(p);
+  panel.appendChild(el('div', 'nums', nums(row)));
+  const a = svLink(row); if (a) { const d = el('div', 'nums'); d.appendChild(a); panel.appendChild(d); }
+  panel.appendChild(el('div', 'src', `Source : ${g.file} (${g.date}), ${g.pts.toLocaleString('fr-FR')} points. Cases de ${g.s} km, rayon régional ${g.R} km, chaînage ${g.link} km.`));
+  [...rowsEl.children].forEach(tr => tr.classList.toggle('sel', tr.row === row));
+}
+function renderRows() {
+  const list = ROWS.filter(r => r.cc === sel.value && (filter === 'tous' || r.v === filter)).sort((a, b) => b.n - a.n);
+  rowsEl.replaceChildren();
+  for (const r of list) {
+    const tr = el('tr'); tr.row = r; tr.tabIndex = 0;
+    tr.appendChild(el('td', null, r.t));
+    [r.n.toLocaleString('fr-FR'), pct(r.sh), r.z, r.z ? pct(r.cap) : '–', r.z ? pct(r.A) : '–', pct(r.g10)].forEach(v => tr.appendChild(el('td', null, v)));
+    const td = el('td', 'v'); td.appendChild(pill(r)); if (r.why) td.appendChild(el('span', 'why', r.why)); tr.appendChild(td);
+    tr.addEventListener('click', () => showPanel(r));
+    tr.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showPanel(r); } });
+    rowsEl.appendChild(tr);
+  }
+  if (list.length) showPanel(list.includes(current) ? current : list[0]);
+  else { panel.replaceChildren(el('div', 'nums', 'Aucun tag pour ce filtre.')); }
+}
+sel.value = ccs.includes('MX') ? 'MX' : ccs[0];
+sel.addEventListener('change', renderRows);
+renderRows();
+
+// redraw maps when the theme changes
+const redraw = () => canvases.forEach(draw);
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', redraw);
+new MutationObserver(redraw).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+</script>

@@ -4,7 +4,9 @@ Interactive map of GeoGuessr metas. Click a point on the globe and see every
 meta that applies there, from the most specific to the most general.
 
 **Personal use.** Texts and images come from [Plonk It](https://www.plonkit.net)
-and are not versioned (`input/` and `data/metas/` are gitignored).
+and are not versioned (`input/` and `data/metas/` are gitignored). The
+"advanced car metas" are computed from the tagged locations of the
+[carmeta](https://github.com/iggedi-ig-ig/carmeta) repository (CC BY-NC 4.0).
 
 The code is MIT-licensed (`LICENSE`); the published data (texts, images,
 footprints) is under CC BY-NC-SA 4.0 (`LICENSE-DATA`) — two different
@@ -122,7 +124,30 @@ meta's Maps link.
 `M` only applies to hand-entered metas, those of `data/manual/`. The imported
 texts (Plonk It, RMRG, tagged) live in `data/metas/`, which is not versioned and
 is rewritten wholesale by the next import: the interface refuses the edit and
-says why, rather than writing where the change would be lost.
+says why, rather than writing where the change would be lost. The car metas
+computed from carmeta (`data/carmeta/`, versioned) cannot be edited either:
+their texts are generated from a lexicon, which is where a wording is corrected
+— see below.
+
+#### Car metas from carmeta
+
+```
+uv run cartometa-carmeta sync        # watch the carmeta repository (scheduled, daily)
+uv run cartometa-carmeta status      # what is waiting
+uv run cartometa-carmeta arbitrate   # settle the filter's borderline cases
+uv run cartometa-carmeta import <CC> # write the proposals, then cartometa-review <CC>
+uv run cartometa-carmeta accept <CC> # …or validate them all as computed, without the review
+```
+
+`cartometa-carmeta` turns the tagged Street View locations of the
+[carmeta](https://github.com/iggedi-ig-ig/carmeta) repository into `car` metas
+whose footprint arrives **pre-drawn**: in the review, `A` accepts it (retouched
+or not) and `R` rejects it. A filter keeps only the tags that rule out part of
+the country. On the site these metas sit behind an **"Enable advanced car
+metas"** option, off by default, so that several hundred narrow footprints
+neither open every result list nor drown the hand-made metas. The whole cycle,
+the rules file and the daily job are described in
+[docs/carmeta-sync.md](docs/carmeta-sync.md).
 
 ```
 uv run cartometa-review <CC> --edit

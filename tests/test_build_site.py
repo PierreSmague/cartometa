@@ -842,3 +842,71 @@ def test_a_slashed_rmrg_id_yields_a_flat_image_name(projet):
     assert "/" not in meta["thumb"].removeprefix("BD/")
     assert (dist / "img" / meta["thumb"]).exists()
     assert (dist / "img" / meta["full"]).exists()
+
+
+def _ajouter_une_car_meta(projet: Path, couleur: str | None = "#0000ff") -> None:
+    """A validated carmeta meta next to pl1: no image, a Street View link, a colour."""
+    carmeta = {"canonical": "Blue 2024", "points": 13750}
+    if couleur:
+        carmeta["color"] = couleur
+    (projet / "data" / "carmeta").mkdir()
+    (projet / "data" / "carmeta" / "PL.json").write_text(json.dumps([{
+        "id": "car-3fa2b1", "country": "PL", "tier": "manual", "origin": "carmeta",
+        "category": "car", "title": "Blue car · 2024", "description": "generated",
+        "source_url": "https://github.com/iggedi-ig-ig/carmeta", "image": None,
+        "maps_url": "https://www.google.com/maps/@?api=1&map_action=pano&pano=P",
+        "carmeta": carmeta,
+    }]), "utf-8")
+    chemin = projet / "data" / "geo" / "PL.geojson"
+    geo = json.loads(chemin.read_text("utf-8"))
+    geo["features"].append({"type": "Feature",
+                            "properties": {"id": "car-3fa2b1", "status": "validé", "pieces": []},
+                            "geometry": _carre(15.0, 50.0, 1.0)})
+    chemin.write_text(json.dumps(geo), "utf-8")
+
+
+def _metas_publiees(dist: Path) -> dict:
+    manifeste = _manifeste(dist)
+    return json.loads(
+        (dist / "data" / manifeste["countries"]["PL"]["file"]).read_text("utf-8"))["metas"]
+
+
+def test_a_carmeta_meta_gets_a_tile_as_its_image(projet):
+    _ajouter_une_car_meta(projet)
+    dist = projet / "dist"
+
+    build_site(projet / "data", dist, projet / "viewer", ["PL"])
+
+    meta = _metas_publiees(dist)["car-3fa2b1"]
+    assert meta["thumb"].startswith("PL/car-3fa2b1.t.") and meta["full"].startswith("PL/car-3fa2b1.f.")
+    with Image.open(dist / "img" / meta["thumb"]) as vignette:
+        r, g, b = vignette.convert("RGB").getpixel((8, 8))
+        assert b > 240 and r < 15 and g < 15
+    assert meta["streetview"].startswith("https://www.google.com/maps/")
+    assert "tile_source" not in meta and "image_source" not in meta
+    # The photo metas are untouched by all this.
+    assert "tile_source" not in _metas_publiees(dist)["pl1"]
+    assert verifier_integrite(dist, _manifeste(dist)).manquants == []
+
+
+def test_a_carmeta_meta_without_a_colour_gets_a_white_tile(projet):
+    _ajouter_une_car_meta(projet, couleur=None)
+    dist = projet / "dist"
+
+    build_site(projet / "data", dist, projet / "viewer", ["PL"])
+
+    meta = _metas_publiees(dist)["car-3fa2b1"]
+    with Image.open(dist / "img" / meta["full"]) as pleine:
+        assert min(pleine.convert("RGB").getpixel((60, 60))) > 245
+
+
+def test_skip_images_draws_no_tile_either(projet):
+    _ajouter_une_car_meta(projet)
+    dist = projet / "dist"
+
+    build_site(projet / "data", dist, projet / "viewer", ["PL"], skip_images=True)
+
+    meta = _metas_publiees(dist)["car-3fa2b1"]
+    assert "thumb" not in meta and "full" not in meta and "tile_source" not in meta
+    # The viewer then falls back on its own tile, from the published colour.
+    assert meta["color"] == "#0000ff"

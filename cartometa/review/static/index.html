@@ -24,6 +24,12 @@
     #info { padding: 8px 12px; }
     #sketch-row { color: #0a7d2b; font-weight: bold; }
     #sketch-row[hidden] { display: none; }
+    #carmeta-banner { color: #444; font-variant-numeric: tabular-nums; }
+    #reproposal-legend .swatch { display: inline-block; width: 14px; height: 10px;
+                                 margin: 0 4px 0 10px; vertical-align: baseline; }
+    #reproposal-legend .swatch.published { border: 2px dashed #d9730d; }
+    #reproposal-legend .swatch.proposed { border: 2px solid #0a7d2b; }
+    #streetview-link { margin-left: 12px; }
     /* Explicit `color`: without it, kbd inherits the header's white and becomes
        unreadable on its own light background. */
     kbd { background: #eee; color: #111; border-radius: 3px; padding: 1px 5px;
@@ -64,8 +70,15 @@
   <div id="info">
     <h2 id="title"></h2>
     <p id="description"></p>
+    <p id="carmeta-banner" hidden></p>
+    <p id="reproposal-legend" hidden>
+      <span class="swatch published"></span> published footprint
+      <span class="swatch proposed"></span> new footprint —
+      <kbd>A</kbd> adopts the new one, <kbd>R</kbd> keeps the published one
+    </p>
     <p id="sketch-row" hidden></p>
     <a id="source-link" target="_blank" rel="noopener">source</a>
+    <a id="streetview-link" target="_blank" rel="noopener" hidden>Street View</a>
   </div>
 
   <div id="manual" hidden>

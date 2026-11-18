@@ -3,6 +3,7 @@ name = "cartometa"
 version = "0.1.0"
 requires-python = ">=3.14"
 dependencies = [
+    "numpy>=2.5.1",
     "pillow>=12.3.0",
     "resvg-py>=0.3.4",
     "selectolax>=0.4.11",
@@ -21,9 +22,13 @@ cartometa-extract-rmrg = "cartometa.extract.rmrg_cli:main"
 cartometa-review = "cartometa.review.server:main"
 cartometa-build = "cartometa.build.cli:main"
 cartometa-import-tagged = "cartometa.tagged.cli:main"
+cartometa-carmeta = "cartometa.carmeta.cli:main"
 
 [tool.pytest.ini_options]
-markers = ["real_data: requires data/geo/, skipped if absent"]
+markers = [
+    "real_data: requires data/geo/, skipped if absent",
+    "carmeta_cache: requires data/cache/carmeta/analysis/, skipped if absent",
+]
 
 [build-system]
 requires = ["hatchling"]
