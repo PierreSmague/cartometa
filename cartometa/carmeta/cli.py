@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from cartometa.carmeta import github
+from cartometa.carmeta.accept import run_accept
 from cartometa.carmeta.arbitrate import ArbitrationError, run_arbitrate
 from cartometa.carmeta.importer import (
     SKIPPED_REJECTED,
@@ -126,6 +127,17 @@ def cmd_prune(args, paths: CarmetaPaths) -> None:
         _fail(str(exc))
 
 
+def cmd_accept(args, paths: CarmetaPaths) -> None:
+    try:
+        result = run_accept(paths.data, args.countries or None, print)
+    except CarmetaImportError as exc:
+        _fail(str(exc))
+    for country, identifier, title, reason in result.failed:
+        print(f"! {country}  {identifier}  {title} : non validée ({reason})")
+    print(f"{len(result.accepted)} proposition(s) validée(s), {len(result.adopted)} "
+          f"re-proposition(s) adoptée(s), {len(result.failed)} laissée(s) en l'état.")
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="cartometa-carmeta",
@@ -154,6 +166,13 @@ def build_parser() -> argparse.ArgumentParser:
     importer.add_argument("--dry-run", action="store_true",
                           help="affiche ce qui serait fait sans rien écrire")
     importer.set_defaults(run=cmd_import)
+
+    accept = commands.add_parser(
+        "accept", help="valide en lot les propositions carmeta telles que "
+                       "calculées, sans passer par la revue")
+    accept.add_argument("countries", nargs="*", metavar="CC",
+                        help="codes pays ; par défaut, tous les pays importés")
+    accept.set_defaults(run=cmd_accept)
 
     arbitrate = commands.add_parser(
         "arbitrate", help="tranche les cas limites du filtre, une fois pour toutes")
