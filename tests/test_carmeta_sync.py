@@ -240,3 +240,14 @@ def test_status_summarises_the_cached_analysis(paths, fake, capsys):
 
     out = capsys.readouterr().out
     assert "AA    1 retenus" in out and "Total : 2 retenus" in out
+
+
+def test_a_neighbour_with_a_handful_of_points_gets_no_analysis(paths, fake):
+    # 4 points of the Aa file fall in BB's territory... and BB has no file of its own.
+    stray = lattice(_half("Blue 2024")) + lattice(_half("Blue 2024"), n=2, lng0=22.0)
+    only = FakeGithub({MX: points_file(stray, name="Aa")})
+
+    result = run_sync(paths, _rules(), only)
+
+    assert result.analysed == ["AA"]
+    assert [p.name for p in paths.analysis_dir.iterdir()] == ["AA.json"]

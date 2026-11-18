@@ -160,7 +160,10 @@ def run_sync(paths: CarmetaPaths, rules: Rules, fetch: github.Fetch, *,
             if paths.analysis_dir.exists() else set()
         # A country no file feeds any more still gets an analysis — an empty
         # one: that is the evidence its tags are gone, which a missing file is not.
-        todo = sorted(set(served) | known) if force else sorted(dirty | (set(served) - known))
+        # A file's handful of points across a border makes that neighbour
+        # "touched" without making it served: it gets no analysis at all.
+        relevant = set(served) | known
+        todo = sorted(relevant if force else (dirty & relevant) | (set(served) - known))
         load = _loader(paths)
         for country in todo:
             progress(f"analyse : {country}")
