@@ -770,3 +770,47 @@ def test_a_carmeta_footprint_with_no_text_stops_the_build(tmp_path):
 
     with pytest.raises(SystemExit, match=r"car-perdue"):
         build_dataset(data_dir, ["MX"])
+
+
+def test_carmeta_metas_are_flagged_advanced_and_nothing_else_is(tmp_path):
+    data_dir = tmp_path / "data"
+    _ecrire_carmeta(data_dir, [_carmeta_meta("car-aaaaaa")], [_feature("car-aaaaaa", "validé")])
+    _ecrire_pays_un_meta(data_dir, category="car")       # a hand-made car meta
+
+    jeu = build_dataset(data_dir, ["MX", "PL"])
+
+    # What the site's "Enable advanced car metas" option filters on.
+    assert jeu.countries["MX"]["metas"]["car-aaaaaa"]["advanced"] is True
+    assert jeu.countries["MX"]["metas"]["car-aaaaaa"]["category"] == "car"
+    assert "advanced" not in jeu.countries["PL"]["metas"]["pl1"]
+
+
+def test_the_advanced_car_metas_option_is_wired_end_to_end():
+    """The build flags, the page offers the checkbox, the script filters on both.
+
+    Nothing runs the viewer's JavaScript in these tests; a renamed id or key would
+    silently show every carmeta meta — or none, ever.
+    """
+    viewer = Path(__file__).resolve().parents[1] / "viewer"
+    html = (viewer / "index.html").read_text("utf-8")
+    script = (viewer / "app.js").read_text("utf-8")
+
+    assert 'id="car-avancees" type="checkbox"' in html
+    assert "Enable advanced car metas" in html
+    # Off by default: the template must not ship the box checked.
+    assert not re.search(r'id="car-avancees"[^>]*\bchecked\b', html)
+    assert "getElementById('car-avancees')" in script
+    assert "meta.advanced && !etat.carAvancees" in script
+    assert "https://github.com/iggedi-ig-ig/carmeta" in html
+
+
+def test_the_fallback_tile_does_not_borrow_the_filter_pills_class():
+    """`.pastille` styles the filter pills. The tile of an imageless meta once
+    reused the name, which would have reshaped every pill."""
+    viewer = Path(__file__).resolve().parents[1] / "viewer"
+    styles = (viewer / "style.css").read_text("utf-8")
+    script = (viewer / "app.js").read_text("utf-8")
+
+    assert len(re.findall(r"^\.pastille \{", styles, re.M)) == 1
+    assert re.search(r"^\.tuile \{", styles, re.M)
+    assert "className = 'tuile'" in script and "className = 'pastille'" not in script

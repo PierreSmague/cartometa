@@ -258,6 +258,17 @@ body {
 .epingle:hover { color: var(--texte); }
 .epingle[aria-pressed="true"] { color: var(--couleur-epingle); border-color: var(--couleur-epingle); background: var(--fond-carte); }
 .epingle:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+/* "Enable advanced car metas": a quiet option under the filters, not a pill. */
+.option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--texte-doux);
+  cursor: pointer;
+}
+.option input { margin: 0; accent-color: var(--accent); }
+.option:has(input:checked) { color: var(--texte); }
 /* Pushed to the end of the difficulty row, apart from the pills they do not belong to. */
 #epingles-actions { margin-left: auto; display: flex; flex-wrap: wrap; gap: 6px; }
 #epingles-actions[hidden],
@@ -271,7 +282,7 @@ body {
   background: #eeeeeb;
 }
 /* Stands in for the thumbnail of a meta with no image, same box. */
-.pastille {
+.tuile {
   aspect-ratio: 16 / 8;
   border-radius: var(--rayon);
   display: grid;

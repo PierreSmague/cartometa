@@ -252,6 +252,11 @@ def build_dataset(
             # metas that have neither does not grow.
             if meta.get("maps_url") and meta.get("origin") == ORIGIN_CARMETA:
                 entree_pays["metas"][identifiant]["streetview"] = meta["maps_url"]
+            if meta.get("origin") == ORIGIN_CARMETA:
+                # Hundreds of narrow, computed footprints: the site keeps them
+                # behind an "advanced car metas" option, off by default, so they
+                # neither open the results nor drown the hand-made metas.
+                entree_pays["metas"][identifiant]["advanced"] = True
             couleur = (meta.get("carmeta") or {}).get("color")
             if couleur:
                 entree_pays["metas"][identifiant]["color"] = couleur

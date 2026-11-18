@@ -22,6 +22,10 @@ const etat = {
   // '' (each pin drawn in its own colour), 'union' or 'intersection' (the pins drawn
   // as one combined footprint). See `afficherCombinaison`.
   combinaison: '',
+  // The "advanced car metas" — the footprints computed from carmeta, flagged
+  // `advanced` by the build — are shown only when the visitor asks for them. Set from
+  // the saved preference further down, once the checkbox exists.
+  carAvancees: false,
 };
 
 const carte = L.map('carte', { worldCopyJump: true }).setView([25, 15], 3);
@@ -440,6 +444,7 @@ function afficherSquelettes() {
 function visibles() {
   const terme = etat.recherche.trim().toLowerCase();
   return etat.resultats.filter((meta) => {
+    if (meta.advanced && !etat.carAvancees) return false;
     if (etat.categorie && meta.category !== etat.categorie) return false;
     // Strict match, like the category filter: "Intermediate" shows the Intermediate
     // metas and nothing else. `NON_EVALUEE` is the one choice that matches on
@@ -485,14 +490,15 @@ function creerCarte(meta) {
     // draws carmeta metas a real one (title on the colour of the car); this is what
     // stands in for it in a build made without images, and for any other meta that
     // has none — white, then.
-    const pastille = document.createElement('div');
-    pastille.className = 'pastille';
+    // `tuile`, not `pastille`: that class is the filter pills'.
+    const tuile = document.createElement('div');
+    tuile.className = 'tuile';
     if (COULEUR_HEX.test(meta.color || '')) {
-      pastille.style.background = meta.color;
-      pastille.style.color = texteSur(meta.color);
+      tuile.style.background = meta.color;
+      tuile.style.color = texteSur(meta.color);
     }
-    pastille.textContent = meta.title;
-    bloc.appendChild(pastille);
+    tuile.textContent = meta.title;
+    bloc.appendChild(tuile);
   }
   const legende = document.createElement('p');
   const code = document.createElement('span');
@@ -732,9 +738,17 @@ for (const [mode, bouton] of Object.entries(boutonsCombinaison)) {
 function rendre() {
   const metas = visibles();
   if (!metas.length) {
-    montrer({ message: etat.resultats.length
-      ? 'No meta matches this filter.'
-      : 'No meta covers this point.' });
+    // Results exist but every one of them is an advanced car meta, hidden by
+    // default: say where they went rather than claim the point is empty.
+    const seulementAvancees = etat.resultats.length && !etat.carAvancees
+      && etat.resultats.every((meta) => meta.advanced);
+    let message = 'No meta covers this point.';
+    if (seulementAvancees) {
+      message = 'Only advanced car metas cover this point — enable them above to see them.';
+    } else if (etat.resultats.length) {
+      message = 'No meta matches this filter.';
+    }
+    montrer({ message });
     return;
   }
   montrer();
@@ -861,6 +875,29 @@ function brancherFiltre(conteneur, champ) {
 }
 brancherFiltre('filtres-categorie', 'categorie');
 brancherFiltre('filtres-difficulte', 'difficulte');
+
+// "Enable advanced car metas": off by default, remembered per browser. Storage can
+// be unavailable (private window, blocked site data): the option then simply starts
+// unchecked every time, and still works for the visit.
+const CLE_CAR_AVANCEES = 'cartometa:advanced-car-metas';
+const caseCarAvancees = document.getElementById('car-avancees');
+try {
+  etat.carAvancees = localStorage.getItem(CLE_CAR_AVANCEES) === '1';
+} catch (_erreur) {
+  etat.carAvancees = false;
+}
+caseCarAvancees.checked = etat.carAvancees;
+caseCarAvancees.addEventListener('change', () => {
+  etat.carAvancees = caseCarAvancees.checked;
+  try {
+    localStorage.setItem(CLE_CAR_AVANCEES, etat.carAvancees ? '1' : '0');
+  } catch (_erreur) {
+    // nothing to do: the choice holds for this visit
+  }
+  // Same safety rail as for the search: see the comment above.
+  if (etat.chargement || etat.erreur) return;
+  rendre();
+});
 
 // --- Street View link bar --------------------------------------------------
 
