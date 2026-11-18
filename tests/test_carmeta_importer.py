@@ -464,3 +464,34 @@ def test_the_summary_lists_the_car_metas_already_published(data):
     assert plan.countries[0].published == [
         ("man-1a2b", "manual", "Blue car 2024"),
         ("man-0000", "manual", "Drawn but recategorised")]
+
+
+def test_the_command_prints_what_it_did_and_counts_the_rest(data, tmp_path, capsys):
+    from cartometa.carmeta import cli
+    from cartometa.carmeta.rules import save_rules
+
+    save_rules(CarmetaPaths(data).rules, _rules())
+    _analyse(data, [_row(), _row("Blue 2023", west=5.0, year=2023, verdict="arbitrage",
+                                 reason="discriminance limite", gain=0.17)])
+
+    cli.main(["--data-dir", str(data), "import", "--dry-run"])
+    out = capsys.readouterr().out
+    assert "[dry-run : rien n'est écrit]" in out and _files(data) == (None, None)
+
+    cli.main(["--data-dir", str(data), "import", "AA"])
+    out = capsys.readouterr().out
+    assert f"{meta_id('AA', 'Blue 2024')}  Blue car · 2024" in out and "écrite" in out
+    assert "1 tag(s) en attente d'arbitrage" in out
+
+    cli.main(["--data-dir", str(data), "import"])
+    assert "1 meta(s) : inchangée" in capsys.readouterr().out
+
+
+def test_the_command_fails_with_a_message_not_a_traceback(data, capsys):
+    from cartometa.carmeta import cli
+
+    with pytest.raises(SystemExit) as exit_info:
+        cli.main(["--data-dir", str(data), "import"])
+
+    assert exit_info.value.code == 1
+    assert "cartometa-carmeta sync" in capsys.readouterr().err
