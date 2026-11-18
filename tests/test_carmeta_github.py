@@ -1,5 +1,9 @@
+import gzip
 import hashlib
+import http.client
+import io
 import json
+import urllib.error
 
 import pytest
 
@@ -88,3 +92,85 @@ def test_the_token_is_sent_to_the_api_only(monkeypatch):
 
     assert fake.headers[0]["Authorization"] == "Bearer s3cret"
     assert "Authorization" not in fake.headers[1]
+
+
+class _Response(io.BytesIO):
+    headers: dict = {}
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
+
+
+def _urlopen(outcomes):
+    """A stand-in for urlopen that plays `outcomes` one call after the other."""
+    calls = []
+
+    def urlopen(request, timeout):
+        calls.append(request.full_url)
+        outcome = outcomes[len(calls) - 1]
+        if isinstance(outcome, Exception):
+            raise outcome
+        return _Response(outcome)
+
+    return urlopen, calls
+
+
+def test_a_download_cut_short_is_retried(monkeypatch):
+    urlopen, calls = _urlopen([http.client.IncompleteRead(b"par"), b"complete"])
+    monkeypatch.setattr(github.urllib.request, "urlopen", urlopen)
+    monkeypatch.setattr(github.time, "sleep", lambda seconds: None)
+
+    assert github.urllib_fetch("https://example.invalid/x", {}) == b"complete"
+    assert len(calls) == 2
+
+
+def test_a_connection_that_keeps_failing_is_one_clean_error(monkeypatch):
+    urlopen, calls = _urlopen([urllib.error.URLError("down")] * github.ATTEMPTS)
+    monkeypatch.setattr(github.urllib.request, "urlopen", urlopen)
+    monkeypatch.setattr(github.time, "sleep", lambda seconds: None)
+
+    with pytest.raises(github.GithubError, match="after 3 attempts"):
+        github.urllib_fetch("https://example.invalid/x", {})
+    assert len(calls) == github.ATTEMPTS
+
+
+def _http_error(code, headers):
+    return urllib.error.HTTPError("https://example.invalid/x", code, "nope", headers, None)
+
+
+def test_a_spent_quota_is_recognised_and_never_retried(monkeypatch):
+    urlopen, calls = _urlopen([_http_error(403, {"X-RateLimit-Remaining": "0",
+                                                 "X-RateLimit-Reset": "1790000000"})])
+    monkeypatch.setattr(github.urllib.request, "urlopen", urlopen)
+
+    with pytest.raises(github.RateLimited, match="1790000000"):
+        github.urllib_fetch("https://example.invalid/x", {})
+    assert len(calls) == 1
+
+
+def test_an_http_status_is_an_answer_not_an_accident(monkeypatch):
+    urlopen, calls = _urlopen([_http_error(404, {})])
+    monkeypatch.setattr(github.urllib.request, "urlopen", urlopen)
+
+    with pytest.raises(github.GithubError, match="HTTP 404"):
+        github.urllib_fetch("https://example.invalid/x", {})
+    assert len(calls) == 1
+
+
+def test_transfers_are_compressed_and_transparently_inflated(monkeypatch):
+    seen = {}
+
+    def urlopen(request, timeout):
+        seen.update(request.header_items())
+        response = _Response(gzip.compress(b'{"big": "json"}'))
+        response.headers = {"Content-Encoding": "gzip"}
+        return response
+
+    monkeypatch.setattr(github.urllib.request, "urlopen", urlopen)
+
+    assert github.urllib_fetch("https://example.invalid/x", {"User-Agent": "carmeta-sync"}) \
+        == b'{"big": "json"}'
+    assert seen == {"User-agent": "carmeta-sync", "Accept-encoding": "gzip"}

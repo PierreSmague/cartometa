@@ -6,10 +6,13 @@ about who is asking.
 """
 from __future__ import annotations
 
+import gzip
 import hashlib
+import http.client
 import json
 import os
 import re
+import time
 import urllib.error
 import urllib.request
 from collections.abc import Callable
@@ -24,6 +27,8 @@ LFS = f"https://media.githubusercontent.com/media/{REPOSITORY}/{BRANCH}"
 USER_AGENT = "carmeta-sync"
 TOKEN_ENV = "GITHUB_TOKEN"
 TIMEOUT_SECONDS = 120
+ATTEMPTS = 3
+RETRY_PAUSE_SECONDS = 2.0
 
 # url, headers -> body
 Fetch = Callable[[str, dict[str, str]], bytes]
@@ -70,16 +75,35 @@ def headers() -> dict[str, str]:
 
 
 def urllib_fetch(url: str, request_headers: dict[str, str]) -> bytes:
-    request = urllib.request.Request(url, headers=request_headers)
-    try:
-        with urllib.request.urlopen(request, timeout=TIMEOUT_SECONDS) as response:
-            return response.read()
-    except urllib.error.HTTPError as exc:
-        if exc.code in (403, 429) and exc.headers.get("X-RateLimit-Remaining") == "0":
-            raise RateLimited(exc.headers.get("X-RateLimit-Reset")) from None
-        raise GithubError(f"{url}: HTTP {exc.code}") from None
-    except (urllib.error.URLError, TimeoutError, OSError) as exc:
-        raise GithubError(f"{url}: {exc}") from None
+    """One GET, retried when the connection itself fails.
+
+    A hundred-megabyte download cut short is the ordinary accident here, and
+    `http.client.IncompleteRead` is not an `OSError`: without catching it the
+    scheduled task would die on a traceback instead of logging one line. An
+    HTTP status is an answer, not an accident, and is never retried.
+    """
+    # Compressed transfer: the JSON files shrink about fourfold, which is most
+    # of the first pass's 1.3 GB — and a shorter transfer is cut short less often.
+    request = urllib.request.Request(
+        url, headers={**request_headers, "Accept-Encoding": "gzip"})
+    failure: Exception | None = None
+    for attempt in range(ATTEMPTS):
+        if attempt:
+            time.sleep(RETRY_PAUSE_SECONDS * attempt)
+        try:
+            with urllib.request.urlopen(request, timeout=TIMEOUT_SECONDS) as response:
+                body = response.read()
+                if response.headers.get("Content-Encoding") == "gzip":
+                    body = gzip.decompress(body)
+                return body
+        except urllib.error.HTTPError as exc:
+            if exc.code in (403, 429) and exc.headers.get("X-RateLimit-Remaining") == "0":
+                raise RateLimited(exc.headers.get("X-RateLimit-Reset")) from None
+            raise GithubError(f"{url}: HTTP {exc.code}") from None
+        except (urllib.error.URLError, http.client.HTTPException, TimeoutError,
+                OSError, EOFError) as exc:
+            failure = exc
+    raise GithubError(f"{url}: {failure!r} after {ATTEMPTS} attempts") from None
 
 
 def _api(fetch: Fetch, url: str):
