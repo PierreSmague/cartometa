@@ -12,6 +12,7 @@ from cartometa.review.store import (
     load_geo,
     load_metas,
     restore_proposal,
+    same_pieces,
     save_geo,
     set_decision,
 )
@@ -454,3 +455,53 @@ def test_the_edit_mode_leaves_the_other_two_modes_alone(paths):
     assert defaut["total"] == 3 and defaut["done"] == 1
     assert [item["id"] for item in tout["items"]] == ["aaaa", "bbbb", "man-1a2b"]
     assert tout["total"] == 3 and tout["done"] == 0
+
+
+def test_load_metas_reads_the_carmeta_metas_before_the_manual_ones(paths):
+    paths.tagged_metas.write_text(json.dumps([_meta("tag-abcdef", origin="tagged")]), "utf-8")
+    paths.carmeta_metas.parent.mkdir(parents=True)
+    paths.carmeta_metas.write_text(json.dumps([_meta("car-3fa2b1", origin="carmeta")]), "utf-8")
+
+    assert paths.carmeta_metas == paths.data / "carmeta" / "PL.json"
+    assert [m["id"] for m in load_metas(paths)] == [
+        "aaaa", "bbbb", "tag-abcdef", "car-3fa2b1", "man-1a2b",
+    ]
+
+
+def test_a_proposal_round_trips_next_to_the_validated_footprint(paths):
+    old = {"kind": "polygon", "ring": [[2.0, 48.0], [3.0, 48.0], [3.0, 49.0]]}
+    new = {"kind": "polygon",
+           "ring": [[2.123456789, 48.0], [3.5, 48.0], [3.5, 49.5]],
+           "holes": [[[2.5, 48.2], [2.6, 48.2], [2.6, 48.3000001]]]}
+    save_geo(paths, {"aaaa": GeoRecord(
+        id="aaaa", geometry=dict(CARRE), pieces=[old], status=STATUS_TRACED,
+        proposal={"pieces": [new, {"kind": "clip"}]},
+    )})
+
+    record = load_geo(paths)["aaaa"]
+
+    assert record.status == STATUS_TRACED and record.pieces == [old]
+    # Rounded like every other piece.
+    assert record.proposal["pieces"][0]["ring"][0] == [2.12346, 48.0]
+    assert record.proposal["pieces"][0]["holes"][0][2] == [2.6, 48.3]
+    assert record.proposal["pieces"][1] == {"kind": "clip"}
+    first = paths.geo.read_bytes()
+    save_geo(paths, load_geo(paths))
+    assert paths.geo.read_bytes() == first
+
+
+def test_a_record_without_a_proposal_keeps_its_bytes(paths):
+    save_geo(paths, {"aaaa": GeoRecord(id="aaaa", geometry=dict(CARRE), pieces=[],
+                                       status=STATUS_TRACED)})
+
+    assert b"proposal" not in paths.geo.read_bytes()
+    assert load_geo(paths)["aaaa"].proposal is None
+
+
+def test_same_pieces_compares_in_the_rounded_space():
+    stored = [{"kind": "polygon", "ring": [[2.12346, 48.0], [3.0, 48.0], [3.0, 49.0]]}]
+    generated = [{"kind": "polygon", "ring": [[2.123456789, 48.0], [3.0, 48.0], [3.0, 49.0]]}]
+
+    assert same_pieces(stored, generated)
+    assert not same_pieces(stored, [{"kind": "polygon",
+                                     "ring": [[2.2, 48.0], [3.0, 48.0], [3.0, 49.0]]}])

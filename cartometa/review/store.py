@@ -31,10 +31,13 @@ class UnknownMetaError(ValueError):
 class CountryPaths:
     """A country's paths, in one single place.
 
-    Three sources of metas coexist: the Plonk It and RMRG imports, gitignored
-    because they are regenerable, and manual entry, versioned because it is
-    irreplaceable. Gathering them here saves every caller from reinventing the
-    convention.
+    Several sources of metas coexist: the Plonk It, RMRG and tagged imports,
+    gitignored because they are regenerable; manual entry, versioned because it
+    is irreplaceable; and the carmeta metas, versioned too although their texts
+    are generated — they carry the footprint baseline the next import compares
+    against, which cannot be rebuilt, and gitignored texts would be lost
+    between two machines while their validated footprints are not. Gathering
+    them here saves every caller from reinventing the convention.
     """
 
     data: Path
@@ -51,6 +54,10 @@ class CountryPaths:
     @property
     def tagged_metas(self) -> Path:
         return self.data / "metas" / f"{self.country}-tagged.json"
+
+    @property
+    def carmeta_metas(self) -> Path:
+        return self.data / "carmeta" / f"{self.country}.json"
 
     @property
     def manual_dir(self) -> Path:
@@ -85,11 +92,12 @@ def read_json_list(path: Path) -> list[dict]:
 
 
 def load_metas(paths: CountryPaths) -> list[dict]:
-    """Imported metas (Plonk It, RMRG, tagged imports) then manual ones, in that order."""
+    """Imported metas (Plonk It, RMRG, tagged, carmeta) then manual ones, in that order."""
     return (
         read_json_list(paths.imported_metas)
         + read_json_list(paths.rmrg_metas)
         + read_json_list(paths.tagged_metas)
+        + read_json_list(paths.carmeta_metas)
         + read_json_list(paths.manual_metas)
     )
 
@@ -174,7 +182,23 @@ def _feature_arrondie(feature: dict) -> dict:
     feature["properties"]["pieces"] = [
         _piece_arrondie(p) for p in feature["properties"]["pieces"]
     ]
+    proposal = feature["properties"].get("proposal")
+    if proposal is not None:
+        feature["properties"]["proposal"] = {
+            **proposal,
+            "pieces": [_piece_arrondie(p) for p in proposal.get("pieces", [])],
+        }
     return feature
+
+
+def same_pieces(stored: list[dict], generated: list[dict]) -> bool:
+    """Are freshly generated pieces the ones already on disk?
+
+    Stored pieces went through save_geo's 5-decimal rounding: compare in that
+    space, not raw floats against rounded ones. What lets an import say
+    "unchanged" and write nothing.
+    """
+    return _arrondi_coords(stored) == _arrondi_coords(generated)
 
 
 def _geometry_is_derivable(record: GeoRecord) -> bool:

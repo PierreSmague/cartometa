@@ -13,6 +13,7 @@ ORIGIN_PLONKIT = "plonkit"
 ORIGIN_MANUAL = "manual"
 ORIGIN_RMRG = "rmrg"
 ORIGIN_TAGGED = "tagged"
+ORIGIN_CARMETA = "carmeta"
 
 # Two DECISION statuses: a geometry that exists was drawn by hand by
 # construction. `proposé` is not a decision but a pre-drawn footprint waiting
@@ -72,13 +73,19 @@ class GeoRecord:
     geometry: dict[str, Any] | None = None
     pieces: list[dict[str, Any]] = field(default_factory=list)
     status: str = STATUS_TRACED
+    # carmeta only: a newer computed footprint waiting next to a *validated*
+    # meta, as `{"pieces": [...]}`. The validated geometry stays published
+    # untouched until the reviewer adopts or dismisses the proposal — moving
+    # the meta back to `proposé` would unpublish it until the next review.
+    proposal: dict[str, Any] | None = None
 
     def to_feature(self) -> dict[str, Any]:
-        return {
-            "type": "Feature",
-            "geometry": self.geometry,
-            "properties": {"id": self.id, "status": self.status, "pieces": self.pieces},
-        }
+        properties = {"id": self.id, "status": self.status, "pieces": self.pieces}
+        # Absent rather than null: the thousands of records that never had a
+        # proposal keep their bytes.
+        if self.proposal is not None:
+            properties["proposal"] = self.proposal
+        return {"type": "Feature", "geometry": self.geometry, "properties": properties}
 
     @classmethod
     def from_feature(cls, feature: dict[str, Any]) -> "GeoRecord":
@@ -88,4 +95,5 @@ class GeoRecord:
             geometry=feature["geometry"],
             pieces=props.get("pieces", []),
             status=props["status"],
+            proposal=props.get("proposal"),
         )
