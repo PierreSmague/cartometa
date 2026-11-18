@@ -10,12 +10,12 @@ from __future__ import annotations
 from collections.abc import Callable
 from pathlib import Path
 
-from cartometa.atomic_write import write_json_atomic
 from cartometa.carmeta.importer import (
     VANISHED_KEPT,
     Action,
     CarmetaImportError,
     plan_import,
+    write_metas,
 )
 from cartometa.carmeta.rules import Rules
 from cartometa.review.server import DEFAULT_PORT as REVIEW_PORT
@@ -41,7 +41,7 @@ def _delete(data_dir: Path, action: Action) -> None:
     paths = CountryPaths(data_dir, action.country)
     metas = [m for m in read_json_list(paths.carmeta_metas) if m["id"] != action.meta_id]
     if metas:
-        write_json_atomic(paths.carmeta_metas, metas)
+        write_metas(paths.carmeta_metas, metas)
     else:
         paths.carmeta_metas.unlink(missing_ok=True)
     records = load_geo(paths)

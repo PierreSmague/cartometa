@@ -496,3 +496,34 @@ def test_the_command_fails_with_a_message_not_a_traceback(data, capsys):
 
     assert exit_info.value.code == 1
     assert "cartometa-carmeta sync" in capsys.readouterr().err
+
+
+def test_the_metas_file_holds_one_meta_per_line(data):
+    _analyse(data, [_row(), _row("Blue 2023", west=5.0, year=2023)])
+    run_import(data, None, _rules(), now=NOW)
+
+    lines = CountryPaths(data, "AA").carmeta_metas.read_text("utf-8").splitlines()
+
+    assert lines[0] == "[" and lines[-1] == "]" and len(lines) == 4
+    assert json.loads(lines[1].rstrip(","))["title"] == "Blue car · 2023"
+
+
+def test_the_baseline_is_a_coarse_summary_yet_compares_exactly(data):
+    from shapely.geometry import Point
+
+    # A footprint with hundreds of vertices, as real ones have.
+    disc = Point(5.0, 5.0).buffer(1.0, quad_segs=64)
+    row = _row()
+    row["pieces"] = [{"kind": "polygon", "ring": [list(c) for c in disc.exterior.coords[:-1]]},
+                     {"kind": "clip"}]
+    _analyse(data, [row])
+    run_import(data, None, _rules(), now=NOW)
+
+    (meta,) = load_metas(CountryPaths(data, "AA"))
+    baseline = meta["carmeta"]["baseline"]["coordinates"][0][0]
+    assert len(baseline) < len(row["pieces"][0]["ring"]) / 3
+    assert all(round(v, 3) == v for vertex in baseline for v in vertex)
+    # Coarse as it is, the same footprint computed again overlaps it at 100 %.
+    _decide(data, "Blue 2024", STATUS_TRACED)
+    (action,) = run_import(data, None, _rules(), now=NOW).actions
+    assert (action.kind, action.detail) == ("validée, empreinte stable", "recouvrement 100%")

@@ -8,6 +8,7 @@ import with nothing new must not touch a byte.
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -15,7 +16,6 @@ from pathlib import Path
 from shapely.geometry import mapping, shape
 from shapely.geometry.base import BaseGeometry
 
-from cartometa.atomic_write import write_json_atomic
 from cartometa.carmeta.footprint import iou, pieces_geometry
 from cartometa.carmeta.paths import CarmetaPaths
 from cartometa.carmeta.rules import Rules, analysis_fingerprint
@@ -23,6 +23,7 @@ from cartometa.carmeta.sync import load_analyses
 from cartometa.carmeta.tags import classify
 from cartometa.carmeta.texts import SOURCE_URL, description, maps_url, meta_id, title
 from cartometa.carmeta.verdicts import ARBITRATION, KEPT, effective_verdict
+from cartometa.carmeta.zones import KM_PER_DEG_LAT
 from cartometa.models import (
     ORIGIN_CARMETA,
     ORIGIN_PLONKIT,
@@ -102,26 +103,56 @@ class ImportPlan:
         return [action for country in self.countries for action in country.actions]
 
 
-def _rounded(value):
+# The baseline is versioned with every meta and only ever serves one
+# comparison: it is kept coarse. Simplified to half a link cell and rounded to
+# ~100 m, it weighs a fifth of the footprint it summarises.
+BASELINE_TOLERANCE_LINKS = 0.5
+BASELINE_DECIMALS = 3
+
+
+def _rounded(value, decimals: int):
     if isinstance(value, float):
-        return round(value, 5)
+        return round(value, decimals)
     if isinstance(value, (list, tuple)):
-        return [_rounded(v) for v in value]
-    if isinstance(value, dict):
-        return {k: _rounded(v) for k, v in value.items()}
+        return [_rounded(v, decimals) for v in value]
     return value
 
 
-def baseline_of(geometry: BaseGeometry) -> dict:
-    """The computed footprint as stored for the next comparison.
+def baseline_of(geometry: BaseGeometry, link_km: float) -> dict:
+    """The computed footprint, reduced to what the next comparison needs.
 
-    Always a MultiPolygon, rounded like the pieces it comes from: two imports
-    of the same analysis store the same bytes.
+    Always a MultiPolygon. The reduction is deterministic and the next import
+    reduces its own footprint the same way before comparing: an unchanged
+    footprint overlaps its baseline at exactly 100 %, however coarse both are.
     """
-    polygons = [geometry] if geometry.geom_type == "Polygon" else [
-        g for g in getattr(geometry, "geoms", []) if g.geom_type == "Polygon"]
+    tolerance = BASELINE_TOLERANCE_LINKS * link_km / KM_PER_DEG_LAT
+    reduced = geometry.simplify(tolerance, preserve_topology=True)
+    polygons = [reduced] if reduced.geom_type == "Polygon" else [
+        g for g in getattr(reduced, "geoms", []) if g.geom_type == "Polygon"]
     return {"type": "MultiPolygon",
-            "coordinates": [_rounded(mapping(p)["coordinates"]) for p in polygons]}
+            "coordinates": [_rounded(mapping(p)["coordinates"], BASELINE_DECIMALS)
+                            for p in polygons]}
+
+
+def _baseline_shape(baseline: dict) -> BaseGeometry:
+    geometry = shape(baseline)
+    # Rounding to 100 m can make a ring touch itself.
+    return geometry if geometry.is_valid else geometry.buffer(0)
+
+
+def write_metas(path: Path, metas: list[dict]) -> None:
+    """The country's carmeta metas, one per line.
+
+    Not `write_json_atomic`'s indented layout: a baseline holds hundreds of
+    coordinates, and one number per line quadrupled the file (1.6 MB for
+    Mexico's 29 metas). One meta per line stays compact and still gives a
+    readable diff — a changed meta is a changed line.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    lines = [json.dumps(meta, ensure_ascii=False, separators=(",", ":")) for meta in metas]
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text("[\n" + ",\n".join(lines) + "\n]\n", "utf-8")
+    os.replace(temporary, path)
 
 
 def _texts(carmeta: dict, rules: Rules) -> tuple[str, str]:
@@ -133,7 +164,7 @@ def _texts(carmeta: dict, rules: Rules) -> tuple[str, str]:
 
 
 def _build_meta(country: str, identifier: str, row: dict, source: dict,
-                geometry: BaseGeometry, rules: Rules, extracted_at: str) -> dict:
+                baseline: dict, rules: Rules, extracted_at: str) -> dict:
     carmeta = {
         "canonical": row["canonical"], "family": row["family"],
         "raw_tags": row["raw_tags"], "source_path": source["path"],
@@ -144,7 +175,7 @@ def _build_meta(country: str, identifier: str, row: dict, source: dict,
     # Absent rather than null, like the difficulty of a manual meta.
     if row.get("color"):
         carmeta["color"] = row["color"]
-    carmeta["baseline"] = baseline_of(geometry)
+    carmeta["baseline"] = baseline
     rep = row["rep"]
     return {
         "id": identifier, "country": country, "tier": TIER_MANUAL,
@@ -202,10 +233,10 @@ def plan_country(data_dir: Path, analysis: dict, rules: Rules, now: str) -> Coun
     for identifier, row in sorted(retained.items(), key=lambda kv: kv[1]["canonical"]):
         source = analysis["sources"][row["source"]]
         pieces = row["pieces"]
-        geometry = pieces_geometry(pieces)
+        computed = baseline_of(pieces_geometry(pieces), source["grid"]["link"])
         existing = records.get(identifier)
         previous = stored.get(identifier)
-        meta = _build_meta(country, identifier, row, source, geometry, rules,
+        meta = _build_meta(country, identifier, row, source, computed, rules,
                            (previous or {}).get("extracted_at", now))
 
         def act(kind: str, detail: str = "", shown: dict = meta) -> None:
@@ -239,7 +270,7 @@ def plan_country(data_dir: Path, analysis: dict, rules: Rules, now: str) -> Coun
             plan.metas[identifier] = meta
             plan.texts_changed = True
             continue
-        overlap = iou(geometry, shape(baseline))
+        overlap = iou(_baseline_shape(computed), _baseline_shape(baseline))
         if overlap >= rules.thresholds.reproposal_iou:
             # Footprint stable: the stored figures stay, but a label corrected
             # in the lexicon must still reach a validated meta.
@@ -332,8 +363,8 @@ def apply_import(data_dir: Path, plan: ImportPlan) -> None:
         paths = CountryPaths(data_dir, country.country)
         if country.texts_changed:
             if country.metas:
-                write_json_atomic(paths.carmeta_metas,
-                                  [country.metas[key] for key in sorted(country.metas)])
+                write_metas(paths.carmeta_metas,
+                            [country.metas[key] for key in sorted(country.metas)])
             else:
                 paths.carmeta_metas.unlink(missing_ok=True)
         if country.geo_changed:
