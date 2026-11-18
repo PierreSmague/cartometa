@@ -119,7 +119,27 @@ meta's Maps link.
 `M` only applies to hand-entered metas, those of `data/manual/`. The imported
 texts (Plonk It, RMRG, tagged) live in `data/metas/`, which is not versioned and
 is rewritten wholesale by the next import: the interface refuses the edit and
-says why, rather than writing where the change would be lost.
+says why, rather than writing where the change would be lost. The car metas
+computed from carmeta (`data/carmeta/`, versioned) cannot be edited either:
+their texts are generated from a lexicon, which is where a wording is corrected
+— see below.
+
+#### Car metas from carmeta
+
+```
+uv run cartometa-carmeta sync        # watch the carmeta repository (scheduled, daily)
+uv run cartometa-carmeta status      # what is waiting
+uv run cartometa-carmeta arbitrate   # settle the filter's borderline cases
+uv run cartometa-carmeta import <CC> # write the proposals, then cartometa-review <CC>
+```
+
+`cartometa-carmeta` turns the tagged Street View locations of the
+[carmeta](https://github.com/iggedi-ig-ig/carmeta) repository into `car` metas
+whose footprint arrives **pre-drawn**: in the review, `A` accepts it (retouched
+or not) and `R` rejects it. A filter keeps only the tags that rule out part of
+the country, and nothing is published without that review. The whole cycle,
+the rules file and the daily job are described in
+[docs/carmeta-sync.md](docs/carmeta-sync.md).
 
 ```
 uv run cartometa-review <CC> --edit
