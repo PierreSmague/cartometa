@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- launchd agent for `cartometa-carmeta sync`, once a day.
+     A template: scripts/install-carmeta-sync.sh fills in __REPO__ and __UV__
+     and loads it. launchd does not read the shell's PATH, hence the absolute
+     path to uv. A Mac asleep at the scheduled time runs the job on waking. -->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.cartometa.carmeta-sync</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>__UV__</string>
+    <string>run</string>
+    <string>cartometa-carmeta</string>
+    <string>sync</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>__REPO__</string>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>9</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>__REPO__/logs/carmeta-sync.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>__REPO__/logs/carmeta-sync.out.log</string>
+  <key>ProcessType</key>
+  <string>Background</string>
+</dict>
+</plist>
