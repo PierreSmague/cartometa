@@ -1,0 +1,206 @@
+{
+  "thresholds": {
+    "min_zone_points": 30,
+    "min_capture": 0.35,
+    "gain_drop": 0.1,
+    "gain_keep": 0.2,
+    "reproposal_iou": 0.8
+  },
+  "sources": {
+    "pin": {},
+    "exclude": []
+  },
+  "lexicon": {
+    "Alberta": {
+      "label": "Alberta",
+      "status": "pending"
+    },
+    "Antenna": {
+      "label": "Antenna",
+      "status": "accepted",
+      "phrase": "where the car's antenna is visible"
+    },
+    "BL": {
+      "label": "Brake light",
+      "status": "accepted",
+      "phrase": "where the car's brake light is visible"
+    },
+    "Black": {
+      "label": "Black car",
+      "status": "accepted"
+    },
+    "Black (Sticker)": {
+      "label": "Black (Sticker)",
+      "status": "pending"
+    },
+    "Black / Gray": {
+      "label": "Black or gray car",
+      "status": "accepted"
+    },
+    "Black Exp": {
+      "label": "Black car, exposed",
+      "status": "accepted",
+      "phrase": "shot with the exposed black car"
+    },
+    "Black Striped": {
+      "label": "Black striped car",
+      "status": "accepted"
+    },
+    "Blue": {
+      "label": "Blue car",
+      "status": "accepted"
+    },
+    "Blue Bit Exposed": {
+      "label": "Blue car, slightly exposed",
+      "status": "accepted",
+      "phrase": "shot with the slightly exposed blue car"
+    },
+    "Blue Exp": {
+      "label": "Blue car, exposed",
+      "status": "accepted",
+      "phrase": "shot with the exposed blue car"
+    },
+    "Blue Lowcam": {
+      "label": "Blue Lowcam",
+      "status": "pending"
+    },
+    "Blue Striped": {
+      "label": "Blue striped car",
+      "status": "accepted"
+    },
+    "Blue Unexposed": {
+      "label": "Blue car, unexposed",
+      "status": "accepted",
+      "phrase": "shot with the unexposed blue car"
+    },
+    "Blue Very Exposed": {
+      "label": "Blue car, very exposed",
+      "status": "accepted",
+      "phrase": "shot with the very exposed blue car"
+    },
+    "Electronic": {
+      "label": "Electronic",
+      "status": "pending"
+    },
+    "Electronic (Black)": {
+      "label": "Electronic (Black)",
+      "status": "pending"
+    },
+    "Electronic (White)": {
+      "label": "Electronic (White)",
+      "status": "pending"
+    },
+    "Exposed": {
+      "label": "Exposed car",
+      "status": "accepted",
+      "phrase": "where the car body is exposed"
+    },
+    "Exposed Back": {
+      "label": "Exposed back",
+      "status": "accepted",
+      "phrase": "where the back of the car is exposed"
+    },
+    "Exposed Blue": {
+      "label": "Blue car, exposed",
+      "status": "accepted",
+      "phrase": "shot with the exposed blue car"
+    },
+    "Ford": {
+      "label": "Ford",
+      "status": "pending"
+    },
+    "Front Blur": {
+      "label": "Front blur",
+      "status": "accepted",
+      "phrase": "where the front of the car is blurred"
+    },
+    "Glitched Blur": {
+      "label": "Glitched Blur",
+      "status": "pending"
+    },
+    "Gray": {
+      "label": "Gray car",
+      "status": "accepted"
+    },
+    "Gray Exp": {
+      "label": "Gray car, exposed",
+      "status": "accepted",
+      "phrase": "shot with the exposed gray car"
+    },
+    "Gray Exposed Back": {
+      "label": "Gray Exposed Back",
+      "status": "pending"
+    },
+    "Lowcam": {
+      "label": "Lowcam",
+      "status": "pending"
+    },
+    "Navy": {
+      "label": "Navy car",
+      "status": "accepted"
+    },
+    "Navy Exp": {
+      "label": "Navy car, exposed",
+      "status": "accepted",
+      "phrase": "shot with the exposed navy car"
+    },
+    "New Blur": {
+      "label": "New Blur",
+      "status": "pending"
+    },
+    "No Car": {
+      "label": "No car visible",
+      "status": "accepted",
+      "phrase": "where the Google car is not visible"
+    },
+    "Red": {
+      "label": "Red car",
+      "status": "accepted"
+    },
+    "Smallcam": {
+      "label": "Smallcam",
+      "status": "accepted",
+      "phrase": "shot with the small camera"
+    },
+    "Snow": {
+      "label": "Snow coverage",
+      "status": "accepted",
+      "phrase": "shot in the snow"
+    },
+    "Striped": {
+      "label": "Striped car",
+      "status": "accepted"
+    },
+    "Striped Exp": {
+      "label": "Striped car, exposed",
+      "status": "accepted",
+      "phrase": "shot with the exposed striped car"
+    },
+    "Striped Lowcam": {
+      "label": "Striped Lowcam",
+      "status": "pending"
+    },
+    "Truck": {
+      "label": "Truck",
+      "status": "pending"
+    },
+    "Unexposed Blue": {
+      "label": "Blue car, unexposed",
+      "status": "accepted",
+      "phrase": "shot with the unexposed blue car"
+    },
+    "White": {
+      "label": "White car",
+      "status": "accepted"
+    },
+    "White EV": {
+      "label": "White EV",
+      "status": "pending"
+    },
+    "White-Blue": {
+      "label": "White and blue car",
+      "status": "accepted"
+    }
+  },
+  "decisions": {}
+}
