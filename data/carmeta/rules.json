@@ -12,8 +12,8 @@
   },
   "lexicon": {
     "Alberta": {
-      "label": "Alberta",
-      "status": "pending"
+      "label": "Alberta car",
+      "status": "accepted"
     },
     "Antenna": {
       "label": "Antenna",
@@ -30,8 +30,8 @@
       "status": "accepted"
     },
     "Black (Sticker)": {
-      "label": "Black (Sticker)",
-      "status": "pending"
+      "label": "Black car with sticker",
+      "status": "accepted"
     },
     "Black / Gray": {
       "label": "Black or gray car",
@@ -61,8 +61,8 @@
       "phrase": "shot with the exposed blue car"
     },
     "Blue Lowcam": {
-      "label": "Blue Lowcam",
-      "status": "pending"
+      "label": "Blue car, low camera",
+      "status": "accepted"
     },
     "Blue Striped": {
       "label": "Blue striped car",
@@ -79,16 +79,16 @@
       "phrase": "shot with the very exposed blue car"
     },
     "Electronic": {
-      "label": "Electronic",
-      "status": "pending"
+      "label": "Electronic car",
+      "status": "accepted"
     },
     "Electronic (Black)": {
-      "label": "Electronic (Black)",
-      "status": "pending"
+      "label": "Electronic car, black",
+      "status": "accepted"
     },
     "Electronic (White)": {
-      "label": "Electronic (White)",
-      "status": "pending"
+      "label": "Electronic car, white",
+      "status": "accepted"
     },
     "Exposed": {
       "label": "Exposed car",
@@ -107,7 +107,7 @@
     },
     "Ford": {
       "label": "Ford",
-      "status": "pending"
+      "status": "accepted"
     },
     "Front Blur": {
       "label": "Front blur",
@@ -115,8 +115,8 @@
       "phrase": "where the front of the car is blurred"
     },
     "Glitched Blur": {
-      "label": "Glitched Blur",
-      "status": "pending"
+      "label": "Glitched blur",
+      "status": "accepted"
     },
     "Gray": {
       "label": "Gray car",
@@ -128,8 +128,8 @@
       "phrase": "shot with the exposed gray car"
     },
     "Gray Exposed Back": {
-      "label": "Gray Exposed Back",
-      "status": "pending"
+      "label": "Gray car, exposed back",
+      "status": "accepted"
     },
     "Lowcam": {
       "label": "Lowcam",
@@ -145,8 +145,8 @@
       "phrase": "shot with the exposed navy car"
     },
     "New Blur": {
-      "label": "New Blur",
-      "status": "pending"
+      "label": "New blur",
+      "status": "accepted"
     },
     "No Car": {
       "label": "No car visible",
@@ -177,12 +177,12 @@
       "phrase": "shot with the exposed striped car"
     },
     "Striped Lowcam": {
-      "label": "Striped Lowcam",
-      "status": "pending"
+      "label": "Striped car, low camera",
+      "status": "accepted"
     },
     "Truck": {
       "label": "Truck",
-      "status": "pending"
+      "status": "accepted"
     },
     "Unexposed Blue": {
       "label": "Blue car, unexposed",
@@ -194,13 +194,129 @@
       "status": "accepted"
     },
     "White EV": {
-      "label": "White EV",
-      "status": "pending"
+      "label": "White electric car",
+      "status": "accepted"
     },
     "White-Blue": {
       "label": "White and blue car",
       "status": "accepted"
     }
   },
-  "decisions": {}
+  "decisions": {
+    "AU|©2024": {
+      "decision": "keep",
+      "gain": 0.1212,
+      "decided_at": "2026-11-18"
+    },
+    "BR|Smallcam 2025": {
+      "decision": "keep",
+      "gain": 0.1089,
+      "decided_at": "2026-11-18"
+    },
+    "CA|©2024": {
+      "decision": "keep",
+      "gain": 0.1903,
+      "decided_at": "2026-11-18"
+    },
+    "CA|©2025": {
+      "decision": "keep",
+      "gain": 0.109,
+      "decided_at": "2026-11-18"
+    },
+    "CR|©2025": {
+      "decision": "keep",
+      "gain": 0.1825,
+      "decided_at": "2026-11-18"
+    },
+    "CY|Smallcam 2024": {
+      "decision": "keep",
+      "gain": 0.1845,
+      "decided_at": "2026-11-18"
+    },
+    "ES|Blue 2024": {
+      "decision": "keep",
+      "gain": 0.165,
+      "decided_at": "2026-11-18"
+    },
+    "ES|Blue 2025": {
+      "decision": "keep",
+      "gain": 0.1615,
+      "decided_at": "2026-11-18"
+    },
+    "FI|Smallcam 2025": {
+      "decision": "keep",
+      "gain": 0.1748,
+      "decided_at": "2026-11-18"
+    },
+    "FR|Blue 2023 (NA)": {
+      "decision": "keep",
+      "gain": 0.1535,
+      "decided_at": "2026-11-18"
+    },
+    "GB|Smallcam 2025": {
+      "decision": "keep",
+      "gain": 0.1948,
+      "decided_at": "2026-11-18"
+    },
+    "IT|Smallcam 2025": {
+      "decision": "keep",
+      "gain": 0.1734,
+      "decided_at": "2026-11-18"
+    },
+    "LU|Blue 2024": {
+      "decision": "keep",
+      "gain": 0.1684,
+      "decided_at": "2026-11-18"
+    },
+    "LV|©2024": {
+      "decision": "keep",
+      "gain": 0.1499,
+      "decided_at": "2026-11-18"
+    },
+    "PE|©2026": {
+      "decision": "keep",
+      "gain": 0.1479,
+      "decided_at": "2026-11-18"
+    },
+    "PT|Blue 2024": {
+      "decision": "keep",
+      "gain": 0.1774,
+      "decided_at": "2026-11-18"
+    },
+    "TR|Smallcam 2025": {
+      "decision": "keep",
+      "gain": 0.1674,
+      "decided_at": "2026-11-18"
+    },
+    "TR|Smallcam 2026": {
+      "decision": "keep",
+      "gain": 0.1593,
+      "decided_at": "2026-11-18"
+    },
+    "US|Black 2023": {
+      "decision": "keep",
+      "gain": 0.1854,
+      "decided_at": "2026-11-18"
+    },
+    "US|Black 2024": {
+      "decision": "keep",
+      "gain": 0.1574,
+      "decided_at": "2026-11-18"
+    },
+    "US|Black 2025": {
+      "decision": "keep",
+      "gain": 0.1039,
+      "decided_at": "2026-11-18"
+    },
+    "US|Blue 2024": {
+      "decision": "keep",
+      "gain": 0.1673,
+      "decided_at": "2026-11-18"
+    },
+    "US|No Car 2024": {
+      "decision": "keep",
+      "gain": 0.1144,
+      "decided_at": "2026-11-18"
+    }
+  }
 }
