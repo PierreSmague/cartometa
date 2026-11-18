@@ -3,6 +3,7 @@ import re
 from pathlib import Path
 
 import pytest
+from shapely.geometry import shape
 
 from cartometa.extract.categories import CATEGORIES
 from cartometa.build.dataset import (
@@ -673,3 +674,99 @@ def test_the_front_end_difficulty_values_match_the_build_ones():
     valeurs = re.findall(r'data-difficulte="([^"]*)"', html)
 
     assert valeurs == ["", *DIFFICULTIES, "none"]
+
+
+def _carmeta_meta(meta_id: str, **carmeta) -> dict:
+    return {
+        "id": meta_id, "country": "MX", "tier": "manual", "origin": "carmeta",
+        "category": "car", "title": "Blue car · 2024", "description": "generated",
+        "description_origin": "generated",
+        "source_url": "https://github.com/iggedi-ig-ig/carmeta", "image": None,
+        "maps_url": "https://www.google.com/maps/@?api=1&map_action=pano&pano=P",
+        "maps_latlon": [19.4, -99.1],
+        "carmeta": {"canonical": "Blue 2024", "points": 13750,
+                    "baseline": {"type": "MultiPolygon", "coordinates": []}, **carmeta},
+    }
+
+
+def _ecrire_carmeta(data_dir: Path, metas: list[dict], features: list[dict]) -> None:
+    (data_dir / "carmeta").mkdir(parents=True, exist_ok=True)
+    (data_dir / "geo").mkdir(parents=True, exist_ok=True)
+    (data_dir / "carmeta" / "MX.json").write_text(json.dumps(metas), "utf-8")
+    (data_dir / "geo" / "MX.geojson").write_text(json.dumps({
+        "type": "FeatureCollection", "features": features}), "utf-8")
+
+
+def _feature(meta_id: str, statut: str, cote: float = 2.0, **properties) -> dict:
+    return {"type": "Feature",
+            "properties": {"id": meta_id, "status": statut, "pieces": [], **properties},
+            "geometry": _carre(0.0, 0.0, cote) if statut == "validé" else None}
+
+
+def test_a_validated_carmeta_meta_is_published_with_its_link_and_colour(tmp_path):
+    data_dir = tmp_path / "data"
+    _ecrire_carmeta(data_dir,
+                    [_carmeta_meta("car-aaaaaa", color="#3366cc"), _carmeta_meta("car-bbbbbb")],
+                    [_feature("car-aaaaaa", "validé"), _feature("car-bbbbbb", "validé", 3.0)])
+
+    metas = build_dataset(data_dir, ["MX"]).countries["MX"]["metas"]
+
+    assert metas["car-aaaaaa"]["streetview"] == \
+        "https://www.google.com/maps/@?api=1&map_action=pano&pano=P"
+    assert metas["car-aaaaaa"]["color"] == "#3366cc"
+    assert metas["car-aaaaaa"]["category"] == "car"
+    assert metas["car-aaaaaa"]["image_source"] is None
+    # No colour in the carmeta file: no key, and the viewer falls back on a neutral tile.
+    assert "color" not in metas["car-bbbbbb"]
+    # The baseline is the import's business, never the site's.
+    assert "carmeta" not in metas["car-aaaaaa"] and "baseline" not in json.dumps(metas)
+
+
+def test_a_proposed_carmeta_meta_is_not_published(tmp_path):
+    data_dir = tmp_path / "data"
+    _ecrire_carmeta(data_dir,
+                    [_carmeta_meta("car-aaaaaa"), _carmeta_meta("car-bbbbbb")],
+                    [_feature("car-aaaaaa", "validé"),
+                     {"type": "Feature", "geometry": None,
+                      "properties": {"id": "car-bbbbbb", "status": "proposé", "pieces": [
+                          {"kind": "polygon", "ring": [[0, 0], [1, 0], [1, 1]]}]}}])
+
+    jeu = build_dataset(data_dir, ["MX"])
+
+    assert list(jeu.countries["MX"]["metas"]) == ["car-aaaaaa"]
+    assert jeu.legacy_statuses == 0
+
+
+def test_a_pending_proposal_never_reaches_the_site(tmp_path):
+    data_dir = tmp_path / "data"
+    newer = {"pieces": [{"kind": "polygon", "ring": [[50, 50], [59, 50], [59, 59]]}]}
+    _ecrire_carmeta(data_dir, [_carmeta_meta("car-aaaaaa")],
+                    [_feature("car-aaaaaa", "validé", 2.0, proposal=newer)])
+
+    jeu = build_dataset(data_dir, ["MX"])
+
+    # Published with the footprint the maintainer validated, the 2° square…
+    (geometrie,) = jeu.countries["MX"]["geometries"].values()
+    assert shape(geometrie).bounds == (0.0, 0.0, 2.0, 2.0)
+    # …and nothing of the waiting one, anywhere in the output.
+    published = json.dumps(jeu.countries) + json.dumps(jeu.index)
+    assert "proposal" not in published and "59" not in published
+
+
+def test_other_metas_gain_no_key(tmp_path):
+    data_dir = tmp_path / "data"
+    _ecrire_pays_un_meta(data_dir, maps_url="https://maps.app.goo.gl/abc")
+
+    meta = build_dataset(data_dir, ["PL"]).countries["PL"]["metas"]["pl1"]
+
+    # A Plonk It meta's Maps link locates its photo; it is not an illustration.
+    assert "streetview" not in meta and "color" not in meta
+
+
+def test_a_carmeta_footprint_with_no_text_stops_the_build(tmp_path):
+    data_dir = tmp_path / "data"
+    _ecrire_carmeta(data_dir, [_carmeta_meta("car-aaaaaa")],
+                    [_feature("car-aaaaaa", "validé"), _feature("car-perdue", "validé")])
+
+    with pytest.raises(SystemExit, match=r"car-perdue"):
+        build_dataset(data_dir, ["MX"])
