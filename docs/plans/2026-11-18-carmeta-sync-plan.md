@@ -151,20 +151,20 @@ points : on ne le retélécharge pas tant que son sha ne bouge pas).
 **Fichiers :** `pyproject.toml`, `cartometa/carmeta/{__init__,paths,rules}.py`,
 `data/carmeta/rules.json`, `tests/test_carmeta_rules.py`.
 
-- [ ] `pyproject.toml` : ajouter `numpy` aux dépendances, le script
+- [x] `pyproject.toml` : ajouter `numpy` aux dépendances, le script
       `cartometa-carmeta = "cartometa.carmeta.cli:main"`, le marqueur pytest
       `carmeta_cache: requires data/cache/carmeta/analysis/, skipped if absent`.
       `uv lock` ne doit changer que la liste des dépendances directes.
-- [ ] `CarmetaPaths(data: Path)` : `cache`, `files`, `state`, `analysis_dir`,
+- [x] `CarmetaPaths(data: Path)` : `cache`, `files`, `state`, `analysis_dir`,
       `analysis(cc)`, `report`, `pending`, `lock`, `rules`, `metas(cc)`.
-- [ ] `Rules` (dataclasses) : `thresholds` (`min_zone_points`, `min_capture`,
+- [x] `Rules` (dataclasses) : `thresholds` (`min_zone_points`, `min_capture`,
       `gain_drop`, `gain_keep`, `reproposal_iou`), `pin`, `exclude`, `lexicon`
       (`label`, `status`), `decisions` (`decision`, `gain`, `decided_at`),
       `streetview_pitch`. `load_rules(path)` : fichier absent → valeurs par
       défaut du §10 ; clé inconnue ou statut invalide → erreur qui nomme la clé.
       `save_rules` : atomique, clés triées. `analysis_fingerprint(rules)` : sha1
       des seuils (hors `reproposal_iou`) et de `sources`.
-- [ ] Écrire `data/carmeta/rules.json` : seuils du §10, lexique de l'annexe B
+- [x] Écrire `data/carmeta/rules.json` : seuils du §10, lexique de l'annexe B
       passé par le normaliseur (D1), plus `Antenna`, `Snow`, `BL`, `Front Blur`,
       `Exposed`, `Exposed Back` acceptés (D2). Libellés anglais d'après la table
       du §12 (`Blue` → `Blue car`, `No Car` → `No car visible`, `BL` → `Brake
@@ -194,12 +194,12 @@ def classify(tag: str, iso_codes: frozenset[str], lexicon: Mapping) -> Canonical
 def normalize_descriptor(descriptor: str) -> str
 ```
 
-- [ ] `classify` rend `None` pour une famille écartée. Ordre d'évaluation **du
+- [x] `classify` rend `None` pour une famille écartée. Ordre d'évaluation **du
       tableau §8.1** (`bl` avant `country`), repris de `family()` du prototype.
-- [ ] `car_year` : `<descripteur> <année>` + suffixe optionnel ; année sur 2
+- [x] `car_year` : `<descripteur> <année>` + suffixe optionnel ; année sur 2
       chiffres → `20xx` ; `Antenna` dans le descripteur → antenne `A` ; `BL` et
       `Brakelight` → `BL` ; `© 2025` → `©2025`.
-- [ ] `normalize_descriptor` selon D1.
+- [x] `normalize_descriptor` selon D1.
 
 **Tests :** une table paramétrée tirée du vocabulaire réel — au minimum :
 `Blue 24 (NA)`, `Blue 2024 (NA)`, `Blue Car 2024`, `Blue Car Antenna 2024`,
@@ -229,11 +229,11 @@ def representative(frame, zones) -> int   # point of the largest zone nearest it
 def to_wgs(frame, geometry) -> BaseGeometry
 ```
 
-- [ ] Port fidèle de `analyse_country` du prototype, découpé en fonctions
+- [x] Port fidèle de `analyse_country` du prototype, découpé en fonctions
       testables : projection et antiméridien, `D` (enveloppe convexe,
       échantillon de 20 000 points), `δ` (300 points, `default_rng(0)`),
       grille de hachage `L`, composantes 8-voisines, `capture`.
-- [ ] Gain : `R = 0,10·D` uniquement (les variantes `G3`/`G6` du prototype
+- [x] Gain : `R = 0,10·D` uniquement (les variantes `G3`/`G6` du prototype
       disparaissent), `s = D/60` borné entre 1,5 et 25 km, cases connues
       `tot > 0` et `totR ≥ 30`.
 
@@ -258,14 +258,14 @@ def pieces_geometry(pieces) -> BaseGeometry        # union of the polygon pieces
 def iou(a: BaseGeometry, b: BaseGeometry) -> float
 ```
 
-- [ ] Masque des cases de zone sur la grille `L`, rogné à la boîte englobante
+- [x] Masque des cases de zone sur la grille `L`, rogné à la boîte englobante
       plus une marge ; fermeture = dilatation puis érosion par un disque
       (`dilate_disc` du prototype) ; trous = composantes du fond qui ne touchent
       pas le bord, comblées sous 25 cases.
-- [ ] Polygonisation sans dépendance : fusionner chaque ligne du masque en
+- [x] Polygonisation sans dépendance : fusionner chaque ligne du masque en
       rectangles (`shapely.box`), puis `unary_union`. Lissage : `buffer(L/2)`,
       `simplify(L/4)`.
-- [ ] Retour en WGS84 par `to_wgs` (longitudes ramenées dans ±180), puis
+- [x] Retour en WGS84 par `to_wgs` (longitudes ramenées dans ±180), puis
       `geometry_to_pieces` de `cartometa/tagged/geometry.py` (plafond
       `MAX_RING_POINTS`, trous), puis ajout de la pièce `clip`.
 
@@ -279,13 +279,13 @@ décalés d'une moitié.
 
 **Fichiers :** `cartometa/carmeta/countries.py`, `tests/test_carmeta_countries.py`.
 
-- [ ] `CountryAssigner(cache_dir)` : `codes: list[str]`, `iso: frozenset[str]`,
+- [x] `CountryAssigner(cache_dir)` : `codes: list[str]`, `iso: frozenset[str]`,
       `assign(lat, lng) -> np.ndarray` (indice dans `codes`, −1 hors de tout
       pays). Port de `Countries` du prototype : préfiltre par boîtes,
       `shapely.contains_xy` sur géométries préparées, puis plus proche pays à
       moins de `NEAREST_MAX_DEG` (importé de `cartometa/tagged/countries.py`,
       pas recopié).
-- [ ] `CountryIndex` reste en place pour `cartometa-import-tagged`.
+- [x] `CountryIndex` reste en place pour `cartometa-import-tagged`.
 
 **Tests :** mêmes cas que `tests/test_tagged_countries.py` (dedans, au large à
 0,05°, loin de tout, code `-99`), plus l'égalité avec `CountryIndex.country_of`
@@ -312,22 +312,22 @@ def store_compact(paths, sha, points, country_idx) -> None
 def load_compact(paths, sha) -> CompactFile
 ```
 
-- [ ] `github.py` : bibliothèque standard seulement. Chemins encodés
+- [x] `github.py` : bibliothèque standard seulement. Chemins encodés
       (`urllib.parse.quote`), `User-Agent` générique, `Authorization` si
       `GITHUB_TOKEN`. `truncated: true` dans l'arbre → erreur explicite. 403 de
       quota → `RateLimited`, avec l'heure de réinitialisation si l'en-tête la
       donne. Le téléchargement vérifie le sha git du blob
       (`sha1(b"blob <taille>\0" + contenu)`) : un fichier modifié entre l'arbre
       et le téléchargement est laissé pour le passage suivant.
-- [ ] `decode_points` reconnaît le format **au contenu** : magie `PK` → premier
+- [x] `decode_points` reconnaît le format **au contenu** : magie `PK` → premier
       membre hors `__MACOSX` ; sinon JSON avec `customCoordinates`. Un pointeur
       Git LFS (`version https://git-lfs…`) est signalé comme tel, pas pris pour
       un fichier vide. Points écartés à la lecture : sans `panoId`, ou
       latitude au-delà de ±84° (points factices des séparateurs).
-- [ ] Sont ignorés sans téléchargement : les blobs à la racine du repo et les
+- [x] Sont ignorés sans téléchargement : les blobs à la racine du repo et les
       extensions de documentation (`.md`, `.txt`, images). Tout le reste est
       téléchargé une fois et classé `points` ou `other`.
-- [ ] `state.json` sauvegardé après **chaque** fichier : un quota épuisé au
+- [x] `state.json` sauvegardé après **chaque** fichier : un quota épuisé au
       milieu du premier passage se reprend sans rien retélécharger.
 
 **Tests :** JSON nu, zip, fichier sans extension, non-JSON, pointeur LFS ;
@@ -347,17 +347,17 @@ def analyse_file_country(compact, point_idx, rules, iso) -> FileCountry
 def geometric_verdict(row, is_parent, thresholds) -> tuple[str, str]
 ```
 
-- [ ] **Fusion** : les tags bruts sont ramenés à leur forme canonique *avant* le
+- [x] **Fusion** : les tags bruts sont ramenés à leur forme canonique *avant* le
       comptage ; un point qui porte deux écritures du même tag compte une fois.
       `raw_tags` garde les écritures d'origine, triées.
-- [ ] **Parent** (§8.3) : famille ni `copyright` ni `car_year` ; enfants =
+- [x] **Parent** (§8.3) : famille ni `copyright` ni `car_year` ; enfants =
       tags `car_year` strictement plus petits, d'au moins 5 points, dont ≥ 98 %
       des points portent le parent ; couverture ≥ 95 % calculée **sur ces seuls
       enfants** (c'est l'écart voulu avec le prototype).
-- [ ] Par tag : zones, capture, gain, verdict géométrique dans l'ordre exact du
+- [x] Par tag : zones, capture, gain, verdict géométrique dans l'ordre exact du
       §9.4. Empreinte, point représentatif et carte `cells` seulement pour les
       tags qui atteignent les lignes de gain (D7).
-- [ ] Vérifier sur un fichier réel le format de `extra.tags[tag].color` et le
+- [x] Vérifier sur un fichier réel le format de `extra.tags[tag].color` et le
       normaliser en `#rrggbb` (D18).
 
 **Tests :** `Antenna` couvert par des `(A)` → parent ; `Antenna` indépendant →
@@ -376,15 +376,15 @@ def choose_sources(candidates, families_of, rules) -> dict[str, Candidate]  # fa
 def analyse_country(country, state, rules, load) -> dict   # the analysis/<CC>.json payload
 ```
 
-- [ ] Rôle d'un fichier pour un pays, d'après `state.files[*].countries` :
+- [x] Rôle d'un fichier pour un pays, d'après `state.files[*].countries` :
       *principal* si le pays pèse ≥ 50 % des points du fichier, sinon
       *multi-pays* s'il y a ≥ 1 000 points. Les deux seuils en constantes.
-- [ ] Candidats : principaux par date de commit décroissante (à égalité, le
+- [x] Candidats : principaux par date de commit décroissante (à égalité, le
       plus de points) ; à défaut **le** multi-pays le plus fourni. Par famille,
       premier candidat qui la contient à ≥ 30 points. `exclude` puis `pin` (D8).
-- [ ] Pays sans candidat → analyse vide (D13). Chemins de type `points` qui ne
+- [x] Pays sans candidat → analyse vide (D13). Chemins de type `points` qui ne
       servent aucun pays → `unused_paths`.
-- [ ] Charger un même fichier une seule fois par pays ; ne lancer zones et gain
+- [x] Charger un même fichier une seule fois par pays ; ne lancer zones et gain
       que pour les familles attribuées à ce fichier.
 
 **Tests :** principal préféré au multi-pays ; le plus récent gagne ; repli par
@@ -402,12 +402,12 @@ def pending_cases(analyses, rules) -> list[PendingCase]   # kind: "descriptor" |
 def retained_rows(analysis, rules) -> list[dict]
 ```
 
-- [ ] Ordre : verdict géométrique `écarté` hors lignes de gain → inchangé ;
+- [x] Ordre : verdict géométrique `écarté` hors lignes de gain → inchangé ;
       clé de lexique `rejected` → `écarté` ; absente ou `pending` → `arbitrage`
       (« descripteur inconnu ») ; décision non périmée → `retenu` ou `écarté` ;
       décision périmée → `arbitrage` (« décision à revoir ») ; sans décision,
       le verdict géométrique (D5).
-- [ ] `pending_cases` : un cas `descriptor` par clé de lexique en attente (avec
+- [x] `pending_cases` : un cas `descriptor` par clé de lexique en attente (avec
       la liste des tags et pays concernés), un cas `tag` par verdict
       `arbitrage` sans décision valable.
 
@@ -421,14 +421,14 @@ en attente ; la clé `<CC>|<canonique>` survit à un changement de chemin source
 
 **Fichiers :** `cartometa/carmeta/{sync,cli}.py`, `tests/test_carmeta_sync.py`.
 
-- [ ] `run_sync(paths, fetch, *, force=False) -> SyncResult` : arbre → sortie
+- [x] `run_sync(paths, fetch, *, force=False) -> SyncResult` : arbre → sortie
       immédiate si rien n'a changé (D14) → verrou → téléchargements et cache
       compact → pays `dirty` (tous avec `--force`) → `analysis/<CC>.json` →
       `pending.json` → `state.json` (`tree_sha`, `dirty` vidé).
-- [ ] Verrou : `sync.lock` créé en `O_EXCL` avec pid et date, retiré en
+- [x] Verrou : `sync.lock` créé en `O_EXCL` avec pid et date, retiré en
       `finally`. Un verrou de plus de 6 heures est repris. Verrou tenu → message
       et code 0.
-- [ ] `cli.py` : sous-commandes `sync [--force]` et `status` (texte : date du
+- [x] `cli.py` : sous-commandes `sync [--force]` et `status` (texte : date du
       dernier passage, par pays le nombre de tags retenus / en attente /
       écartés, chemins inutilisés). Option cachée `--data-dir` pour les tests.
       Erreur réseau ou quota → message sur stderr, code 1, état cohérent.
@@ -444,19 +444,19 @@ hors `data/cache/carmeta/`.
 
 **Fichiers :** `tests/test_carmeta_expected.py` (marqueur `carmeta_cache`).
 
-- [ ] Lancer le premier `uv run cartometa-carmeta sync` réel (≈ 1,3 Go, 46
+- [x] Lancer le premier `uv run cartometa-carmeta sync` réel (≈ 1,3 Go, 46
       appels d'API ; avec un `GITHUB_TOKEN` si le quota gêne). Chronométrer
       ensuite `sync --force` : l'analyse complète doit tenir en moins de 15
       minutes.
-- [ ] Le test compare `analysis/` à `expected-verdicts.json` sur la clé (pays,
+- [x] Le test compare `analysis/` à `expected-verdicts.json` sur la clé (pays,
       forme canonique du tag attendu), pour les seuls fichiers dont la date de
       commit est encore celle de `file_dates.json`. Verdict et motif identiques,
       gain à ±0,02.
-- [ ] Chaque écart est inscrit dans un dictionnaire `KNOWN_GAPS` du test avec
+- [x] Chaque écart est inscrit dans un dictionnaire `KNOWN_GAPS` du test avec
       son explication (fusion de tags, couverture des parents, familles `car` et
       `unknown` absentes du prototype). Un écart non expliqué fait échouer le
       test. Cible : 621 retenus, 23 en arbitrage, à quelques cas près.
-- [ ] Comparer les sources retenues à l'annexe A.
+- [x] Comparer les sources retenues à l'annexe A.
 
 ---
 
@@ -467,12 +467,12 @@ hors `data/cache/carmeta/`.
 **Fichiers :** `cartometa/models.py`, `cartometa/review/store.py`,
 `tests/test_store.py`.
 
-- [ ] `ORIGIN_CARMETA = "carmeta"`.
-- [ ] `CountryPaths.carmeta_metas` → `data/carmeta/<CC>.json` ; `load_metas`
+- [x] `ORIGIN_CARMETA = "carmeta"`.
+- [x] `CountryPaths.carmeta_metas` → `data/carmeta/<CC>.json` ; `load_metas`
       la lit entre les imports taggés et les metas manuelles. Mettre à jour la
       docstring de `CountryPaths` (les textes carmeta sont versionnés, et
       pourquoi).
-- [ ] `GeoRecord.proposal: dict | None = None`, de forme `{"pieces": [...]}`.
+- [x] `GeoRecord.proposal: dict | None = None`, de forme `{"pieces": [...]}`.
       `to_feature` n'écrit la clé que si elle existe ; `from_feature` la lit ;
       `_feature_arrondie` arrondit aussi ses pièces.
 
@@ -492,11 +492,11 @@ def description(canonical, lexicon, points) -> str
 def maps_url(rep, pitch) -> str
 ```
 
-- [ ] Titres : la table du §12, ligne pour ligne. Antenne : `(A)` → `, antenna`,
+- [x] Titres : la table du §12, ligne pour ligne. Antenne : `(A)` → `, antenna`,
       `(NA)` → `, no antenna`, `(A+NA)` ou absente → rien.
-- [ ] Descriptions : un gabarit par famille dans le code, libellés pris au
+- [x] Descriptions : un gabarit par famille dans le code, libellés pris au
       lexique, nombre de points avec séparateur de milliers anglais.
-- [ ] Lien : `https://www.google.com/maps/@?api=1&map_action=pano&pano=…&viewpoint=<lat>,<lng>&heading=…&pitch=…`.
+- [x] Lien : `https://www.google.com/maps/@?api=1&map_action=pano&pano=…&viewpoint=<lat>,<lng>&heading=…&pitch=…`.
 
 **Tests :** chaque ligne de la table du §12 ; l'exemple JSON du §12 reproduit ;
 identifiant stable entre deux écritures du même tag ; lien bien encodé.
@@ -513,22 +513,22 @@ def apply_import(data_dir, plan) -> None
 #            | skipped_validated | reproposed | vanished_kept | vanished_deleted
 ```
 
-- [ ] `plan_import` est **sans effet de bord** : il sert à `import --dry-run`,
+- [x] `plan_import` est **sans effet de bord** : il sert à `import --dry-run`,
       à `status` et au rapport. `apply_import` n'écrit que les pays dont une
       action change quelque chose.
-- [ ] Gardes : session de revue active (`port_is_taken` de
+- [x] Gardes : session de revue active (`port_is_taken` de
       `cartometa/review/server.py`) ; cache d'analyse absent ; empreinte des
       règles périmée (D6) ; collision d'identifiants → échec avec les deux tags.
-- [ ] Table d'états du §13, complétée par D11 et D13. `extracted_at` repris de
+- [x] Table d'états du §13, complétée par D11 et D13. `extracted_at` repris de
       l'enregistrement existant. `baseline` (D10) écrite **uniquement** quand
       une proposition ou une re-proposition est écrite.
-- [ ] Comparaison des pièces dans l'espace arrondi à 5 décimales : sortir
+- [x] Comparaison des pièces dans l'espace arrondi à 5 décimales : sortir
       `_same_pieces` de `cartometa/tagged/importer.py` vers `review/store.py`
       et l'importer des deux côtés.
-- [ ] Récapitulatif : une ligne par action, tags laissés en attente
+- [x] Récapitulatif : une ligne par action, tags laissés en attente
       d'arbitrage, car metas déjà publiées du pays (catégorie `car` après
       `data/categories.json`, toutes origines) pour repérer les doublons.
-- [ ] `cartometa-carmeta import [CC …] [--dry-run]` ; sans code pays, tous les
+- [x] `cartometa-carmeta import [CC …] [--dry-run]` ; sans code pays, tous les
       pays qui ont une analyse.
 
 **Tests (§17) :** première écriture `proposé` ; deuxième import identique
@@ -546,18 +546,18 @@ fichier → aucun doublon (critère 5).
 **Fichiers :** `cartometa/review/{store,server}.py`,
 `tests/test_store.py`, `tests/test_review_server.py`.
 
-- [ ] `build_queue` : une meta `validé` qui porte une `proposal` entre dans la
+- [x] `build_queue` : une meta `validé` qui porte une `proposal` entre dans la
       file par défaut. Son item a `pieces` = pièces de la `proposal`,
       `current_pieces` = pièces validées, `reproposal: true`. Tout item gagne
       `streetview` (`maps_url`) et, pour une meta carmeta, `carmeta` (points,
       zones, capture, gain, chemin source, date — sans `baseline`).
-- [ ] `dismiss_proposal(paths, meta_id)` et
+- [x] `dismiss_proposal(paths, meta_id)` et
       `restore_reproposal(paths, meta_id, pieces, proposal)` (géométrie
       re-résolue depuis les pièces).
-- [ ] `apply_decision` : `validé` inchangé (`set_decision` recrée le record,
+- [x] `apply_decision` : `validé` inchangé (`set_decision` recrée le record,
       donc efface la `proposal`) ; `rejeté` sur une re-proposition →
       `dismiss_proposal` (D12).
-- [ ] `apply_undo` : `restore.status == "validé"` avec `restore.proposal` →
+- [x] `apply_undo` : `restore.status == "validé"` avec `restore.proposal` →
       `restore_reproposal`.
 
 **Tests (§17) :** la file contient la re-proposition et pas les autres metas
@@ -569,14 +569,14 @@ géométrie, pièces **et** `proposal` ; `done` reste juste.
 
 **Fichiers :** `cartometa/review/static/{app.js,index.html}`.
 
-- [ ] Superposition : pour un item `reproposal`, demander la géométrie de
+- [x] Superposition : pour un item `reproposal`, demander la géométrie de
       `current_pieces` à `/api/resolve` et la dessiner sous l'esquisse dans un
       style distinct (orange, tirets). Une ligne de légende dit laquelle est
       laquelle.
-- [ ] Bandeau `#carmeta-banner` sous le titre : points, zones, part en zones,
+- [x] Bandeau `#carmeta-banner` sous le titre : points, zones, part en zones,
       gain, fichier source et date. Lien « Street View » à côté du lien source.
-- [ ] `undo()` envoie `restore` pour un item `reproposal`.
-- [ ] `editCurrent` : pour une meta `car-`, le message de refus renvoie au
+- [x] `undo()` envoie `restore` pour un item `reproposal`.
+- [x] `editCurrent` : pour une meta `car-`, le message de refus renvoie au
       lexique de `data/carmeta/rules.json`.
 - [ ] Pas de tests JS dans le dépôt : vérification manuelle sur un pays de
       test, avec une re-proposition fabriquée à la main (`A`, `R`, `U`, `Space`).
@@ -599,14 +599,14 @@ géométrie, pièces **et** `proposal` ; `done` reste juste.
 **Fichiers :** `cartometa/carmeta/arbitrate.py`, `cli.py`,
 `tests/test_carmeta_arbitrate.py`.
 
-- [ ] `run_arbitrate(paths, rules, ask, out)` avec `ask` injectable. Les
+- [x] `run_arbitrate(paths, rules, ask, out)` avec `ask` injectable. Les
       descripteurs d'abord (un descripteur accepté peut faire apparaître des cas
       de discriminance), puis les tags. Par cas : pays, tag, points, zones, part
       en zones, gain, lien Street View.
-- [ ] Réponses : `k` garder, `d` écarter, `s` passer, `q` quitter. Un
+- [x] Réponses : `k` garder, `d` écarter, `s` passer, `q` quitter. Un
       descripteur gardé demande son libellé anglais. `rules.json` sauvegardé
       après **chaque** réponse.
-- [ ] Refus si l'empreinte des règles de l'analyse est périmée (D6).
+- [x] Refus si l'empreinte des règles de l'analyse est périmée (D6).
 
 **Tests :** *keep* et *drop* enregistrés avec gain et date ; libellé demandé
 pour un descripteur ; `q` conserve les réponses déjà données ; un cas décidé
@@ -618,10 +618,10 @@ fichier.
 **Fichiers :** `cartometa/carmeta/prune.py`, `cli.py`,
 `tests/test_carmeta_prune.py`.
 
-- [ ] `vanished_validated(data_dir, countries, rules)` : les metas `car-`
+- [x] `vanished_validated(data_dir, countries, rules)` : les metas `car-`
       validées absentes des tags retenus, avec le motif (tag absent de
       l'analyse, ou écarté et pourquoi). Vient de `plan_import`.
-- [ ] `cartometa-carmeta prune [CC …] [--yes]` : affiche chaque meta (titre,
+- [x] `cartometa-carmeta prune [CC …] [--yes]` : affiche chaque meta (titre,
       motif), demande `o/N`, supprime texte et empreinte. Mêmes gardes que
       `import` (revue active, analyse absente ou périmée). Un pays sans analyse
       n'est jamais purgé.
@@ -636,14 +636,14 @@ ignoré.
 **Fichiers :** `cartometa/carmeta/report.py`, `report_template.html`,
 `sync.py`, `tests/test_carmeta_report.py`.
 
-- [ ] Gabarit dérivé de `page_template.html` du prototype (canvas par tag
+- [x] Gabarit dérivé de `page_template.html` du prototype (canvas par tag
       décodé depuis `cells`, lien Street View), copié dans le paquet. Polices
       système : le rapport doit s'ouvrir hors ligne.
-- [ ] Sections : changements du repo ; par pays, tags retenus à importer, cas
+- [x] Sections : changements du repo ; par pays, tags retenus à importer, cas
       en attente, metas validées dont l'empreinte a bougé, tags disparus
       (tout cela vient de `plan_import`, en lecture seule) ; chemins et
       descripteurs inconnus.
-- [ ] `status` reprend le même résumé en texte.
+- [x] `status` reprend le même résumé en texte.
 
 **Tests :** le rapport est autonome (aucune URL externe hors liens Street View
 et GitHub) ; chaque section apparaît quand elle a du contenu ; les titres venus
@@ -655,14 +655,14 @@ des tags sont échappés ; `status` et rapport donnent les mêmes compteurs.
 `scripts/install-carmeta-sync.sh`, `scripts/install-carmeta-sync.ps1`,
 `docs/carmeta-sync.md`.
 
-- [ ] Une ligne par passage utile dans `logs/carmeta-sync.log` (date, fichiers
+- [x] Une ligne par passage utile dans `logs/carmeta-sync.log` (date, fichiers
       changés, à importer, en attente, ou l'erreur). Rien quand rien n'a changé.
-- [ ] Notification au mieux : `osascript` sous macOS, PowerShell sous Windows,
+- [x] Notification au mieux : `osascript` sous macOS, PowerShell sous Windows,
       jamais bloquante, jamais fatale.
-- [ ] macOS : agent `launchd` quotidien ; le script d'installation renseigne le
+- [x] macOS : agent `launchd` quotidien ; le script d'installation renseigne le
       chemin absolu de `uv` et du dépôt (launchd n'a pas le `PATH` du shell).
       Windows : `Register-ScheduledTask` équivalent.
-- [ ] `docs/carmeta-sync.md` (en anglais, comme les autres) : le cycle
+- [x] `docs/carmeta-sync.md` (en anglais, comme les autres) : le cycle
       `sync → arbitrate → import → review → build`, l'installation sur les deux
       systèmes, `rules.json` champ par champ, que faire quand un libellé est
       faux.
@@ -678,9 +678,9 @@ notification qui échoue ne change pas le code de retour.
 
 **Fichiers :** `cartometa/build/dataset.py`, `tests/test_build_dataset.py`.
 
-- [ ] Chaque meta publiée gagne `streetview` (son `maps_url`) et `color`
+- [x] Chaque meta publiée gagne `streetview` (son `maps_url`) et `color`
       (`carmeta.color`), absents quand la meta n'en a pas.
-- [ ] Un orphelin `car-` est fatal, avec `man-` (D17) ; le message nomme
+- [x] Un orphelin `car-` est fatal, avec `man-` (D17) ; le message nomme
       `data/carmeta/<CC>.json`.
 
 **Tests :** meta carmeta validée publiée avec lien et couleur ; meta `proposé`
@@ -692,13 +692,13 @@ publiées à l'identique.
 
 **Fichiers :** `viewer/{app.js,style.css,licence.html}`.
 
-- [ ] `creerCarte` : sans `thumb`, une pastille à la couleur du tag (neutre à
+- [x] `creerCarte` : sans `thumb`, une pastille à la couleur du tag (neutre à
       défaut) portant le titre, à la place de la vignette.
-- [ ] `ouvrirLoupe` : lien « Street View example » quand `meta.streetview`
+- [x] `ouvrirLoupe` : lien « Street View example » quand `meta.streetview`
       existe.
-- [ ] « Add to Anki » : déjà masqué sans image (`viewer/anki.js`,
+- [x] « Add to Anki » : déjà masqué sans image (`viewer/anki.js`,
       `reinitialiser`) — à vérifier, rien à coder.
-- [ ] `licence.html` : une ligne d'attribution à carmeta (CC BY-NC 4.0).
+- [x] `licence.html` : une ligne d'attribution à carmeta (CC BY-NC 4.0).
 - [ ] Vérification manuelle : `uv run cartometa-build MX --skip-images` puis
       `npx wrangler pages dev dist`, thèmes clair et sombre, largeur mobile.
 
@@ -708,10 +708,10 @@ publiées à l'identique.
       fichier multi-pays) et cocher les six critères de succès du §17.
 - [ ] Simuler une nouvelle version d'un fichier (changer un sha dans
       `state.json`) : aucun doublon, aucune décision redemandée.
-- [ ] `README.md` : section `cartometa-carmeta` et renvoi à
+- [x] `README.md` : section `cartometa-carmeta` et renvoi à
       `docs/carmeta-sync.md` ; corriger la phrase sur les sources de textes
       (`data/carmeta/` est versionné).
-- [ ] Suite complète verte.
+- [x] Suite complète verte.
 
 ---
 
@@ -749,3 +749,35 @@ publiées à l'identique.
 - **Forme des empreintes** : seul point de la spec non validé visuellement.
   C'est la raison de l'arrêt Mexique, placé avant l'arbitrage et le rapport
   pour que les réglages bougent tôt.
+
+## 6. État au 2026-11-18
+
+Tâches 1 à 22 codées, testées et commitées sur la branche `carmeta-sync`
+(810 tests verts). Le Mexique est importé (29 propositions, non commitées) et
+attend la revue du mainteneur : c'est l'arrêt prévu. Restent ouverts, cases
+non cochées ci-dessus :
+
+- la revue du Mexique et le réglage éventuel des constantes de `footprint.py` ;
+- l'ouverture dans un navigateur des trois interfaces touchées (revue, viewer,
+  rapport) : leur JavaScript est vérifié en syntaxe et en identifiants, pas à
+  l'écran ;
+- l'arbitrage des 36 cas en attente, puis l'import des 42 autres pays ;
+- l'installation de la tâche planifiée (`scripts/install-carmeta-sync.sh`).
+
+Écarts par rapport au plan, tous dans le sens de la spec :
+
+- **Téléchargements** : transferts compressés et reprise par `Range` d'un
+  fichier coupé (le premier passage réel perdait les derniers kilo-octets des
+  gros fichiers, de façon répétée).
+- **Empreinte** : fermeture et comblement faits en vectoriel (tampon positif
+  puis négatif, anneaux intérieurs sous 25 cases supprimés) plutôt que sur un
+  raster : même résultat, sans grille de plusieurs millions de cases.
+- **Référence d'empreinte** : simplifiée à une demi-case et arrondie à 100 m,
+  et le fichier `data/carmeta/<CC>.json` écrit une meta par ligne. Le fichier
+  du Mexique passe de 1,6 Mo à 230 Ko.
+- **Pastille du viewer** : appliquée à toute meta sans image, pas seulement
+  aux metas carmeta, pour garder la grille alignée.
+- **Contrôle sur données réelles** : 957 verdicts sur 965 strictement
+  identiques au prototype, 8 de même verdict avec des chiffres différents
+  (expliqués dans `tests/test_carmeta_expected.py`), 4 lignes nouvelles de la
+  famille `car`. Analyse complète en 35 secondes.
