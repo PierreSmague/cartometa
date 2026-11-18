@@ -27,7 +27,7 @@ LFS = f"https://media.githubusercontent.com/media/{REPOSITORY}/{BRANCH}"
 USER_AGENT = "carmeta-sync"
 TOKEN_ENV = "GITHUB_TOKEN"
 TIMEOUT_SECONDS = 120
-ATTEMPTS = 3
+ATTEMPTS = 6
 RETRY_PAUSE_SECONDS = 2.0
 
 # url, headers -> body
@@ -75,28 +75,50 @@ def headers() -> dict[str, str]:
 
 
 def urllib_fetch(url: str, request_headers: dict[str, str]) -> bytes:
-    """One GET, retried when the connection itself fails.
+    """One GET that survives a connection cut short.
 
-    A hundred-megabyte download cut short is the ordinary accident here, and
-    `http.client.IncompleteRead` is not an `OSError`: without catching it the
-    scheduled task would die on a traceback instead of logging one line. An
-    HTTP status is an answer, not an accident, and is never retried.
+    A hundred-megabyte download losing its last kilobytes is the ordinary
+    accident here, and it repeats: asking again for the whole file fails the
+    same way. So the transfer is first asked compressed (the JSON shrinks about
+    fourfold); if it is cut, it is asked again plain and *resumed* with a Range
+    request from the bytes already held. `http.client.IncompleteRead` is not an
+    `OSError`: without catching it the scheduled task would die on a traceback.
+    An HTTP status is an answer, not an accident, and is never retried.
     """
-    # Compressed transfer: the JSON files shrink about fourfold, which is most
-    # of the first pass's 1.3 GB — and a shorter transfer is cut short less often.
-    request = urllib.request.Request(
-        url, headers={**request_headers, "Accept-Encoding": "gzip"})
+    body = b""
+    compressed = True
     failure: Exception | None = None
     for attempt in range(ATTEMPTS):
         if attempt:
-            time.sleep(RETRY_PAUSE_SECONDS * attempt)
+            time.sleep(RETRY_PAUSE_SECONDS)
+        sent = dict(request_headers)
+        if body:
+            sent["Range"] = f"bytes={len(body)}-"
+        elif compressed:
+            sent["Accept-Encoding"] = "gzip"
         try:
-            with urllib.request.urlopen(request, timeout=TIMEOUT_SECONDS) as response:
-                body = response.read()
-                if response.headers.get("Content-Encoding") == "gzip":
-                    body = gzip.decompress(body)
-                return body
+            with urllib.request.urlopen(
+                urllib.request.Request(url, headers=sent), timeout=TIMEOUT_SECONDS
+            ) as response:
+                gzipped = response.headers.get("Content-Encoding") == "gzip"
+                if body and getattr(response, "status", 200) != 206:
+                    # The server ignored the range and sent everything again.
+                    body = b""
+                try:
+                    chunk = response.read()
+                except http.client.IncompleteRead as exc:
+                    failure = exc
+                    if gzipped:
+                        # Half a compressed stream cannot be resumed.
+                        compressed = False
+                    else:
+                        body += exc.partial
+                    continue
+                return gzip.decompress(chunk) if gzipped else body + chunk
         except urllib.error.HTTPError as exc:
+            if exc.code == 416 and body:
+                # Nothing left to send: what was held was already complete.
+                return body
             if exc.code in (403, 429) and exc.headers.get("X-RateLimit-Remaining") == "0":
                 raise RateLimited(exc.headers.get("X-RateLimit-Reset")) from None
             raise GithubError(f"{url}: HTTP {exc.code}") from None

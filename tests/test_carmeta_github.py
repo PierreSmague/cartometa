@@ -95,7 +95,18 @@ def test_the_token_is_sent_to_the_api_only(monkeypatch):
 
 
 class _Response(io.BytesIO):
-    headers: dict = {}
+    """What urlopen returns: a body, or a body that breaks off after `partial`."""
+
+    def __init__(self, body=b"", status=200, headers=None, partial=None):
+        super().__init__(body)
+        self.status = status
+        self.headers = headers or {}
+        self._partial = partial
+
+    def read(self, *args):
+        if self._partial is not None:
+            raise http.client.IncompleteRead(self._partial)
+        return super().read(*args)
 
     def __enter__(self):
         return self
@@ -104,73 +115,86 @@ class _Response(io.BytesIO):
         return False
 
 
-def _urlopen(outcomes):
-    """A stand-in for urlopen that plays `outcomes` one call after the other."""
-    calls = []
+@pytest.fixture
+def urlopen(monkeypatch):
+    """Plays the given outcomes one call after the other; records the requests."""
+    played = {"outcomes": [], "requests": []}
 
-    def urlopen(request, timeout):
-        calls.append(request.full_url)
-        outcome = outcomes[len(calls) - 1]
+    def fake(request, timeout):
+        played["requests"].append({k.lower(): v for k, v in request.header_items()})
+        outcome = played["outcomes"][len(played["requests"]) - 1]
         if isinstance(outcome, Exception):
             raise outcome
-        return _Response(outcome)
+        return outcome
 
-    return urlopen, calls
-
-
-def test_a_download_cut_short_is_retried(monkeypatch):
-    urlopen, calls = _urlopen([http.client.IncompleteRead(b"par"), b"complete"])
-    monkeypatch.setattr(github.urllib.request, "urlopen", urlopen)
+    monkeypatch.setattr(github.urllib.request, "urlopen", fake)
     monkeypatch.setattr(github.time, "sleep", lambda seconds: None)
-
-    assert github.urllib_fetch("https://example.invalid/x", {}) == b"complete"
-    assert len(calls) == 2
+    return played
 
 
-def test_a_connection_that_keeps_failing_is_one_clean_error(monkeypatch):
-    urlopen, calls = _urlopen([urllib.error.URLError("down")] * github.ATTEMPTS)
-    monkeypatch.setattr(github.urllib.request, "urlopen", urlopen)
-    monkeypatch.setattr(github.time, "sleep", lambda seconds: None)
-
-    with pytest.raises(github.GithubError, match="after 3 attempts"):
-        github.urllib_fetch("https://example.invalid/x", {})
-    assert len(calls) == github.ATTEMPTS
+URL = "https://example.invalid/x"
 
 
-def _http_error(code, headers):
-    return urllib.error.HTTPError("https://example.invalid/x", code, "nope", headers, None)
+def test_transfers_are_asked_compressed_and_inflated(urlopen):
+    urlopen["outcomes"] = [_Response(gzip.compress(b'{"big": "json"}'),
+                                     headers={"Content-Encoding": "gzip"})]
+
+    assert github.urllib_fetch(URL, {"User-Agent": "carmeta-sync"}) == b'{"big": "json"}'
+    assert urlopen["requests"] == [{"user-agent": "carmeta-sync", "accept-encoding": "gzip"}]
 
 
-def test_a_spent_quota_is_recognised_and_never_retried(monkeypatch):
-    urlopen, calls = _urlopen([_http_error(403, {"X-RateLimit-Remaining": "0",
-                                                 "X-RateLimit-Reset": "1790000000"})])
-    monkeypatch.setattr(github.urllib.request, "urlopen", urlopen)
+def test_a_plain_download_cut_short_is_resumed_from_where_it_stopped(urlopen):
+    urlopen["outcomes"] = [_Response(partial=b"begin"), _Response(partial=b"ning and", status=206),
+                           _Response(b" end", status=206)]
+
+    assert github.urllib_fetch(URL, {}) == b"beginning and end"
+    assert [r.get("range") for r in urlopen["requests"]] == [None, "bytes=5-", "bytes=13-"]
+
+
+def test_a_compressed_download_cut_short_starts_over_plain(urlopen):
+    urlopen["outcomes"] = [
+        _Response(partial=b"\x1f\x8b half", headers={"Content-Encoding": "gzip"}),
+        _Response(b"the whole file"),
+    ]
+
+    assert github.urllib_fetch(URL, {}) == b"the whole file"
+    assert urlopen["requests"] == [{"accept-encoding": "gzip"}, {}]
+
+
+def test_a_server_that_ignores_the_range_is_read_from_the_start(urlopen):
+    urlopen["outcomes"] = [_Response(partial=b"begin"), _Response(b"beginning", status=200)]
+
+    assert github.urllib_fetch(URL, {}) == b"beginning"
+
+
+def test_a_range_past_the_end_means_the_file_was_already_whole(urlopen):
+    urlopen["outcomes"] = [_Response(partial=b"all of it"),
+                           urllib.error.HTTPError(URL, 416, "nope", {}, None)]
+
+    assert github.urllib_fetch(URL, {}) == b"all of it"
+
+
+def test_a_connection_that_keeps_failing_is_one_clean_error(urlopen):
+    urlopen["outcomes"] = [urllib.error.URLError("down")] * github.ATTEMPTS
+
+    with pytest.raises(github.GithubError, match=f"after {github.ATTEMPTS} attempts"):
+        github.urllib_fetch(URL, {})
+    assert len(urlopen["requests"]) == github.ATTEMPTS
+
+
+def test_a_spent_quota_is_recognised_and_never_retried(urlopen):
+    urlopen["outcomes"] = [urllib.error.HTTPError(
+        URL, 403, "nope", {"X-RateLimit-Remaining": "0", "X-RateLimit-Reset": "1790000000"},
+        None)]
 
     with pytest.raises(github.RateLimited, match="1790000000"):
-        github.urllib_fetch("https://example.invalid/x", {})
-    assert len(calls) == 1
+        github.urllib_fetch(URL, {})
+    assert len(urlopen["requests"]) == 1
 
 
-def test_an_http_status_is_an_answer_not_an_accident(monkeypatch):
-    urlopen, calls = _urlopen([_http_error(404, {})])
-    monkeypatch.setattr(github.urllib.request, "urlopen", urlopen)
+def test_an_http_status_is_an_answer_not_an_accident(urlopen):
+    urlopen["outcomes"] = [urllib.error.HTTPError(URL, 404, "nope", {}, None)]
 
     with pytest.raises(github.GithubError, match="HTTP 404"):
-        github.urllib_fetch("https://example.invalid/x", {})
-    assert len(calls) == 1
-
-
-def test_transfers_are_compressed_and_transparently_inflated(monkeypatch):
-    seen = {}
-
-    def urlopen(request, timeout):
-        seen.update(request.header_items())
-        response = _Response(gzip.compress(b'{"big": "json"}'))
-        response.headers = {"Content-Encoding": "gzip"}
-        return response
-
-    monkeypatch.setattr(github.urllib.request, "urlopen", urlopen)
-
-    assert github.urllib_fetch("https://example.invalid/x", {"User-Agent": "carmeta-sync"}) \
-        == b'{"big": "json"}'
-    assert seen == {"User-agent": "carmeta-sync", "Accept-encoding": "gzip"}
+        github.urllib_fetch(URL, {})
+    assert len(urlopen["requests"]) == 1
