@@ -1,0 +1,18 @@
+[
+  {
+    "id": "man-a1fb",
+    "country": "BE",
+    "tier": "manual",
+    "title": "Tall, narrow Belgian pylon",
+    "description": "Belgium mainly has symmetrical pylons, which is unusual among its neighbours. They are often tall yet narrow for their height; a fourth crossarm for the ground cables set very high above the third one, or a long spike, is typical.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1VFMArifys-VP7eID3iISJaGM0WBsO-lLkW6j52k4S9Q/edit",
+    "extracted_at": "2026-11-19T13:39:20.082594+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/BE/images/man-a1fb.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  }
+]

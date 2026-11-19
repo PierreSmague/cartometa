@@ -14,5 +14,37 @@
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
+  },
+  {
+    "id": "man-f80b",
+    "country": "IE",
+    "tier": "manual",
+    "title": "Mini pylon",
+    "description": "Ireland occasionally has these mini pylons, much smaller than standard lattice pylons. They are unique to Ireland, which makes them useful for an Ireland/UK 50/50.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1VFMArifys-VP7eID3iISJaGM0WBsO-lLkW6j52k4S9Q/edit",
+    "extracted_at": "2026-11-19T13:39:19.496559+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/IE/images/man-f80b.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-421c",
+    "country": "IE",
+    "tier": "manual",
+    "title": "Delta pylon in Ireland",
+    "description": "Ireland has some fairly generic Delta pylons, mostly in the midlands, the east and the south. There are few to no Delta pylons in the UK, so in an Ireland/UK 50/50 a Delta pylon almost always means Ireland.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1VFMArifys-VP7eID3iISJaGM0WBsO-lLkW6j52k4S9Q/edit",
+    "extracted_at": "2026-11-19T13:39:19.496559+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/IE/images/man-421c.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]

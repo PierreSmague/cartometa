@@ -1160,5 +1160,21 @@
       158.230948
     ],
     "overlay": null
+  },
+  {
+    "id": "man-fbfe",
+    "country": "RU",
+    "tier": "manual",
+    "title": "Post-Soviet pylons",
+    "description": "Soviet-era pylon designs are shared by Russia, Ukraine, Belarus and the Baltic states and set them apart from the rest of Europe: plain barrel pylons, asymmetrical pylons that are not very tall with wide crossarms that do not taper outwards, A-shape pylons and concrete or steel H-frames. They do not help between these countries, but over time you get a feel for them. In Russia steel H-frames are more common than concrete ones.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1VFMArifys-VP7eID3iISJaGM0WBsO-lLkW6j52k4S9Q/edit",
+    "extracted_at": "2026-11-19T13:39:20.500160+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/RU/images/man-fbfe.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]

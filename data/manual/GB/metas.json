@@ -46,5 +46,37 @@
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
+  },
+  {
+    "id": "man-16d6",
+    "country": "GB",
+    "tier": "manual",
+    "title": "UK barrel pylon",
+    "description": "Barrel pylons (three crossarms, the middle one longest) are the most common pylons in the UK and have very recognisable designs: a spike integrated into the crossarm, an especially long spike, or a pointed roof instead of a spike. You quickly get a feel for UK pylons.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1VFMArifys-VP7eID3iISJaGM0WBsO-lLkW6j52k4S9Q/edit",
+    "extracted_at": "2026-11-19T13:39:19.311039+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GB/images/man-16d6.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-32a2",
+    "country": "GB",
+    "tier": "manual",
+    "title": "UK symmetrical pylon",
+    "description": "Symmetrical pylons (three crossarms of equal length) are common in the UK, though less than barrel pylons, with the same spike designs. They are mostly found in England and Wales.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1VFMArifys-VP7eID3iISJaGM0WBsO-lLkW6j52k4S9Q/edit",
+    "extracted_at": "2026-11-19T13:39:19.311039+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/GB/images/man-32a2.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]
