@@ -910,5 +910,37 @@
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
+  },
+  {
+    "id": "man-ff19",
+    "country": "CZ",
+    "tier": "manual",
+    "title": "H-frame pylon with widening legs",
+    "description": "Czechia and Slovakia have a unique H-frame design whose legs widen significantly towards the bottom. In Czechia they run across the north, the centre and Moravia.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1VFMArifys-VP7eID3iISJaGM0WBsO-lLkW6j52k4S9Q/edit",
+    "extracted_at": "2026-11-19T13:39:21.269841+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/CZ/images/man-ff19.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-52f9",
+    "country": "CZ",
+    "tier": "manual",
+    "title": "Chat pylon with low crossarms",
+    "description": "Czech and Slovak chat pylons (a cat-face shape) have their crossarms set particularly low. In Czechia they occur in three clusters: the west around Karlovy Vary and Plzeň, the area south of Brno, and the north-east around Olomouc and Ostrava.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1VFMArifys-VP7eID3iISJaGM0WBsO-lLkW6j52k4S9Q/edit",
+    "extracted_at": "2026-11-19T13:39:21.269841+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/CZ/images/man-52f9.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]

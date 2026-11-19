@@ -46,5 +46,21 @@
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
+  },
+  {
+    "id": "man-fe50",
+    "country": "PL",
+    "tier": "manual",
+    "title": "Polish asymmetrical pylon",
+    "description": "Poland has many asymmetrical pylons (a full lower crossarm and a half upper one). Typical are a small beam sticking out of the peak to hold the ground cable, and an upper half crossarm that is just a thin rod with an insulator, which is unique to Poland.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1VFMArifys-VP7eID3iISJaGM0WBsO-lLkW6j52k4S9Q/edit",
+    "extracted_at": "2026-11-19T13:39:20.357119+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/PL/images/man-fe50.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]

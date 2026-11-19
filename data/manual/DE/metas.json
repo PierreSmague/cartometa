@@ -1234,5 +1234,53 @@
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
+  },
+  {
+    "id": "man-20d4",
+    "country": "DE",
+    "tier": "manual",
+    "title": "Donau pylon with a huge spike",
+    "description": "The most common pylon in Germany is the Donau pylon (usually two crossarms, the lower one longer, often four cables below and two above) with a huge spike on top for the ground cable. Germany and the Netherlands use Donau pylons almost exclusively; other European countries have them, but far less often.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1VFMArifys-VP7eID3iISJaGM0WBsO-lLkW6j52k4S9Q/edit",
+    "extracted_at": "2026-11-19T13:39:18.874357+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/DE/images/man-20d4.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-f9ea",
+    "country": "DE",
+    "tier": "manual",
+    "title": "Donau pylon without a spike",
+    "description": "A simpler Donau pylon with a single crossarm and no pronounced top spike, sometimes with small 'cat ears'. It is mostly found in eastern Germany.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1VFMArifys-VP7eID3iISJaGM0WBsO-lLkW6j52k4S9Q/edit",
+    "extracted_at": "2026-11-19T13:39:18.874357+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/DE/images/man-f9ea.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-69be",
+    "country": "DE",
+    "tier": "manual",
+    "title": "Christmas tree pylon",
+    "description": "Three crossarms getting shorter towards the top, six cables in all. Somewhat common in western Germany, especially North Rhine-Westphalia, Rhineland-Palatinate, Saarland and Hesse, with a few in the east and in Bavaria. Much rarer in other countries.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1VFMArifys-VP7eID3iISJaGM0WBsO-lLkW6j52k4S9Q/edit",
+    "extracted_at": "2026-11-19T13:39:18.874357+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/DE/images/man-69be.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]

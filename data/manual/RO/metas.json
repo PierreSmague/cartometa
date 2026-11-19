@@ -78,5 +78,21 @@
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
+  },
+  {
+    "id": "man-e918",
+    "country": "RO",
+    "tier": "manual",
+    "title": "No triangle pylons in Romania",
+    "description": "Triangle pylons (three half crossarms in a staggered pattern, here one from Bulgaria) basically do not exist in Romania, nor in Greece, while Bulgaria has many. Useful for a Romania/Bulgaria 50/50.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1VFMArifys-VP7eID3iISJaGM0WBsO-lLkW6j52k4S9Q/edit",
+    "extracted_at": "2026-11-19T13:39:20.217376+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/RO/images/man-e918.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]

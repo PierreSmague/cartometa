@@ -30,5 +30,37 @@
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
+  },
+  {
+    "id": "man-f701",
+    "country": "NO",
+    "tier": "manual",
+    "title": "Four-rod H-frame pylon",
+    "description": "Norwegian H-frames sometimes have a unique design: legs made of four metal rods with multiple crossbars. They can get very tall, and are only rarely seen in Iceland. Found from the south up to Troms.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1VFMArifys-VP7eID3iISJaGM0WBsO-lLkW6j52k4S9Q/edit",
+    "extracted_at": "2026-11-19T13:39:21.775569+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NO/images/man-f701.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-f853",
+    "country": "NO",
+    "tier": "manual",
+    "title": "Delta pylon in Norway",
+    "description": "Delta pylons are mainly found in southern Norway, occasionally in the north. Sweden has virtually none, which makes them useful for a Norway/Sweden 50/50.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1VFMArifys-VP7eID3iISJaGM0WBsO-lLkW6j52k4S9Q/edit",
+    "extracted_at": "2026-11-19T13:39:21.775569+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/NO/images/man-f853.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]

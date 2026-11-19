@@ -700,5 +700,21 @@
       9.1105397
     ],
     "overlay": null
+  },
+  {
+    "id": "man-da62",
+    "country": "DK",
+    "tier": "manual",
+    "title": "Danish triangle pylon",
+    "description": "Denmark is the only Nordic country with many triangle pylons. They are very narrow, some with extremely thin steel beams. With a Netherlands/Germany/Denmark vibe, a triangle pylon very likely means Denmark.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1VFMArifys-VP7eID3iISJaGM0WBsO-lLkW6j52k4S9Q/edit",
+    "extracted_at": "2026-11-19T13:39:21.646126+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/DK/images/man-da62.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]

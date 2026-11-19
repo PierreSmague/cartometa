@@ -78,5 +78,37 @@
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
+  },
+  {
+    "id": "man-4de3",
+    "country": "IT",
+    "tier": "manual",
+    "title": "Italian triangle pylon",
+    "description": "Italy uses many triangle pylons (three half crossarms in a staggered pattern), seen almost everywhere. Very large ones have a peak, but even smaller ones often have no peak at all, which is very typical of Italy. Spain also has many, with a different design; Greece has none.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1VFMArifys-VP7eID3iISJaGM0WBsO-lLkW6j52k4S9Q/edit",
+    "extracted_at": "2026-11-19T13:39:19.645120+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/IT/images/man-4de3.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-c317",
+    "country": "IT",
+    "tier": "manual",
+    "title": "Italian delta pylon",
+    "description": "Italy has some unique Delta pylons: an arch in the beam, a beam that is sometimes off centre, or a tower body rotated by 45° with a very sharp triangular hole. A generic Delta design found in almost every country also exists.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1VFMArifys-VP7eID3iISJaGM0WBsO-lLkW6j52k4S9Q/edit",
+    "extracted_at": "2026-11-19T13:39:19.645120+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/IT/images/man-c317.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]

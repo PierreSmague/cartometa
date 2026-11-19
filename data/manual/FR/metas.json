@@ -814,5 +814,37 @@
     "maps_url": null,
     "maps_latlon": null,
     "overlay": null
+  },
+  {
+    "id": "man-5a18",
+    "country": "FR",
+    "tier": "manual",
+    "title": "Triangle pylon with a flat top",
+    "description": "France has a large number of triangle pylons (three half crossarms in a staggered pattern). They often end in a flattened, wide top instead of a sharp peak, which is rare in neighbouring countries. This wide spike end also shows up on French barrel and symmetrical pylons.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1VFMArifys-VP7eID3iISJaGM0WBsO-lLkW6j52k4S9Q/edit",
+    "extracted_at": "2026-11-19T13:39:19.136241+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/FR/images/man-5a18.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
+  },
+  {
+    "id": "man-3737",
+    "country": "FR",
+    "tier": "manual",
+    "title": "Beaubourg pylon",
+    "description": "The Beaubourg variant of the Donau pylon is especially common in France: two spikes on the upper crossarm stick far outwards at an angle. Romania has a similar design, but there the top bar is completely flat instead of angled.",
+    "category": "infrastructure",
+    "source_url": "https://docs.google.com/document/d/1VFMArifys-VP7eID3iISJaGM0WBsO-lLkW6j52k4S9Q/edit",
+    "extracted_at": "2026-11-19T13:39:19.136241+00:00",
+    "description_origin": "imported",
+    "origin": "manual",
+    "image": "data/manual/FR/images/man-3737.webp",
+    "maps_url": null,
+    "maps_latlon": null,
+    "overlay": null
   }
 ]
